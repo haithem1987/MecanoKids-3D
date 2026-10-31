@@ -1,0 +1,6 @@
+{
+  "name": "MécanoKids 3D",
+  "description": "Jeu éducatif d'assemblage mécanique 3D pour enfants (voitures, bateaux, avions) avec progression par niveaux, 3 styles visuels, mascotte Gemini et fiches découvertes Google Search.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
