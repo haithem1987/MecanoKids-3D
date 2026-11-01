@@ -7,7 +7,9 @@ import {
   Eye,
   Gem,
   Lightbulb,
+  RotateCcw,
   Star,
+  Timer,
   Trophy,
   X,
 } from 'lucide-react';
@@ -15,6 +17,17 @@ import { RareCollectibleSpec } from '../data/dailyChallenges';
 import { renderBadgeIcon } from './ProgressionModal';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { BadgeEvaluation, LanguageCode, VehicleBlueprint } from '../types/game';
+import {
+  formatDeltaMs,
+  formatSecondsPerPart,
+  formatStopwatchMs,
+} from '../utils/speedrun';
+
+export interface TimedCompletionResult {
+  timeMs: number;
+  isNewRecord: boolean;
+  previousBestMs: number | null;
+}
 
 interface DiscoveryModalProps {
   isOpen: boolean;
@@ -26,6 +39,9 @@ interface DiscoveryModalProps {
   newlyUnlockedBadges: BadgeEvaluation[];
   rareRewardSpec?: RareCollectibleSpec | null;
   onOpenDailyVault?: () => void;
+  timedResult?: TimedCompletionResult | null;
+  onOpenLeaderboard?: () => void;
+  onRetryTimedRun?: () => void;
   onOpenProgression: () => void;
   hasNextStage: boolean;
   onNextStage: () => void;
@@ -41,6 +57,9 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
   newlyUnlockedBadges,
   rareRewardSpec,
   onOpenDailyVault,
+  timedResult,
+  onOpenLeaderboard,
+  onRetryTimedRun,
   onOpenProgression,
   hasNextStage,
   onNextStage,
@@ -115,6 +134,81 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Official Stopwatch Speedrun Result Card */}
+              {timedResult && (
+                <div className="p-4 bg-sky-50/70 border border-sky-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0">
+                      <Timer className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                        <span className="font-bold text-sky-950">
+                          {t.discoveryTimerCardTitle}
+                        </span>
+                        {timedResult.isNewRecord && (
+                          <>
+                            <span aria-hidden="true">·</span>
+                            <span className="font-bold text-emerald-700">
+                              {t.discoveryNewRecordTag}
+                            </span>
+                          </>
+                        )}
+                      </div>
+
+                      <p className="mt-0.5 font-mono tabular-nums text-lg font-bold text-slate-900">
+                        {formatStopwatchMs(timedResult.timeMs)}
+                        <span className="font-sans font-normal text-xs text-slate-600">
+                          {' · '}
+                          {formatSecondsPerPart(
+                            timedResult.timeMs,
+                            blueprint.parts.length,
+                            language,
+                          )}
+                        </span>
+                      </p>
+
+                      {timedResult.previousBestMs !== null && (
+                        <p className="text-xs font-mono tabular-nums text-slate-500">
+                          {t.discoveryPreviousBestLabel(
+                            formatStopwatchMs(timedResult.previousBestMs),
+                            formatDeltaMs(timedResult.timeMs - timedResult.previousBestMs),
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    {onRetryTimedRun && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          onRetryTimedRun();
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t.retryTimedRunBtn}</span>
+                      </button>
+                    )}
+                    {onOpenLeaderboard && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          onOpenLeaderboard();
+                        }}
+                        className="px-3 py-2 text-xs font-semibold text-sky-900 bg-white border border-sky-300 hover:bg-sky-100/70 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                      >
+                        {t.openLeaderboardBtn}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Rare Collector Part Reward Banner (Daily Mechanical Challenge) */}
               {blueprint.isDailyBonus && rareRewardSpec && (
                 <div className="p-4 bg-amber-50/75 border border-amber-300 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">

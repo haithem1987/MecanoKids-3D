@@ -161,6 +161,7 @@ export interface StageCompletionRecord {
   completed: boolean;
   stars: number;
   bestMistakes: number;
+  bestTimeMs?: number;
   completedAt?: number;
 }
 
@@ -169,6 +170,24 @@ export interface DailyCompletionEntry {
   completedAt: number;
   rareCollectibleId: string;
   templateId: string;
+  bestTimeMs?: number;
+}
+
+export interface SpeedrunRecord {
+  id: string;
+  blueprintId: string;
+  stageNumber: number;
+  category: VehicleCategory;
+  tier: DifficultyTier;
+  partsCount: number;
+  timeMs: number;
+  mistakesCount: number;
+  stars: number;
+  achievedAt: number;
+  isDailyBonus?: boolean;
+  vehicleNameFr?: string;
+  vehicleNameEn?: string;
+  vehicleNameAr?: string;
 }
 
 export interface DailyChallengeState {
@@ -190,6 +209,7 @@ export enum BadgeIconKind {
   ROCKET = 'rocket',
   CALENDAR = 'calendar',
   GEM = 'gem',
+  TIMER = 'timer',
   AWARD = 'award',
   STAR = 'star',
   TROPHY = 'trophy',
@@ -211,6 +231,7 @@ export interface BadgeEvaluation {
 export interface StageInProgressRecord {
   placedPartIds: string[];
   mistakesCount: number;
+  elapsedMs?: number;
   updatedAt: number;
 }
 
@@ -220,6 +241,8 @@ export interface PlayerProgress {
   inProgressStages: Record<string, StageInProgressRecord>;
   completedStages: Record<string, StageCompletionRecord>;
   dailyChallenge: DailyChallengeState;
+  speedrunRecords: SpeedrunRecord[];
+  timerModeEnabled: boolean;
   unlockedBadges: Record<string, number>;
   language: LanguageCode;
   preferredStyle: VisualStyleMode;

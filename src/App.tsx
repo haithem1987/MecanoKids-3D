@@ -20,8 +20,10 @@ import {
   CameraPreset,
   LanguageCode,
   PlayerProgress,
+  SpeedrunRecord,
   VisualStyleMode,
 } from './types/game';
+import { recordSpeedrunCompletion } from './utils/speedrun';
 import {
   createDefaultProgress,
   downloadProgressBackup,
@@ -35,9 +37,10 @@ import { WorkshopCanvas } from './components/WorkshopCanvas';
 import { BottomPartsDock } from './components/BottomPartsDock';
 import { StageCatalogModal } from './components/StageCatalogModal';
 import { DailyChallengeModal } from './components/DailyChallengeModal';
+import { SpeedLeaderboardModal } from './components/SpeedLeaderboardModal';
 import { ProgressionModal } from './components/ProgressionModal';
 import { MechanicHintDrawer } from './components/MechanicHintDrawer';
-import { DiscoveryModal } from './components/DiscoveryModal';
+import { DiscoveryModal, TimedCompletionResult } from './components/DiscoveryModal';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 
 export default function App() {
@@ -54,15 +57,22 @@ export default function App() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const statusTimerRef = useRef<number | null>(null);
 
-  // Modals, Daily Challenge, Progression, Guide Drawer & Automatic Guided Tour for New Users
+  // Modals, Daily Challenge, Leaderboard, Progression, Guide Drawer & Guided Tour
   const [catalogOpen, setCatalogOpen] = useState<boolean>(false);
   const [dailyModalOpen, setDailyModalOpen] = useState<boolean>(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState<boolean>(false);
   const [progressionOpen, setProgressionOpen] = useState<boolean>(false);
   const [mechanicGuideOpen, setMechanicGuideOpen] = useState<boolean>(false);
   const [discoveryOpen, setDiscoveryOpen] = useState<boolean>(false);
   const [recentUnlockedBadgeIds, setRecentUnlockedBadgeIds] = useState<string[]>([]);
+  const [lastTimedResult, setLastTimedResult] = useState<TimedCompletionResult | null>(null);
   const [tourOpen, setTourOpen] = useState<boolean>(() => !loadPlayerProgress().tutorialSeen);
   const [tourStep, setTourStep] = useState<number>(0);
+
+  // Live Stopwatch state (tracks active assembly delta on top of persisted elapsedMs)
+  const [timerArmed, setTimerArmed] = useState<boolean>(false);
+  const [liveDeltaMs, setLiveDeltaMs] = useState<number>(0);
+  const segmentStartRef = useRef<number | null>(null);
 
   // Keep todayDateKey fresh across midnight rollovers
   useEffect(() => {
@@ -91,22 +101,25 @@ export default function App() {
     [language],
   );
 
-  const currentBlueprint = useMemo(() => {
+  const currentRawBlueprint = useMemo(() => {
     if (progress.currentBlueprintId === todayDailyBundle.blueprint.id) {
-      return localizedDailyBlueprint;
+      return todayDailyBundle.blueprint;
     }
-    const raw =
+    return (
       VEHICLE_BLUEPRINTS.find((b) => b.id === progress.currentBlueprintId) ??
       VEHICLE_BLUEPRINTS.find((b) => b.id === progress.lastStandardBlueprintId) ??
-      VEHICLE_BLUEPRINTS[0];
-    return getLocalizedBlueprint(raw, language);
+      VEHICLE_BLUEPRINTS[0]
+    );
   }, [
-    localizedDailyBlueprint,
     progress.currentBlueprintId,
     progress.lastStandardBlueprintId,
-    todayDailyBundle.blueprint.id,
-    language,
+    todayDailyBundle.blueprint,
   ]);
+
+  const currentBlueprint = useMemo(
+    () => getLocalizedBlueprint(currentRawBlueprint, language),
+    [currentRawBlueprint, language],
+  );
 
   const progressionSummary = useMemo(
     () =>
@@ -115,8 +128,15 @@ export default function App() {
         progress.unlockedBadges,
         language,
         progress.dailyChallenge,
+        progress.speedrunRecords,
       ),
-    [progress.completedStages, progress.unlockedBadges, progress.dailyChallenge, language],
+    [
+      progress.completedStages,
+      progress.unlockedBadges,
+      progress.dailyChallenge,
+      progress.speedrunRecords,
+      language,
+    ],
   );
 
   const newlyUnlockedBadges = useMemo(
@@ -131,12 +151,106 @@ export default function App() {
     [currentStageState],
   );
   const mistakesCount = currentStageState?.mistakesCount ?? 0;
+  const baseElapsedMs = currentStageState?.elapsedMs ?? 0;
+  const isCompleted = placedPartIds.length === currentBlueprint.parts.length;
 
   const currentIndex = useMemo(
     () => VEHICLE_BLUEPRINTS.findIndex((b) => b.id === currentBlueprint.id),
     [currentBlueprint.id],
   );
   const hasNextStage = currentIndex >= 0 && currentIndex < VEHICLE_BLUEPRINTS.length - 1;
+
+  const anyOverlayOpen =
+    catalogOpen ||
+    dailyModalOpen ||
+    leaderboardOpen ||
+    progressionOpen ||
+    mechanicGuideOpen ||
+    discoveryOpen ||
+    tourOpen;
+
+  const shouldRunStopwatch =
+    !isCompleted &&
+    !anyOverlayOpen &&
+    (placedPartIds.length > 0 || timerArmed || baseElapsedMs > 0);
+
+  // Flush active stopwatch segment into persisted inProgressStages whenever paused or stage switches
+  const flushActiveStopwatchSegment = useCallback(
+    (bpId: string) => {
+      if (segmentStartRef.current === null) return 0;
+      const delta = Math.max(0, Date.now() - segmentStartRef.current);
+      segmentStartRef.current = null;
+      setLiveDeltaMs(0);
+      if (delta > 0) {
+        setProgress((p) => {
+          const cur = p.inProgressStages[bpId];
+          if (!cur && delta < 50) return p;
+          return {
+            ...p,
+            inProgressStages: {
+              ...p.inProgressStages,
+              [bpId]: {
+                placedPartIds: cur?.placedPartIds ?? [],
+                mistakesCount: cur?.mistakesCount ?? 0,
+                elapsedMs: (cur?.elapsedMs ?? 0) + delta,
+                updatedAt: Date.now(),
+              },
+            },
+          };
+        });
+      }
+      return delta;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!shouldRunStopwatch) {
+      if (segmentStartRef.current !== null) {
+        flushActiveStopwatchSegment(currentBlueprint.id);
+      }
+      return;
+    }
+
+    segmentStartRef.current = Date.now();
+    setLiveDeltaMs(0);
+
+    const tick = window.setInterval(() => {
+      if (document.hidden) return;
+      if (segmentStartRef.current !== null) {
+        setLiveDeltaMs(Math.max(0, Date.now() - segmentStartRef.current));
+      }
+    }, 100);
+
+    const handleVisibility = () => {
+      if (document.hidden && segmentStartRef.current !== null) {
+        flushActiveStopwatchSegment(currentBlueprint.id);
+      } else if (!document.hidden && shouldRunStopwatch && segmentStartRef.current === null) {
+        segmentStartRef.current = Date.now();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      window.clearInterval(tick);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [currentBlueprint.id, flushActiveStopwatchSegment, shouldRunStopwatch]);
+
+  const liveElapsedMs = baseElapsedMs + liveDeltaMs;
+
+  const currentPersonalBestMs = useMemo(() => {
+    if (currentBlueprint.isDailyBonus) {
+      return progress.dailyChallenge.completedByDate[todayDateKey]?.bestTimeMs ?? null;
+    }
+    return progress.completedStages[currentBlueprint.id]?.bestTimeMs ?? null;
+  }, [
+    currentBlueprint.id,
+    currentBlueprint.isDailyBonus,
+    progress.completedStages,
+    progress.dailyChallenge.completedByDate,
+    todayDateKey,
+  ]);
 
   // Keep latest progress in a ref for synchronous flush on tab close / app restart
   const latestProgressRef = useRef<PlayerProgress>(progress);
@@ -148,7 +262,28 @@ export default function App() {
 
   useEffect(() => {
     const handleUnload = () => {
-      savePlayerProgress(latestProgressRef.current);
+      const snap = latestProgressRef.current;
+      const extraDelta =
+        segmentStartRef.current !== null
+          ? Math.max(0, Date.now() - segmentStartRef.current)
+          : 0;
+      if (extraDelta > 0) {
+        const cur = snap.inProgressStages[snap.currentBlueprintId];
+        savePlayerProgress({
+          ...snap,
+          inProgressStages: {
+            ...snap.inProgressStages,
+            [snap.currentBlueprintId]: {
+              placedPartIds: cur?.placedPartIds ?? [],
+              mistakesCount: cur?.mistakesCount ?? 0,
+              elapsedMs: (cur?.elapsedMs ?? 0) + extraDelta,
+              updatedAt: Date.now(),
+            },
+          },
+        });
+      } else {
+        savePlayerProgress(snap);
+      }
     };
     window.addEventListener('beforeunload', handleUnload);
     window.addEventListener('pagehide', handleUnload);
@@ -195,27 +330,89 @@ export default function App() {
     }));
   }, []);
 
-  const handleSelectBlueprint = useCallback((blueprintId: string) => {
-    setProgress((p) => ({
-      ...p,
-      currentBlueprintId: blueprintId,
-      lastStandardBlueprintId: blueprintId.startsWith('daily-')
-        ? p.lastStandardBlueprintId
-        : blueprintId,
-      cameraPreset: CameraPreset.ISO,
-    }));
-    setStagedPartId(null);
-    setActiveDragPartId(null);
-    setHintPartId(null);
-    setRecentUnlockedBadgeIds([]);
-    setExplodedFactor(0);
-    setCameraPresetNonce((n) => n + 1);
-    setStatusMessage(null);
-  }, []);
+  const handleToggleTimerMode = useCallback(
+    (explicitNext?: boolean) => {
+      const nextEnabled =
+        typeof explicitNext === 'boolean'
+          ? explicitNext
+          : !latestProgressRef.current.timerModeEnabled;
+      setProgress((p) => ({
+        ...p,
+        timerModeEnabled: nextEnabled,
+      }));
+      flashStatus(nextEnabled ? t.timerEnabledToast : t.timerDisabledToast);
+    },
+    [flashStatus, t.timerDisabledToast, t.timerEnabledToast],
+  );
+
+  const handleSelectBlueprint = useCallback(
+    (blueprintId: string) => {
+      flushActiveStopwatchSegment(currentBlueprint.id);
+      setTimerArmed(false);
+      setLiveDeltaMs(0);
+      setLastTimedResult(null);
+      setProgress((p) => ({
+        ...p,
+        currentBlueprintId: blueprintId,
+        lastStandardBlueprintId: blueprintId.startsWith('daily-')
+          ? p.lastStandardBlueprintId
+          : blueprintId,
+        cameraPreset: CameraPreset.ISO,
+      }));
+      setStagedPartId(null);
+      setActiveDragPartId(null);
+      setHintPartId(null);
+      setRecentUnlockedBadgeIds([]);
+      setExplodedFactor(0);
+      setCameraPresetNonce((n) => n + 1);
+      setStatusMessage(null);
+    },
+    [currentBlueprint.id, flushActiveStopwatchSegment],
+  );
+
+  const handleStartTimedStage = useCallback(
+    (blueprintId: string) => {
+      segmentStartRef.current = null;
+      setTimerArmed(false);
+      setLiveDeltaMs(0);
+      setLastTimedResult(null);
+      setProgress((p) => ({
+        ...p,
+        timerModeEnabled: true,
+        currentBlueprintId: blueprintId,
+        lastStandardBlueprintId: blueprintId.startsWith('daily-')
+          ? p.lastStandardBlueprintId
+          : blueprintId,
+        cameraPreset: CameraPreset.ISO,
+        inProgressStages: {
+          ...p.inProgressStages,
+          [blueprintId]: {
+            placedPartIds: [],
+            mistakesCount: 0,
+            elapsedMs: 0,
+            updatedAt: Date.now(),
+          },
+        },
+      }));
+      setDockCollapsed(false);
+      setStagedPartId(null);
+      setActiveDragPartId(null);
+      setHintPartId(null);
+      setRecentUnlockedBadgeIds([]);
+      setExplodedFactor(0);
+      setCameraPresetNonce((n) => n + 1);
+      flashStatus(t.timerEnabledToast);
+    },
+    [flashStatus, t.timerEnabledToast],
+  );
 
   const handleStartDailyBuild = useCallback(
     (resetIfCompleted = false) => {
+      flushActiveStopwatchSegment(currentBlueprint.id);
       const dailyId = todayDailyBundle.blueprint.id;
+      setTimerArmed(false);
+      setLiveDeltaMs(0);
+      setLastTimedResult(null);
       setProgress((p) => {
         const existingInProg = p.inProgressStages[dailyId];
         const shouldReset =
@@ -236,6 +433,7 @@ export default function App() {
                 [dailyId]: {
                   placedPartIds: [],
                   mistakesCount: 0,
+                  elapsedMs: 0,
                   updatedAt: Date.now(),
                 },
               }
@@ -251,10 +449,19 @@ export default function App() {
       setCameraPresetNonce((n) => n + 1);
       setStatusMessage(null);
     },
-    [todayDailyBundle.blueprint.id, todayDailyBundle.blueprint.parts.length],
+    [
+      currentBlueprint.id,
+      flushActiveStopwatchSegment,
+      todayDailyBundle.blueprint.id,
+      todayDailyBundle.blueprint.parts.length,
+    ],
   );
 
   const handleResetStage = useCallback(() => {
+    segmentStartRef.current = null;
+    setTimerArmed(false);
+    setLiveDeltaMs(0);
+    setLastTimedResult(null);
     setProgress((p) => ({
       ...p,
       cameraPreset: CameraPreset.ISO,
@@ -263,6 +470,7 @@ export default function App() {
         [currentBlueprint.id]: {
           placedPartIds: [],
           mistakesCount: 0,
+          elapsedMs: 0,
           updatedAt: Date.now(),
         },
       },
@@ -285,15 +493,17 @@ export default function App() {
       const justCompleted = updatedPlaced.length === currentBlueprint.parts.length;
 
       if (!justCompleted) {
+        setTimerArmed(true);
         setProgress((p) => {
-          const curMistakes = p.inProgressStages[currentBlueprint.id]?.mistakesCount ?? 0;
+          const cur = p.inProgressStages[currentBlueprint.id];
           return {
             ...p,
             inProgressStages: {
               ...p.inProgressStages,
               [currentBlueprint.id]: {
                 placedPartIds: updatedPlaced,
-                mistakesCount: curMistakes,
+                mistakesCount: cur?.mistakesCount ?? 0,
+                elapsedMs: cur?.elapsedMs ?? 0,
                 updatedAt: Date.now(),
               },
             },
@@ -304,106 +514,176 @@ export default function App() {
         if (snappedSpec) {
           flashStatus(t.partSnappedMsg(snappedSpec.name, snappedSpec.roleHint));
         }
-      } else if (currentBlueprint.isDailyBonus) {
-        // Daily Mechanical Challenge Completed! Record streak, Rare Part vault & badges
-        const prevSnap = latestProgressRef.current;
-        const curMistakes = prevSnap.inProgressStages[currentBlueprint.id]?.mistakesCount ?? 0;
-        const twoStarLimit = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
-        const stars = curMistakes === 0 ? 3 : curMistakes <= twoStarLimit ? 2 : 1;
-
-        const { nextState: nextDailyState } = recordDailyChallengeCompletion(
-          prevSnap.dailyChallenge,
-          todayDateKey,
-          stars,
-          todayDailyBundle.rareSpec.id,
-          todayDailyBundle.templateId,
-        );
-
-        const { updatedUnlocked, newlyUnlockedIds } = syncUnlockedBadgesMap(
-          prevSnap.completedStages,
-          prevSnap.unlockedBadges,
-          nextDailyState,
-        );
-
-        setRecentUnlockedBadgeIds(newlyUnlockedIds);
-
-        setProgress((p) => ({
-          ...p,
-          inProgressStages: {
-            ...p.inProgressStages,
-            [currentBlueprint.id]: {
-              placedPartIds: updatedPlaced,
-              mistakesCount: curMistakes,
-              updatedAt: Date.now(),
-            },
-          },
-          dailyChallenge: nextDailyState,
-          unlockedBadges: updatedUnlocked,
-        }));
-
-        window.setTimeout(() => {
-          soundEngine.playStageVictory();
-          window.setTimeout(() => {
-            soundEngine.playBadgeUnlocked();
-          }, 420);
-        }, 160);
-
-        window.setTimeout(() => {
-          setDiscoveryOpen(true);
-        }, 850);
       } else {
-        // Standard Stage Completed! Compute stars & evaluate any newly unlocked achievement badges
+        // Capture exact final elapsed time for this stage run
+        const segmentDelta =
+          segmentStartRef.current !== null
+            ? Math.max(0, Date.now() - segmentStartRef.current)
+            : 0;
+        segmentStartRef.current = null;
+        setTimerArmed(false);
+        setLiveDeltaMs(0);
+
         const prevSnap = latestProgressRef.current;
-        const curMistakes = prevSnap.inProgressStages[currentBlueprint.id]?.mistakesCount ?? 0;
+        const curStage = prevSnap.inProgressStages[currentBlueprint.id];
+        const curMistakes = curStage?.mistakesCount ?? 0;
+        const finalElapsedMs = Math.max(500, (curStage?.elapsedMs ?? 0) + segmentDelta);
         const twoStarLimit = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
         const stars = curMistakes === 0 ? 3 : curMistakes <= twoStarLimit ? 2 : 1;
-        const existing = prevSnap.completedStages[currentBlueprint.id];
-        const bestStars = Math.max(existing?.stars ?? 0, stars);
-        const bestMistakes =
-          existing?.bestMistakes !== undefined
-            ? Math.min(existing.bestMistakes, curMistakes)
-            : curMistakes;
 
-        const nextCompletedStages = {
-          ...prevSnap.completedStages,
-          [currentBlueprint.id]: {
-            completed: true,
-            stars: bestStars,
-            bestMistakes,
-            completedAt: Date.now(),
-          },
-        };
+        let nextSpeedRecords = prevSnap.speedrunRecords;
+        let timedOutcome: TimedCompletionResult | null = null;
 
-        const { updatedUnlocked, newlyUnlockedIds } = syncUnlockedBadgesMap(
-          nextCompletedStages,
-          prevSnap.unlockedBadges,
-          prevSnap.dailyChallenge,
-        );
+        if (prevSnap.timerModeEnabled) {
+          const frBp = getLocalizedBlueprint(currentRawBlueprint, 'fr');
+          const enBp = getLocalizedBlueprint(currentRawBlueprint, 'en');
+          const arBp = getLocalizedBlueprint(currentRawBlueprint, 'ar');
 
-        setRecentUnlockedBadgeIds(newlyUnlockedIds);
+          const newRecord: SpeedrunRecord = {
+            id: `${currentBlueprint.id}-${Date.now()}`,
+            blueprintId: currentBlueprint.id,
+            stageNumber: currentBlueprint.stageNumber,
+            category: currentBlueprint.category,
+            tier: currentBlueprint.tier,
+            partsCount: currentBlueprint.parts.length,
+            timeMs: finalElapsedMs,
+            mistakesCount: curMistakes,
+            stars,
+            achievedAt: Date.now(),
+            isDailyBonus: Boolean(currentBlueprint.isDailyBonus),
+            vehicleNameFr: frBp.name,
+            vehicleNameEn: enBp.name,
+            vehicleNameAr: arBp.name,
+          };
 
-        setProgress((p) => ({
-          ...p,
-          inProgressStages: {
-            ...p.inProgressStages,
-            [currentBlueprint.id]: {
-              placedPartIds: updatedPlaced,
-              mistakesCount: curMistakes,
-              updatedAt: Date.now(),
+          const speedRes = recordSpeedrunCompletion(prevSnap.speedrunRecords, newRecord);
+          nextSpeedRecords = speedRes.updatedRecords;
+          timedOutcome = {
+            timeMs: finalElapsedMs,
+            isNewRecord: speedRes.isNewPersonalBest,
+            previousBestMs: speedRes.previousBestMs,
+          };
+        }
+
+        setLastTimedResult(timedOutcome);
+
+        if (currentBlueprint.isDailyBonus) {
+          const { nextState: rawNextDaily } = recordDailyChallengeCompletion(
+            prevSnap.dailyChallenge,
+            todayDateKey,
+            stars,
+            todayDailyBundle.rareSpec.id,
+            todayDailyBundle.templateId,
+          );
+
+          const prevDailyBest =
+            prevSnap.dailyChallenge.completedByDate[todayDateKey]?.bestTimeMs;
+          const nextDailyBest = prevSnap.timerModeEnabled
+            ? prevDailyBest !== undefined
+              ? Math.min(prevDailyBest, finalElapsedMs)
+              : finalElapsedMs
+            : prevDailyBest;
+
+          const nextDailyState = {
+            ...rawNextDaily,
+            completedByDate: {
+              ...rawNextDaily.completedByDate,
+              [todayDateKey]: {
+                ...rawNextDaily.completedByDate[todayDateKey],
+                bestTimeMs: nextDailyBest,
+              },
             },
-          },
-          completedStages: nextCompletedStages,
-          unlockedBadges: updatedUnlocked,
-        }));
+          };
 
-        window.setTimeout(() => {
-          soundEngine.playStageVictory();
-          if (newlyUnlockedIds.length > 0) {
+          const { updatedUnlocked, newlyUnlockedIds } = syncUnlockedBadgesMap(
+            prevSnap.completedStages,
+            prevSnap.unlockedBadges,
+            nextDailyState,
+            nextSpeedRecords,
+          );
+
+          setRecentUnlockedBadgeIds(newlyUnlockedIds);
+
+          setProgress((p) => ({
+            ...p,
+            inProgressStages: {
+              ...p.inProgressStages,
+              [currentBlueprint.id]: {
+                placedPartIds: updatedPlaced,
+                mistakesCount: curMistakes,
+                elapsedMs: finalElapsedMs,
+                updatedAt: Date.now(),
+              },
+            },
+            dailyChallenge: nextDailyState,
+            speedrunRecords: nextSpeedRecords,
+            unlockedBadges: updatedUnlocked,
+          }));
+
+          window.setTimeout(() => {
+            soundEngine.playStageVictory();
             window.setTimeout(() => {
               soundEngine.playBadgeUnlocked();
             }, 420);
-          }
-        }, 160);
+          }, 160);
+        } else {
+          const existing = prevSnap.completedStages[currentBlueprint.id];
+          const bestStars = Math.max(existing?.stars ?? 0, stars);
+          const bestMistakes =
+            existing?.bestMistakes !== undefined
+              ? Math.min(existing.bestMistakes, curMistakes)
+              : curMistakes;
+          const bestTimeMs = prevSnap.timerModeEnabled
+            ? existing?.bestTimeMs !== undefined
+              ? Math.min(existing.bestTimeMs, finalElapsedMs)
+              : finalElapsedMs
+            : existing?.bestTimeMs;
+
+          const nextCompletedStages = {
+            ...prevSnap.completedStages,
+            [currentBlueprint.id]: {
+              completed: true,
+              stars: bestStars,
+              bestMistakes,
+              bestTimeMs,
+              completedAt: Date.now(),
+            },
+          };
+
+          const { updatedUnlocked, newlyUnlockedIds } = syncUnlockedBadgesMap(
+            nextCompletedStages,
+            prevSnap.unlockedBadges,
+            prevSnap.dailyChallenge,
+            nextSpeedRecords,
+          );
+
+          setRecentUnlockedBadgeIds(newlyUnlockedIds);
+
+          setProgress((p) => ({
+            ...p,
+            inProgressStages: {
+              ...p.inProgressStages,
+              [currentBlueprint.id]: {
+                placedPartIds: updatedPlaced,
+                mistakesCount: curMistakes,
+                elapsedMs: finalElapsedMs,
+                updatedAt: Date.now(),
+              },
+            },
+            completedStages: nextCompletedStages,
+            speedrunRecords: nextSpeedRecords,
+            unlockedBadges: updatedUnlocked,
+          }));
+
+          window.setTimeout(() => {
+            soundEngine.playStageVictory();
+            if (newlyUnlockedIds.length > 0 || timedOutcome?.isNewRecord) {
+              window.setTimeout(() => {
+                soundEngine.playBadgeUnlocked();
+              }, 420);
+            }
+          }, 160);
+        }
 
         window.setTimeout(() => {
           setDiscoveryOpen(true);
@@ -416,6 +696,7 @@ export default function App() {
     },
     [
       currentBlueprint,
+      currentRawBlueprint,
       flashStatus,
       placedPartIds,
       t,
@@ -427,6 +708,7 @@ export default function App() {
 
   const handlePartDropRejected = useCallback(
     (reason: string) => {
+      setTimerArmed(true);
       setProgress((p) => {
         const cur = p.inProgressStages[currentBlueprint.id];
         return {
@@ -436,6 +718,7 @@ export default function App() {
             [currentBlueprint.id]: {
               placedPartIds: cur?.placedPartIds ?? [],
               mistakesCount: (cur?.mistakesCount ?? 0) + 1,
+              elapsedMs: cur?.elapsedMs ?? 0,
               updatedAt: Date.now(),
             },
           },
@@ -449,6 +732,7 @@ export default function App() {
   const handleStartPartDrag = useCallback(
     (partId: string) => {
       soundEngine.playPickup(progress.preferredStyle);
+      setTimerArmed(true);
       setStagedPartId(partId);
       setActiveDragPartId(partId);
       setExplodedFactor(0);
@@ -458,6 +742,7 @@ export default function App() {
 
   const handleClickPartCard = useCallback(
     (partId: string) => {
+      setTimerArmed(true);
       setStagedPartId(partId);
       const spec = currentBlueprint.parts.find((p) => p.id === partId);
       if (spec) {
@@ -507,6 +792,7 @@ export default function App() {
     setDockCollapsed(false);
     setCatalogOpen(false);
     setDailyModalOpen(false);
+    setLeaderboardOpen(false);
     setProgressionOpen(false);
     setDiscoveryOpen(false);
     setTourStep(0);
@@ -535,6 +821,10 @@ export default function App() {
         try {
           const parsed = JSON.parse(String(reader.result));
           const restored = sanitizeProgress(parsed);
+          segmentStartRef.current = null;
+          setTimerArmed(false);
+          setLiveDeltaMs(0);
+          setLastTimedResult(null);
           setProgress(restored);
           savePlayerProgress(restored);
           setStagedPartId(null);
@@ -553,7 +843,38 @@ export default function App() {
     [flashStatus, t.progressImportErrorToast],
   );
 
+  const handleClearLeaderboard = useCallback(() => {
+    setLastTimedResult(null);
+    setProgress((p) => {
+      const cleanedCompleted = { ...p.completedStages };
+      for (const [bpId, rec] of Object.entries(cleanedCompleted)) {
+        if (rec.bestTimeMs !== undefined) {
+          cleanedCompleted[bpId] = { ...rec, bestTimeMs: undefined };
+        }
+      }
+      const cleanedDailyCompleted = { ...p.dailyChallenge.completedByDate };
+      for (const [dKey, entry] of Object.entries(cleanedDailyCompleted)) {
+        if (entry.bestTimeMs !== undefined) {
+          cleanedDailyCompleted[dKey] = { ...entry, bestTimeMs: undefined };
+        }
+      }
+      return {
+        ...p,
+        speedrunRecords: [],
+        completedStages: cleanedCompleted,
+        dailyChallenge: {
+          ...p.dailyChallenge,
+          completedByDate: cleanedDailyCompleted,
+        },
+      };
+    });
+  }, []);
+
   const handleResetAllProgress = useCallback(() => {
+    segmentStartRef.current = null;
+    setTimerArmed(false);
+    setLiveDeltaMs(0);
+    setLastTimedResult(null);
     const fresh = createDefaultProgress(language, true);
     setProgress(fresh);
     savePlayerProgress(fresh);
@@ -578,7 +899,6 @@ export default function App() {
   const effectiveHintPartId =
     hintPartId ?? (tourOpen && (tourStep === 0 || tourStep === 1) ? firstReadyPart?.id ?? null : null);
 
-  const isCompleted = placedPartIds.length === currentBlueprint.parts.length;
   const twoStarMaxMistakes = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
   const currentStars = currentBlueprint.isDailyBonus
     ? progress.dailyChallenge.completedByDate[todayDateKey]?.stars ??
@@ -595,7 +915,7 @@ export default function App() {
       dir={language === 'ar' ? 'rtl' : 'ltr'}
       className="flex flex-col w-full h-full bg-[#F4F6F9] text-slate-900 overflow-hidden"
     >
-      {/* Top Bar with Daily Challenge + FR / EN / العربية Language Switcher */}
+      {/* Top Bar with Daily Challenge + Stopwatch Leaderboard + FR / EN / العربية */}
       <TopBar
         language={language}
         onSelectLanguage={handleSelectLanguage}
@@ -605,6 +925,8 @@ export default function App() {
         onOpenDailyChallenge={() => setDailyModalOpen(true)}
         isDailyCompletedToday={isDailyCompletedToday}
         isDailyActiveNow={Boolean(currentBlueprint.isDailyBonus)}
+        timerModeEnabled={progress.timerModeEnabled}
+        onOpenLeaderboard={() => setLeaderboardOpen(true)}
         onOpenDiscovery={() => setDiscoveryOpen(true)}
         onOpenMechanicGuide={() => {
           setMechanicGuideOpen((open) => {
@@ -635,6 +957,7 @@ export default function App() {
           onDragEndSignal={() => setActiveDragPartId(null)}
           onStartCanvasDrag={(partId) => {
             soundEngine.playPickup(progress.preferredStyle);
+            setTimerArmed(true);
             setActiveDragPartId(partId);
           }}
         />
@@ -659,6 +982,11 @@ export default function App() {
         onSelectStyle={handleSelectStyle}
         muted={progress.muted}
         onToggleMute={() => setProgress((p) => ({ ...p, muted: !p.muted }))}
+        timerModeEnabled={progress.timerModeEnabled}
+        liveElapsedMs={liveElapsedMs}
+        personalBestMs={currentPersonalBestMs}
+        onToggleTimerMode={() => handleToggleTimerMode()}
+        onOpenLeaderboard={() => setLeaderboardOpen(true)}
         onResetStage={handleResetStage}
         onSaveNow={handleManualSave}
         onStartPartDrag={handleStartPartDrag}
@@ -691,6 +1019,7 @@ export default function App() {
           setCatalogOpen(false);
           setProgressionOpen(true);
         }}
+        onOpenLeaderboard={() => setLeaderboardOpen(true)}
         dailyVehicleName={localizedDailyBlueprint.name}
         dailyRarePartName={todayDailyBundle.rareSpec.name[language]}
         isDailyCompletedToday={isDailyCompletedToday}
@@ -713,6 +1042,20 @@ export default function App() {
         isCurrentlyOnWorkbench={Boolean(currentBlueprint.isDailyBonus)}
         inProgressPartCount={dailyInProgressCount}
         onStartDailyBuild={handleStartDailyBuild}
+      />
+
+      {/* Optional Stopwatch Mode & Local Best-Times Leaderboard Modal */}
+      <SpeedLeaderboardModal
+        isOpen={leaderboardOpen}
+        onClose={() => setLeaderboardOpen(false)}
+        language={language}
+        timerModeEnabled={progress.timerModeEnabled}
+        onToggleTimerMode={(nextEnabled) => handleToggleTimerMode(nextEnabled)}
+        records={progress.speedrunRecords}
+        localizedBlueprints={localizedBlueprints}
+        currentBlueprint={currentBlueprint}
+        onStartTimedStage={handleStartTimedStage}
+        onClearLeaderboard={handleClearLeaderboard}
       />
 
       {/* Progression & Achievement Badges Modal (Accessible from Catalog & Victory Screen) */}
@@ -749,6 +1092,9 @@ export default function App() {
         newlyUnlockedBadges={newlyUnlockedBadges}
         rareRewardSpec={currentBlueprint.isDailyBonus ? todayDailyBundle.rareSpec : null}
         onOpenDailyVault={() => setDailyModalOpen(true)}
+        timedResult={progress.timerModeEnabled ? lastTimedResult : null}
+        onOpenLeaderboard={() => setLeaderboardOpen(true)}
+        onRetryTimedRun={() => handleStartTimedStage(currentBlueprint.id)}
         onOpenProgression={() => setProgressionOpen(true)}
         hasNextStage={hasNextStage}
         onNextStage={handleGoNextStage}

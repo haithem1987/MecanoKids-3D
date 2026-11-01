@@ -8,6 +8,7 @@ import {
   Save,
   Search,
   Star,
+  Timer,
   Trash2,
   Trophy,
   Unlock,
@@ -23,6 +24,7 @@ import {
   VehicleCategory,
   VisualStyleMode,
 } from '../types/game';
+import { formatStopwatchMs } from '../utils/speedrun';
 
 interface StageCatalogModalProps {
   isOpen: boolean;
@@ -38,6 +40,7 @@ interface StageCatalogModalProps {
   unlockedBadgesCount: number;
   totalBadgesCount: number;
   onOpenProgression: () => void;
+  onOpenLeaderboard: () => void;
   dailyVehicleName: string;
   dailyRarePartName: string;
   isDailyCompletedToday: boolean;
@@ -70,6 +73,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   unlockedBadgesCount,
   totalBadgesCount,
   onOpenProgression,
+  onOpenLeaderboard,
   dailyVehicleName,
   dailyRarePartName,
   isDailyCompletedToday,
@@ -184,7 +188,19 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
             </h2>
             <p className="mt-1 text-sm text-slate-600">{t.catalogSubtitle}</p>
           </div>
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenLeaderboard();
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors whitespace-nowrap min-h-[40px] cursor-pointer"
+            >
+              <Timer className="w-4 h-4 text-sky-600 shrink-0" />
+              <span className="hidden sm:inline">{t.leaderboardNavBtn}</span>
+            </button>
+
             <button
               type="button"
               onClick={onOpenProgression}
@@ -466,6 +482,9 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                           <div className="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
                             <span className="font-mono tabular-nums text-slate-600">
                               {t.partsCountLabel(bp.parts.length)}
+                              {record?.bestTimeMs
+                                ? ` · ${formatStopwatchMs(record.bestTimeMs)}`
+                                : ''}
                             </span>
 
                             {placedCount > 0 && placedCount < bp.parts.length ? (

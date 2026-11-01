@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Save,
   Sparkles,
+  Timer,
   Volume2,
   VolumeX,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ import {
   VehicleBlueprint,
   VisualStyleMode,
 } from '../types/game';
+import { formatStopwatchMs } from '../utils/speedrun';
 
 interface BottomPartsDockProps {
   language: LanguageCode;
@@ -40,6 +42,11 @@ interface BottomPartsDockProps {
   onSelectStyle: (style: VisualStyleMode) => void;
   muted: boolean;
   onToggleMute: () => void;
+  timerModeEnabled: boolean;
+  liveElapsedMs: number;
+  personalBestMs: number | null;
+  onToggleTimerMode: () => void;
+  onOpenLeaderboard: () => void;
   onResetStage: () => void;
   onSaveNow: () => void;
   onStartPartDrag: (partId: string) => void;
@@ -70,6 +77,11 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
   onSelectStyle,
   muted,
   onToggleMute,
+  timerModeEnabled,
+  liveElapsedMs,
+  personalBestMs,
+  onToggleTimerMode,
+  onOpenLeaderboard,
   onResetStage,
   onSaveNow,
   onStartPartDrag,
@@ -116,7 +128,10 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
         {collapsed ? (
           <>
             <ChevronUp className="w-3.5 h-3.5 shrink-0" />
-            <span>{t.openWorkbench(placedPartIds.length, blueprint.parts.length)}</span>
+            <span>
+              {t.openWorkbench(placedPartIds.length, blueprint.parts.length)}
+              {timerModeEnabled ? ` · ${formatStopwatchMs(liveElapsedMs)}` : ''}
+            </span>
           </>
         ) : (
           <>
@@ -129,7 +144,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
       {/* Main Dock Panel (Solid surface — zero backdrop-filter over WebGL) */}
       {!collapsed && (
         <div className="pointer-events-auto w-full bg-white border border-slate-200 rounded-xl shadow-sm p-4">
-          {/* Row 1: Stage Metadata + Auto-Save Action + Completion Action */}
+          {/* Row 1: Stage Metadata + Live Stopwatch (when enabled) + Auto-Save + Completion Action */}
           <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
               <span className="font-display text-base font-bold text-slate-900">
@@ -147,6 +162,26 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
               <span className="font-mono tabular-nums font-semibold text-sky-700">
                 {t.partsCounter(placedPartIds.length, blueprint.parts.length)}
               </span>
+
+              {timerModeEnabled && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <button
+                    type="button"
+                    onClick={onOpenLeaderboard}
+                    title={t.leaderboardTitle}
+                    className="inline-flex items-center gap-1.5 font-mono tabular-nums font-bold text-sky-900 hover:text-sky-700 hover:underline cursor-pointer"
+                  >
+                    <Timer className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                    <span>{formatStopwatchMs(liveElapsedMs)}</span>
+                    {personalBestMs !== null && (
+                      <span className="font-sans font-normal text-slate-500">
+                        ({t.personalBestShort(formatStopwatchMs(personalBestMs))})
+                      </span>
+                    )}
+                  </button>
+                </>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -164,7 +199,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
               <button
                 type="button"
                 onClick={onOpenCatalog}
-                className="lg:hidden px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md whitespace-nowrap cursor-pointer"
+                className="xl:hidden px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md whitespace-nowrap cursor-pointer"
               >
                 {t.stagesBtn}
               </button>
@@ -307,7 +342,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
             })()}
           </div>
 
-          {/* Row 3: Workshop Controls (Exploded Slider + Camera Angles + Mobile Style + Audio + Reset) */}
+          {/* Row 3: Workshop Controls (Exploded Slider + Camera Angles + Mobile Style + Stopwatch + Audio + Reset) */}
           <div
             data-tour="camera-controls"
             className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100"
@@ -331,12 +366,12 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
                 step={2}
                 value={Math.round(explodedFactor * 100)}
                 onChange={(e) => onChangeExploded(Number(e.target.value) / 100)}
-                className="w-28 sm:w-36 accent-sky-600 cursor-pointer"
+                className="w-24 sm:w-32 accent-sky-600 cursor-pointer"
               />
             </div>
 
             {/* Mobile/Tablet 3 Visual Modes Switcher */}
-            <div className="flex lg:hidden items-center gap-1 p-1 bg-slate-100 rounded-lg">
+            <div className="flex xl:hidden items-center gap-1 p-1 bg-slate-100 rounded-lg">
               {(
                 [
                   [VisualStyleMode.WOOD, t.styleWoodShort],
@@ -389,8 +424,26 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
               ))}
             </div>
 
-            {/* Guide, Audio & Reset Controls */}
+            {/* Optional Stopwatch Toggle + Guide + Audio + Reset Controls */}
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onToggleTimerMode}
+                title={t.timerModeSwitchDesc}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 min-h-[36px] cursor-pointer ${
+                  timerModeEnabled
+                    ? 'bg-sky-50 border-sky-300 text-sky-800 hover:bg-sky-100'
+                    : 'bg-slate-100 border-transparent text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <Timer
+                  className={`w-3.5 h-3.5 shrink-0 ${
+                    timerModeEnabled ? 'text-sky-600' : 'text-slate-500'
+                  }`}
+                />
+                <span>{timerModeEnabled ? t.timerActiveLabel : t.timerToggleBtn}</span>
+              </button>
+
               <button
                 type="button"
                 onClick={onOpenTour}

@@ -10,12 +10,16 @@ import {
   CameraPreset,
   DailyChallengeState,
   DailyCompletionEntry,
+  DifficultyTier,
   LanguageCode,
   PlayerProgress,
+  SpeedrunRecord,
   StageCompletionRecord,
   StageInProgressRecord,
+  VehicleCategory,
   VisualStyleMode,
 } from '../types/game';
+import { MAX_SPEEDRUN_HISTORY } from './speedrun';
 
 export const SAVE_STORAGE_KEY = 'mecanokids_3d_save_v2';
 const LEGACY_STORAGE_KEY = 'mecanokids_3d_progress_v1';
@@ -33,6 +37,14 @@ const VALID_CAMERAS = new Set<string>([
   CameraPreset.TOP,
 ]);
 
+const VALID_CATEGORIES = new Set<string>([
+  VehicleCategory.CAR,
+  VehicleCategory.BOAT,
+  VehicleCategory.PLANE,
+  VehicleCategory.CONSTRUCTION,
+  VehicleCategory.SPACE,
+]);
+
 const VALID_RARE_IDS = new Set<string>(RARE_COLLECTIBLES_CATALOG.map((r) => r.id));
 
 export function createDefaultProgress(
@@ -45,6 +57,8 @@ export function createDefaultProgress(
     inProgressStages: {},
     completedStages: {},
     dailyChallenge: createEmptyDailyChallengeState(),
+    speedrunRecords: [],
+    timerModeEnabled: false,
     unlockedBadges: {},
     language,
     preferredStyle: VisualStyleMode.WOOD,
@@ -75,6 +89,10 @@ function sanitizeDailyChallenge(raw: unknown): DailyChallengeState {
         rareCollectibleId:
           typeof e.rareCollectibleId === 'string' ? e.rareCollectibleId : '',
         templateId: typeof e.templateId === 'string' ? e.templateId : '',
+        bestTimeMs:
+          typeof e.bestTimeMs === 'number' && e.bestTimeMs > 0
+            ? Math.round(e.bestTimeMs)
+            : undefined,
       };
     }
   }
@@ -111,6 +129,42 @@ function sanitizeDailyChallenge(raw: unknown): DailyChallengeState {
     bestStreak,
     lastCompletedDate,
   };
+}
+
+function sanitizeSpeedrunRecords(raw: unknown): SpeedrunRecord[] {
+  if (!Array.isArray(raw)) return [];
+  const valid: SpeedrunRecord[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue;
+    const r = item as Record<string, unknown>;
+    if (typeof r.blueprintId !== 'string' || typeof r.timeMs !== 'number' || r.timeMs <= 0) {
+      continue;
+    }
+    const category =
+      typeof r.category === 'string' && VALID_CATEGORIES.has(r.category)
+        ? (r.category as VehicleCategory)
+        : VehicleCategory.CAR;
+    const tierNum = typeof r.tier === 'number' ? Math.max(1, Math.min(5, Math.round(r.tier))) : 1;
+
+    valid.push({
+      id: typeof r.id === 'string' && r.id ? r.id : `${r.blueprintId}-${Date.now()}-${valid.length}`,
+      blueprintId: r.blueprintId,
+      stageNumber: typeof r.stageNumber === 'number' ? Math.max(0, Math.round(r.stageNumber)) : 0,
+      category,
+      tier: tierNum as DifficultyTier,
+      partsCount: typeof r.partsCount === 'number' ? Math.max(1, Math.round(r.partsCount)) : 4,
+      timeMs: Math.round(r.timeMs),
+      mistakesCount: typeof r.mistakesCount === 'number' ? Math.max(0, Math.round(r.mistakesCount)) : 0,
+      stars: typeof r.stars === 'number' ? Math.max(1, Math.min(3, Math.round(r.stars))) : 3,
+      achievedAt: typeof r.achievedAt === 'number' ? r.achievedAt : Date.now(),
+      isDailyBonus: Boolean(r.isDailyBonus),
+      vehicleNameFr: typeof r.vehicleNameFr === 'string' ? r.vehicleNameFr : undefined,
+      vehicleNameEn: typeof r.vehicleNameEn === 'string' ? r.vehicleNameEn : undefined,
+      vehicleNameAr: typeof r.vehicleNameAr === 'string' ? r.vehicleNameAr : undefined,
+    });
+  }
+  valid.sort((a, b) => a.timeMs - b.timeMs);
+  return valid.slice(0, MAX_SPEEDRUN_HISTORY);
 }
 
 export function sanitizeProgress(raw: unknown): PlayerProgress {
@@ -166,6 +220,10 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
             typeof r.stars === 'number' ? Math.max(1, Math.min(3, Math.round(r.stars))) : 3,
           bestMistakes:
             typeof r.bestMistakes === 'number' ? Math.max(0, Math.round(r.bestMistakes)) : 0,
+          bestTimeMs:
+            typeof r.bestTimeMs === 'number' && r.bestTimeMs > 0
+              ? Math.round(r.bestTimeMs)
+              : undefined,
           completedAt: typeof r.completedAt === 'number' ? r.completedAt : undefined,
         };
       }
@@ -189,12 +247,15 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
         placedPartIds: uniquePlaced,
         mistakesCount:
           typeof r.mistakesCount === 'number' ? Math.max(0, Math.round(r.mistakesCount)) : 0,
+        elapsedMs:
+          typeof r.elapsedMs === 'number' && r.elapsedMs >= 0 ? Math.round(r.elapsedMs) : 0,
         updatedAt: typeof r.updatedAt === 'number' ? r.updatedAt : Date.now(),
       };
     }
   }
 
   const dailyChallenge = sanitizeDailyChallenge(obj.dailyChallenge);
+  const speedrunRecords = sanitizeSpeedrunRecords(obj.speedrunRecords);
 
   const rawUnlocked: Record<string, number> = {};
   if (obj.unlockedBadges && typeof obj.unlockedBadges === 'object') {
@@ -205,11 +266,12 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     }
   }
 
-  // Backfill any badges earned from completedStages & dailyChallenge scores
+  // Backfill any badges earned from completedStages, dailyChallenge & speedrunRecords
   const { updatedUnlocked } = syncUnlockedBadgesMap(
     completedStages,
     rawUnlocked,
     dailyChallenge,
+    speedrunRecords,
   );
 
   return {
@@ -218,6 +280,8 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     inProgressStages,
     completedStages,
     dailyChallenge,
+    speedrunRecords,
+    timerModeEnabled: Boolean(obj.timerModeEnabled),
     unlockedBadges: updatedUnlocked,
     language,
     preferredStyle,

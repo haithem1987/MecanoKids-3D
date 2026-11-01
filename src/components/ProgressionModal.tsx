@@ -15,6 +15,7 @@ import {
   Rocket,
   Star,
   Target,
+  Timer,
   Trophy,
   Wrench,
   X,
@@ -53,6 +54,8 @@ export function renderBadgeIcon(icon: BadgeIconKind, className = 'w-5 h-5'): Rea
       return <Calendar className={className} />;
     case BadgeIconKind.GEM:
       return <Gem className={className} />;
+    case BadgeIconKind.TIMER:
+      return <Timer className={className} />;
     case BadgeIconKind.AWARD:
       return <Award className={className} />;
     case BadgeIconKind.STAR:

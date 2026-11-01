@@ -678,6 +678,44 @@ export interface UIStrings {
   dailyCatalogBannerCta: string;
   dailyRareUnlockedBannerTitle: string;
   openDailyVaultBtn: string;
+  // Optional Stopwatch Mode ("Mode Chronomètre") & Local Best-Times Leaderboard
+  timerToggleBtn: string;
+  timerActiveLabel: string;
+  timerOffLabel: string;
+  timerEnabledToast: string;
+  timerDisabledToast: string;
+  personalBestShort: (formatted: string) => string;
+  leaderboardNavBtn: string;
+  leaderboardTitle: string;
+  leaderboardSubtitle: string;
+  closeLeaderboardAria: string;
+  timerModeSwitchTitle: string;
+  timerModeSwitchDesc: string;
+  timerEnableAction: string;
+  timerDisableAction: string;
+  leaderboardKpiRuns: string;
+  leaderboardKpiFastest: string;
+  leaderboardKpiBestPace: string;
+  leaderboardTabStageRecords: (count: number) => string;
+  leaderboardTabTopRuns: (count: number) => string;
+  leaderboardColRank: string;
+  leaderboardColVehicle: string;
+  leaderboardColTime: string;
+  leaderboardColPace: string;
+  leaderboardColPrecision: string;
+  leaderboardColAction: string;
+  leaderboardBeatTimeBtn: string;
+  leaderboardTimeAttackCurrentBtn: string;
+  leaderboardEmptyTitle: string;
+  leaderboardEmptyDesc: string;
+  leaderboardStartFirstRunBtn: string;
+  clearLeaderboardBtn: string;
+  confirmClearLeaderboardBtn: string;
+  discoveryTimerCardTitle: string;
+  discoveryNewRecordTag: string;
+  discoveryPreviousBestLabel: (prevTime: string, delta: string) => string;
+  openLeaderboardBtn: string;
+  retryTimedRunBtn: string;
 }
 
 export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
@@ -901,6 +939,47 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     dailyCatalogBannerCta: 'Voir le Défi & les Pièces Rares',
     dailyRareUnlockedBannerTitle: 'Pièce Rare du Jour ajoutée à ta vitrine !',
     openDailyVaultBtn: 'Ouvrir la vitrine des pièces rares',
+    timerToggleBtn: 'Chrono',
+    timerActiveLabel: 'Chrono ON',
+    timerOffLabel: 'Chrono OFF',
+    timerEnabledToast:
+      'Mode Chronomètre activé : le chrono démarre dès ta première pièce manipulée !',
+    timerDisabledToast: 'Mode Chronomètre désactivé.',
+    personalBestShort: (formatted) => `Record : ${formatted}`,
+    leaderboardNavBtn: 'Chronos',
+    leaderboardTitle: 'Mode Chronomètre & Classement Local',
+    leaderboardSubtitle:
+      'Optionnel pour les joueurs avancés : mesure ta vitesse d’assemblage et compare tes meilleurs temps sur cet appareil.',
+    closeLeaderboardAria: 'Fermer le classement chronomètre',
+    timerModeSwitchTitle: 'Mode Chronomètre en direct',
+    timerModeSwitchDesc:
+      'Démarre à la 1re pièce manipulée, se met en pause dans les menus et enregistre automatiquement tes records.',
+    timerEnableAction: 'Activer le Chronomètre',
+    timerDisableAction: 'Désactiver le Chronomètre',
+    leaderboardKpiRuns: 'Chronos enregistrés',
+    leaderboardKpiFastest: 'Meilleur temps absolu',
+    leaderboardKpiBestPace: 'Cadence record',
+    leaderboardTabStageRecords: (count) => `Records par véhicule (${count})`,
+    leaderboardTabTopRuns: (count) => `Journal des meilleurs temps (${count})`,
+    leaderboardColRank: '#',
+    leaderboardColVehicle: 'Véhicule & Palier',
+    leaderboardColTime: 'Temps',
+    leaderboardColPace: 'Cadence',
+    leaderboardColPrecision: 'Précision',
+    leaderboardColAction: 'Défi vitesse',
+    leaderboardBeatTimeBtn: 'Battre ce temps',
+    leaderboardTimeAttackCurrentBtn: 'Chronométrer le niveau actuel',
+    leaderboardEmptyTitle: 'Aucun temps enregistré pour le moment',
+    leaderboardEmptyDesc:
+      'Active le mode Chronomètre et termine un assemblage complet pour inscrire ton premier record local !',
+    leaderboardStartFirstRunBtn: 'Lancer un assemblage chronométré maintenant',
+    clearLeaderboardBtn: 'Effacer les chronos',
+    confirmClearLeaderboardBtn: 'Confirmer la suppression des temps',
+    discoveryTimerCardTitle: 'Temps officiel en Mode Chronomètre',
+    discoveryNewRecordTag: 'Nouveau Record Personnel !',
+    discoveryPreviousBestLabel: (prevTime, delta) => `Ancien record : ${prevTime} (${delta})`,
+    openLeaderboardBtn: 'Voir le classement des temps',
+    retryTimedRunBtn: 'Rejouer contre le chrono',
   },
 
   en: {
@@ -1123,6 +1202,47 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     dailyCatalogBannerCta: 'Open Challenge & Rare Vault',
     dailyRareUnlockedBannerTitle: "Today's Rare Part added to your vault!",
     openDailyVaultBtn: 'Open Rare Parts Vault',
+    timerToggleBtn: 'Timer',
+    timerActiveLabel: 'Timer ON',
+    timerOffLabel: 'Timer OFF',
+    timerEnabledToast:
+      'Stopwatch Mode enabled: timer starts on your very first part interaction!',
+    timerDisabledToast: 'Stopwatch Mode disabled.',
+    personalBestShort: (formatted) => `Best: ${formatted}`,
+    leaderboardNavBtn: 'Best Times',
+    leaderboardTitle: 'Stopwatch Mode & Local Leaderboard',
+    leaderboardSubtitle:
+      'Optional for advanced builders: test your assembly speed and track personal best times on this device.',
+    closeLeaderboardAria: 'Close best-times leaderboard',
+    timerModeSwitchTitle: 'Live Assembly Stopwatch',
+    timerModeSwitchDesc:
+      'Starts on the 1st part touched, pauses automatically in menus, and saves personal records locally.',
+    timerEnableAction: 'Enable Stopwatch',
+    timerDisableAction: 'Disable Stopwatch',
+    leaderboardKpiRuns: 'Recorded runs',
+    leaderboardKpiFastest: 'Fastest overall time',
+    leaderboardKpiBestPace: 'Fastest pace',
+    leaderboardTabStageRecords: (count) => `Records by vehicle (${count})`,
+    leaderboardTabTopRuns: (count) => `Top runs log (${count})`,
+    leaderboardColRank: '#',
+    leaderboardColVehicle: 'Vehicle & Tier',
+    leaderboardColTime: 'Time',
+    leaderboardColPace: 'Pace',
+    leaderboardColPrecision: 'Precision',
+    leaderboardColAction: 'Time Attack',
+    leaderboardBeatTimeBtn: 'Beat record',
+    leaderboardTimeAttackCurrentBtn: 'Time Attack current stage',
+    leaderboardEmptyTitle: 'No stopwatch times recorded yet',
+    leaderboardEmptyDesc:
+      'Enable Stopwatch Mode and complete any vehicle assembly to post your first local speed record!',
+    leaderboardStartFirstRunBtn: 'Start a timed assembly run now',
+    clearLeaderboardBtn: 'Clear times',
+    confirmClearLeaderboardBtn: 'Confirm clearing leaderboard',
+    discoveryTimerCardTitle: 'Official Stopwatch Assembly Time',
+    discoveryNewRecordTag: 'New Personal Best!',
+    discoveryPreviousBestLabel: (prevTime, delta) => `Previous best: ${prevTime} (${delta})`,
+    openLeaderboardBtn: 'Open best-times leaderboard',
+    retryTimedRunBtn: 'Retry against the clock',
   },
 
   ar: {
@@ -1345,5 +1465,45 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     dailyCatalogBannerCta: 'عرض التحدي وخزانة النوادر',
     dailyRareUnlockedBannerTitle: 'تمت إضافة قطعة اليوم النادرة إلى خزانتك!',
     openDailyVaultBtn: 'فتح خزانة القطع النادرة',
+    timerToggleBtn: 'مؤقّت',
+    timerActiveLabel: 'المؤقّت مفعّل',
+    timerOffLabel: 'المؤقّت متوقف',
+    timerEnabledToast: 'تم تفعيل وضع المؤقّت: يبدأ العد فور تحريك أول قطعة!',
+    timerDisabledToast: 'تم إيقاف وضع المؤقّت.',
+    personalBestShort: (formatted) => `أفضل زمن: ${formatted}`,
+    leaderboardNavBtn: 'أفضل الأزمان',
+    leaderboardTitle: 'وضع المؤقّت ولوحة أسرع الأزمان المحلية',
+    leaderboardSubtitle:
+      'وضع اختياري للاعبين المتقدمين: اختبر سرعة تجميعك وتابع أرقامك القياسية المحفوظة على جهازك.',
+    closeLeaderboardAria: 'إغلاق لوحة الأزمان',
+    timerModeSwitchTitle: 'مؤقّت التجميع المباشر',
+    timerModeSwitchDesc:
+      'يبدأ عند الإمساك بأول قطعة، ويتوقف مؤقتاً داخل القوائم، ويحفظ أفضل أوقاتك تلقائياً.',
+    timerEnableAction: 'تفعيل المؤقّت',
+    timerDisableAction: 'إيقاف المؤقّت',
+    leaderboardKpiRuns: 'الأزمان المسجّلة',
+    leaderboardKpiFastest: 'أسرع زمن مطلق',
+    leaderboardKpiBestPace: 'أسرع وتيرة تركيب',
+    leaderboardTabStageRecords: (count) => `الأرقام القياسية لكل مركبة (${count})`,
+    leaderboardTabTopRuns: (count) => `سجل أسرع المحاولات (${count})`,
+    leaderboardColRank: '#',
+    leaderboardColVehicle: 'المركبة والمستوى',
+    leaderboardColTime: 'الزمن',
+    leaderboardColPace: 'الوتيرة',
+    leaderboardColPrecision: 'الدقة',
+    leaderboardColAction: 'تحدي السرعة',
+    leaderboardBeatTimeBtn: 'حطّم الزمن',
+    leaderboardTimeAttackCurrentBtn: 'ابدأ سباق الزمن للمرحلة الحالية',
+    leaderboardEmptyTitle: 'لا توجد أزمان مسجّلة حتى الآن',
+    leaderboardEmptyDesc:
+      'فعّل وضع المؤقّت وأكمل تجميع أي مركبة لتسجيل أول رقم قياسي محلي لك!',
+    leaderboardStartFirstRunBtn: 'ابدأ تجميعاً موقوتاً الآن',
+    clearLeaderboardBtn: 'مسح الأزمان',
+    confirmClearLeaderboardBtn: 'تأكيد مسح سجل الأزمان',
+    discoveryTimerCardTitle: 'الزمن الرسمي في وضع المؤقّت',
+    discoveryNewRecordTag: 'رقم قياسي شخصي جديد!',
+    discoveryPreviousBestLabel: (prevTime, delta) => `الرقم السابق: ${prevTime} (${delta})`,
+    openLeaderboardBtn: 'عرض لوحة أسرع الأزمان',
+    retryTimedRunBtn: 'إعادة المحاولة ضد الساعة',
   },
 };

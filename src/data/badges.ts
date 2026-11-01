@@ -5,6 +5,7 @@ import {
   DailyChallengeState,
   DifficultyTier,
   LanguageCode,
+  SpeedrunRecord,
   StageCompletionRecord,
   VehicleCategory,
 } from '../types/game';
@@ -43,6 +44,8 @@ export interface ComputedScoreStats {
   spaceMaxStars: number;
   dailyCompletedCount: number;
   rarePartsCollected: number;
+  timedRunsCount: number;
+  fastestTimeMs: number | null;
 }
 
 export interface PlayerProgressionSummary {
@@ -56,6 +59,7 @@ export interface PlayerProgressionSummary {
 export function computeScoreStats(
   completedStages: Record<string, StageCompletionRecord>,
   dailyChallenge?: DailyChallengeState,
+  speedrunRecords?: SpeedrunRecord[],
 ): ComputedScoreStats {
   let completedCount = 0;
   let totalStars = 0;
@@ -115,6 +119,11 @@ export function computeScoreStats(
     ? Object.keys(dailyChallenge.completedByDate).length
     : 0;
   const rarePartsCollected = dailyChallenge ? dailyChallenge.collectedRareIds.length : 0;
+  const timedRunsCount = speedrunRecords ? speedrunRecords.length : 0;
+  const fastestTimeMs =
+    speedrunRecords && speedrunRecords.length > 0
+      ? Math.min(...speedrunRecords.map((r) => r.timeMs))
+      : null;
 
   return {
     completedCount,
@@ -136,6 +145,8 @@ export function computeScoreStats(
     spaceMaxStars: spaceCount * 3,
     dailyCompletedCount,
     rarePartsCollected,
+    timedRunsCount,
+    fastestTimeMs,
   };
 }
 
@@ -253,6 +264,37 @@ const BADGE_DEFINITIONS: BadgeDefinition[] = [
             : lang === 'en'
               ? `${s.rarePartsCollected} / 3 rare parts`
               : `${s.rarePartsCollected} / 3 pièces rares`,
+      };
+    },
+  },
+  {
+    id: 'speed-sprinter',
+    icon: BadgeIconKind.TIMER,
+    accentColor: 'sky',
+    title: {
+      fr: 'Éclair du Chronomètre',
+      en: 'Stopwatch Lightning',
+      ar: 'برق المؤقّت السريع',
+    },
+    description: {
+      fr: 'Assembler complètement un véhicule en moins de 45 secondes avec le mode Chronomètre actif.',
+      en: 'Assemble an entire vehicle in under 45 seconds with Stopwatch Mode enabled.',
+      ar: 'إتمام تجميع مركبة كاملة في أقل من 45 ثانية أثناء تفعيل وضع المؤقّت.',
+    },
+    evaluate: (s, lang) => {
+      const unlocked = s.fastestTimeMs !== null && s.fastestTimeMs <= 45_000;
+      const bestSec =
+        s.fastestTimeMs !== null ? `${(s.fastestTimeMs / 1000).toFixed(1)}s` : '—';
+      return {
+        unlocked,
+        currentValue: unlocked ? 1 : 0,
+        targetValue: 1,
+        progressLabel:
+          lang === 'ar'
+            ? `أفضل زمن: ${bestSec} (الهدف ≤ 45ث)`
+            : lang === 'en'
+              ? `Best: ${bestSec} (goal ≤ 45s)`
+              : `Record : ${bestSec} (objectif ≤ 45s)`,
       };
     },
   },
@@ -576,8 +618,9 @@ export function evaluatePlayerProgression(
   unlockedBadges: Record<string, number>,
   lang: LanguageCode,
   dailyChallenge?: DailyChallengeState,
+  speedrunRecords?: SpeedrunRecord[],
 ): PlayerProgressionSummary {
-  const stats = computeScoreStats(completedStages, dailyChallenge);
+  const stats = computeScoreStats(completedStages, dailyChallenge, speedrunRecords);
   const { rankTitle, nextRankLabel } = computeRankInfo(stats.totalStars, lang);
 
   const badges: BadgeEvaluation[] = BADGE_DEFINITIONS.map((def) => {
@@ -612,11 +655,12 @@ export function syncUnlockedBadgesMap(
   completedStages: Record<string, StageCompletionRecord>,
   existingUnlocked: Record<string, number>,
   dailyChallenge?: DailyChallengeState,
+  speedrunRecords?: SpeedrunRecord[],
 ): {
   updatedUnlocked: Record<string, number>;
   newlyUnlockedIds: string[];
 } {
-  const stats = computeScoreStats(completedStages, dailyChallenge);
+  const stats = computeScoreStats(completedStages, dailyChallenge, speedrunRecords);
   const updatedUnlocked: Record<string, number> = { ...existingUnlocked };
   const newlyUnlockedIds: string[] = [];
   const now = Date.now();
