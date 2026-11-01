@@ -1,0 +1,40 @@
+PS C:\DEV\REPOS> cd .\MecanoKids-3D\
+PS C:\DEV\REPOS\MecanoKids-3D> Copy-Item .env.example .env
+PS C:\DEV\REPOS\MecanoKids-3D> npm install
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE could not resolve
+npm ERR!
+npm ERR! While resolving: vite@8.3.5
+npm ERR! Found: esbuild@0.25.12
+npm ERR! node_modules/esbuild
+npm ERR!   dev esbuild@"^0.25.0" from the root project
+npm ERR!
+npm ERR! Could not resolve dependency:
+npm ERR! peerOptional esbuild@"^0.27.0 || ^0.28.0" from vite@8.3.5
+npm ERR! node_modules/vite
+npm ERR!   vite@"^8.3.0" from the root project
+npm ERR!   peer vite@"^5.2.0 || ^6 || ^7 || ^8" from @tailwindcss/vite@4.3.3
+npm ERR!   node_modules/@tailwindcss/vite
+npm ERR!     @tailwindcss/vite@"^4.3.3" from the root project
+npm ERR!   1 more (@vitejs/plugin-react)
+npm ERR!
+npm ERR! Conflicting peer dependency: esbuild@0.28.2
+npm ERR! node_modules/esbuild
+npm ERR!   peerOptional esbuild@"^0.27.0 || ^0.28.0" from vite@8.3.5
+npm ERR!   node_modules/vite
+npm ERR!     vite@"^8.3.0" from the root project
+npm ERR!     peer vite@"^5.2.0 || ^6 || ^7 || ^8" from @tailwindcss/vite@4.3.3
+npm ERR!     node_modules/@tailwindcss/vite
+npm ERR!       @tailwindcss/vite@"^4.3.3" from the root project
+npm ERR!     1 more (@vitejs/plugin-react)
+npm ERR!
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR!
+npm ERR!
+npm ERR! For a full report see:
+npm ERR! C:\Users\haith\AppData\Local\npm-cache\_logs\2026-11-01T07_51_52_549Z-eresolve-report.txt
+
+npm ERR! A complete log of this run can be found in: C:\Users\haith\AppData\Local\npm-cache\_logs\2026-11-01T07_51_52_549Z-debug-0.log
+PS C:\DEV\REPOS\MecanoKids-3D>
