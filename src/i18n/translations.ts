@@ -716,6 +716,195 @@ export interface UIStrings {
   discoveryPreviousBestLabel: (prevTime: string, delta: string) => string;
   openLeaderboardBtn: string;
   retryTimedRunBtn: string;
+  // Family Multi-Profiles, Native Web Speech & Offline PWA
+  profilesNavBtn: string;
+  profilesModalTitle: string;
+  profilesModalSubtitle: string;
+  closeProfilesAria: string;
+  profilesListTitle: (count: number, max: number) => string;
+  profileActiveTag: string;
+  profileSwitchBtn: string;
+  profileStatsLine: (completed: number, total: number, stars: number, badges: number) => string;
+  profileNewBtn: string;
+  profileMaxReached: (max: number) => string;
+  profileNameLabel: string;
+  profileNamePlaceholder: string;
+  profileColorLabel: string;
+  profileIconLabel: string;
+  profileCreateSubmit: string;
+  profileEditBtn: string;
+  profileSaveEditBtn: string;
+  profileDeleteBtn: string;
+  profileConfirmDeleteBtn: string;
+  profileSwitchedToast: (name: string) => string;
+  profileCreatedToast: (name: string) => string;
+  profileDeletedToast: (name: string) => string;
+  voiceSectionTitle: string;
+  voiceSectionDesc: string;
+  voiceAutoReadLabel: string;
+  voiceAutoReadDesc: string;
+  voiceTestBtn: string;
+  voiceTestSample: string;
+  voiceListenBtn: string;
+  voiceStopBtn: string;
+  voiceReadFullCardBtn: string;
+  voiceAutoToggleShort: string;
+  voiceAutoEnabledToast: string;
+  voiceAutoDisabledToast: string;
+  voiceUnsupportedLabel: string;
+  pwaSectionTitle: string;
+  pwaSectionDesc: string;
+  pwaInstallBtn: string;
+  pwaInstallShortBtn: string;
+  pwaInstalledLabel: string;
+  pwaOnlineReadyLabel: string;
+  pwaOfflineActiveBanner: string;
+  pwaIosGuideTitle: string;
+  pwaIosStep1: string;
+  pwaIosStep2: string;
+  pwaCloseGuideBtn: string;
+  // Axe 1 — 3D Test Drive, X-Ray Cutaway & Thematic Environments
+  testDriveBtn: string;
+  testDriveActiveBtn: string;
+  testDriveStartedToast: (vehicleName: string) => string;
+  testDriveStoppedToast: string;
+  xRayBtn: string;
+  xRayActiveBtn: string;
+  xRayTitle: string;
+  xRayEnabledToast: string;
+  xRayDisabledToast: string;
+  envThematicBtn: string;
+  envStudioBtn: string;
+  envSwitchTitle: string;
+  envThematicToast: string;
+  envStudioToast: string;
+  // Axe 2 — Paint Booth, 3D Photo Postcard Studio & Personal 3D Garage
+  studioBtn: string;
+  studioModalTitle: string;
+  studioModalSubtitle: string;
+  closeStudioAria: string;
+  studioPaintSectionTitle: string;
+  studioPaintSectionDesc: string;
+  liveryAppliedToast: (liveryLabel: string) => string;
+  studioPhotoSectionTitle: string;
+  studioPhotoSectionDesc: string;
+  capturePostcardBtn: string;
+  retakePostcardBtn: string;
+  downloadPostcardBtn: string;
+  postcardDownloadedToast: string;
+  garageNavBtn: string;
+  garageModalTitle: string;
+  garageModalSubtitle: string;
+  closeGarageAria: string;
+  garageKpiVehicles: string;
+  garageKpiPatents: string;
+  garageKpiRepairs: string;
+  garageKpiRareVault: string;
+  garageTabVehicles: (count: number) => string;
+  garageTabRareVault: (collected: number, total: number) => string;
+  garageEmptyTitle: string;
+  garageEmptyDesc: string;
+  garageLoadBtn: string;
+  garageTestDriveBtn: string;
+  garagePatentTag: string;
+  garageRepairedTag: (count: number) => string;
+  garageMasterTag: string;
+  // Axe 3 — Master No-Silhouette Mode, 3-Question Engineering Quiz & Diagnostic/Repair Mode
+  noSilhouetteBtn: string;
+  noSilhouetteActiveBtn: string;
+  noSilhouetteTitle: string;
+  noSilhouetteEnabledToast: string;
+  noSilhouetteDisabledToast: string;
+  quizOpenBtn: string;
+  quizPassedBtn: string;
+  quizModalTitle: (vehicleName: string) => string;
+  quizModalSubtitle: string;
+  closeQuizAria: string;
+  quizQuestionCounter: (current: number, total: number) => string;
+  quizNextQuestionBtn: string;
+  quizSeeResultsBtn: string;
+  quizRetryBtn: string;
+  quizScoreTitle: (score: number, total: number) => string;
+  quizPatentEarnedTitle: string;
+  quizPatentEarnedDesc: (vehicleName: string) => string;
+  quizAlmostTitle: string;
+  quizAlmostDesc: string;
+  diagnosticBtn: string;
+  diagnosticActiveBanner: (faultyLeft: number, missingLeft: number) => string;
+  diagnosticQuitBtn: string;
+  diagnosticStartedToast: (vehicleName: string, issues: number) => string;
+  diagnosticExtractedToast: (partName: string) => string;
+  diagnosticClickFaultyHint: (partName: string) => string;
+  diagnosticCompletedToast: (vehicleName: string) => string;
+  // Daily Engagement Streak & Rewards
+  streakTopBarTitle: (days: number, activeToday: boolean) => string;
+  streakExtendedToast: (days: number) => string;
+  streakMilestoneUnlockedToast: (days: number, rewardLabel: string) => string;
+  liveryLockedStreakHint: (days: number) => string;
+  streakModalTitle: string;
+  streakModalSubtitle: string;
+  closeStreakAria: string;
+  streakStatusActiveToday: (days: number) => string;
+  streakStatusKeepAliveToday: (days: number) => string;
+  streakStatusStartToday: string;
+  streakCurrentLabel: string;
+  streakBestLabel: string;
+  streakDaysUnit: (days: number) => string;
+  streakRecentWeekTitle: string;
+  streakTodayTag: string;
+  streakMilestonesTitle: string;
+  streakRewardUnlockedTag: string;
+  streakOpenPaintBoothBtn: string;
+  // Lot A — Parental Gate, Parent & Teacher STEM Space, Gentle Session Timer & Printable Diplomas
+  parentsNavBtn: string;
+  parentsTopBarTitle: string;
+  parentalGateTitle: string;
+  parentalGateSubtitle: string;
+  parentalGateInputPlaceholder: string;
+  parentalGateVerifyBtn: string;
+  parentalGateCancelBtn: string;
+  parentalGateNewChallengeBtn: string;
+  parentalGateIncorrectMsg: (attemptsLeft: number) => string;
+  parentalGateCooldownMsg: (seconds: number) => string;
+  parentSpaceTitle: string;
+  parentSpaceSubtitle: string;
+  closeParentSpaceAria: string;
+  parentProfileSelectLabel: string;
+  parentSwitchActiveBtn: string;
+  parentTabStem: string;
+  parentTabTimer: string;
+  parentTabDiplomas: string;
+  parentStemOverviewTitle: string;
+  parentStemIndexLabel: string;
+  parentKpiCompleted: string;
+  parentKpiPatents: string;
+  parentKpiRepairs: string;
+  parentKpiStreak: string;
+  parentTimerSectionTitle: string;
+  parentTimerSectionDesc: string;
+  parentTimerUnlimited: string;
+  parentTimerMinutesOption: (mins: number) => string;
+  parentTimerConsumedLabel: string;
+  parentTimerRemainingLabel: string;
+  parentTimerGraceRuleNote: string;
+  parentTimerExtend15Btn: string;
+  parentTimerResetTodayBtn: string;
+  parentTimerSavedToast: string;
+  parentTimerExtendedToast: string;
+  parentDiplomasSectionTitle: string;
+  parentDiplomasSectionDesc: string;
+  parentDiplomaUnlockedStatus: string;
+  parentDiplomaLockedStatus: (needed: number) => string;
+  parentDiplomaEmptyHint: string;
+  parentDiplomaDownloadBtn: string;
+  parentDiplomaPrintBtn: string;
+  parentDiplomaDownloadedToast: string;
+  parentBackupBtn: string;
+  parentDiagnosticFooter: (profileCount: number, isOfflineReady: boolean) => string;
+  sessionCurtainTitle: string;
+  sessionCurtainSubtitle: (profileName: string, completedCount: number) => string;
+  sessionCurtainGraceBanner: (secondsLeft: number) => string;
+  sessionCurtainParentExtendBtn: string;
 }
 
 export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
@@ -980,6 +1169,236 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     discoveryPreviousBestLabel: (prevTime, delta) => `Ancien record : ${prevTime} (${delta})`,
     openLeaderboardBtn: 'Voir le classement des temps',
     retryTimedRunBtn: 'Rejouer contre le chrono',
+    profilesNavBtn: 'Profils',
+    profilesModalTitle: 'Profils Mécaniciens, Voix & Mode Hors-Ligne',
+    profilesModalSubtitle:
+      'Chaque enfant dispose de sa propre sauvegarde sur cet appareil, avec lecture vocale trilingue et installation hors-ligne.',
+    closeProfilesAria: 'Fermer la gestion des profils',
+    profilesListTitle: (count, max) => `Profils locaux sur cet appareil (${count}/${max})`,
+    profileActiveTag: 'Profil actif',
+    profileSwitchBtn: 'Choisir',
+    profileStatsLine: (completed, total, stars, badges) =>
+      `${completed}/${total} véhicules · ${stars} ★ · ${badges} badges`,
+    profileNewBtn: 'Nouveau profil',
+    profileMaxReached: (max) => `Limite de ${max} profils locaux atteinte.`,
+    profileNameLabel: 'Prénom ou surnom du constructeur',
+    profileNamePlaceholder: 'Ex : Léo, Yasmine, Atelier CE1...',
+    profileColorLabel: 'Couleur d’établi',
+    profileIconLabel: 'Emblème mécanique',
+    profileCreateSubmit: 'Créer et activer ce profil',
+    profileEditBtn: 'Renommer',
+    profileSaveEditBtn: 'Enregistrer',
+    profileDeleteBtn: 'Supprimer',
+    profileConfirmDeleteBtn: 'Confirmer suppression',
+    profileSwitchedToast: (name) => `Bienvenue sur l’établi de ${name} !`,
+    profileCreatedToast: (name) => `Profil « ${name} » créé et activé !`,
+    profileDeletedToast: (name) => `Profil « ${name} » supprimé.`,
+    voiceSectionTitle: 'Synthèse Vocale Éducative (Web Speech)',
+    voiceSectionDesc:
+      'Lit à voix haute les indices mécaniques, le tutoriel et les fiches découvertes en Français, Anglais ou Arabe sans Internet.',
+    voiceAutoReadLabel: 'Lecture vocale automatique des pièces',
+    voiceAutoReadDesc:
+      'Énonce automatiquement le nom et le rôle mécanique d’une pièce lorsqu’on la sélectionne ou qu’on la fixe.',
+    voiceTestBtn: 'Tester la voix',
+    voiceTestSample:
+      'Bonjour jeune ingénieur ! Prêt à assembler ton prochain véhicule mécanique en trois dimensions ?',
+    voiceListenBtn: 'Écouter',
+    voiceStopBtn: 'Arrêter',
+    voiceReadFullCardBtn: 'Écouter toute la fiche',
+    voiceAutoToggleShort: 'Voix auto',
+    voiceAutoEnabledToast: 'Lecture vocale automatique activée.',
+    voiceAutoDisabledToast: 'Lecture vocale automatique désactivée.',
+    voiceUnsupportedLabel: 'Synthèse vocale non prise en charge sur ce navigateur.',
+    pwaSectionTitle: 'Application Hors-Ligne (PWA)',
+    pwaSectionDesc:
+      'Installe MécanoKids 3D sur ton écran d’accueil ou ton bureau Windows pour jouer en plein écran sans connexion Internet.',
+    pwaInstallBtn: 'Installer MécanoKids 3D sur cet appareil',
+    pwaInstallShortBtn: 'Installer',
+    pwaInstalledLabel: 'Application installée · Prête hors-ligne',
+    pwaOnlineReadyLabel: 'Cache hors-ligne actif · Jouable sans réseau',
+    pwaOfflineActiveBanner: 'Mode hors-ligne actif — Sauvegarde locale garantie',
+    pwaIosGuideTitle: 'Installer sur iPhone ou iPad (Safari)',
+    pwaIosStep1: '1. Appuie sur le bouton Partager dans la barre d’outils Safari.',
+    pwaIosStep2: '2. Fais défiler et choisis « Sur l’écran d’accueil ».',
+    pwaCloseGuideBtn: 'Compris',
+    testDriveBtn: 'Essai 3D',
+    testDriveActiveBtn: 'Arrêter l’essai',
+    testDriveStartedToast: (vehicleName) =>
+      `Essai dynamique 3D lancé pour ${vehicleName} !`,
+    testDriveStoppedToast: 'Essai dynamique 3D terminé.',
+    xRayBtn: 'Rayons X',
+    xRayActiveBtn: 'Rayons X ON',
+    xRayTitle: 'Coupe technique translucide pour observer les organes mécaniques internes',
+    xRayEnabledToast: 'Mode Rayons X activé : coque translucide et organes internes visibles.',
+    xRayDisabledToast: 'Mode Rayons X désactivé.',
+    envThematicBtn: 'Décor Thème',
+    envStudioBtn: 'Décor Studio',
+    envSwitchTitle: 'Alterner entre le plateau thématique (circuit, port, piste, chantier, pas de tir) et l’établi classique',
+    envThematicToast: 'Environnement d’établi thématique activé.',
+    envStudioToast: 'Établi studio classique activé.',
+    studioBtn: 'Peinture & Photo',
+    studioModalTitle: 'Cabine de Peinture & Carte Postale 3D',
+    studioModalSubtitle:
+      'Personnalise la livrée de ton véhicule et photographie ta création en haute définition.',
+    closeStudioAria: 'Fermer la cabine de peinture et le studio photo',
+    studioPaintSectionTitle: 'Cabine de Peinture & Finitions d’Atelier',
+    studioPaintSectionDesc:
+      'Choisis une teinte d’atelier mémorisée automatiquement pour ce véhicule (les pièces rares Or 24K conservent leur éclat).',
+    liveryAppliedToast: (liveryLabel) => `Peinture « ${liveryLabel} » appliquée et mémorisée !`,
+    studioPhotoSectionTitle: 'Studio Photo — Carte Postale Souvenir 3D',
+    studioPhotoSectionDesc:
+      'Capture instantanément le rendu 3D actuel avec ton profil, tes étoiles et ton meilleur chrono en image PNG.',
+    capturePostcardBtn: 'Capturer la carte postale 3D',
+    retakePostcardBtn: 'Actualiser la prise de vue',
+    downloadPostcardBtn: 'Télécharger en PNG',
+    postcardDownloadedToast: 'Carte postale 3D téléchargée en PNG !',
+    garageNavBtn: 'Ma Vitrine',
+    garageModalTitle: 'Garage Personnel — Ma Vitrine 3D',
+    garageModalSubtitle:
+      'Retrouve tous tes véhicules construits avec leurs peintures personnalisées, tes Brevets d’Ingénieur et tes 7 pièces rares Or 24K.',
+    closeGarageAria: 'Fermer la vitrine 3D',
+    garageKpiVehicles: 'Véhicules exposés',
+    garageKpiPatents: 'Brevets d’Ingénieur',
+    garageKpiRepairs: 'Missions réparation',
+    garageKpiRareVault: 'Pièces rares Or 24K',
+    garageTabVehicles: (count) => `Mes Véhicules Construits (${count})`,
+    garageTabRareVault: (collected, total) => `Pièces Rares Or 24K (${collected}/${total})`,
+    garageEmptyTitle: 'Ta vitrine attend son premier véhicule !',
+    garageEmptyDesc:
+      'Termine n’importe quel stage sur l’établi 3D pour exposer ta création ici, la repeindre et lancer un essai dynamique.',
+    garageLoadBtn: 'Exposer sur l’établi',
+    garageTestDriveBtn: 'Essai 3D direct',
+    garagePatentTag: 'Breveté',
+    garageRepairedTag: (count) => `Réparé ${count}×`,
+    garageMasterTag: 'Sans silhouette',
+    noSilhouetteBtn: 'Sans silhouette',
+    noSilhouetteActiveBtn: 'Maître ON',
+    noSilhouetteTitle:
+      'Difficulté Grand Ingénieur : masque les silhouettes guides translucides pour déduire le montage par pure logique mécanique',
+    noSilhouetteEnabledToast:
+      'Mode Maître Sans Silhouette activé : déduis l’emplacement exact de chaque pièce !',
+    noSilhouetteDisabledToast: 'Silhouettes guides 3D réactivées.',
+    quizOpenBtn: 'Quiz Brevet',
+    quizPassedBtn: 'Brevet obtenu',
+    quizModalTitle: (vehicleName) => `Mini-Quiz Mécanique : ${vehicleName}`,
+    quizModalSubtitle:
+      'Réponds aux 3 questions sur l’assemblage et le fonctionnement réel pour décrocher le Brevet d’Ingénieur de cet engin !',
+    closeQuizAria: 'Fermer le mini-quiz mécanique',
+    quizQuestionCounter: (current, total) => `Question ${current} sur ${total}`,
+    quizNextQuestionBtn: 'Question suivante',
+    quizSeeResultsBtn: 'Voir mon résultat',
+    quizRetryBtn: 'Retenter le quiz',
+    quizScoreTitle: (score, total) => `Score obtenu : ${score} / ${total}`,
+    quizPatentEarnedTitle: 'Sceau « Brevet d’Ingénieur » décerné !',
+    quizPatentEarnedDesc: (vehicleName) =>
+      `Félicitations ! Tu maîtrises l’architecture et les secrets mécaniques de « ${vehicleName} ».`,
+    quizAlmostTitle: 'Presque ! Relis les indices et réessaie',
+    quizAlmostDesc:
+      'Obtiens au moins 2 bonnes réponses sur 3 pour valider ton Brevet d’Ingénieur sur ce modèle.',
+    diagnosticBtn: 'Réparation',
+    diagnosticActiveBanner: (faultyLeft, missingLeft) =>
+      faultyLeft > 0
+        ? `Diagnostic : clique sur ${faultyLeft} pièce(s) orange mal montée(s) sur le modèle 3D, puis remonte ${missingLeft} pièce(s) !`
+        : `Réparation : remonte les ${missingLeft} pièce(s) manquante(s) depuis l’établi pour remettre l’engin en état !`,
+    diagnosticQuitBtn: 'Quitter réparation',
+    diagnosticStartedToast: (vehicleName, issues) =>
+      `Mission Diagnostic sur ${vehicleName} : ${issues} anomalies mécaniques à corriger !`,
+    diagnosticExtractedToast: (partName) =>
+      `✓ Pièce mal fixée « ${partName} » démontée ! Réinstalle-la proprement depuis l’établi.`,
+    diagnosticClickFaultyHint: (partName) =>
+      `Démonte d’abord la pièce orange mal fixée « ${partName} » en cliquant dessus sur le modèle 3D !`,
+    diagnosticCompletedToast: (vehicleName) =>
+      `Diagnostic réussi ! ${vehicleName} est réparé à 100 % et prêt à repartir !`,
+    streakTopBarTitle: (days, activeToday) =>
+      activeToday
+        ? `Série quotidienne active : ${days} jour(s) d’affilée`
+        : days > 0
+          ? `Série de ${days} jour(s) à prolonger aujourd’hui !`
+          : 'Commence ta série quotidienne dans l’atelier 3D',
+    streakExtendedToast: (days) =>
+      `Série quotidienne : ${days} jour${days > 1 ? 's' : ''} d’affilée dans l’atelier !`,
+    streakMilestoneUnlockedToast: (days, rewardLabel) =>
+      `Palier de série ${days} jours atteint ! Récompense débloquée : ${rewardLabel}`,
+    liveryLockedStreakHint: (days) =>
+      `Débloque cette finition exclusive en atteignant une série de ${days} jours consécutifs !`,
+    streakModalTitle: 'Série Quotidienne & Récompenses',
+    streakModalSubtitle:
+      'Assemble, répare ou réussis un quiz chaque jour pour faire grandir ta flamme d’atelier et débloquer des récompenses permanentes.',
+    closeStreakAria: 'Fermer la fenêtre de série quotidienne',
+    streakStatusActiveToday: (days) =>
+      `Flamme allumée aujourd’hui ! Tu es à ${days} jour${days > 1 ? 's' : ''} consécutif${days > 1 ? 's' : ''}.`,
+    streakStatusKeepAliveToday: (days) =>
+      `Ta série de ${days} jour${days > 1 ? 's' : ''} t’attend : fixe une pièce ou répare un véhicule aujourd’hui pour la prolonger !`,
+    streakStatusStartToday:
+      'Fixe ta première pièce sur l’établi aujourd’hui pour allumer ta série quotidienne !',
+    streakCurrentLabel: 'Série actuelle',
+    streakBestLabel: 'Meilleure série',
+    streakDaysUnit: (days) => `${days} ${days > 1 ? 'jours' : 'jour'}`,
+    streakRecentWeekTitle: 'Activité des 7 derniers jours',
+    streakTodayTag: 'Auj.',
+    streakMilestonesTitle: 'Paliers de Récompenses d’Assiduité',
+    streakRewardUnlockedTag: 'Débloqué',
+    streakOpenPaintBoothBtn: 'Ouvrir la Cabine de Peinture',
+    parentsNavBtn: 'Parents',
+    parentsTopBarTitle: 'Espace Parents & Enseignants (protégé par vérification adulte)',
+    parentalGateTitle: 'Vérification Adulte — Espace Parents',
+    parentalGateSubtitle:
+      'Pour protéger la progression et les réglages des enfants, résolvez ce calcul en chiffres :',
+    parentalGateInputPlaceholder: 'Votre réponse en chiffres',
+    parentalGateVerifyBtn: 'Déverrouiller',
+    parentalGateCancelBtn: 'Retour au jeu',
+    parentalGateNewChallengeBtn: 'Autre calcul',
+    parentalGateIncorrectMsg: (attemptsLeft) =>
+      `Réponse incorrecte (${attemptsLeft} essai${attemptsLeft > 1 ? 's' : ''} restant${attemptsLeft > 1 ? 's' : ''}).`,
+    parentalGateCooldownMsg: (seconds) =>
+      `Trop d’essais erronés. Patientez ${seconds}s avant de réessayer.`,
+    parentSpaceTitle: 'Espace Parents & Enseignants',
+    parentSpaceSubtitle:
+      'Bilan pédagogique STEM, gestion bienveillante du temps d’écran et diplômes officiels imprimables (100 % hors-ligne, zéro donnée enfant collectée).',
+    closeParentSpaceAria: 'Fermer l’espace parents',
+    parentProfileSelectLabel: 'Profil enfant consulté :',
+    parentSwitchActiveBtn: 'Activer sur l’établi',
+    parentTabStem: 'Bulletin STEM',
+    parentTabTimer: 'Minuteur Bienveillant',
+    parentTabDiplomas: 'Diplômes Imprimables',
+    parentStemOverviewTitle: 'Compétences d’Ingénierie Développées',
+    parentStemIndexLabel: 'Indice global de maîtrise STEM',
+    parentKpiCompleted: 'Machines assemblées',
+    parentKpiPatents: 'Brevets de quiz',
+    parentKpiRepairs: 'Pannes résolues',
+    parentKpiStreak: 'Meilleure série',
+    parentTimerSectionTitle: 'Minuteur d’Atelier Bienveillant',
+    parentTimerSectionDesc:
+      'Définissez une durée quotidienne maximale sur cet appareil. Aucune coupure brutale : l’enfant peut terminer son assemblage en cours.',
+    parentTimerUnlimited: 'Illimité',
+    parentTimerMinutesOption: (mins) => `${mins} min / jour`,
+    parentTimerConsumedLabel: 'Temps actif aujourd’hui',
+    parentTimerRemainingLabel: 'Temps restant aujourd’hui',
+    parentTimerGraceRuleNote:
+      'Grâce de fin d’assemblage active : si le véhicule en cours est monté à plus de 50 %, jusqu’à 3 minutes supplémentaires sont accordées pour poser la dernière pièce sans frustration.',
+    parentTimerExtend15Btn: '+15 min aujourd’hui',
+    parentTimerResetTodayBtn: 'Remettre le compteur du jour à 0',
+    parentTimerSavedToast: 'Limite quotidienne du minuteur mise à jour.',
+    parentTimerExtendedToast: '15 minutes supplémentaires accordées pour aujourd’hui.',
+    parentDiplomasSectionTitle: 'Certificats & Diplômes Officiels Imprimables',
+    parentDiplomasSectionDesc:
+      'Téléchargez en PNG haute définition (format A4 paysage) ou imprimez le diplôme officiel personnalisé au prénom de l’enfant.',
+    parentDiplomaUnlockedStatus: 'Acquis',
+    parentDiplomaLockedStatus: (needed) => `À ${needed} véhicules`,
+    parentDiplomaEmptyHint:
+      'Terminez un premier véhicule sur l’établi 3D pour débloquer le Brevet d’Initiation Mécanique personnalisé !',
+    parentDiplomaDownloadBtn: 'Télécharger le diplôme (PNG A4)',
+    parentDiplomaPrintBtn: 'Imprimer le diplôme',
+    parentDiplomaDownloadedToast: 'Diplôme officiel haute définition téléchargé !',
+    parentBackupBtn: 'Sauvegarder ce profil (.json)',
+    parentDiagnosticFooter: (profileCount, isOfflineReady) =>
+      `MécanoKids 3D v1.1 · Lot A · ${profileCount} profil(s) local(aux) · ${isOfflineReady ? 'Prêt hors-ligne' : 'Mode hors-ligne actif'} · 0 % Publicité / 0 % Tracking enfant`,
+    sessionCurtainTitle: 'L’atelier ferme ses portes pour aujourd’hui !',
+    sessionCurtainSubtitle: (profileName, completedCount) =>
+      `Bravo ${profileName} ! Tes outils sont bien rangés et tes ${completedCount} véhicule(s) construit(s) sont sauvegardés pour demain.`,
+    sessionCurtainGraceBanner: (secondsLeft) =>
+      `Fin de séance proche : il te reste ${secondsLeft}s pour fixer tes dernières pièces sur ce véhicule.`,
+    sessionCurtainParentExtendBtn: 'Accès Parent (Prolonger ou régler)',
   },
 
   en: {
@@ -1243,6 +1662,236 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     discoveryPreviousBestLabel: (prevTime, delta) => `Previous best: ${prevTime} (${delta})`,
     openLeaderboardBtn: 'Open best-times leaderboard',
     retryTimedRunBtn: 'Retry against the clock',
+    profilesNavBtn: 'Profiles',
+    profilesModalTitle: 'Builder Profiles, Voice & Offline App',
+    profilesModalSubtitle:
+      'Each child gets an independent save slot on this device, plus trilingual read-aloud narration and offline installation.',
+    closeProfilesAria: 'Close profiles & settings modal',
+    profilesListTitle: (count, max) => `Local profiles on this device (${count}/${max})`,
+    profileActiveTag: 'Active profile',
+    profileSwitchBtn: 'Select',
+    profileStatsLine: (completed, total, stars, badges) =>
+      `${completed}/${total} vehicles · ${stars} ★ · ${badges} badges`,
+    profileNewBtn: 'New profile',
+    profileMaxReached: (max) => `Maximum of ${max} local profiles reached.`,
+    profileNameLabel: 'Builder name or nickname',
+    profileNamePlaceholder: 'E.g., Leo, Maya, Grade 2 Lab...',
+    profileColorLabel: 'Workbench color',
+    profileIconLabel: 'Mechanical emblem',
+    profileCreateSubmit: 'Create & switch to profile',
+    profileEditBtn: 'Rename',
+    profileSaveEditBtn: 'Save',
+    profileDeleteBtn: 'Delete',
+    profileConfirmDeleteBtn: 'Confirm delete',
+    profileSwitchedToast: (name) => `Switched to ${name}'s workbench!`,
+    profileCreatedToast: (name) => `Profile "${name}" created and activated!`,
+    profileDeletedToast: (name) => `Profile "${name}" deleted.`,
+    voiceSectionTitle: 'Educational Read-Aloud (Web Speech)',
+    voiceSectionDesc:
+      'Reads mechanical hints, tutorial steps, and real-world Discovery Cards aloud in French, English, or Arabic completely offline.',
+    voiceAutoReadLabel: 'Auto-read part hints aloud',
+    voiceAutoReadDesc:
+      'Automatically speaks each part name and engineering role when selected or snapped onto the vehicle.',
+    voiceTestBtn: 'Test voice',
+    voiceTestSample:
+      'Hello young engineer! Ready to assemble your next three-dimensional mechanical vehicle?',
+    voiceListenBtn: 'Listen',
+    voiceStopBtn: 'Stop',
+    voiceReadFullCardBtn: 'Listen to full card',
+    voiceAutoToggleShort: 'Auto Voice',
+    voiceAutoEnabledToast: 'Automatic voice narration enabled.',
+    voiceAutoDisabledToast: 'Automatic voice narration disabled.',
+    voiceUnsupportedLabel: 'Speech synthesis is not supported in this browser.',
+    pwaSectionTitle: 'Offline Installable App (PWA)',
+    pwaSectionDesc:
+      'Install MécanoKids 3D on your home screen or Windows desktop to play fullscreen anywhere without an internet connection.',
+    pwaInstallBtn: 'Install MécanoKids 3D on this device',
+    pwaInstallShortBtn: 'Install',
+    pwaInstalledLabel: 'App installed · Offline ready',
+    pwaOnlineReadyLabel: 'Offline cache ready · Playable without internet',
+    pwaOfflineActiveBanner: 'Offline mode active — Local save guaranteed',
+    pwaIosGuideTitle: 'Install on iPhone or iPad (Safari)',
+    pwaIosStep1: '1. Tap the Share button in the Safari toolbar.',
+    pwaIosStep2: '2. Scroll down and tap "Add to Home Screen".',
+    pwaCloseGuideBtn: 'Got it',
+    testDriveBtn: 'Test Drive',
+    testDriveActiveBtn: 'Stop Test Drive',
+    testDriveStartedToast: (vehicleName) =>
+      `3D Dynamic Test Drive engaged for ${vehicleName}!`,
+    testDriveStoppedToast: '3D Dynamic Test Drive stopped.',
+    xRayBtn: 'X-Ray',
+    xRayActiveBtn: 'X-Ray ON',
+    xRayTitle: 'Technical cutaway mode: make outer bodywork translucent to inspect internal organs',
+    xRayEnabledToast: 'X-Ray Cutaway enabled: outer shell translucent, inner mechanisms visible.',
+    xRayDisabledToast: 'X-Ray Cutaway disabled.',
+    envThematicBtn: 'Themed Deck',
+    envStudioBtn: 'Studio Deck',
+    envSwitchTitle: 'Switch between thematic 3D test environment (track, harbor, tarmac, workzone, launchpad) and studio turntable',
+    envThematicToast: 'Thematic 3D workbench environment enabled.',
+    envStudioToast: 'Classic studio turntable enabled.',
+    studioBtn: 'Paint & Photo',
+    studioModalTitle: 'Paint Booth & 3D Souvenir Postcard',
+    studioModalSubtitle:
+      'Repaint your vehicle with custom workshop liveries and snap a high-resolution 3D postcard.',
+    closeStudioAria: 'Close paint booth and photo studio',
+    studioPaintSectionTitle: 'Workshop Paint Booth & Custom Finishes',
+    studioPaintSectionDesc:
+      'Pick a custom workshop livery saved automatically for this vehicle (24K Gold rare parts keep their pure gold finish).',
+    liveryAppliedToast: (liveryLabel) => `"${liveryLabel}" livery applied and saved!`,
+    studioPhotoSectionTitle: '3D Photo Studio — Souvenir Postcard',
+    studioPhotoSectionDesc:
+      'Capture the live 3D render framed with your builder profile, star rating, and personal best time as a downloadable PNG.',
+    capturePostcardBtn: 'Capture 3D Postcard',
+    retakePostcardBtn: 'Refresh 3D Snapshot',
+    downloadPostcardBtn: 'Download PNG',
+    postcardDownloadedToast: '3D Souvenir Postcard downloaded as PNG!',
+    garageNavBtn: 'My Garage',
+    garageModalTitle: 'Personal 3D Garage & Showcase',
+    garageModalSubtitle:
+      'Browse your completed fleet with custom liveries, Engineering Patents, repair seals, and 24K Gold rare collector parts.',
+    closeGarageAria: 'Close personal garage',
+    garageKpiVehicles: 'Completed fleet',
+    garageKpiPatents: 'Engineering Patents',
+    garageKpiRepairs: 'Completed repairs',
+    garageKpiRareVault: '24K Gold rare parts',
+    garageTabVehicles: (count) => `My Built Vehicles (${count})`,
+    garageTabRareVault: (collected, total) => `24K Gold Rare Vault (${collected}/${total})`,
+    garageEmptyTitle: 'Your showcase awaits its first build!',
+    garageEmptyDesc:
+      'Complete any vehicle on the 3D workbench to display it here, customize its paint, and launch a 3D Test Drive.',
+    garageLoadBtn: 'Load on workbench',
+    garageTestDriveBtn: 'Instant Test Drive',
+    garagePatentTag: 'Patented',
+    garageRepairedTag: (count) => `Repaired ${count}×`,
+    garageMasterTag: 'No-Silhouette',
+    noSilhouetteBtn: 'No Silhouette',
+    noSilhouetteActiveBtn: 'Master ON',
+    noSilhouetteTitle:
+      'Grand Engineer difficulty: hides translucent 3D guide silhouettes so you deduce placement purely by mechanical logic',
+    noSilhouetteEnabledToast:
+      'Master Silhouette-Free Mode enabled: deduce every attachment point!',
+    noSilhouetteDisabledToast: '3D guide silhouettes restored.',
+    quizOpenBtn: 'Patent Quiz',
+    quizPassedBtn: 'Patent Earned',
+    quizModalTitle: (vehicleName) => `3-Question Engineering Quiz: ${vehicleName}`,
+    quizModalSubtitle:
+      'Answer 3 quick questions on assembly logic and real-world physics to earn this machine’s Engineering Patent!',
+    closeQuizAria: 'Close mechanical quiz',
+    quizQuestionCounter: (current, total) => `Question ${current} of ${total}`,
+    quizNextQuestionBtn: 'Next question',
+    quizSeeResultsBtn: 'See my score',
+    quizRetryBtn: 'Retry quiz',
+    quizScoreTitle: (score, total) => `Your score: ${score} / ${total}`,
+    quizPatentEarnedTitle: '"Engineering Patent" Seal Awarded!',
+    quizPatentEarnedDesc: (vehicleName) =>
+      `Congratulations! You mastered the structural logic and real-world mechanics of "${vehicleName}".`,
+    quizAlmostTitle: 'Almost there! Review the hints and try again',
+    quizAlmostDesc:
+      'Score at least 2 out of 3 correct answers to earn your official Engineering Patent for this vehicle.',
+    diagnosticBtn: 'Repair Mode',
+    diagnosticActiveBanner: (faultyLeft, missingLeft) =>
+      faultyLeft > 0
+        ? `Diagnostic: click ${faultyLeft} orange misaligned part(s) on the 3D model to extract them, then reinstall ${missingLeft} part(s)!`
+        : `Repair: reinstall the ${missingLeft} detached part(s) from the tray to restore full operation!`,
+    diagnosticQuitBtn: 'Exit repair',
+    diagnosticStartedToast: (vehicleName, issues) =>
+      `Diagnostic Mission on ${vehicleName}: ${issues} mechanical faults to fix!`,
+    diagnosticExtractedToast: (partName) =>
+      `✓ Loosened part "${partName}" extracted! Now snap it back cleanly from the tray.`,
+    diagnosticClickFaultyHint: (partName) =>
+      `First click the orange misaligned part "${partName}" on the 3D model to remove it!`,
+    diagnosticCompletedToast: (vehicleName) =>
+      `Diagnostic complete! ${vehicleName} is 100% repaired and ready for action!`,
+    streakTopBarTitle: (days, activeToday) =>
+      activeToday
+        ? `Active daily streak: ${days} day(s) in a row`
+        : days > 0
+          ? `${days}-day streak waiting — build today to keep it alive!`
+          : 'Start your daily 3D workshop streak today',
+    streakExtendedToast: (days) =>
+      `Daily Streak: ${days} consecutive day${days === 1 ? '' : 's'} in the workshop!`,
+    streakMilestoneUnlockedToast: (days, rewardLabel) =>
+      `${days}-Day Streak Milestone reached! Unlocked: ${rewardLabel}`,
+    liveryLockedStreakHint: (days) =>
+      `Reach a ${days}-day active workshop streak to unlock this exclusive finish!`,
+    streakModalTitle: 'Daily Engagement Streak & Rewards',
+    streakModalSubtitle:
+      'Snap parts, repair machines, or pass a mechanical quiz each day to grow your workshop flame and earn permanent rewards.',
+    closeStreakAria: 'Close daily streak modal',
+    streakStatusActiveToday: (days) =>
+      `Today’s flame is lit! You are on a ${days}-day consecutive streak.`,
+    streakStatusKeepAliveToday: (days) =>
+      `Your ${days}-day streak is ready: snap a part or complete a repair today to extend it!`,
+    streakStatusStartToday:
+      'Snap your first part on the workbench today to ignite your daily streak!',
+    streakCurrentLabel: 'Current streak',
+    streakBestLabel: 'Best streak',
+    streakDaysUnit: (days) => `${days} ${days === 1 ? 'day' : 'days'}`,
+    streakRecentWeekTitle: 'Last 7 days of workshop activity',
+    streakTodayTag: 'Today',
+    streakMilestonesTitle: 'Consecutive-Day Milestone Rewards',
+    streakRewardUnlockedTag: 'Unlocked',
+    streakOpenPaintBoothBtn: 'Open Paint Booth',
+    parentsNavBtn: 'Parents',
+    parentsTopBarTitle: 'Parent & Teacher Space (protected by adult verification)',
+    parentalGateTitle: 'Adult Verification — Parent Space',
+    parentalGateSubtitle:
+      'To protect children’s progress and screen-time settings, please solve this word problem using digits:',
+    parentalGateInputPlaceholder: 'Enter answer in digits',
+    parentalGateVerifyBtn: 'Unlock',
+    parentalGateCancelBtn: 'Back to workshop',
+    parentalGateNewChallengeBtn: 'New question',
+    parentalGateIncorrectMsg: (attemptsLeft) =>
+      `Incorrect answer (${attemptsLeft} attempt${attemptsLeft === 1 ? '' : 's'} remaining).`,
+    parentalGateCooldownMsg: (seconds) =>
+      `Too many incorrect attempts. Please wait ${seconds}s before trying again.`,
+    parentSpaceTitle: 'Parent & Teacher Space',
+    parentSpaceSubtitle:
+      'STEM competency report, gentle screen-time management, and printable official diplomas (100% offline, zero child PII collected).',
+    closeParentSpaceAria: 'Close parent space',
+    parentProfileSelectLabel: 'Viewing child profile:',
+    parentSwitchActiveBtn: 'Switch workbench to profile',
+    parentTabStem: 'STEM Report',
+    parentTabTimer: 'Gentle Timer',
+    parentTabDiplomas: 'Printable Diplomas',
+    parentStemOverviewTitle: 'Engineering & Cognitive Skills Practiced',
+    parentStemIndexLabel: 'Overall STEM Mastery Index',
+    parentKpiCompleted: 'Machines built',
+    parentKpiPatents: 'Quiz patents',
+    parentKpiRepairs: 'Repairs solved',
+    parentKpiStreak: 'Best streak',
+    parentTimerSectionTitle: 'Gentle Workshop Session Timer',
+    parentTimerSectionDesc:
+      'Set a daily active time budget on this device. No abrupt cutoffs: your child can calmly finish a vehicle already past 50%.',
+    parentTimerUnlimited: 'Unlimited',
+    parentTimerMinutesOption: (mins) => `${mins} min / day`,
+    parentTimerConsumedLabel: 'Active time today',
+    parentTimerRemainingLabel: 'Remaining today',
+    parentTimerGraceRuleNote:
+      'Assembly completion grace active: if the current vehicle is over 50% assembled when time expires, up to 3 extra minutes are granted to snap the final parts.',
+    parentTimerExtend15Btn: '+15 min for today',
+    parentTimerResetTodayBtn: 'Reset today’s counter to 0',
+    parentTimerSavedToast: 'Daily session timer updated.',
+    parentTimerExtendedToast: '15 bonus minutes granted for today.',
+    parentDiplomasSectionTitle: 'Official Printable Certificates & Diplomas',
+    parentDiplomasSectionDesc:
+      'Download a high-resolution A4 landscape PNG or print an official engineering certificate personalized with your child’s name.',
+    parentDiplomaUnlockedStatus: 'Earned',
+    parentDiplomaLockedStatus: (needed) => `At ${needed} builds`,
+    parentDiplomaEmptyHint:
+      'Complete your first vehicle on the 3D workbench to unlock the personalized Junior Mechanical Initiation Certificate!',
+    parentDiplomaDownloadBtn: 'Download Diploma (A4 PNG)',
+    parentDiplomaPrintBtn: 'Print Diploma',
+    parentDiplomaDownloadedToast: 'High-resolution official diploma downloaded!',
+    parentBackupBtn: 'Backup profile (.json)',
+    parentDiagnosticFooter: (profileCount, isOfflineReady) =>
+      `MécanoKids 3D v1.1 · Lot A · ${profileCount} local profile(s) · ${isOfflineReady ? 'Offline Ready' : 'Offline Mode Active'} · 0% Ads / 0% Child Tracking`,
+    sessionCurtainTitle: 'The workshop is closing for today!',
+    sessionCurtainSubtitle: (profileName, completedCount) =>
+      `Great work ${profileName}! Your tools are neatly stored and your ${completedCount} completed machine(s) are safely saved for tomorrow.`,
+    sessionCurtainGraceBanner: (secondsLeft) =>
+      `Session wrapping up: ${secondsLeft}s remaining to snap the final parts onto this vehicle.`,
+    sessionCurtainParentExtendBtn: 'Parent Access (Extend or adjust)',
   },
 
   ar: {
@@ -1505,5 +2154,235 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     discoveryPreviousBestLabel: (prevTime, delta) => `الرقم السابق: ${prevTime} (${delta})`,
     openLeaderboardBtn: 'عرض لوحة أسرع الأزمان',
     retryTimedRunBtn: 'إعادة المحاولة ضد الساعة',
+    profilesNavBtn: 'الملفات',
+    profilesModalTitle: 'ملفات اللاعبين والقراءة الصوتية والوضع دون إنترنت',
+    profilesModalSubtitle:
+      'يحتفظ كل طفل بتقدمه وأوسمته الخاصة على هذا الجهاز، مع نطق صوتي بثلاث لغات وإمكانية تثبيت اللعبة بدون إنترنت.',
+    closeProfilesAria: 'إغلاق نافذة الملفات الشخصية',
+    profilesListTitle: (count, max) => `الملفات المحلية على هذا الجهاز (${count}/${max})`,
+    profileActiveTag: 'الملف النشط',
+    profileSwitchBtn: 'اختيار',
+    profileStatsLine: (completed, total, stars, badges) =>
+      `${completed}/${total} مركبة · ${stars} ★ · ${badges} أوسمة`,
+    profileNewBtn: 'ملف جديد',
+    profileMaxReached: (max) => `تم الوصول إلى الحد الأقصى (${max} ملفات محلية).`,
+    profileNameLabel: 'اسم البطل أو اللقب',
+    profileNamePlaceholder: 'مثال: آدم، سارة، فصل العلوم...',
+    profileColorLabel: 'لون الورشة',
+    profileIconLabel: 'الشعار الميكانيكي',
+    profileCreateSubmit: 'إنشاء وتفعيل هذا الملف',
+    profileEditBtn: 'تعديل الاسم',
+    profileSaveEditBtn: 'حفظ',
+    profileDeleteBtn: 'حذف',
+    profileConfirmDeleteBtn: 'تأكيد الحذف',
+    profileSwitchedToast: (name) => `مرحباً بك في ورشة «${name}»!`,
+    profileCreatedToast: (name) => `تم إنشاء وتفعيل ملف «${name}»!`,
+    profileDeletedToast: (name) => `تم حذف ملف «${name}».`,
+    voiceSectionTitle: 'القراءة الصوتية التعليمية (Web Speech)',
+    voiceSectionDesc:
+      'قراءة التلميحات الميكانيكية والجولة التعريفية وبطاقات الاكتشاف بصوت واضح بالعربية والفرنسية والإنجليزية بدون إنترنت.',
+    voiceAutoReadLabel: 'قراءة تلقائية لوظيفة القطع',
+    voiceAutoReadDesc:
+      'ينطق تلقائياً اسم القطعة ودورها الميكانيكي عند اختيارها أو تثبيتها في المركبة.',
+    voiceTestBtn: 'تجربة الصوت',
+    voiceTestSample:
+      'مرحباً أيها المهندس الصغير! هل أنت مستعد لتجميع مركبتك الميكانيكية القادمة ثلاثية الأبعاد؟',
+    voiceListenBtn: 'استماع',
+    voiceStopBtn: 'إيقاف',
+    voiceReadFullCardBtn: 'الاستماع للبطاقة كاملة',
+    voiceAutoToggleShort: 'قراءة تلقائية',
+    voiceAutoEnabledToast: 'تم تفعيل القراءة الصوتية التلقائية للقطع.',
+    voiceAutoDisabledToast: 'تم إيقاف القراءة الصوتية التلقائية.',
+    voiceUnsupportedLabel: 'القراءة الصوتية غير مدعومة في هذا المتصفح.',
+    pwaSectionTitle: 'تثبيت اللعبة للعمل بدون إنترنت (PWA)',
+    pwaSectionDesc:
+      'ثبّت ميكانو كيدز 3D على الشاشة الرئيسية أو سطح مكتب ويندوز للعب بملء الشاشة في أي وقت بدون اتصال بالإنترنت.',
+    pwaInstallBtn: 'تثبيت ميكانو كيدز 3D على هذا الجهاز',
+    pwaInstallShortBtn: 'تثبيت',
+    pwaInstalledLabel: 'التطبيق مثبّت · جاهز بدون إنترنت',
+    pwaOnlineReadyLabel: 'التخزين المؤقت جاهز · يعمل بدون شبكة',
+    pwaOfflineActiveBanner: 'وضع بدون إنترنت مفعّل — الحفظ المحلي مضمون',
+    pwaIosGuideTitle: 'التثبيت على آيفون أو آيباد (سفاري)',
+    pwaIosStep1: '1. اضغط على زر المشاركة (Share) في شريط أدوات سفاري.',
+    pwaIosStep2: '2. مرّر للأسفل واختر «إضافة إلى الشاشة الرئيسية».',
+    pwaCloseGuideBtn: 'حسناً',
+    testDriveBtn: 'اختبار 3D',
+    testDriveActiveBtn: 'إيقاف الاختبار',
+    testDriveStartedToast: (vehicleName) =>
+      `انطلق الاختبار الحركي ثلاثي الأبعاد لمركبة «${vehicleName}»!`,
+    testDriveStoppedToast: 'تم إيقاف الاختبار الحركي ثلاثي الأبعاد.',
+    xRayBtn: 'أشعة سينية',
+    xRayActiveBtn: 'أشعة مفعّلة',
+    xRayTitle: 'مقطع تقني شفاف لمشاهدة المحرك والهيكل والأجزاء الداخلية بوضوح',
+    xRayEnabledToast: 'تم تفعيل وضع الأشعة السينية: الهيكل الخارجي شفاف والأعضاء الداخلية واضحة.',
+    xRayDisabledToast: 'تم إيقاف وضع الأشعة السينية.',
+    envThematicBtn: 'منصة تفاعلية',
+    envStudioBtn: 'منصة استوديو',
+    envSwitchTitle: 'التبديل بين المنصة التفاعلية (مضمار، ميناء، مدرج، ورشة، منصة إطلاق) ومنصة الاستوديو',
+    envThematicToast: 'تم تفعيل بيئة المنصة التفاعلية ثلاثية الأبعاد.',
+    envStudioToast: 'تم تفعيل منصة الاستوديو الكلاسيكية.',
+    studioBtn: 'طلاء وتصوير',
+    studioModalTitle: 'غرفة الطلاء واستوديو البطاقة التذكارية 3D',
+    studioModalSubtitle:
+      'لوّن مركبتك بألوان الورشة المخصصة والتقط بطاقة تذكارية عالية الدقة لإنجازك.',
+    closeStudioAria: 'إغلاق غرفة الطلاء واستوديو التصوير',
+    studioPaintSectionTitle: 'غرفة الطلاء وتشطيبات الورشة',
+    studioPaintSectionDesc:
+      'اختر لون طلاء يُحفظ تلقائياً لهذه المركبة (مع احتفاظ القطع النادرة الذهبية عيار 24 قيراط ببريقها).',
+    liveryAppliedToast: (liveryLabel) => `تم تطبيق وحفظ طلاء «${liveryLabel}»!`,
+    studioPhotoSectionTitle: 'استوديو التصوير — بطاقة تذكارية 3D',
+    studioPhotoSectionDesc:
+      'التقط صورة فورية للمجسّم ثلاثي الأبعاد مع اسم ملفك ونجومك وأفضل زمن وحمّلها بصيغة PNG.',
+    capturePostcardBtn: 'التقاط البطاقة التذكارية 3D',
+    retakePostcardBtn: 'تحديث لقطة الكاميرا',
+    downloadPostcardBtn: 'تحميل صورة PNG',
+    postcardDownloadedToast: 'تم تحميل البطاقة التذكارية بصيغة PNG!',
+    garageNavBtn: 'معرضي 3D',
+    garageModalTitle: 'المعرض الشخصي — خزانتي ثلاثية الأبعاد',
+    garageModalSubtitle:
+      'تصفّح جميع مركباتك المكتملة بطلائها المخصص وبراءات الهندسة والقطع النادرة المطلية بالذهب.',
+    closeGarageAria: 'إغلاق المعرض الشخصي',
+    garageKpiVehicles: 'مركبات معروضة',
+    garageKpiPatents: 'براءات هندسية',
+    garageKpiRepairs: 'مهام إصلاح ناجحة',
+    garageKpiRareVault: 'قطع نادرة ذهب 24K',
+    garageTabVehicles: (count) => `مركباتي المكتملة (${count})`,
+    garageTabRareVault: (collected, total) => `خزانة النوادر الذهبية (${collected}/${total})`,
+    garageEmptyTitle: 'معرضك ينتظر مركبتك الأولى!',
+    garageEmptyDesc:
+      'أكمل تجميع أي مركبة على طاولة العمل لعرضها هنا وتلوينها وتشغيلها في اختبار حركي ثلاثي الأبعاد.',
+    garageLoadBtn: 'عرض على المنصة',
+    garageTestDriveBtn: 'اختبار حركي فوري',
+    garagePatentTag: 'براءة مهندس',
+    garageRepairedTag: (count) => `أُصلحت ${count}×`,
+    garageMasterTag: 'بدون طيف',
+    noSilhouetteBtn: 'بدون طيف',
+    noSilhouetteActiveBtn: 'وضع الخبير',
+    noSilhouetteTitle:
+      'صعوبة كبير المهندسين: إخفاء الأطياف الإرشادية لاستنتاج مواضع القطع بالمنطق الميكانيكي وحده',
+    noSilhouetteEnabledToast:
+      'تم تفعيل وضع الخبير بدون طيف إرشادي: استنتج موضع كل قطعة بدقة!',
+    noSilhouetteDisabledToast: 'تمت إعادة إظهار الأطياف الإرشادية ثلاثية الأبعاد.',
+    quizOpenBtn: 'اختبار البراءة',
+    quizPassedBtn: 'براءة مكتسبة',
+    quizModalTitle: (vehicleName) => `اختبار الهندسة السريع: ${vehicleName}`,
+    quizModalSubtitle:
+      'أجب عن 3 أسئلة حول ترتيب التركيب وطريقة العمل الحقيقية لنيل ختم «براءة مهندس» لهذه المركبة!',
+    closeQuizAria: 'إغلاق الاختبار الميكانيكي',
+    quizQuestionCounter: (current, total) => `السؤال ${current} من ${total}`,
+    quizNextQuestionBtn: 'السؤال التالي',
+    quizSeeResultsBtn: 'عرض النتيجة',
+    quizRetryBtn: 'إعادة الاختبار',
+    quizScoreTitle: (score, total) => `النتيجة: ${score} / ${total}`,
+    quizPatentEarnedTitle: 'مُنحت ختم «براءة مهندس»!',
+    quizPatentEarnedDesc: (vehicleName) =>
+      `أحسنت! لقد أتقنت البنية الهندسية وأسرار عمل «${vehicleName}».`,
+    quizAlmostTitle: 'اقتربت جداً! راجع التلميحات وحاول مجدداً',
+    quizAlmostDesc:
+      'احصل على إجابتين صحيحتين على الأقل من أصل 3 لنيل براءة المهندس الخاصة بهذه المركبة.',
+    diagnosticBtn: 'إصلاح الأعطال',
+    diagnosticActiveBanner: (faultyLeft, missingLeft) =>
+      faultyLeft > 0
+        ? `التشخيص: انقر على ${faultyLeft} قطعة برتقالية مفكوكة على المجسّم 3D لإزالتها، ثم ركّب ${missingLeft} قطع!`
+        : `الإصلاح: أعد تركيب القطع الـ ${missingLeft} المتبقية من طاولة العمل لاستعادة الجاهزية الكاملة!`,
+    diagnosticQuitBtn: 'إنهاء الإصلاح',
+    diagnosticStartedToast: (vehicleName, issues) =>
+      `مهمة تشخيص وإصلاح لمركبة «${vehicleName}»: ${issues} أعطال ميكانيكية بانتظارك!`,
+    diagnosticExtractedToast: (partName) =>
+      `✓ تم فك القطعة المختلّة «${partName}»! أعد تركيبها الآن بشكل سليم من الطاولة.`,
+    diagnosticClickFaultyHint: (partName) =>
+      `انقر أولاً على القطعة البرتقالية المفكوكة «${partName}» فوق المجسّم 3D لفكّها!`,
+    diagnosticCompletedToast: (vehicleName) =>
+      `نجح التشخيص والإصلاح! عادت «${vehicleName}» للعمل بنسبة 100%!`,
+    streakTopBarTitle: (days, activeToday) =>
+      activeToday
+        ? `السلسلة اليومية نشطة: ${days} أيام متتالية`
+        : days > 0
+          ? `سلسلة ${days} أيام بانتظارك اليوم لمواصلتها!`
+          : 'ابدأ سلسلتك اليومية في الورشة ثلاثية الأبعاد',
+    streakExtendedToast: (days) =>
+      `السلسلة اليومية: ${days} يوم متتالي من الإبداع في الورشة!`,
+    streakMilestoneUnlockedToast: (days, rewardLabel) =>
+      `إنجاز سلسلة ${days} أيام! تمت مكافأتك بـ: ${rewardLabel}`,
+    liveryLockedStreakHint: (days) =>
+      `حقق سلسلة تفاعل لمدة ${days} أيام متتالية لفتح هذا الطلاء الحصري!`,
+    streakModalTitle: 'السلسلة اليومية ومكافآت المثابرة',
+    streakModalSubtitle:
+      'ركّب القطع أو أصلح المركبات أو اجتز اختباراً كل يوم لإبقاء شعلة الورشة متقدة وربح مكافآت دائمة.',
+    closeStreakAria: 'إغلاق نافذة السلسلة اليومية',
+    streakStatusActiveToday: (days) =>
+      `شعلة اليوم متقدة! أنت في سلسلة مستمرة منذ ${days} أيام متتالية.`,
+    streakStatusKeepAliveToday: (days) =>
+      `سلسلتك البالغة ${days} أيام بانتظارك: ركّب قطعة اليوم لمواصلة التقدم!`,
+    streakStatusStartToday:
+      'ركّب أول قطعة على طاولة العمل اليوم لإشعال سلسلتك اليومية!',
+    streakCurrentLabel: 'السلسلة الحالية',
+    streakBestLabel: 'أفضل سلسلة',
+    streakDaysUnit: (days) => `${days} أيام`,
+    streakRecentWeekTitle: 'نشاط آخر 7 أيام في الورشة',
+    streakTodayTag: 'اليوم',
+    streakMilestonesTitle: 'جوائز ومكافآت الأيام المتتالية',
+    streakRewardUnlockedTag: 'مفتوح',
+    streakOpenPaintBoothBtn: 'فتح كابينة الطلاء',
+    parentsNavBtn: 'الأهل',
+    parentsTopBarTitle: 'مساحة أولياء الأمور والمعلمين (محمية بتحقق للبالغين)',
+    parentalGateTitle: 'تحقق البالغين — مساحة الأهل والمعلمين',
+    parentalGateSubtitle:
+      'لحماية تقدم الأطفال وإعدادات وقت الشاشة، يرجى كتابة ناتج المسألة التالية بالأرقام:',
+    parentalGateInputPlaceholder: 'اكتب الإجابة بالأرقام',
+    parentalGateVerifyBtn: 'فتح القفل',
+    parentalGateCancelBtn: 'العودة للورشة',
+    parentalGateNewChallengeBtn: 'سؤال آخر',
+    parentalGateIncorrectMsg: (attemptsLeft) =>
+      `إجابة غير صحيحة (تبقّت ${attemptsLeft} محاولات).`,
+    parentalGateCooldownMsg: (seconds) =>
+      `محاولات خاطئة متعددة. يرجى الانتظار ${seconds} ثانية قبل المحاولة مجدداً.`,
+    parentSpaceTitle: 'مساحة أولياء الأمور والمعلمين',
+    parentSpaceSubtitle:
+      'تقرير مهارات الهندسة STEM، ومؤقّت الجلسة اللطيف، والشهادات الرسمية القابلة للطباعة (يعمل 100% دون إنترنت وبدون جمع أي بيانات عن الطفل).',
+    closeParentSpaceAria: 'إغلاق مساحة أولياء الأمور',
+    parentProfileSelectLabel: 'ملف الطفل المعروض:',
+    parentSwitchActiveBtn: 'تفعيل على طاولة العمل',
+    parentTabStem: 'تقرير مهارات STEM',
+    parentTabTimer: 'المؤقّت اللطيف',
+    parentTabDiplomas: 'الشهادات والطباعة',
+    parentStemOverviewTitle: 'المهارات الهندسية والذهنية المكتسبة',
+    parentStemIndexLabel: 'المؤشر العام لإتقان مهارات STEM',
+    parentKpiCompleted: 'مركبات منجزة',
+    parentKpiPatents: 'براءات الاختبار',
+    parentKpiRepairs: 'أعطال أُصلحت',
+    parentKpiStreak: 'أفضل سلسلة يومية',
+    parentTimerSectionTitle: 'مؤقّت الورشة اللطيف لتنظيم وقت الشاشة',
+    parentTimerSectionDesc:
+      'حدّد المدة اليومية القصوى على هذا الجهاز بدون إغلاق مفاجئ: يُسمح للطفل بإتمام المركبة التي تجاوزت 50% بهدوء.',
+    parentTimerUnlimited: 'غير محدود',
+    parentTimerMinutesOption: (mins) => `${mins} دقيقة / يوم`,
+    parentTimerConsumedLabel: 'الوقت المستهلك اليوم',
+    parentTimerRemainingLabel: 'الوقت المتبقي اليوم',
+    parentTimerGraceRuleNote:
+      'مهلة إتمام التجميع مفعّلة: إذا تجاوز تركيب المركبة الحالية 50% عند انتهاء الوقت، تُمنح مهلة حتى 3 دقائق لتثبيت القطعة الأخيرة بدون إحباط.',
+    parentTimerExtend15Btn: '+15 دقيقة إضافية لليوم',
+    parentTimerResetTodayBtn: 'تصفير عدّاد اليوم',
+    parentTimerSavedToast: 'تم تحديث الحد اليومي لمؤقّت الجلسة.',
+    parentTimerExtendedToast: 'تمت إضافة 15 دقيقة إضافية لليوم.',
+    parentDiplomasSectionTitle: 'الشهادات والدبلومات الرسمية القابلة للطباعة',
+    parentDiplomasSectionDesc:
+      'حمّل شهادة عالية الدقة بحجم A4 أفقي (PNG) أو اطبع دبلوم الهندسة الرسمي باسم طفلك.',
+    parentDiplomaUnlockedStatus: 'مكتسبة',
+    parentDiplomaLockedStatus: (needed) => `عند ${needed} مركبة`,
+    parentDiplomaEmptyHint:
+      'أكمل تجميع أول مركبة على طاولة العمل لفتح شهادة التمهيد الهندسي باسم الطفل!',
+    parentDiplomaDownloadBtn: 'تحميل الشهادة (PNG A4)',
+    parentDiplomaPrintBtn: 'طباعة الشهادة',
+    parentDiplomaDownloadedToast: 'تم تحميل الشهادة الرسمية عالية الدقة!',
+    parentBackupBtn: 'نسخ احتياطي للملف (.json)',
+    parentDiagnosticFooter: (profileCount, isOfflineReady) =>
+      `ميكانو كيدز 3D الإصدار 1.1 · الحزمة A · ${profileCount} ملفات محلية · ${isOfflineReady ? 'جاهز دون إنترنت' : 'وضع دون إنترنت نشط'} · 0% إعلانات / 0% تتبع للأطفال`,
+    sessionCurtainTitle: 'أغلقت الورشة أبوابها لهذا اليوم!',
+    sessionCurtainSubtitle: (profileName, completedCount) =>
+      `أحسنت يا ${profileName}! أُعيدت الأدوات إلى مكانها وحُفظت مركباتك الـ ${completedCount} بأمان للغد.`,
+    sessionCurtainGraceBanner: (secondsLeft) =>
+      `شارفت الجلسة على الانتهاء: لديك ${secondsLeft} ثانية لتثبيت القطع الأخيرة في هذه المركبة.`,
+    sessionCurtainParentExtendBtn: 'دخول ولي الأمر (تمديد أو تعديل)',
   },
 };

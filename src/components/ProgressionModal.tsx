@@ -8,6 +8,7 @@ import {
   Car,
   CheckCircle2,
   Compass,
+  Flame,
   Gem,
   Hammer,
   Lock,
@@ -52,6 +53,8 @@ export function renderBadgeIcon(icon: BadgeIconKind, className = 'w-5 h-5'): Rea
       return <Rocket className={className} />;
     case BadgeIconKind.CALENDAR:
       return <Calendar className={className} />;
+    case BadgeIconKind.FLAME:
+      return <Flame className={className} />;
     case BadgeIconKind.GEM:
       return <Gem className={className} />;
     case BadgeIconKind.TIMER:

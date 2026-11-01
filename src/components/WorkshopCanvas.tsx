@@ -2,22 +2,33 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { applyLiveryToPartSpec } from '../data/liveries';
 import {
   CameraPreset,
   LanguageCode,
+  LiveryPresetId,
   PartAnimationKind,
   PartSpec,
   VehicleBlueprint,
   VehicleCategory,
   VisualStyleMode,
+  WorkbenchEnvironmentMode,
 } from '../types/game';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
+  createDiagnosticFaultMaterial,
   createGuideGhostMaterial,
   createRadialShadowTexture,
+  createThematicTurntableTexture,
   createTurntableTexture,
+  createXRayCutawayMaterial,
 } from '../three/materials';
 import { buildPartMeshGroup } from '../three/partGeometries';
+import {
+  buildThematicEnvironment,
+  isOuterShellPartForXRay,
+  ThematicSceneArtifacts,
+} from '../three/thematicEnvironment';
 import { soundEngine } from '../audio/soundEngine';
 
 // Pre-allocated math helpers at module scope (zero GC in render loop)
@@ -32,7 +43,10 @@ const _sparkDummy = new THREE.Object3D();
 
 const SPARK_COUNT = 28;
 
-const CAMERA_PRESET_VECTORS: Record<CameraPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
+const CAMERA_PRESET_VECTORS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
   [CameraPreset.ISO]: { pos: [4.4, 3.2, 4.9], target: [0, 0.9, 0] },
   [CameraPreset.FRONT]: { pos: [0, 1.9, 6.2], target: [0, 0.9, 0] },
   [CameraPreset.SIDE]: { pos: [6.2, 1.9, 0], target: [0, 0.9, 0] },
@@ -52,6 +66,14 @@ interface WorkshopCanvasProps {
   blueprint: VehicleBlueprint;
   placedPartIds: string[];
   visualStyle: VisualStyleMode;
+  liveryPreset: LiveryPresetId;
+  environmentMode: WorkbenchEnvironmentMode;
+  xRayMode: boolean;
+  testDriveActive: boolean;
+  noSilhouetteMode: boolean;
+  faultyPartIds: string[];
+  onExtractFaultyPart?: (partId: string) => void;
+  onRegisterSnapshotCapture?: (fn: (() => string | null) | null) => void;
   explodedFactor: number;
   cameraPreset: CameraPreset;
   cameraPresetNonce: number;
@@ -91,6 +113,14 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
   blueprint,
   placedPartIds,
   visualStyle,
+  liveryPreset,
+  environmentMode,
+  xRayMode,
+  testDriveActive,
+  noSilhouetteMode,
+  faultyPartIds,
+  onExtractFaultyPart,
+  onRegisterSnapshotCapture,
   explodedFactor,
   cameraPreset,
   cameraPresetNonce,
@@ -112,6 +142,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     blueprint,
     placedPartIds,
     visualStyle,
+    liveryPreset,
+    environmentMode,
+    xRayMode,
+    testDriveActive,
+    noSilhouetteMode,
+    faultyPartIds,
+    onExtractFaultyPart,
     explodedFactor,
     activeDragPartId,
     stagedPartId,
@@ -128,6 +165,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       blueprint,
       placedPartIds,
       visualStyle,
+      liveryPreset,
+      environmentMode,
+      xRayMode,
+      testDriveActive,
+      noSilhouetteMode,
+      faultyPartIds,
+      onExtractFaultyPart,
       explodedFactor,
       activeDragPartId,
       stagedPartId,
@@ -142,6 +186,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     blueprint,
     placedPartIds,
     visualStyle,
+    liveryPreset,
+    environmentMode,
+    xRayMode,
+    testDriveActive,
+    noSilhouetteMode,
+    faultyPartIds,
+    onExtractFaultyPart,
     explodedFactor,
     activeDragPartId,
     stagedPartId,
@@ -160,12 +211,16 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     controls: OrbitControls;
     turntableGroup: THREE.Group;
     turntableTopMesh: THREE.Mesh;
+    thematicContainer: THREE.Group;
+    thematicArtifacts: ThematicSceneArtifacts | null;
     assembledGroup: THREE.Group;
+    faultyGroup: THREE.Group;
     silhouettesGroup: THREE.Group;
     dragContainer: THREE.Group;
     sparksMesh: THREE.InstancedMesh;
     sparks: SparkParticle[];
     placedPartEntries: Map<string, { group: THREE.Group; spec: PartSpec; popScale: number }>;
+    faultyPartEntries: Map<string, { group: THREE.Group; spec: PartSpec; baseY: number }>;
     silhouetteEntries: Map<string, { group: THREE.Group; spec: PartSpec; stateKey: string }>;
     draggedMesh: { partId: string; group: THREE.Group; spec: PartSpec; magnetized: boolean } | null;
     cameraTransition: { active: boolean; pos: THREE.Vector3; target: THREE.Vector3 };
@@ -316,9 +371,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     contactShadow.position.y = 0.024;
     turntableGroup.add(contactShadow);
 
+    const thematicContainer = new THREE.Group();
     const assembledGroup = new THREE.Group();
+    const faultyGroup = new THREE.Group();
     const silhouettesGroup = new THREE.Group();
+    turntableGroup.add(thematicContainer);
     turntableGroup.add(assembledGroup);
+    turntableGroup.add(faultyGroup);
     turntableGroup.add(silhouettesGroup);
 
     const dragContainer = new THREE.Group();
@@ -386,12 +445,16 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       controls,
       turntableGroup,
       turntableTopMesh,
+      thematicContainer,
+      thematicArtifacts: null,
       assembledGroup,
+      faultyGroup,
       silhouettesGroup,
       dragContainer,
       sparksMesh,
       sparks,
       placedPartEntries: new Map(),
+      faultyPartEntries: new Map(),
       silhouetteEntries: new Map(),
       draggedMesh: null,
       cameraTransition,
@@ -399,6 +462,20 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       maxAnisotropy,
       triggerSparks,
     };
+
+    // Expose synchronous WebGL capture callback (must call renderer.render right before toDataURL!)
+    if (onRegisterSnapshotCapture) {
+      onRegisterSnapshotCapture(() => {
+        const engNow = engineRef.current;
+        if (!engNow) return null;
+        try {
+          engNow.renderer.render(engNow.scene, engNow.camera);
+          return engNow.renderer.domElement.toDataURL('image/png');
+        } catch {
+          return null;
+        }
+      });
+    }
 
     if (!isSoftwareGl) {
       renderer.compile(scene, camera);
@@ -473,11 +550,67 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
         const isCompleted =
           currentProps.placedPartIds.length === currentProps.blueprint.parts.length &&
-          currentProps.blueprint.parts.length > 0;
+          currentProps.blueprint.parts.length > 0 &&
+          currentProps.faultyPartIds.length === 0;
 
-        // Celebrate completed vehicle with gentle turntable rotation & mechanical animations
-        if (isCompleted && !eng.draggedMesh) {
+        const isTestDrive = isCompleted && currentProps.testDriveActive && !eng.draggedMesh;
+
+        if (eng.thematicArtifacts) {
+          eng.thematicArtifacts.testDriveFxGroup.visible = isTestDrive;
+        }
+
+        if (isTestDrive) {
+          // Axe 1.1: Dynamic 3D Test Drive choreography per mechanical family!
+          eng.turntableGroup.rotation.y += dt * 0.24;
+          const cat = currentProps.blueprint.category;
+
+          if (cat === VehicleCategory.CAR || cat === VehicleCategory.CONSTRUCTION) {
+            // Road / track sprint: high-frequency suspension micro-bounce & slight forward pitch
+            eng.assembledGroup.position.y = 0.015 + Math.abs(Math.sin(elapsed * 18.0)) * 0.016;
+            eng.assembledGroup.rotation.x = Math.sin(elapsed * 9.0) * 0.015 - 0.02;
+            eng.assembledGroup.rotation.z = Math.sin(elapsed * 4.5) * 0.018;
+          } else if (cat === VehicleCategory.BOAT) {
+            // Oceanic swell: pitching & rolling across 3D waves
+            eng.assembledGroup.position.y = 0.055 + Math.sin(elapsed * 2.8) * 0.055;
+            eng.assembledGroup.rotation.x = Math.sin(elapsed * 2.3) * 0.068;
+            eng.assembledGroup.rotation.z = Math.cos(elapsed * 1.9) * 0.058;
+          } else if (cat === VehicleCategory.PLANE) {
+            // Banked hover flight & climb
+            eng.assembledGroup.position.y = 0.32 + Math.sin(elapsed * 2.4) * 0.075;
+            eng.assembledGroup.rotation.x = -0.055 + Math.sin(elapsed * 1.8) * 0.035;
+            eng.assembledGroup.rotation.z = Math.sin(elapsed * 1.5) * 0.11;
+          } else {
+            // SPACE: Orbital liftoff hover above plasma plume!
+            eng.assembledGroup.position.y = 0.44 + Math.sin(elapsed * 3.2) * 0.06;
+            eng.assembledGroup.rotation.x = Math.sin(elapsed * 2.1) * 0.025;
+            eng.assembledGroup.rotation.z = Math.cos(elapsed * 1.7) * 0.028;
+          }
+
+          // Animate dynamic Test-Drive FX meshes (zero GC)
+          if (eng.thematicArtifacts) {
+            const fx = eng.thematicArtifacts.animatedMeshes;
+            for (let i = 0; i < fx.roadStripes.length; i++) {
+              const dash = fx.roadStripes[i];
+              const baseZ = (dash.userData.baseZ as number) ?? 0;
+              const scrolled = ((baseZ - elapsed * 4.2 + 2.2) % 4.4 + 4.4) % 4.4 - 2.2;
+              dash.position.z = scrolled;
+            }
+            for (let i = 0; i < fx.waterRings.length; i++) {
+              const ring = fx.waterRings[i];
+              const phase = (ring.userData.phase as number) ?? 0;
+              const pulse = 1 + Math.sin(elapsed * 3.4 + phase) * 0.09;
+              ring.scale.set(pulse, pulse, 1);
+            }
+            for (let i = 0; i < fx.thrusterFlames.length; i++) {
+              const flame = fx.thrusterFlames[i];
+              const flicker = 0.86 + Math.sin(elapsed * 32.0 + i * 2.1) * 0.18;
+              flame.scale.set(1, flicker, 1);
+            }
+          }
+        } else if (isCompleted && !eng.draggedMesh) {
+          // Gentle showcase rotation when completed (idle)
           eng.turntableGroup.rotation.y += dt * 0.42;
+          eng.assembledGroup.rotation.x = THREE.MathUtils.damp(eng.assembledGroup.rotation.x, 0, 8, dt);
           if (currentProps.blueprint.category === VehicleCategory.BOAT) {
             eng.assembledGroup.position.y = Math.sin(elapsed * 2.4) * 0.04;
             eng.assembledGroup.rotation.z = Math.sin(elapsed * 1.8) * 0.035;
@@ -492,14 +625,17 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
             eng.assembledGroup.rotation.z = THREE.MathUtils.damp(eng.assembledGroup.rotation.z, 0, 8, dt);
           }
         } else {
-          // Smoothly align turntable back to 0 during active assembly so coordinates match silhouettes cleanly
+          // Smoothly align turntable back to 0 during active assembly or Diagnostic repair
           eng.turntableGroup.rotation.y = THREE.MathUtils.damp(eng.turntableGroup.rotation.y, 0, 7, dt);
           eng.assembledGroup.position.y = THREE.MathUtils.damp(eng.assembledGroup.position.y, 0, 8, dt);
+          eng.assembledGroup.rotation.x = THREE.MathUtils.damp(eng.assembledGroup.rotation.x, 0, 8, dt);
           eng.assembledGroup.rotation.z = THREE.MathUtils.damp(eng.assembledGroup.rotation.z, 0, 8, dt);
         }
 
         // Update placed parts (spring pop + exploded view damping + mechanical animation)
         const exp = currentProps.explodedFactor;
+        const speedBoost = isTestDrive ? 2.65 : 1.0;
+
         eng.placedPartEntries.forEach((entry) => {
           const { group, spec } = entry;
           const tx = spec.targetPos[0] + spec.explodeOffset[0] * exp;
@@ -515,15 +651,22 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
           if (isCompleted && spec.animation) {
             if (spec.animation === PartAnimationKind.SPIN_X) {
-              group.rotation.x += dt * 7.5;
+              group.rotation.x += dt * 7.5 * speedBoost;
             } else if (spec.animation === PartAnimationKind.SPIN_Y) {
-              group.rotation.y += dt * 9.5;
+              group.rotation.y += dt * 9.5 * speedBoost;
             } else if (spec.animation === PartAnimationKind.SPIN_Z) {
-              group.rotation.z += dt * 13.0;
+              group.rotation.z += dt * 13.0 * speedBoost;
             } else if (spec.animation === PartAnimationKind.SWAY_Y) {
-              group.rotation.y = Math.sin(elapsed * 2.0) * 0.22;
+              group.rotation.y = Math.sin(elapsed * (isTestDrive ? 3.8 : 2.0)) * (isTestDrive ? 0.34 : 0.22);
             }
+          } else if (isTestDrive && spec.id.includes('axle')) {
+            group.rotation.x += dt * 11.0;
           }
+        });
+
+        // Subtle looseness oscillation on Diagnostic faulty parts so they look mechanically unfastened
+        eng.faultyPartEntries.forEach((entry) => {
+          entry.group.position.y = entry.baseY + Math.sin(elapsed * 4.2) * 0.025;
         });
 
         // Gentle hover float on staged (clicked) part when not actively pointer-dragging
@@ -568,6 +711,9 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
     return () => {
       unmounted = true;
+      if (onRegisterSnapshotCapture) {
+        onRegisterSnapshotCapture(null);
+      }
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
       resizeObserver.disconnect();
@@ -581,7 +727,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       }
       engineRef.current = null;
     };
-  }, []);
+  }, [onRegisterSnapshotCapture]);
 
   // 2. Camera Preset Transitions
   useEffect(() => {
@@ -593,15 +739,35 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     eng.cameraTransition.active = true;
   }, [cameraPreset, cameraPresetNonce]);
 
-  // 3. Rebuild Turntable Surface & Placed / Silhouette Meshes when Blueprint, Style, Placed Parts, or Hint change
+  // 2b. Rebuild Thematic Turntable Surface, Perimeter Props & Test-Drive FX when Category, Environment Mode, or Visual Style changes
   useEffect(() => {
     const eng = engineRef.current;
     if (!eng) return;
 
-    // Update turntable texture for the selected visual style
     const topMat = eng.turntableTopMesh.material as THREE.MeshStandardMaterial;
-    topMat.map = createTurntableTexture(visualStyle, eng.maxAnisotropy);
+    topMat.map =
+      environmentMode === 'auto_thematic'
+        ? createThematicTurntableTexture(blueprint.category, eng.maxAnisotropy)
+        : createTurntableTexture(visualStyle, eng.maxAnisotropy);
     topMat.needsUpdate = true;
+
+    disposeObject3D(eng.thematicContainer);
+    eng.thematicContainer.clear();
+
+    const artifacts = buildThematicEnvironment(
+      blueprint.category,
+      environmentMode === 'auto_thematic',
+    );
+    artifacts.testDriveFxGroup.visible = false;
+    eng.thematicContainer.add(artifacts.propsGroup);
+    eng.thematicContainer.add(artifacts.testDriveFxGroup);
+    eng.thematicArtifacts = artifacts;
+  }, [blueprint.category, environmentMode, visualStyle]);
+
+  // 3. Rebuild Placed, Diagnostic Faulty & Silhouette Meshes when Blueprint, Style, Livery, X-Ray, No-Silhouette, Placed/Faulty Parts, or Hint change
+  useEffect(() => {
+    const eng = engineRef.current;
+    if (!eng) return;
 
     // Rebuild Placed Meshes cleanly (preserving pop animation for newly snapped part)
     const prevIds = new Set(eng.placedPartEntries.keys());
@@ -610,34 +776,87 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     eng.placedPartEntries.clear();
 
     const placedSet = new Set(placedPartIds);
+    const faultySet = new Set(faultyPartIds);
 
-    for (const partSpec of blueprint.parts) {
-      if (placedSet.has(partSpec.id)) {
+    for (const rawSpec of blueprint.parts) {
+      if (placedSet.has(rawSpec.id)) {
+        const tintedSpec = applyLiveryToPartSpec(rawSpec, liveryPreset);
+        const isCutawayShell =
+          xRayMode && isOuterShellPartForXRay(tintedSpec, blueprint.parts);
+        const cutawayOverride = isCutawayShell
+          ? createXRayCutawayMaterial(tintedSpec.primaryColor)
+          : undefined;
+
         const meshGroup = buildPartMeshGroup(
-          partSpec,
+          tintedSpec,
           visualStyle,
           eng.isSoftwareGl,
           eng.maxAnisotropy,
+          cutawayOverride,
         );
-        const isNewlyAdded = !prevIds.has(partSpec.id) && placedPartIds[placedPartIds.length - 1] === partSpec.id;
+        if (isCutawayShell) {
+          meshGroup.traverse((ch) => {
+            if ((ch as THREE.Mesh).isMesh) {
+              ch.renderOrder = 3;
+            }
+          });
+        }
+
+        const isNewlyAdded =
+          !prevIds.has(rawSpec.id) &&
+          placedPartIds[placedPartIds.length - 1] === rawSpec.id;
         meshGroup.position.set(
-          partSpec.targetPos[0] + partSpec.explodeOffset[0] * explodedFactor,
-          partSpec.targetPos[1] + partSpec.explodeOffset[1] * explodedFactor,
-          partSpec.targetPos[2] + partSpec.explodeOffset[2] * explodedFactor,
+          rawSpec.targetPos[0] + rawSpec.explodeOffset[0] * explodedFactor,
+          rawSpec.targetPos[1] + rawSpec.explodeOffset[1] * explodedFactor,
+          rawSpec.targetPos[2] + rawSpec.explodeOffset[2] * explodedFactor,
         );
         const startScale = isNewlyAdded ? 1.2 : 1.0;
         meshGroup.scale.setScalar(startScale);
         eng.assembledGroup.add(meshGroup);
-        eng.placedPartEntries.set(partSpec.id, {
+        eng.placedPartEntries.set(rawSpec.id, {
           group: meshGroup,
-          spec: partSpec,
+          spec: tintedSpec,
           popScale: startScale,
         });
 
         if (isNewlyAdded) {
-          eng.triggerSparks(partSpec.targetPos);
+          eng.triggerSparks(rawSpec.targetPos);
         }
       }
+    }
+
+    // Rebuild Faulty / Misaligned Parts for Diagnostic & Repair Mode
+    disposeObject3D(eng.faultyGroup);
+    eng.faultyGroup.clear();
+    eng.faultyPartEntries.clear();
+
+    for (let idx = 0; idx < blueprint.parts.length; idx++) {
+      const partSpec = blueprint.parts[idx];
+      if (!faultySet.has(partSpec.id) || placedSet.has(partSpec.id)) continue;
+
+      const faultMat = createDiagnosticFaultMaterial();
+      const faultMeshGroup = buildPartMeshGroup(
+        partSpec,
+        visualStyle,
+        eng.isSoftwareGl,
+        eng.maxAnisotropy,
+        faultMat,
+      );
+      const sideSign = idx % 2 === 0 ? 1 : -1;
+      const baseY = partSpec.targetPos[1] + 0.16;
+      faultMeshGroup.position.set(
+        partSpec.targetPos[0] + sideSign * 0.14,
+        baseY,
+        partSpec.targetPos[2] + 0.08,
+      );
+      faultMeshGroup.rotation.set(0.18 * sideSign, 0.24, -0.2 * sideSign);
+      faultMeshGroup.userData = { faultyPartId: partSpec.id };
+      eng.faultyGroup.add(faultMeshGroup);
+      eng.faultyPartEntries.set(partSpec.id, {
+        group: faultMeshGroup,
+        spec: partSpec,
+        baseY,
+      });
     }
 
     // Rebuild Guide Silhouettes for Remaining Parts
@@ -646,27 +865,29 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     eng.silhouetteEntries.clear();
 
     for (const partSpec of blueprint.parts) {
-      if (placedSet.has(partSpec.id)) continue;
+      // Do not show a blue guide silhouette on a slot currently occupied by a faulty orange part
+      if (placedSet.has(partSpec.id) || faultySet.has(partSpec.id)) continue;
 
       const depsMet = partSpec.dependsOn.every((depId) => placedSet.has(depId));
+      const isHinted = hintPartId === partSpec.id;
       const isFocusedPart =
-        hintPartId === partSpec.id ||
+        isHinted ||
         activeDragPartId === partSpec.id ||
         stagedPartId === partSpec.id;
 
-      // Progressive spatial difficulty across Tiers 1 -> 5:
-      // - Tiers 1 & 2: show all silhouettes (ready + locked)
-      // - Tiers 3 & 4: show only ready silhouettes (dependencies met) or focused part
-      // - Tier 5 (Master): show silhouette when part is picked up/staged/hinted (or initial base anchor)
-      if ((blueprint.tier === 3 || blueprint.tier === 4) && !depsMet && !isFocusedPart) {
-        continue;
-      }
-      if (blueprint.tier >= 5 && !isFocusedPart && !(placedSet.size === 0 && depsMet)) {
-        continue;
+      // Axe 3.1: Master Silhouette-Free Mode ("Mode Maître Sans Silhouette")
+      // Hides all guide silhouettes unless explicitly hinted via Mechanical Guide (or turned visible during close-range magnetic snap)
+      if (!noSilhouetteMode) {
+        if ((blueprint.tier === 3 || blueprint.tier === 4) && !depsMet && !isFocusedPart) {
+          continue;
+        }
+        if (blueprint.tier >= 5 && !isFocusedPart && !(placedSet.size === 0 && depsMet)) {
+          continue;
+        }
       }
 
       const stateKey: 'ready' | 'locked' | 'hint' =
-        hintPartId === partSpec.id || stagedPartId === partSpec.id
+        isHinted || (!noSilhouetteMode && stagedPartId === partSpec.id)
           ? 'hint'
           : depsMet
             ? 'ready'
@@ -685,6 +906,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         partSpec.targetPos[1],
         partSpec.targetPos[2],
       );
+      // In Master No-Silhouette Mode, keep silhouette invisible until close-range magnet snap (or explicit hint)
+      ghostGroup.visible = !noSilhouetteMode || isHinted;
       ghostGroup.userData = { silhouettePartId: partSpec.id, depsMet };
       eng.silhouettesGroup.add(ghostGroup);
       eng.silhouetteEntries.set(partSpec.id, {
@@ -693,7 +916,18 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         stateKey,
       });
     }
-  }, [blueprint, placedPartIds, visualStyle, hintPartId, stagedPartId, activeDragPartId]);
+  }, [
+    blueprint,
+    placedPartIds,
+    faultyPartIds,
+    visualStyle,
+    liveryPreset,
+    xRayMode,
+    noSilhouetteMode,
+    hintPartId,
+    stagedPartId,
+    activeDragPartId,
+  ]);
 
   // 4. Manage Staged / Dragged Floating 3D Part & Pointer Projection
   useEffect(() => {
@@ -715,11 +949,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       return;
     }
 
-    const spec = blueprint.parts.find((p) => p.id === activeId);
-    if (!spec) return;
+    const rawSpec = blueprint.parts.find((p) => p.id === activeId);
+    if (!rawSpec) return;
+
+    const tintedSpec = applyLiveryToPartSpec(rawSpec, liveryPreset);
 
     const dragGroup = buildPartMeshGroup(
-      spec,
+      tintedSpec,
       visualStyle,
       eng.isSoftwareGl,
       eng.maxAnisotropy,
@@ -728,18 +964,18 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     dragGroup.position.set(-1.55, 1.65, 1.45);
     eng.dragContainer.add(dragGroup);
     eng.draggedMesh = {
-      partId: spec.id,
+      partId: rawSpec.id,
       group: dragGroup,
-      spec,
+      spec: tintedSpec,
       magnetized: false,
     };
 
     if (activeDragPartId) {
       eng.controls.enabled = false;
     }
-  }, [activeDragPartId, stagedPartId, blueprint, visualStyle]);
+  }, [activeDragPartId, stagedPartId, blueprint, visualStyle, liveryPreset]);
 
-  // 5. Global Pointer Drag & Click-to-Snap Handlers
+  // 5. Global Pointer Drag, Diagnostic Click-to-Extract & Click-to-Snap Handlers
   useEffect(() => {
     const eng = engineRef.current;
     if (!eng) return;
@@ -768,19 +1004,21 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         _intersectPt.y = Math.max(0.22, _intersectPt.y);
 
         const placedSet = new Set(currentProps.placedPartIds);
+        const occupiedByFaulty = currentProps.faultyPartIds.includes(spec.id);
         const missingDeps = spec.dependsOn.filter((d) => !placedSet.has(d));
         const dist = _intersectPt.distanceTo(_targetVec);
         const withinSnap = dist <= spec.snapRadius;
 
         const silEntry = engine.silhouetteEntries.get(spec.id);
 
-        if (withinSnap && missingDeps.length === 0) {
+        if (withinSnap && missingDeps.length === 0 && !occupiedByFaulty) {
           // Magnetic pull into exact target position!
           engine.draggedMesh.group.position.lerp(_targetVec, 0.58);
           if (!engine.draggedMesh.magnetized) {
             engine.draggedMesh.magnetized = true;
             soundEngine.playMagnetHover();
             if (silEntry) {
+              silEntry.group.visible = true;
               const magMat = createGuideGhostMaterial('magnet');
               silEntry.group.traverse((ch) => {
                 if ((ch as THREE.Mesh).isMesh) (ch as THREE.Mesh).material = magMat;
@@ -803,6 +1041,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           if (engine.draggedMesh.magnetized) {
             engine.draggedMesh.magnetized = false;
             if (silEntry) {
+              silEntry.group.visible =
+                !currentProps.noSilhouetteMode || currentProps.hintPartId === spec.id;
               const resetMat = createGuideGhostMaterial(missingDeps.length === 0 ? 'ready' : 'locked');
               silEntry.group.traverse((ch) => {
                 if ((ch as THREE.Mesh).isMesh) (ch as THREE.Mesh).material = resetMat;
@@ -810,7 +1050,15 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
             }
           }
 
-          if (withinSnap && missingDeps.length > 0) {
+          if (withinSnap && occupiedByFaulty) {
+            setDragHud({
+              partName: spec.name,
+              status: 'locked',
+              message: t.diagnosticClickFaultyHint(spec.name),
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top - 48,
+            });
+          } else if (withinSnap && missingDeps.length > 0) {
             const firstMissingName =
               currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? '';
             setDragHud({
@@ -841,11 +1089,15 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       const t = UI_TRANSLATIONS[currentProps.language];
       const spec = engine.draggedMesh.spec;
       const placedSet = new Set(currentProps.placedPartIds);
+      const occupiedByFaulty = currentProps.faultyPartIds.includes(spec.id);
       const missingDeps = spec.dependsOn.filter((d) => !placedSet.has(d));
 
-      if (engine.draggedMesh.magnetized && missingDeps.length === 0) {
+      if (engine.draggedMesh.magnetized && missingDeps.length === 0 && !occupiedByFaulty) {
         soundEngine.playSnapSuccess(currentProps.visualStyle);
         currentProps.onPartSnapped(spec.id);
+      } else if (occupiedByFaulty) {
+        soundEngine.playGentleBounce();
+        currentProps.onPartDropRejected(t.diagnosticClickFaultyHint(spec.name));
       } else if (missingDeps.length > 0) {
         const firstMissingName =
           currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? '';
@@ -862,17 +1114,34 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       currentProps.onDragEndSignal();
     };
 
-    // Also allow clicking directly on the target 3D silhouette when a part is staged!
+    // Click handler: supports Diagnostic faulty part extraction AND click-to-snap on target silhouette!
     const handleCanvasClick = (e: MouseEvent) => {
       const currentProps = propsRef.current;
       const engine = engineRef.current;
-      if (!engine || !currentProps.stagedPartId || currentProps.activeDragPartId) return;
+      if (!engine || currentProps.activeDragPartId) return;
 
       const rect = engine.renderer.domElement.getBoundingClientRect();
       _mouseNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       _mouseNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
       raycaster.setFromCamera(_mouseNDC, engine.camera);
+
+      // 1. Check if clicking a faulty/misaligned orange part in Diagnostic & Repair Mode
+      if (currentProps.faultyPartIds.length > 0 && currentProps.onExtractFaultyPart) {
+        for (const [fId, fEntry] of engine.faultyPartEntries.entries()) {
+          const fHits = raycaster.intersectObject(fEntry.group, true);
+          if (fHits.length > 0) {
+            soundEngine.playDiagnosticExtract();
+            engine.triggerSparks(fEntry.spec.targetPos);
+            currentProps.onExtractFaultyPart(fId);
+            return;
+          }
+        }
+      }
+
+      // 2. Check if clicking target silhouette when a part is staged (and silhouettes are allowed)
+      if (!currentProps.stagedPartId || currentProps.noSilhouetteMode) return;
+
       const silEntry = engine.silhouetteEntries.get(currentProps.stagedPartId);
       if (!silEntry) return;
 
@@ -898,7 +1167,12 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     const handleCanvasPointerDown = (e: PointerEvent) => {
       const currentProps = propsRef.current;
       const engine = engineRef.current;
-      if (!engine || !currentProps.stagedPartId || currentProps.activeDragPartId || !engine.draggedMesh) {
+      if (
+        !engine ||
+        !currentProps.stagedPartId ||
+        currentProps.activeDragPartId ||
+        !engine.draggedMesh
+      ) {
         return;
       }
 

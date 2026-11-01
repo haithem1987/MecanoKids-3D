@@ -1,7 +1,8 @@
 import React from 'react';
-import { Check, Lightbulb, Lock, Wrench, X } from 'lucide-react';
+import { Check, Lightbulb, Lock, Square, Volume2, Wrench, X } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { LanguageCode, PartSpec, VehicleBlueprint } from '../types/game';
+import { useSpeech } from '../utils/speech';
 
 interface MechanicHintDrawerProps {
   isOpen: boolean;
@@ -11,6 +12,8 @@ interface MechanicHintDrawerProps {
   placedPartIds: string[];
   hintPartId: string | null;
   onHighlightHintPart: (partId: string | null) => void;
+  voiceAutoRead: boolean;
+  onToggleVoiceAutoRead: () => void;
 }
 
 export const MechanicHintDrawer: React.FC<MechanicHintDrawerProps> = ({
@@ -21,7 +24,11 @@ export const MechanicHintDrawer: React.FC<MechanicHintDrawerProps> = ({
   placedPartIds,
   hintPartId,
   onHighlightHintPart,
+  voiceAutoRead,
+  onToggleVoiceAutoRead,
 }) => {
+  const { isSupported: speechSupported, isSpeaking, activeId, toggle: toggleSpeech } = useSpeech();
+
   if (!isOpen) return null;
 
   const t = UI_TRANSLATIONS[language];
@@ -50,45 +57,91 @@ export const MechanicHintDrawer: React.FC<MechanicHintDrawerProps> = ({
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 px-4 py-3.5 bg-slate-50 border-b border-slate-200">
-        <div className="flex items-center gap-2.5">
+      <div className="flex items-center justify-between gap-2 px-4 py-3.5 bg-slate-50 border-b border-slate-200">
+        <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0">
             <Wrench className="w-4 h-4" />
           </div>
-          <div>
-            <h2 className="font-display text-base font-bold text-slate-900">
+          <div className="min-w-0">
+            <h2 className="font-display text-base font-bold text-slate-900 truncate">
               {t.mechanicTitle}
             </h2>
-            <p className="text-xs text-slate-500">{t.mechanicSubtitle}</p>
+            <p className="text-xs text-slate-500 truncate">{t.mechanicSubtitle}</p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={t.closeMechanicAria}
-          className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {speechSupported && (
+            <button
+              type="button"
+              onClick={onToggleVoiceAutoRead}
+              title={t.voiceAutoReadDesc}
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap cursor-pointer ${
+                voiceAutoRead
+                  ? 'bg-sky-50 border-sky-300 text-sky-900'
+                  : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Volume2 className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.voiceAutoToggleShort}</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t.closeMechanicAria}
+            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Next Recommended Part Highlight Card */}
       <div className="p-4 bg-amber-50/70 border-b border-amber-200/80 space-y-3">
         {nextValidPart ? (
           <>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-semibold text-amber-900">
                 {t.recommendedNextTitle}
               </span>
-              <button
-                type="button"
-                onClick={() => onHighlightHintPart(nextValidPart.id)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
-              >
-                <Lightbulb className="w-3.5 h-3.5 shrink-0" />
-                <span>{t.highlightOn3DBtn}</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                {speechSupported && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      toggleSpeech(
+                        `hint-next-${nextValidPart.id}`,
+                        `${nextValidPart.name}. ${nextValidPart.roleHint}`,
+                        language,
+                      )
+                    }
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-950 bg-white border border-amber-300 hover:bg-amber-100/70 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                  >
+                    {isSpeaking && activeId === `hint-next-${nextValidPart.id}` ? (
+                      <>
+                        <Square className="w-3 h-3 text-rose-600 shrink-0" />
+                        <span>{t.voiceStopBtn}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <span>{t.voiceListenBtn}</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => onHighlightHintPart(nextValidPart.id)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                >
+                  <Lightbulb className="w-3.5 h-3.5 shrink-0" />
+                  <span>{t.highlightOn3DBtn}</span>
+                </button>
+              </div>
             </div>
 
             <div className="p-3 bg-white border border-amber-200 rounded-lg">
@@ -123,6 +176,8 @@ export const MechanicHintDrawer: React.FC<MechanicHintDrawerProps> = ({
           const missingDep = getMissingDepName(part);
           const isReady = !isPlaced && missingDep === null;
           const isHinted = hintPartId === part.id && !isPlaced;
+          const rowSpeechId = `hint-part-${part.id}`;
+          const isRowSpeaking = isSpeaking && activeId === rowSpeechId;
 
           return (
             <div
@@ -157,21 +212,46 @@ export const MechanicHintDrawer: React.FC<MechanicHintDrawerProps> = ({
                   </span>
                 </div>
 
-                {isPlaced ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 shrink-0">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>{t.partStatusPlaced}</span>
-                  </span>
-                ) : missingDep ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 shrink-0">
-                    <Lock className="w-3 h-3" />
-                    <span>{t.partStatusLockedAfter(missingDep)}</span>
-                  </span>
-                ) : (
-                  <span className="text-[11px] font-semibold text-sky-700 shrink-0">
-                    {t.partStatusReady}
-                  </span>
-                )}
+                <div className="flex items-center gap-2 shrink-0">
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSpeech(
+                          rowSpeechId,
+                          `${part.name}. ${part.roleHint}`,
+                          language,
+                        );
+                      }}
+                      aria-label={isRowSpeaking ? t.voiceStopBtn : t.voiceListenBtn}
+                      title={isRowSpeaking ? t.voiceStopBtn : t.voiceListenBtn}
+                      className="p-1 text-slate-400 hover:text-sky-700 hover:bg-slate-100 rounded transition-colors cursor-pointer"
+                    >
+                      {isRowSpeaking ? (
+                        <Square className="w-3 h-3 text-rose-600" />
+                      ) : (
+                        <Volume2 className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  )}
+
+                  {isPlaced ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 shrink-0">
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{t.partStatusPlaced}</span>
+                    </span>
+                  ) : missingDep ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 shrink-0">
+                      <Lock className="w-3 h-3" />
+                      <span>{t.partStatusLockedAfter(missingDep)}</span>
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-semibold text-sky-700 shrink-0">
+                      {t.partStatusReady}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">

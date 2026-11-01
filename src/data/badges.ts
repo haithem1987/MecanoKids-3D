@@ -3,6 +3,7 @@ import {
   BadgeEvaluation,
   BadgeIconKind,
   DailyChallengeState,
+  DailyStreakState,
   DifficultyTier,
   LanguageCode,
   SpeedrunRecord,
@@ -46,6 +47,8 @@ export interface ComputedScoreStats {
   rarePartsCollected: number;
   timedRunsCount: number;
   fastestTimeMs: number | null;
+  engagementCurrentStreak: number;
+  engagementBestStreak: number;
 }
 
 export interface PlayerProgressionSummary {
@@ -60,6 +63,7 @@ export function computeScoreStats(
   completedStages: Record<string, StageCompletionRecord>,
   dailyChallenge?: DailyChallengeState,
   speedrunRecords?: SpeedrunRecord[],
+  dailyStreak?: DailyStreakState,
 ): ComputedScoreStats {
   let completedCount = 0;
   let totalStars = 0;
@@ -125,6 +129,16 @@ export function computeScoreStats(
       ? Math.min(...speedrunRecords.map((r) => r.timeMs))
       : null;
 
+  const engagementCurrentStreak = Math.max(
+    dailyStreak?.currentStreak ?? 0,
+    dailyChallenge?.currentStreak ?? 0,
+  );
+  const engagementBestStreak = Math.max(
+    engagementCurrentStreak,
+    dailyStreak?.bestStreak ?? 0,
+    dailyChallenge?.bestStreak ?? 0,
+  );
+
   return {
     completedCount,
     totalStages: VEHICLE_BLUEPRINTS.length,
@@ -147,6 +161,8 @@ export function computeScoreStats(
     rarePartsCollected,
     timedRunsCount,
     fastestTimeMs,
+    engagementCurrentStreak,
+    engagementBestStreak,
   };
 }
 
@@ -235,6 +251,64 @@ const BADGE_DEFINITIONS: BadgeDefinition[] = [
             : lang === 'en'
               ? `${cur} / 1 daily build`
               : `${cur} / 1 défi du jour`,
+      };
+    },
+  },
+  {
+    id: 'workshop-flame-3',
+    icon: BadgeIconKind.FLAME,
+    accentColor: 'amber',
+    title: {
+      fr: 'Flamme d’Atelier (3 jours)',
+      en: 'Workshop Flame (3 days)',
+      ar: 'شعلة الورشة (3 أيام)',
+    },
+    description: {
+      fr: 'Pratiquer activement dans l’atelier 3D pendant 3 jours consécutifs.',
+      en: 'Actively build or repair in the 3D workshop for 3 consecutive days.',
+      ar: 'المشاركة الفعّالة في الورشة ثلاثية الأبعاد لمدة 3 أيام متتالية.',
+    },
+    evaluate: (s, lang) => {
+      const cur = Math.min(s.engagementBestStreak, 3);
+      return {
+        unlocked: s.engagementBestStreak >= 3,
+        currentValue: cur,
+        targetValue: 3,
+        progressLabel:
+          lang === 'ar'
+            ? `${s.engagementBestStreak} / 3 أيام متتالية`
+            : lang === 'en'
+              ? `${s.engagementBestStreak} / 3-day streak`
+              : `${s.engagementBestStreak} / 3 jours d’affilée`,
+      };
+    },
+  },
+  {
+    id: 'workshop-flame-7',
+    icon: BadgeIconKind.FLAME,
+    accentColor: 'rose',
+    title: {
+      fr: 'Gardien de la Flamme (7 jours)',
+      en: 'Keeper of the Flame (7 days)',
+      ar: 'حارس الشعلة (7 أيام)',
+    },
+    description: {
+      fr: 'Maintenir une série de 7 jours consécutifs et débloquer la peinture « Flamme d’Or ».',
+      en: 'Maintain a 7-day active streak and unlock the exclusive "Flame Gold" paint livery.',
+      ar: 'الحفاظ على سلسلة 7 أيام متتالية وفتح طلاء «ذهب الشعلة» الحصري.',
+    },
+    evaluate: (s, lang) => {
+      const cur = Math.min(s.engagementBestStreak, 7);
+      return {
+        unlocked: s.engagementBestStreak >= 7,
+        currentValue: cur,
+        targetValue: 7,
+        progressLabel:
+          lang === 'ar'
+            ? `${s.engagementBestStreak} / 7 أيام متتالية`
+            : lang === 'en'
+              ? `${s.engagementBestStreak} / 7-day streak`
+              : `${s.engagementBestStreak} / 7 jours d’affilée`,
       };
     },
   },
@@ -619,8 +693,9 @@ export function evaluatePlayerProgression(
   lang: LanguageCode,
   dailyChallenge?: DailyChallengeState,
   speedrunRecords?: SpeedrunRecord[],
+  dailyStreak?: DailyStreakState,
 ): PlayerProgressionSummary {
-  const stats = computeScoreStats(completedStages, dailyChallenge, speedrunRecords);
+  const stats = computeScoreStats(completedStages, dailyChallenge, speedrunRecords, dailyStreak);
   const { rankTitle, nextRankLabel } = computeRankInfo(stats.totalStars, lang);
 
   const badges: BadgeEvaluation[] = BADGE_DEFINITIONS.map((def) => {
@@ -656,11 +731,12 @@ export function syncUnlockedBadgesMap(
   existingUnlocked: Record<string, number>,
   dailyChallenge?: DailyChallengeState,
   speedrunRecords?: SpeedrunRecord[],
+  dailyStreak?: DailyStreakState,
 ): {
   updatedUnlocked: Record<string, number>;
   newlyUnlockedIds: string[];
 } {
-  const stats = computeScoreStats(completedStages, dailyChallenge, speedrunRecords);
+  const stats = computeScoreStats(completedStages, dailyChallenge, speedrunRecords, dailyStreak);
   const updatedUnlocked: Record<string, number> = { ...existingUnlocked };
   const newlyUnlockedIds: string[] = [];
   const now = Date.now();

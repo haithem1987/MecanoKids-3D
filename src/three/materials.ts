@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { PartSpec, VisualStyleMode } from '../types/game';
+import { PartSpec, VehicleCategory, VisualStyleMode } from '../types/game';
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
@@ -138,6 +138,176 @@ export function createTurntableTexture(
     ctx.beginPath();
     ctx.arc(256, 256, 212, 0, Math.PI * 2);
     ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = maxAnisotropy;
+  textureCache.set(key, tex);
+  return tex;
+}
+
+export function createThematicTurntableTexture(
+  category: VehicleCategory,
+  maxAnisotropy: number,
+): THREE.CanvasTexture {
+  const key = `thematic_turntable_${category}`;
+  const cached = textureCache.get(key);
+  if (cached) return cached;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+  const cx = 256;
+  const cy = 256;
+
+  if (category === VehicleCategory.CAR) {
+    // Asphalt test circuit with racing kerbs & centerline dashes
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Subtle asphalt grain speckles
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    for (let i = 0; i < 420; i++) {
+      const x = (i * 73) % 512;
+      const y = (i * 137) % 512;
+      ctx.fillRect(x, y, 2, 2);
+    }
+
+    // Red & white FIA racing kerb ring
+    const segments = 36;
+    for (let s = 0; s < segments; s++) {
+      const a0 = (s / segments) * Math.PI * 2;
+      const a1 = ((s + 1) / segments) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 228, a0, a1);
+      ctx.lineWidth = 16;
+      ctx.strokeStyle = s % 2 === 0 ? '#ef4444' : '#f8fafc';
+      ctx.stroke();
+    }
+
+    // Center dashed test-lane markings
+    ctx.strokeStyle = 'rgba(248, 250, 252, 0.72)';
+    ctx.lineWidth = 5;
+    ctx.setLineDash([22, 18]);
+    ctx.beginPath();
+    ctx.moveTo(cx - 56, 36);
+    ctx.lineTo(cx - 56, 476);
+    ctx.moveTo(cx + 56, 36);
+    ctx.lineTo(cx + 56, 476);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  } else if (category === VehicleCategory.BOAT) {
+    // Harbor water basin with concentric aqua ripples & quay ring
+    const grad = ctx.createRadialGradient(cx, cy, 24, cx, cy, 248);
+    grad.addColorStop(0, '#0ea5e9');
+    grad.addColorStop(0.65, '#0284c7');
+    grad.addColorStop(1, '#0369a1');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 512);
+
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.32)';
+    ctx.lineWidth = 2.5;
+    for (const r of [72, 118, 164, 204]) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Wooden/stone harbor quay outer border
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 18;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 232, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (category === VehicleCategory.PLANE) {
+    // Airfield tarmac runway with piano-key threshold & yellow taxi centerline
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Darker central runway strip
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(cx - 96, 0, 192, 512);
+
+    // White runway side lines
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(cx - 90, 20);
+    ctx.lineTo(cx - 90, 492);
+    ctx.moveTo(cx + 90, 20);
+    ctx.lineTo(cx + 90, 492);
+    ctx.stroke();
+
+    // Yellow taxi/centerline dashes
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 5;
+    ctx.setLineDash([26, 18]);
+    ctx.beginPath();
+    ctx.moveTo(cx, 32);
+    ctx.lineTo(cx, 480);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Threshold piano keys
+    ctx.fillStyle = 'rgba(248,250,252,0.86)';
+    for (const dx of [-66, -42, 42, 66]) {
+      ctx.fillRect(cx + dx - 7, 62, 14, 42);
+      ctx.fillRect(cx + dx - 7, 408, 14, 42);
+    }
+  } else if (category === VehicleCategory.CONSTRUCTION) {
+    // Reinforced concrete engineering pad with safety chevron border
+    ctx.fillStyle = '#d6d3d1';
+    ctx.fillRect(0, 0, 512, 512);
+
+    ctx.strokeStyle = 'rgba(41, 37, 36, 0.14)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i <= 512; i += 48) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, 512);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(512, i);
+      ctx.stroke();
+    }
+
+    const segments = 40;
+    for (let s = 0; s < segments; s++) {
+      const a0 = (s / segments) * Math.PI * 2;
+      const a1 = ((s + 1) / segments) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 226, a0, a1);
+      ctx.lineWidth = 18;
+      ctx.strokeStyle = s % 2 === 0 ? '#f59e0b' : '#1e293b';
+      ctx.stroke();
+    }
+  } else {
+    // SPACE: Orbital launchpad deck with azimuth rings & flame-deflector grid
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Central flame-trench grate
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(cx - 72, cy - 72, 144, 144);
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.lineWidth = 2;
+    for (let g = -60; g <= 60; g += 20) {
+      ctx.beginPath();
+      ctx.moveTo(cx + g, cy - 70);
+      ctx.lineTo(cx + g, cy + 70);
+      ctx.stroke();
+    }
+
+    for (const r of [112, 168, 224]) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = r === 224 ? '#38bdf8' : 'rgba(148, 163, 184, 0.35)';
+      ctx.lineWidth = r === 224 ? 5 : 2;
+      ctx.stroke();
+    }
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -404,3 +574,29 @@ export function createGuideGhostMaterial(state: 'ready' | 'locked' | 'magnet' | 
     depthWrite: false,
   });
 }
+
+export function createXRayCutawayMaterial(baseColor = '#38bdf8'): THREE.MeshPhysicalMaterial {
+  return new THREE.MeshPhysicalMaterial({
+    color: baseColor,
+    emissive: '#0284c7',
+    emissiveIntensity: 0.14,
+    transparent: true,
+    opacity: 0.22,
+    roughness: 0.14,
+    metalness: 0.08,
+    clearcoat: 0.85,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+}
+
+export function createDiagnosticFaultMaterial(): THREE.MeshStandardMaterial {
+  return new THREE.MeshStandardMaterial({
+    color: '#fb923c',
+    emissive: '#ea580c',
+    emissiveIntensity: 0.42,
+    roughness: 0.32,
+    metalness: 0.25,
+  });
+}
+

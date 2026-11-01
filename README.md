@@ -56,13 +56,21 @@ Puis ouvrez **`http://localhost:3000`** dans Chrome, Edge ou Firefox.
 
 ## 4. Fonctionnalités Clés
 
-- **9 véhicules mécaniques en 3D** répartis en 3 paliers progressifs (Découverte, Atelier, Ingénieur).
-- **Bilingue Français / Arabe (`FR` / `العربية`)** avec bascule instantanée dans la barre supérieure et mise en page RTL complète.
-- **Sauvegarde locale automatique (`localStorage`)** :
-  - Mémorise le **niveau en cours**, les **pièces déjà assemblées** sur chaque véhicule, les **étoiles gagnées**, la **langue choisie**, le **style 3D** et l'angle caméra.
-  - Permet également d'**exporter / importer un fichier `.json`** de sauvegarde depuis le menu *Stages & Sauvegarde*.
-- **3 styles visuels 3D temps réel** : *Bois & Métal*, *Blocs Modulaires*, *Maquette Réaliste*.
-- **Guide Mécanique & Fiches Découvertes hors-ligne** intégrés pour chaque véhicule.
+- **100 objets mécaniques en 3D** répartis en 5 paliers progressifs (Découverte, Atelier, Ingénieur, Expert, Maître Constructeur) + **Défi Mécanique du Jour** (7 pièces rares Or 24K).
+- **Immersion 3D avancée** :
+  - **Essai Dynamique 3D** après assemblage (roues et phares sur piste défilante, houle marine 3D, sustentation aérienne et propulseurs spatiaux).
+  - **Coupe Technique Rayons X** pour observer les organes mécaniques internes à travers la carrosserie ou la coque.
+  - **Environnements d'établi thématiques** adaptés à chaque famille (circuit bitumé, bassin portuaire, tarmac d'aérodrome, chantier balisé, pas de tir orbital) commutables avec le plateau Studio.
+- **Créativité & Atelier** :
+  - **Cabine de Peinture** (8 livrées d'atelier mémorisées par véhicule) et **Studio Carte Postale 3D** téléchargeable en `.png` (`1200×820`).
+  - **Garage Personnel (« Ma Vitrine 3D »)** exposant tous les véhicules construits, leurs distinctions et le coffre des pièces rares Or 24K.
+- **Défis Pédagogiques** :
+  - **Mode Maître Sans Silhouette** (assemblage par pure déduction mécanique).
+  - **Mini-Quiz Mécanique Express (3 questions)** décernant un **Brevet d'Ingénieur** par véhicule.
+  - **Mode Diagnostic & Réparation** (détection et démontage des pièces mal fixées en 3D puis remise en état).
+- **Trilingue Français / Anglais / Arabe (`FR` / `EN` / `العربية`)** avec bascule instantanée, mise en page RTL complète et **synthèse vocale hors-ligne (Web Speech API)**.
+- **Multi-Profils locaux & PWA 100 % hors-ligne** : jusqu'à 8 profils indépendants (`localStorage` + import/export `.json`), 15 badges de réussite, mode Chronomètre et installation hors-ligne Windows / Android / iOS.
+- **Feuille de route complète** : consultez [`AMELIORATIONS.md`](./AMELIORATIONS.md).
 
 ---
 

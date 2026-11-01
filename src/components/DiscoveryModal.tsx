@@ -7,10 +7,14 @@ import {
   Eye,
   Gem,
   Lightbulb,
+  Paintbrush,
+  Play,
   RotateCcw,
+  Square,
   Star,
   Timer,
   Trophy,
+  Volume2,
   X,
 } from 'lucide-react';
 import { RareCollectibleSpec } from '../data/dailyChallenges';
@@ -22,6 +26,7 @@ import {
   formatSecondsPerPart,
   formatStopwatchMs,
 } from '../utils/speedrun';
+import { useSpeech } from '../utils/speech';
 
 export interface TimedCompletionResult {
   timeMs: number;
@@ -43,6 +48,10 @@ interface DiscoveryModalProps {
   onOpenLeaderboard?: () => void;
   onRetryTimedRun?: () => void;
   onOpenProgression: () => void;
+  hasPatent?: boolean;
+  onOpenQuiz?: () => void;
+  onStartTestDrive?: () => void;
+  onOpenStudio?: () => void;
   hasNextStage: boolean;
   onNextStage: () => void;
 }
@@ -61,14 +70,41 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
   onOpenLeaderboard,
   onRetryTimedRun,
   onOpenProgression,
+  hasPatent,
+  onOpenQuiz,
+  onStartTestDrive,
+  onOpenStudio,
   hasNextStage,
   onNextStage,
 }) => {
+  const { isSupported: speechSupported, isSpeaking, activeId, toggle: toggleSpeech, stop } =
+    useSpeech();
+
   if (!isOpen) return null;
 
   const t = UI_TRANSLATIONS[language];
   const isRtl = language === 'ar';
   const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
+
+  const fullDiscoveryNarration = [
+    blueprint.name,
+    t.howItWorksTitle,
+    blueprint.discovery.howItWorks,
+    t.realRecordTitle,
+    blueprint.discovery.realRecord,
+    t.didYouKnowTitle,
+    blueprint.discovery.didYouKnow,
+  ].join('. ');
+
+  const fullCardId = `discovery-full-${blueprint.id}`;
+  const howId = `discovery-how-${blueprint.id}`;
+  const recId = `discovery-rec-${blueprint.id}`;
+  const knowId = `discovery-know-${blueprint.id}`;
+
+  const handleClose = () => {
+    stop();
+    onClose();
+  };
 
   return (
     <div
@@ -112,7 +148,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label={t.closeDiscoveryAria}
             className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
           >
@@ -184,7 +220,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                       <button
                         type="button"
                         onClick={() => {
-                          onClose();
+                          handleClose();
                           onRetryTimedRun();
                         }}
                         className="inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
@@ -197,7 +233,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                       <button
                         type="button"
                         onClick={() => {
-                          onClose();
+                          handleClose();
                           onOpenLeaderboard();
                         }}
                         className="px-3 py-2 text-xs font-semibold text-sky-900 bg-white border border-sky-300 hover:bg-sky-100/70 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
@@ -233,7 +269,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                     <button
                       type="button"
                       onClick={() => {
-                        onClose();
+                        handleClose();
                         onOpenDailyVault();
                       }}
                       className="px-3.5 py-2 text-xs font-semibold text-amber-950 bg-white border border-amber-300 hover:bg-amber-100/70 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
@@ -255,7 +291,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                     <button
                       type="button"
                       onClick={() => {
-                        onClose();
+                        handleClose();
                         onOpenProgression();
                       }}
                       className="text-xs font-semibold text-sky-700 hover:text-sky-900 hover:underline cursor-pointer"
@@ -283,42 +319,120 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-xs font-semibold text-sky-800">
                   <BookOpen className="w-4 h-4 shrink-0" />
                   <span>{t.discoveryBadgeLocal}</span>
                 </div>
 
-                {newlyUnlockedBadges.length === 0 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onOpenProgression();
-                    }}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 hover:text-amber-900 cursor-pointer"
-                  >
-                    <Trophy className="w-3.5 h-3.5 shrink-0" />
-                    <span>{t.viewAllBadgesBtn}</span>
-                  </button>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toggleSpeech(fullCardId, fullDiscoveryNarration, language)
+                      }
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+                    >
+                      {isSpeaking && activeId === fullCardId ? (
+                        <>
+                          <Square className="w-3 h-3 text-rose-600 shrink-0" />
+                          <span>{t.voiceStopBtn}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 text-sky-700 shrink-0" />
+                          <span>{t.voiceReadFullCardBtn}</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {newlyUnlockedBadges.length === 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleClose();
+                        onOpenProgression();
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 hover:text-amber-900 cursor-pointer"
+                    >
+                      <Trophy className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t.viewAllBadgesBtn}</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="p-4 bg-sky-50/60 border border-sky-100 rounded-xl">
-                <h3 className="text-sm font-bold text-slate-900 mb-1.5">
-                  {t.howItWorksTitle}
-                </h3>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {t.howItWorksTitle}
+                  </h3>
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toggleSpeech(
+                          howId,
+                          `${t.howItWorksTitle}. ${blueprint.discovery.howItWorks}`,
+                          language,
+                        )
+                      }
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-sky-800 hover:bg-sky-100/80 rounded-md transition-colors cursor-pointer"
+                    >
+                      {isSpeaking && activeId === howId ? (
+                        <>
+                          <Square className="w-3 h-3 text-rose-600 shrink-0" />
+                          <span>{t.voiceStopBtn}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 shrink-0" />
+                          <span>{t.voiceListenBtn}</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
                 <p className="text-sm text-slate-700 leading-relaxed">
                   {blueprint.discovery.howItWorks}
                 </p>
               </div>
 
               <div className="p-4 bg-amber-50/60 border border-amber-100 rounded-xl">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <Award className="w-4 h-4 text-amber-600 shrink-0" />
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {t.realRecordTitle}
-                  </h3>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-amber-600 shrink-0" />
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {t.realRecordTitle}
+                    </h3>
+                  </div>
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toggleSpeech(
+                          recId,
+                          `${t.realRecordTitle}. ${blueprint.discovery.realRecord}`,
+                          language,
+                        )
+                      }
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-amber-900 hover:bg-amber-100/80 rounded-md transition-colors cursor-pointer"
+                    >
+                      {isSpeaking && activeId === recId ? (
+                        <>
+                          <Square className="w-3 h-3 text-rose-600 shrink-0" />
+                          <span>{t.voiceStopBtn}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 shrink-0" />
+                          <span>{t.voiceListenBtn}</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <p className="text-sm text-slate-700 leading-relaxed">
                   {blueprint.discovery.realRecord}
@@ -326,11 +440,38 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               </div>
 
               <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <Lightbulb className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {t.didYouKnowTitle}
-                  </h3>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Lightbulb className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {t.didYouKnowTitle}
+                    </h3>
+                  </div>
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toggleSpeech(
+                          knowId,
+                          `${t.didYouKnowTitle}. ${blueprint.discovery.didYouKnow}`,
+                          language,
+                        )
+                      }
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-900 hover:bg-emerald-100/80 rounded-md transition-colors cursor-pointer"
+                    >
+                      {isSpeaking && activeId === knowId ? (
+                        <>
+                          <Square className="w-3 h-3 text-rose-600 shrink-0" />
+                          <span>{t.voiceStopBtn}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 shrink-0" />
+                          <span>{t.voiceListenBtn}</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <p className="text-sm text-slate-700 leading-relaxed">
                   {blueprint.discovery.didYouKnow}
@@ -341,21 +482,69 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors min-h-[40px] cursor-pointer"
-          >
-            <Eye className="w-4 h-4 shrink-0" />
-            <span>{t.admire3DBtn}</span>
-          </button>
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors min-h-[40px] cursor-pointer"
+            >
+              <Eye className="w-4 h-4 shrink-0" />
+              <span>{t.admire3DBtn}</span>
+            </button>
+
+            {isCompleted && onStartTestDrive && (
+              <button
+                type="button"
+                onClick={() => {
+                  handleClose();
+                  onStartTestDrive();
+                }}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-amber-950 bg-amber-50 border border-amber-300 hover:bg-amber-100 rounded-lg transition-colors min-h-[40px] cursor-pointer"
+              >
+                <Play className="w-3.5 h-3.5 shrink-0" />
+                <span>{t.testDriveBtn}</span>
+              </button>
+            )}
+
+            {isCompleted && onOpenStudio && (
+              <button
+                type="button"
+                onClick={() => {
+                  handleClose();
+                  onOpenStudio();
+                }}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-800 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors min-h-[40px] cursor-pointer"
+              >
+                <Paintbrush className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span>{t.studioBtn}</span>
+              </button>
+            )}
+
+            {isCompleted && onOpenQuiz && (
+              <button
+                type="button"
+                onClick={() => {
+                  handleClose();
+                  onOpenQuiz();
+                }}
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border transition-colors min-h-[40px] cursor-pointer ${
+                  hasPatent
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100'
+                    : 'bg-sky-50 border-sky-200 text-sky-900 hover:bg-sky-100'
+                }`}
+              >
+                <Award className="w-3.5 h-3.5 shrink-0" />
+                <span>{hasPatent ? t.quizPassedBtn : t.quizOpenBtn}</span>
+              </button>
+            )}
+          </div>
 
           {isCompleted && (hasNextStage || blueprint.isDailyBonus) && (
             <button
               type="button"
               onClick={() => {
-                onClose();
+                handleClose();
                 onNextStage();
               }}
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors min-h-[40px] cursor-pointer"

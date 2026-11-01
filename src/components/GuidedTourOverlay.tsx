@@ -7,10 +7,13 @@ import {
   Magnet,
   Rotate3d,
   Sparkles,
+  Square,
+  Volume2,
   X,
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { LanguageCode } from '../types/game';
+import { useSpeech } from '../utils/speech';
 
 interface SpotlightRect {
   x: number;
@@ -59,6 +62,8 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
   const t = UI_TRANSLATIONS[language];
   const isRtl = language === 'ar';
   const totalSteps = t.tourSteps.length;
+  const { isSupported: speechSupported, isSpeaking, activeId, toggle: toggleSpeech, stop } =
+    useSpeech();
 
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [viewportSize, setViewportSize] = useState<{ w: number; h: number }>({
@@ -77,8 +82,10 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
     if (isOpen) {
       setStepIndex(0);
       onStepChange(0);
+    } else {
+      stop();
     }
-  }, [isOpen, onStepChange]);
+  }, [isOpen, onStepChange, stop]);
 
   const measureTargets = useCallback(() => {
     if (!isOpen || typeof window === 'undefined') return;
@@ -190,11 +197,12 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
 
   const goToStep = useCallback(
     (next: number) => {
+      stop();
       const clamped = Math.max(0, Math.min(totalSteps - 1, next));
       setStepIndex(clamped);
       onStepChange(clamped);
     },
-    [onStepChange, totalSteps],
+    [onStepChange, stop, totalSteps],
   );
 
   useEffect(() => {
@@ -301,14 +309,50 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={onFinish}
-            aria-label={t.closeTourAria}
-            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            {speechSupported && (
+              <button
+                type="button"
+                onClick={() =>
+                  toggleSpeech(
+                    `tour-step-${stepIndex}`,
+                    `${currentStep.title}. ${currentStep.description}. ${currentStep.tip}`,
+                    language,
+                  )
+                }
+                aria-label={
+                  isSpeaking && activeId === `tour-step-${stepIndex}`
+                    ? t.voiceStopBtn
+                    : t.voiceListenBtn
+                }
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-md transition-colors cursor-pointer"
+              >
+                {isSpeaking && activeId === `tour-step-${stepIndex}` ? (
+                  <>
+                    <Square className="w-3 h-3 text-rose-600 shrink-0" />
+                    <span>{t.voiceStopBtn}</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>{t.voiceListenBtn}</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                stop();
+                onFinish();
+              }}
+              aria-label={t.closeTourAria}
+              className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Title & Explanation */}

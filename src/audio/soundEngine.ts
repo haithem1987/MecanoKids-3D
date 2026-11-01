@@ -1,4 +1,4 @@
-import { VisualStyleMode } from '../types/game';
+import { VehicleCategory, VisualStyleMode } from '../types/game';
 
 class WorkshopSoundEngine {
   private ctx: AudioContext | null = null;
@@ -130,6 +130,60 @@ class WorkshopSoundEngine {
     notes.forEach((freq, idx) => {
       const start = now + idx * 0.075;
       this.triggerTone(ctx, 'sine', freq, freq * 1.015, start, 0.24, 0.12);
+    });
+  }
+
+  public playTestDriveEngage(category: VehicleCategory): void {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    if (category === VehicleCategory.CAR || category === VehicleCategory.CONSTRUCTION) {
+      // Sporty engine rev sweep
+      this.triggerTone(ctx, 'sawtooth', 95, 220, now, 0.26, 0.09);
+      this.triggerTone(ctx, 'triangle', 190, 420, now + 0.08, 0.28, 0.1);
+    } else if (category === VehicleCategory.BOAT) {
+      // Deep maritime horn chord + gentle splash tone
+      this.triggerTone(ctx, 'triangle', 146.83, 146.83, now, 0.34, 0.13);
+      this.triggerTone(ctx, 'sine', 220, 222, now + 0.03, 0.32, 0.09);
+    } else if (category === VehicleCategory.PLANE) {
+      // Turbine / rotor spool-up
+      this.triggerTone(ctx, 'sine', 260, 780, now, 0.36, 0.1);
+      this.triggerTone(ctx, 'triangle', 390, 980, now + 0.05, 0.32, 0.07);
+    } else {
+      // Space thruster ignition sweep
+      this.triggerTone(ctx, 'sawtooth', 110, 520, now, 0.38, 0.09);
+      this.triggerTone(ctx, 'sine', 440, 1174.66, now + 0.06, 0.34, 0.1);
+    }
+  }
+
+  public playDiagnosticExtract(): void {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    this.triggerTone(ctx, 'sawtooth', 540, 340, now, 0.05, 0.08);
+    this.triggerTone(ctx, 'triangle', 480, 720, now + 0.055, 0.11, 0.12);
+  }
+
+  public playCameraShutter(): void {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    this.triggerTone(ctx, 'square', 1400, 520, now, 0.028, 0.09);
+    this.triggerTone(ctx, 'triangle', 980, 1560, now + 0.04, 0.05, 0.08);
+  }
+
+  public playPatentEarned(): void {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51];
+    notes.forEach((freq, idx) => {
+      const start = now + idx * 0.08;
+      this.triggerTone(ctx, 'triangle', freq, freq * 1.01, start, 0.26, 0.13);
     });
   }
 

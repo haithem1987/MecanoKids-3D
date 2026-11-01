@@ -11,18 +11,31 @@ import {
   DailyChallengeState,
   DailyCompletionEntry,
   DifficultyTier,
+  EngineeringPatentRecord,
   LanguageCode,
+  LiveryPresetId,
+  MultiProfileStore,
+  PlayerProfile,
   PlayerProgress,
+  ProfileAvatarColor,
+  ProfileAvatarIcon,
   SpeedrunRecord,
   StageCompletionRecord,
   StageInProgressRecord,
   VehicleCategory,
   VisualStyleMode,
+  WorkbenchEnvironmentMode,
 } from '../types/game';
+import { VALID_LIVERY_IDS } from '../data/liveries';
+import { createEmptyDailyStreakState, sanitizeDailyStreak } from './dailyStreak';
+import { createDefaultParentalSettings, sanitizeParentalSettings } from './sessionTimer';
 import { MAX_SPEEDRUN_HISTORY } from './speedrun';
 
 export const SAVE_STORAGE_KEY = 'mecanokids_3d_save_v2';
+export const PROFILES_STORAGE_KEY = 'mecanokids_3d_profiles_v1';
 const LEGACY_STORAGE_KEY = 'mecanokids_3d_progress_v1';
+
+export const MAX_LOCAL_PROFILES = 8;
 
 const VALID_STYLES = new Set<string>([
   VisualStyleMode.WOOD,
@@ -45,7 +58,29 @@ const VALID_CATEGORIES = new Set<string>([
   VehicleCategory.SPACE,
 ]);
 
+const VALID_AVATAR_COLORS = new Set<ProfileAvatarColor>([
+  'sky',
+  'amber',
+  'emerald',
+  'indigo',
+  'rose',
+]);
+
+const VALID_AVATAR_ICONS = new Set<ProfileAvatarIcon>([
+  'wrench',
+  'car',
+  'rocket',
+  'anchor',
+  'plane',
+]);
+
 const VALID_RARE_IDS = new Set<string>(RARE_COLLECTIBLES_CATALOG.map((r) => r.id));
+
+export function getDefaultProfileName(lang: LanguageCode, index = 1): string {
+  if (lang === 'ar') return `الميكانيكي ${index}`;
+  if (lang === 'en') return `Builder ${index}`;
+  return `Mécanicien ${index}`;
+}
 
 export function createDefaultProgress(
   language: LanguageCode = 'fr',
@@ -57,14 +92,22 @@ export function createDefaultProgress(
     inProgressStages: {},
     completedStages: {},
     dailyChallenge: createEmptyDailyChallengeState(),
+    dailyStreak: createEmptyDailyStreakState(),
     speedrunRecords: [],
     timerModeEnabled: false,
     unlockedBadges: {},
+    customLiveries: {},
+    engineeringPatents: {},
+    repairedStages: {},
+    masterNoSilhouetteStages: {},
+    noSilhouetteMode: false,
+    environmentMode: 'auto_thematic',
     language,
     preferredStyle: VisualStyleMode.WOOD,
     cameraPreset: CameraPreset.ISO,
     freeWorkshopUnlocked: false,
     muted: false,
+    voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
     lastSavedAt: Date.now(),
   };
@@ -255,6 +298,7 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
   }
 
   const dailyChallenge = sanitizeDailyChallenge(obj.dailyChallenge);
+  const dailyStreak = sanitizeDailyStreak(obj.dailyStreak, dailyChallenge);
   const speedrunRecords = sanitizeSpeedrunRecords(obj.speedrunRecords);
 
   const rawUnlocked: Record<string, number> = {};
@@ -266,13 +310,65 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     }
   }
 
-  // Backfill any badges earned from completedStages, dailyChallenge & speedrunRecords
+  // Backfill any badges earned from completedStages, dailyChallenge, speedrunRecords & dailyStreak
   const { updatedUnlocked } = syncUnlockedBadgesMap(
     completedStages,
     rawUnlocked,
     dailyChallenge,
     speedrunRecords,
+    dailyStreak,
   );
+
+  const customLiveries: Record<string, LiveryPresetId> = {};
+  if (obj.customLiveries && typeof obj.customLiveries === 'object') {
+    for (const [bpId, liv] of Object.entries(obj.customLiveries as Record<string, unknown>)) {
+      if (
+        typeof liv === 'string' &&
+        VALID_LIVERY_IDS.has(liv as LiveryPresetId) &&
+        liv !== 'original'
+      ) {
+        customLiveries[bpId] = liv as LiveryPresetId;
+      }
+    }
+  }
+
+  const engineeringPatents: Record<string, EngineeringPatentRecord> = {};
+  if (obj.engineeringPatents && typeof obj.engineeringPatents === 'object') {
+    for (const [bpId, rec] of Object.entries(obj.engineeringPatents as Record<string, unknown>)) {
+      if (!rec || typeof rec !== 'object') continue;
+      const r = rec as Record<string, unknown>;
+      if (typeof r.score === 'number' && r.score > 0) {
+        engineeringPatents[bpId] = {
+          score: Math.max(1, Math.min(3, Math.round(r.score))),
+          total: typeof r.total === 'number' ? Math.max(1, Math.round(r.total)) : 3,
+          passedAt: typeof r.passedAt === 'number' ? r.passedAt : Date.now(),
+        };
+      }
+    }
+  }
+
+  const repairedStages: Record<string, number> = {};
+  if (obj.repairedStages && typeof obj.repairedStages === 'object') {
+    for (const [bpId, count] of Object.entries(obj.repairedStages as Record<string, unknown>)) {
+      if (typeof count === 'number' && count > 0) {
+        repairedStages[bpId] = Math.round(count);
+      }
+    }
+  }
+
+  const masterNoSilhouetteStages: Record<string, number> = {};
+  if (obj.masterNoSilhouetteStages && typeof obj.masterNoSilhouetteStages === 'object') {
+    for (const [bpId, ts] of Object.entries(
+      obj.masterNoSilhouetteStages as Record<string, unknown>,
+    )) {
+      if (typeof ts === 'number' && ts > 0) {
+        masterNoSilhouetteStages[bpId] = ts;
+      }
+    }
+  }
+
+  const environmentMode: WorkbenchEnvironmentMode =
+    obj.environmentMode === 'studio' ? 'studio' : 'auto_thematic';
 
   return {
     currentBlueprintId: candidateBpId,
@@ -280,14 +376,23 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     inProgressStages,
     completedStages,
     dailyChallenge,
+    dailyStreak,
     speedrunRecords,
     timerModeEnabled: Boolean(obj.timerModeEnabled),
     unlockedBadges: updatedUnlocked,
+    customLiveries,
+    engineeringPatents,
+    repairedStages,
+    masterNoSilhouetteStages,
+    noSilhouetteMode: Boolean(obj.noSilhouetteMode),
+    environmentMode,
     language,
     preferredStyle,
     cameraPreset,
-    freeWorkshopUnlocked: Boolean(obj.freeWorkshopUnlocked),
+    freeWorkshopUnlocked:
+      Boolean(obj.freeWorkshopUnlocked) || Boolean(dailyStreak.unlockedMilestones.streak_14),
     muted: Boolean(obj.muted),
+    voiceAutoRead: Boolean(obj.voiceAutoRead),
     tutorialSeen: Boolean(obj.tutorialSeen),
     lastSavedAt: typeof obj.lastSavedAt === 'number' ? obj.lastSavedAt : Date.now(),
   };
@@ -327,15 +432,167 @@ export function savePlayerProgress(progress: PlayerProgress): boolean {
   }
 }
 
-export function downloadProgressBackup(progress: PlayerProgress): void {
+export function createNewPlayerProfile(params: {
+  name: string;
+  avatarColor?: ProfileAvatarColor;
+  avatarIcon?: ProfileAvatarIcon;
+  language?: LanguageCode;
+  progressOverride?: PlayerProgress;
+  index?: number;
+}): PlayerProfile {
+  const lang = params.language ?? params.progressOverride?.language ?? 'fr';
+  const trimmedName = params.name.trim() || getDefaultProfileName(lang, params.index ?? 1);
+  const now = Date.now();
+  return {
+    id: `profile-${now}-${Math.random().toString(36).slice(2, 7)}`,
+    name: trimmedName.slice(0, 28),
+    avatarColor:
+      params.avatarColor && VALID_AVATAR_COLORS.has(params.avatarColor)
+        ? params.avatarColor
+        : 'sky',
+    avatarIcon:
+      params.avatarIcon && VALID_AVATAR_ICONS.has(params.avatarIcon)
+        ? params.avatarIcon
+        : 'wrench',
+    createdAt: now,
+    updatedAt: now,
+    progress: params.progressOverride ?? createDefaultProgress(lang, false),
+  };
+}
+
+function sanitizeProfile(raw: unknown, index: number): PlayerProfile | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const obj = raw as Record<string, unknown>;
+  const progress = sanitizeProgress(obj.progress);
+  const name =
+    typeof obj.name === 'string' && obj.name.trim()
+      ? obj.name.trim().slice(0, 28)
+      : getDefaultProfileName(progress.language, index + 1);
+  const avatarColor: ProfileAvatarColor =
+    typeof obj.avatarColor === 'string' && VALID_AVATAR_COLORS.has(obj.avatarColor as ProfileAvatarColor)
+      ? (obj.avatarColor as ProfileAvatarColor)
+      : 'sky';
+  const avatarIcon: ProfileAvatarIcon =
+    typeof obj.avatarIcon === 'string' && VALID_AVATAR_ICONS.has(obj.avatarIcon as ProfileAvatarIcon)
+      ? (obj.avatarIcon as ProfileAvatarIcon)
+      : 'wrench';
+  const now = Date.now();
+
+  return {
+    id:
+      typeof obj.id === 'string' && obj.id.trim()
+        ? obj.id.trim()
+        : `profile-${now}-${index}`,
+    name,
+    avatarColor,
+    avatarIcon,
+    createdAt: typeof obj.createdAt === 'number' ? obj.createdAt : now,
+    updatedAt: typeof obj.updatedAt === 'number' ? obj.updatedAt : now,
+    progress,
+  };
+}
+
+export function sanitizeMultiProfileStore(raw: unknown): MultiProfileStore {
+  const todayKey = getTodayDateKey();
+  if (raw && typeof raw === 'object') {
+    const obj = raw as Record<string, unknown>;
+    const parentalSettings = sanitizeParentalSettings(obj.parentalSettings, todayKey);
+    if (Array.isArray(obj.profiles) && obj.profiles.length > 0) {
+      const profiles: PlayerProfile[] = [];
+      const seenIds = new Set<string>();
+      for (let i = 0; i < obj.profiles.length && profiles.length < MAX_LOCAL_PROFILES; i++) {
+        const sanitized = sanitizeProfile(obj.profiles[i], i);
+        if (sanitized && !seenIds.has(sanitized.id)) {
+          seenIds.add(sanitized.id);
+          profiles.push(sanitized);
+        }
+      }
+      if (profiles.length > 0) {
+        const activeProfileId =
+          typeof obj.activeProfileId === 'string' && seenIds.has(obj.activeProfileId)
+            ? obj.activeProfileId
+            : profiles[0].id;
+        return { activeProfileId, profiles, parentalSettings };
+      }
+    }
+  }
+
+  // Automatic migration from single-profile SAVE_STORAGE_KEY (mecanokids_3d_save_v2)
+  const existingProgress = loadPlayerProgress();
+  const initialProfile = createNewPlayerProfile({
+    name: getDefaultProfileName(existingProgress.language, 1),
+    avatarColor: 'sky',
+    avatarIcon: 'wrench',
+    progressOverride: existingProgress,
+    index: 1,
+  });
+
+  return {
+    activeProfileId: initialProfile.id,
+    profiles: [initialProfile],
+    parentalSettings: createDefaultParentalSettings(todayKey),
+  };
+}
+
+export function loadMultiProfileStore(): MultiProfileStore {
+  if (typeof window === 'undefined') {
+    const defaultProg = createDefaultProgress();
+    const initial = createNewPlayerProfile({
+      name: getDefaultProfileName(defaultProg.language, 1),
+      progressOverride: defaultProg,
+    });
+    return {
+      activeProfileId: initial.id,
+      profiles: [initial],
+      parentalSettings: createDefaultParentalSettings(),
+    };
+  }
+
+  try {
+    const rawProfiles = window.localStorage.getItem(PROFILES_STORAGE_KEY);
+    if (rawProfiles) {
+      return sanitizeMultiProfileStore(JSON.parse(rawProfiles));
+    }
+  } catch {
+    // Fallback to migrating v2 progress
+  }
+
+  const migratedStore = sanitizeMultiProfileStore(null);
+  saveMultiProfileStore(migratedStore);
+  return migratedStore;
+}
+
+export function saveMultiProfileStore(store: MultiProfileStore): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    window.localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(store));
+    const active =
+      store.profiles.find((p) => p.id === store.activeProfileId) ?? store.profiles[0];
+    if (active) {
+      savePlayerProgress(active.progress);
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function downloadProgressBackup(progress: PlayerProgress, profileName?: string): void {
   if (typeof document === 'undefined') return;
   const json = JSON.stringify(progress, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   const datePart = new Date().toISOString().slice(0, 10);
+  const safeSlug = profileName
+    ? `-${profileName
+        .toLowerCase()
+        .replace(/[^a-z0-9\u0600-\u06FF]+/gi, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 20)}`
+    : '';
   link.href = url;
-  link.download = `mecanokids-3d-sauvegarde-${datePart}.json`;
+  link.download = `mecanokids-3d${safeSlug}-${datePart}.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

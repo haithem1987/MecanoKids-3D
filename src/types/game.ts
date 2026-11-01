@@ -208,6 +208,7 @@ export enum BadgeIconKind {
   HAMMER = 'hammer',
   ROCKET = 'rocket',
   CALENDAR = 'calendar',
+  FLAME = 'flame',
   GEM = 'gem',
   TIMER = 'timer',
   AWARD = 'award',
@@ -235,20 +236,86 @@ export interface StageInProgressRecord {
   updatedAt: number;
 }
 
+export type LiveryPresetId =
+  | 'original'
+  | 'fire_red'
+  | 'racing_blue'
+  | 'safety_yellow'
+  | 'emerald_green'
+  | 'titanium_silver'
+  | 'solar_orange'
+  | 'royal_indigo'
+  | 'flame_gold';
+
+export type WorkbenchEnvironmentMode = 'auto_thematic' | 'studio';
+
+export interface EngineeringPatentRecord {
+  score: number;
+  total: number;
+  passedAt: number;
+}
+
+export type DailyStreakMilestoneId = 'streak_3' | 'streak_7' | 'streak_14' | 'streak_30';
+
+export interface DailyStreakState {
+  currentStreak: number;
+  bestStreak: number;
+  lastActiveDate: string | null;
+  activeDates: string[];
+  unlockedMilestones: Record<string, number>;
+}
+
 export interface PlayerProgress {
   currentBlueprintId: string;
   lastStandardBlueprintId: string;
   inProgressStages: Record<string, StageInProgressRecord>;
   completedStages: Record<string, StageCompletionRecord>;
   dailyChallenge: DailyChallengeState;
+  dailyStreak: DailyStreakState;
   speedrunRecords: SpeedrunRecord[];
   timerModeEnabled: boolean;
   unlockedBadges: Record<string, number>;
+  customLiveries: Record<string, LiveryPresetId>;
+  engineeringPatents: Record<string, EngineeringPatentRecord>;
+  repairedStages: Record<string, number>;
+  masterNoSilhouetteStages: Record<string, number>;
+  noSilhouetteMode: boolean;
+  environmentMode: WorkbenchEnvironmentMode;
   language: LanguageCode;
   preferredStyle: VisualStyleMode;
   cameraPreset: CameraPreset;
   freeWorkshopUnlocked: boolean;
   muted: boolean;
+  voiceAutoRead: boolean;
   tutorialSeen: boolean;
   lastSavedAt: number;
 }
+
+export type ProfileAvatarColor = 'sky' | 'amber' | 'emerald' | 'indigo' | 'rose';
+export type ProfileAvatarIcon = 'wrench' | 'car' | 'rocket' | 'anchor' | 'plane';
+
+export interface PlayerProfile {
+  id: string;
+  name: string;
+  avatarColor: ProfileAvatarColor;
+  avatarIcon: ProfileAvatarIcon;
+  createdAt: number;
+  updatedAt: number;
+  progress: PlayerProgress;
+}
+
+export type DailyLimitMinutesOption = 15 | 20 | 30 | 45;
+
+export interface ParentalSettings {
+  dailyLimitMinutes: DailyLimitMinutesOption | null;
+  consumedTodaySeconds: number;
+  consumedDateKey: string;
+  extraGrantedMinutesToday: number;
+}
+
+export interface MultiProfileStore {
+  activeProfileId: string;
+  profiles: PlayerProfile[];
+  parentalSettings: ParentalSettings;
+}
+

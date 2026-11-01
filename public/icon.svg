@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#0284c7" />
+  <circle cx="256" cy="256" r="168" fill="#0369a1" />
+  <!-- Mechanical Gear Teeth -->
+  <g fill="#f8fafc">
+    <rect x="234" y="82" width="44" height="52" rx="10" />
+    <rect x="234" y="378" width="44" height="52" rx="10" />
+    <rect x="82" y="234" width="52" height="44" rx="10" />
+    <rect x="378" y="234" width="52" height="44" rx="10" />
+    <rect x="234" y="82" width="44" height="52" rx="10" transform="rotate(45 256 256)" />
+    <rect x="234" y="82" width="44" height="52" rx="10" transform="rotate(135 256 256)" />
+    <rect x="234" y="82" width="44" height="52" rx="10" transform="rotate(225 256 256)" />
+    <rect x="234" y="82" width="44" height="52" rx="10" transform="rotate(315 256 256)" />
+    <circle cx="256" cy="256" r="136" />
+  </g>
+  <!-- Inner Hub & 24K Gold Accent Nut -->
+  <circle cx="256" cy="256" r="92" fill="#0284c7" />
+  <polygon points="256,192 311,224 311,288 256,320 201,288 201,224" fill="#f59e0b" />
+  <circle cx="256" cy="256" r="30" fill="#ffffff" />
+</svg>
