@@ -8,11 +8,11 @@ import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 function getGenAIClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
     throw new Error('MISSING_API_KEY');
   }
   return new GoogleGenAI({
@@ -46,7 +46,7 @@ function formatGeminiError(error: unknown): { status: number; message: string } 
     return {
       status: 400,
       message:
-        'Veuillez vérifier la configuration de la clé API Gemini dans le panneau Settings > Secrets.',
+        'Clé API Gemini manquante ou invalide : vérifiez GEMINI_API_KEY dans votre fichier .env (en local) ou dans Settings > Secrets.',
     };
   }
   if (raw.includes('PERMISSION_DENIED') || raw.includes('403')) {
@@ -221,7 +221,10 @@ async function startServer() {
     }
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  const isProduction =
+    process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
+
+  if (!isProduction) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -237,7 +240,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`MécanoKids 3D server listening on http://0.0.0.0:${PORT}`);
+    console.log(`MécanoKids 3D lancé sur http://localhost:${PORT}`);
   });
 }
 

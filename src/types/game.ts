@@ -134,4 +134,5 @@ export interface PlayerProgress {
   preferredStyle: VisualStyleMode;
   freeWorkshopUnlocked: boolean;
   muted: boolean;
+  tutorialSeen: boolean;
 }

@@ -3,6 +3,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  CircleHelp,
   Compass,
   Lock,
   RotateCcw,
@@ -41,6 +42,7 @@ interface BottomPartsDockProps {
   onOpenVictoryModal: () => void;
   hasNextStage: boolean;
   onGoNextStage: () => void;
+  onOpenTour: () => void;
   statusMessage: string | null;
 }
 
@@ -68,6 +70,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
   onOpenVictoryModal,
   hasNextStage,
   onGoNextStage,
+  onOpenTour,
   statusMessage,
 }) => {
   const placedSet = new Set(placedPartIds);
@@ -175,18 +178,27 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
           </div>
 
           {/* Row 2: Horizontal Parts Tray */}
-          <div className="flex items-stretch gap-2.5 overflow-x-auto py-3 select-none">
-            {blueprint.parts.map((part, idx) => {
-              const isPlaced = placedSet.has(part.id);
-              const missingDep = getMissingDepName(part);
-              const isLocked = !isPlaced && missingDep !== null;
-              const isSelected = stagedPartId === part.id || activeDragPartId === part.id;
-              const isHinted = hintPartId === part.id && !isPlaced;
+          <div
+            data-tour="parts-tray"
+            className="flex items-stretch gap-2.5 overflow-x-auto py-3 select-none"
+          >
+            {(() => {
+              const firstAvailableId =
+                blueprint.parts.find((p) => !placedSet.has(p.id) && getMissingDepName(p) === null)
+                  ?.id ?? blueprint.parts[0]?.id;
 
-              return (
-                <button
-                  key={part.id}
-                  type="button"
+              return blueprint.parts.map((part, idx) => {
+                const isPlaced = placedSet.has(part.id);
+                const missingDep = getMissingDepName(part);
+                const isLocked = !isPlaced && missingDep !== null;
+                const isSelected = stagedPartId === part.id || activeDragPartId === part.id;
+                const isHinted = hintPartId === part.id && !isPlaced;
+
+                return (
+                  <button
+                    key={part.id}
+                    type="button"
+                    data-tour={part.id === firstAvailableId ? 'first-part-card' : undefined}
                   disabled={isPlaced}
                   onPointerDown={(e) => {
                     if (isPlaced) return;
@@ -250,13 +262,17 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
                       )}
                     </div>
                   </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              });
+            })()}
           </div>
 
           {/* Row 3: Workshop Controls (Exploded Slider + Camera Angles + Mobile Style + Audio + Reset) */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100">
+          <div
+            data-tour="camera-controls"
+            className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100"
+          >
             {/* Labeled Exploded-View Slider */}
             <div className="flex items-center gap-3">
               <label
@@ -330,8 +346,18 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
               ))}
             </div>
 
-            {/* Audio & Reset Controls */}
+            {/* Guide, Audio & Reset Controls */}
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onOpenTour}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[36px] cursor-pointer"
+                title="Relancer le tour du propriétaire"
+              >
+                <CircleHelp className="w-3.5 h-3.5" />
+                <span>Guide</span>
+              </button>
+
               <button
                 type="button"
                 onClick={onToggleMute}

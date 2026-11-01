@@ -19,6 +19,7 @@ import { BottomPartsDock } from './components/BottomPartsDock';
 import { StageCatalogModal } from './components/StageCatalogModal';
 import { MascotChatDrawer } from './components/MascotChatDrawer';
 import { DiscoveryModal } from './components/DiscoveryModal';
+import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 
 const STORAGE_KEY = 'mecanokids_3d_progress_v1';
 
@@ -27,6 +28,7 @@ const DEFAULT_PROGRESS: PlayerProgress = {
   preferredStyle: VisualStyleMode.WOOD,
   freeWorkshopUnlocked: false,
   muted: false,
+  tutorialSeen: false,
 };
 
 function loadInitialProgress(): PlayerProgress {
@@ -40,6 +42,7 @@ function loadInitialProgress(): PlayerProgress {
       preferredStyle: parsed.preferredStyle ?? VisualStyleMode.WOOD,
       freeWorkshopUnlocked: Boolean(parsed.freeWorkshopUnlocked),
       muted: Boolean(parsed.muted),
+      tutorialSeen: Boolean(parsed.tutorialSeen),
     };
   } catch {
     return DEFAULT_PROGRESS;
@@ -63,10 +66,12 @@ export default function App() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const statusTimerRef = useRef<number | null>(null);
 
-  // Modals & Drawers (never fire arrival popups on page load)
+  // Modals, Drawers & Guided Tour (auto-activated for new users!)
   const [catalogOpen, setCatalogOpen] = useState<boolean>(false);
   const [mascotOpen, setMascotOpen] = useState<boolean>(false);
   const [discoveryOpen, setDiscoveryOpen] = useState<boolean>(false);
+  const [tourOpen, setTourOpen] = useState<boolean>(() => !loadInitialProgress().tutorialSeen);
+  const [tourStep, setTourStep] = useState<number>(0);
 
   // Mascot Multi-turn Chat History
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -302,6 +307,31 @@ export default function App() {
     }
   }, [currentIndex, handleSelectBlueprint, hasNextStage]);
 
+  const handleOpenTour = useCallback(() => {
+    setDockCollapsed(false);
+    setCatalogOpen(false);
+    setDiscoveryOpen(false);
+    setTourStep(0);
+    setTourOpen(true);
+  }, []);
+
+  const handleFinishTour = useCallback(() => {
+    setTourOpen(false);
+    setProgress((p) => (p.tutorialSeen ? p : { ...p, tutorialSeen: true }));
+  }, []);
+
+  const firstReadyPart = useMemo(() => {
+    const placedSet = new Set(placedPartIds);
+    return (
+      currentBlueprint.parts.find(
+        (p) => !placedSet.has(p.id) && p.dependsOn.every((dep) => placedSet.has(dep)),
+      ) ?? currentBlueprint.parts[0]
+    );
+  }, [currentBlueprint.parts, placedPartIds]);
+
+  const effectiveHintPartId =
+    hintPartId ?? (tourOpen && (tourStep === 0 || tourStep === 1) ? firstReadyPart?.id ?? null : null);
+
   const isCompleted = placedPartIds.length === currentBlueprint.parts.length;
   const currentStars =
     progress.completedStages[currentBlueprint.id]?.stars ??
@@ -334,7 +364,7 @@ export default function App() {
           cameraPresetNonce={cameraPresetNonce}
           activeDragPartId={activeDragPartId}
           stagedPartId={stagedPartId}
-          hintPartId={hintPartId}
+          hintPartId={effectiveHintPartId}
           onPartSnapped={handlePartSnapped}
           onPartDropRejected={handlePartDropRejected}
           onDragEndSignal={() => setActiveDragPartId(null)}
@@ -352,7 +382,7 @@ export default function App() {
         placedPartIds={placedPartIds}
         stagedPartId={stagedPartId}
         activeDragPartId={activeDragPartId}
-        hintPartId={hintPartId}
+        hintPartId={effectiveHintPartId}
         collapsed={dockCollapsed}
         onToggleCollapse={() => setDockCollapsed((c) => !c)}
         explodedFactor={explodedFactor}
@@ -373,6 +403,7 @@ export default function App() {
         }}
         hasNextStage={hasNextStage}
         onGoNextStage={handleGoNextStage}
+        onOpenTour={handleOpenTour}
         statusMessage={statusMessage}
       />
 
@@ -416,6 +447,21 @@ export default function App() {
         onRetryDiscovery={() => fetchDiscoveryForBlueprint(currentBlueprint)}
         hasNextStage={hasNextStage}
         onNextStage={handleGoNextStage}
+      />
+
+      {/* Automatic Interactive Guided Tour ("Tour du Propriétaire") for New Users */}
+      <GuidedTourOverlay
+        isOpen={tourOpen}
+        firstPartName={firstReadyPart?.name ?? 'Châssis Porteur'}
+        vehicleName={currentBlueprint.name}
+        hasSnappedAnyPart={placedPartIds.length > 0}
+        onStepChange={(idx) => {
+          setTourStep(idx);
+          if (idx <= 2) {
+            setDockCollapsed(false);
+          }
+        }}
+        onFinish={handleFinishTour}
       />
     </div>
   );

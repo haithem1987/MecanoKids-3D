@@ -28,7 +28,11 @@ export const TopBar: React.FC<TopBarProps> = ({
       </button>
 
       {/* Zone 2: 5 concise single-line text navigation links */}
-      <nav aria-label="Navigation principale et styles 3D" className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+      <nav
+        data-tour="topbar-styles"
+        aria-label="Navigation principale et styles 3D"
+        className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600"
+      >
         <button
           type="button"
           onClick={onOpenCatalog}
@@ -86,6 +90,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div className="flex items-center shrink-0">
         <button
           type="button"
+          data-tour="mascot-cta"
           onClick={onOpenMascot}
           className="px-4 py-2 text-xs font-semibold text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
         >

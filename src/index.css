@@ -43,3 +43,55 @@ h3,
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+@keyframes tourDragPiece {
+  0%,
+  12% {
+    transform: translate3d(0, 44px, 0) scale(1);
+    opacity: 1;
+  }
+  58%,
+  82% {
+    transform: translate3d(0, -34px, 0) scale(1.04);
+    opacity: 1;
+  }
+  95%,
+  100% {
+    transform: translate3d(0, -34px, 0) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes tourSnapBadge {
+  0%,
+  52% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  64%,
+  86% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  96%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+}
+
+.tour-drag-piece {
+  animation: tourDragPiece 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.tour-snap-badge {
+  animation: tourSnapBadge 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-drag-piece,
+  .tour-snap-badge {
+    animation: none;
+  }
+}
+
