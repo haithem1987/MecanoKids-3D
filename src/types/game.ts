@@ -1,4 +1,4 @@
-export type LanguageCode = 'fr' | 'ar';
+export type LanguageCode = 'fr' | 'en' | 'ar';
 
 export enum VisualStyleMode {
   WOOD = 'wood',
@@ -10,12 +10,16 @@ export enum VehicleCategory {
   CAR = 'voiture',
   BOAT = 'bateau',
   PLANE = 'avion',
+  CONSTRUCTION = 'chantier',
+  SPACE = 'espace',
 }
 
 export enum DifficultyTier {
   DISCOVERY = 1,
   WORKSHOP = 2,
   ENGINEER = 3,
+  EXPERT = 4,
+  MASTER = 5,
 }
 
 export enum PartShapeKind {
@@ -60,6 +64,27 @@ export enum PartShapeKind {
   HELI_ROTOR_MAST = 'heli_rotor_mast',
   HELI_MAIN_BLADES = 'heli_main_blades',
   HELI_WINCH = 'heli_winch',
+  // Extended 3D shapes for Construction, Trains, Submarines, Jets, Drones & Space/Robotics
+  CATERPILLAR_TRACK = 'caterpillar_track',
+  EXCAVATOR_ARM = 'excavator_arm',
+  BULLDOZER_BLADE = 'bulldozer_blade',
+  MIXER_DRUM = 'mixer_drum',
+  ROLLER_DRUM = 'roller_drum',
+  FORKLIFT_MAST = 'forklift_mast',
+  HARVESTER_HEADER = 'harvester_header',
+  TRAIN_BOILER = 'train_boiler',
+  SUB_HULL = 'sub_hull',
+  CONNING_TOWER = 'conning_tower',
+  CATAMARAN_PONTOONS = 'catamaran_pontoons',
+  JET_TURBINE_PAIR = 'jet_turbine_pair',
+  DELTA_WING = 'delta_wing',
+  ROCKET_STAGE = 'rocket_stage',
+  ROCKET_NOZZLE_CLUSTER = 'rocket_nozzle_cluster',
+  ROCKET_FAIRING = 'rocket_fairing',
+  SOLAR_PANEL_ARRAY = 'solar_panel_array',
+  PARABOLIC_DISH = 'parabolic_dish',
+  ROVER_MAST_CAM = 'rover_mast_cam',
+  DRONE_QUAD_ARMS = 'drone_quad_arms',
 }
 
 export enum PartAnimationKind {
@@ -81,6 +106,11 @@ export interface PartSpec {
   id: string;
   name: string;
   roleHint: string;
+  nameEn?: string;
+  roleHintEn?: string;
+  nameAr?: string;
+  roleHintAr?: string;
+  isRarePart?: boolean;
   shape: PartShapeKind;
   primaryColor: string;
   secondaryColor: string;
@@ -105,12 +135,26 @@ export interface VehicleBlueprint {
   stageNumber: number;
   name: string;
   subtitle: string;
+  nameEn?: string;
+  subtitleEn?: string;
+  nameAr?: string;
+  subtitleAr?: string;
   category: VehicleCategory;
   tier: DifficultyTier;
   tierLabel: string;
+  tierLabelEn?: string;
+  tierLabelAr?: string;
   ageNote: string;
+  ageNoteEn?: string;
+  ageNoteAr?: string;
   discovery: DiscoveryFacts;
+  discoveryEn?: DiscoveryFacts;
+  discoveryAr?: DiscoveryFacts;
   parts: PartSpec[];
+  isDailyBonus?: boolean;
+  dailyDateKey?: string;
+  rarePartId?: string;
+  rareCollectibleId?: string;
 }
 
 export interface StageCompletionRecord {
@@ -120,6 +164,21 @@ export interface StageCompletionRecord {
   completedAt?: number;
 }
 
+export interface DailyCompletionEntry {
+  stars: number;
+  completedAt: number;
+  rareCollectibleId: string;
+  templateId: string;
+}
+
+export interface DailyChallengeState {
+  completedByDate: Record<string, DailyCompletionEntry>;
+  collectedRareIds: string[];
+  currentStreak: number;
+  bestStreak: number;
+  lastCompletedDate: string | null;
+}
+
 export enum BadgeIconKind {
   WRENCH = 'wrench',
   TARGET = 'target',
@@ -127,6 +186,10 @@ export enum BadgeIconKind {
   CAR = 'car',
   ANCHOR = 'anchor',
   PLANE = 'plane',
+  HAMMER = 'hammer',
+  ROCKET = 'rocket',
+  CALENDAR = 'calendar',
+  GEM = 'gem',
   AWARD = 'award',
   STAR = 'star',
   TROPHY = 'trophy',
@@ -153,8 +216,10 @@ export interface StageInProgressRecord {
 
 export interface PlayerProgress {
   currentBlueprintId: string;
+  lastStandardBlueprintId: string;
   inProgressStages: Record<string, StageInProgressRecord>;
   completedStages: Record<string, StageCompletionRecord>;
+  dailyChallenge: DailyChallengeState;
   unlockedBadges: Record<string, number>;
   language: LanguageCode;
   preferredStyle: VisualStyleMode;

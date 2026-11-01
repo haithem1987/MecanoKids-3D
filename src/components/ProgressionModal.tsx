@@ -4,11 +4,15 @@ import {
   ArrowLeft,
   ArrowRight,
   Award,
+  Calendar,
   Car,
   CheckCircle2,
   Compass,
+  Gem,
+  Hammer,
   Lock,
   Plane,
+  Rocket,
   Star,
   Target,
   Trophy,
@@ -41,6 +45,14 @@ export function renderBadgeIcon(icon: BadgeIconKind, className = 'w-5 h-5'): Rea
       return <Anchor className={className} />;
     case BadgeIconKind.PLANE:
       return <Plane className={className} />;
+    case BadgeIconKind.HAMMER:
+      return <Hammer className={className} />;
+    case BadgeIconKind.ROCKET:
+      return <Rocket className={className} />;
+    case BadgeIconKind.CALENDAR:
+      return <Calendar className={className} />;
+    case BadgeIconKind.GEM:
+      return <Gem className={className} />;
     case BadgeIconKind.AWARD:
       return <Award className={className} />;
     case BadgeIconKind.STAR:
@@ -128,6 +140,20 @@ export const ProgressionModal: React.FC<ProgressionModalProps> = ({
       stars: stats.planeStars,
       maxStars: stats.planeMaxStars,
       color: 'bg-emerald-600',
+    },
+    {
+      id: 'construction',
+      label: t.catConstruction,
+      stars: stats.constructionStars,
+      maxStars: stats.constructionMaxStars,
+      color: 'bg-rose-600',
+    },
+    {
+      id: 'space',
+      label: t.catSpace,
+      stars: stats.spaceStars,
+      maxStars: stats.spaceMaxStars,
+      color: 'bg-indigo-600',
     },
   ];
 
@@ -238,7 +264,7 @@ export const ProgressionModal: React.FC<ProgressionModalProps> = ({
             <h3 className="text-xs font-semibold text-slate-500 mb-2.5">
               {t.familyScoresTitle}
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               {familyBreakdown.map((fam) => {
                 const pct = fam.maxStars > 0 ? Math.round((fam.stars / fam.maxStars) * 100) : 0;
                 return (

@@ -226,8 +226,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = !isSoftwareGl;
     controls.dampingFactor = 0.07;
-    controls.minDistance = 2.8;
-    controls.maxDistance = 10.5;
+    controls.minDistance = 2.6;
+    controls.maxDistance = 12.5;
     controls.maxPolarAngle = Math.PI * 0.485;
     controls.target.set(0, 0.9, 0);
     controls.update();
@@ -484,6 +484,9 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           } else if (currentProps.blueprint.category === VehicleCategory.PLANE) {
             eng.assembledGroup.position.y = 0.08 + Math.sin(elapsed * 2.6) * 0.05;
             eng.assembledGroup.rotation.z = Math.sin(elapsed * 1.5) * 0.03;
+          } else if (currentProps.blueprint.category === VehicleCategory.SPACE) {
+            eng.assembledGroup.position.y = 0.09 + Math.sin(elapsed * 1.9) * 0.055;
+            eng.assembledGroup.rotation.z = Math.sin(elapsed * 1.2) * 0.025;
           } else {
             eng.assembledGroup.position.y = THREE.MathUtils.damp(eng.assembledGroup.position.y, 0, 8, dt);
             eng.assembledGroup.rotation.z = THREE.MathUtils.damp(eng.assembledGroup.rotation.z, 0, 8, dt);
@@ -646,8 +649,19 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       if (placedSet.has(partSpec.id)) continue;
 
       const depsMet = partSpec.dependsOn.every((depId) => placedSet.has(depId));
-      // In Tier 3 (Engineer), only show silhouettes whose dependencies are met (or hinted) to build genuine spatial mastery!
-      if (blueprint.tier === 3 && !depsMet && hintPartId !== partSpec.id && activeDragPartId !== partSpec.id && stagedPartId !== partSpec.id) {
+      const isFocusedPart =
+        hintPartId === partSpec.id ||
+        activeDragPartId === partSpec.id ||
+        stagedPartId === partSpec.id;
+
+      // Progressive spatial difficulty across Tiers 1 -> 5:
+      // - Tiers 1 & 2: show all silhouettes (ready + locked)
+      // - Tiers 3 & 4: show only ready silhouettes (dependencies met) or focused part
+      // - Tier 5 (Master): show silhouette when part is picked up/staged/hinted (or initial base anchor)
+      if ((blueprint.tier === 3 || blueprint.tier === 4) && !depsMet && !isFocusedPart) {
+        continue;
+      }
+      if (blueprint.tier >= 5 && !isFocusedPart && !(placedSet.size === 0 && depsMet)) {
         continue;
       }
 

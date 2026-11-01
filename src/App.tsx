@@ -7,6 +7,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { evaluatePlayerProgression, syncUnlockedBadgesMap } from './data/badges';
 import { VEHICLE_BLUEPRINTS } from './data/blueprints';
 import {
+  buildDailyBlueprintForDate,
+  getTodayDateKey,
+  recordDailyChallengeCompletion,
+} from './data/dailyChallenges';
+import {
   getLocalizedBlueprint,
   getLocalizedBlueprints,
   UI_TRANSLATIONS,
@@ -29,6 +34,7 @@ import { TopBar } from './components/TopBar';
 import { WorkshopCanvas } from './components/WorkshopCanvas';
 import { BottomPartsDock } from './components/BottomPartsDock';
 import { StageCatalogModal } from './components/StageCatalogModal';
+import { DailyChallengeModal } from './components/DailyChallengeModal';
 import { ProgressionModal } from './components/ProgressionModal';
 import { MechanicHintDrawer } from './components/MechanicHintDrawer';
 import { DiscoveryModal } from './components/DiscoveryModal';
@@ -36,6 +42,7 @@ import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 
 export default function App() {
   const [progress, setProgress] = useState<PlayerProgress>(loadPlayerProgress);
+  const [todayDateKey, setTodayDateKey] = useState<string>(() => getTodayDateKey());
 
   const [stagedPartId, setStagedPartId] = useState<string | null>(null);
   const [activeDragPartId, setActiveDragPartId] = useState<string | null>(null);
@@ -47,8 +54,9 @@ export default function App() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const statusTimerRef = useRef<number | null>(null);
 
-  // Modals, Progression, Guide Drawer & Automatic Guided Tour for New Users
+  // Modals, Daily Challenge, Progression, Guide Drawer & Automatic Guided Tour for New Users
   const [catalogOpen, setCatalogOpen] = useState<boolean>(false);
+  const [dailyModalOpen, setDailyModalOpen] = useState<boolean>(false);
   const [progressionOpen, setProgressionOpen] = useState<boolean>(false);
   const [mechanicGuideOpen, setMechanicGuideOpen] = useState<boolean>(false);
   const [discoveryOpen, setDiscoveryOpen] = useState<boolean>(false);
@@ -56,8 +64,27 @@ export default function App() {
   const [tourOpen, setTourOpen] = useState<boolean>(() => !loadPlayerProgress().tutorialSeen);
   const [tourStep, setTourStep] = useState<number>(0);
 
+  // Keep todayDateKey fresh across midnight rollovers
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      const nextKey = getTodayDateKey();
+      setTodayDateKey((prev) => (prev === nextKey ? prev : nextKey));
+    }, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const language = progress.language;
   const t = UI_TRANSLATIONS[language];
+
+  const todayDailyBundle = useMemo(
+    () => buildDailyBlueprintForDate(todayDateKey),
+    [todayDateKey],
+  );
+
+  const localizedDailyBlueprint = useMemo(
+    () => getLocalizedBlueprint(todayDailyBundle.blueprint, language),
+    [todayDailyBundle.blueprint, language],
+  );
 
   const localizedBlueprints = useMemo(
     () => getLocalizedBlueprints(VEHICLE_BLUEPRINTS, language),
@@ -65,11 +92,21 @@ export default function App() {
   );
 
   const currentBlueprint = useMemo(() => {
+    if (progress.currentBlueprintId === todayDailyBundle.blueprint.id) {
+      return localizedDailyBlueprint;
+    }
     const raw =
       VEHICLE_BLUEPRINTS.find((b) => b.id === progress.currentBlueprintId) ??
+      VEHICLE_BLUEPRINTS.find((b) => b.id === progress.lastStandardBlueprintId) ??
       VEHICLE_BLUEPRINTS[0];
     return getLocalizedBlueprint(raw, language);
-  }, [progress.currentBlueprintId, language]);
+  }, [
+    localizedDailyBlueprint,
+    progress.currentBlueprintId,
+    progress.lastStandardBlueprintId,
+    todayDailyBundle.blueprint.id,
+    language,
+  ]);
 
   const progressionSummary = useMemo(
     () =>
@@ -77,8 +114,9 @@ export default function App() {
         progress.completedStages,
         progress.unlockedBadges,
         language,
+        progress.dailyChallenge,
       ),
-    [progress.completedStages, progress.unlockedBadges, language],
+    [progress.completedStages, progress.unlockedBadges, progress.dailyChallenge, language],
   );
 
   const newlyUnlockedBadges = useMemo(
@@ -161,6 +199,9 @@ export default function App() {
     setProgress((p) => ({
       ...p,
       currentBlueprintId: blueprintId,
+      lastStandardBlueprintId: blueprintId.startsWith('daily-')
+        ? p.lastStandardBlueprintId
+        : blueprintId,
       cameraPreset: CameraPreset.ISO,
     }));
     setStagedPartId(null);
@@ -171,6 +212,47 @@ export default function App() {
     setCameraPresetNonce((n) => n + 1);
     setStatusMessage(null);
   }, []);
+
+  const handleStartDailyBuild = useCallback(
+    (resetIfCompleted = false) => {
+      const dailyId = todayDailyBundle.blueprint.id;
+      setProgress((p) => {
+        const existingInProg = p.inProgressStages[dailyId];
+        const shouldReset =
+          resetIfCompleted ||
+          (existingInProg?.placedPartIds.length ?? 0) ===
+            todayDailyBundle.blueprint.parts.length;
+
+        return {
+          ...p,
+          currentBlueprintId: dailyId,
+          lastStandardBlueprintId: p.currentBlueprintId.startsWith('daily-')
+            ? p.lastStandardBlueprintId
+            : p.currentBlueprintId,
+          cameraPreset: CameraPreset.ISO,
+          inProgressStages: shouldReset
+            ? {
+                ...p.inProgressStages,
+                [dailyId]: {
+                  placedPartIds: [],
+                  mistakesCount: 0,
+                  updatedAt: Date.now(),
+                },
+              }
+            : p.inProgressStages,
+        };
+      });
+      setDockCollapsed(false);
+      setStagedPartId(null);
+      setActiveDragPartId(null);
+      setHintPartId(null);
+      setRecentUnlockedBadgeIds([]);
+      setExplodedFactor(0);
+      setCameraPresetNonce((n) => n + 1);
+      setStatusMessage(null);
+    },
+    [todayDailyBundle.blueprint.id, todayDailyBundle.blueprint.parts.length],
+  );
 
   const handleResetStage = useCallback(() => {
     setProgress((p) => ({
@@ -222,11 +304,59 @@ export default function App() {
         if (snappedSpec) {
           flashStatus(t.partSnappedMsg(snappedSpec.name, snappedSpec.roleHint));
         }
-      } else {
-        // Stage Completed! Compute stars & evaluate any newly unlocked achievement badges
+      } else if (currentBlueprint.isDailyBonus) {
+        // Daily Mechanical Challenge Completed! Record streak, Rare Part vault & badges
         const prevSnap = latestProgressRef.current;
         const curMistakes = prevSnap.inProgressStages[currentBlueprint.id]?.mistakesCount ?? 0;
-        const stars = curMistakes === 0 ? 3 : curMistakes <= 2 ? 2 : 1;
+        const twoStarLimit = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
+        const stars = curMistakes === 0 ? 3 : curMistakes <= twoStarLimit ? 2 : 1;
+
+        const { nextState: nextDailyState } = recordDailyChallengeCompletion(
+          prevSnap.dailyChallenge,
+          todayDateKey,
+          stars,
+          todayDailyBundle.rareSpec.id,
+          todayDailyBundle.templateId,
+        );
+
+        const { updatedUnlocked, newlyUnlockedIds } = syncUnlockedBadgesMap(
+          prevSnap.completedStages,
+          prevSnap.unlockedBadges,
+          nextDailyState,
+        );
+
+        setRecentUnlockedBadgeIds(newlyUnlockedIds);
+
+        setProgress((p) => ({
+          ...p,
+          inProgressStages: {
+            ...p.inProgressStages,
+            [currentBlueprint.id]: {
+              placedPartIds: updatedPlaced,
+              mistakesCount: curMistakes,
+              updatedAt: Date.now(),
+            },
+          },
+          dailyChallenge: nextDailyState,
+          unlockedBadges: updatedUnlocked,
+        }));
+
+        window.setTimeout(() => {
+          soundEngine.playStageVictory();
+          window.setTimeout(() => {
+            soundEngine.playBadgeUnlocked();
+          }, 420);
+        }, 160);
+
+        window.setTimeout(() => {
+          setDiscoveryOpen(true);
+        }, 850);
+      } else {
+        // Standard Stage Completed! Compute stars & evaluate any newly unlocked achievement badges
+        const prevSnap = latestProgressRef.current;
+        const curMistakes = prevSnap.inProgressStages[currentBlueprint.id]?.mistakesCount ?? 0;
+        const twoStarLimit = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
+        const stars = curMistakes === 0 ? 3 : curMistakes <= twoStarLimit ? 2 : 1;
         const existing = prevSnap.completedStages[currentBlueprint.id];
         const bestStars = Math.max(existing?.stars ?? 0, stars);
         const bestMistakes =
@@ -247,6 +377,7 @@ export default function App() {
         const { updatedUnlocked, newlyUnlockedIds } = syncUnlockedBadgesMap(
           nextCompletedStages,
           prevSnap.unlockedBadges,
+          prevSnap.dailyChallenge,
         );
 
         setRecentUnlockedBadgeIds(newlyUnlockedIds);
@@ -283,7 +414,15 @@ export default function App() {
       setActiveDragPartId(null);
       setHintPartId((prev) => (prev === partId ? null : prev));
     },
-    [currentBlueprint, flashStatus, placedPartIds, t],
+    [
+      currentBlueprint,
+      flashStatus,
+      placedPartIds,
+      t,
+      todayDailyBundle.rareSpec.id,
+      todayDailyBundle.templateId,
+      todayDateKey,
+    ],
   );
 
   const handlePartDropRejected = useCallback(
@@ -346,14 +485,28 @@ export default function App() {
   }, []);
 
   const handleGoNextStage = useCallback(() => {
+    if (currentBlueprint.isDailyBonus) {
+      const targetId =
+        VEHICLE_BLUEPRINTS.find((b) => b.id === progress.lastStandardBlueprintId)?.id ??
+        VEHICLE_BLUEPRINTS[0].id;
+      handleSelectBlueprint(targetId);
+      return;
+    }
     if (hasNextStage) {
       handleSelectBlueprint(VEHICLE_BLUEPRINTS[currentIndex + 1].id);
     }
-  }, [currentIndex, handleSelectBlueprint, hasNextStage]);
+  }, [
+    currentBlueprint.isDailyBonus,
+    currentIndex,
+    handleSelectBlueprint,
+    hasNextStage,
+    progress.lastStandardBlueprintId,
+  ]);
 
   const handleOpenTour = useCallback(() => {
     setDockCollapsed(false);
     setCatalogOpen(false);
+    setDailyModalOpen(false);
     setProgressionOpen(false);
     setDiscoveryOpen(false);
     setTourStep(0);
@@ -426,22 +579,32 @@ export default function App() {
     hintPartId ?? (tourOpen && (tourStep === 0 || tourStep === 1) ? firstReadyPart?.id ?? null : null);
 
   const isCompleted = placedPartIds.length === currentBlueprint.parts.length;
-  const currentStars =
-    progress.completedStages[currentBlueprint.id]?.stars ??
-    (mistakesCount === 0 ? 3 : mistakesCount <= 2 ? 2 : 1);
+  const twoStarMaxMistakes = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
+  const currentStars = currentBlueprint.isDailyBonus
+    ? progress.dailyChallenge.completedByDate[todayDateKey]?.stars ??
+      (mistakesCount === 0 ? 3 : mistakesCount <= twoStarMaxMistakes ? 2 : 1)
+    : progress.completedStages[currentBlueprint.id]?.stars ??
+      (mistakesCount === 0 ? 3 : mistakesCount <= twoStarMaxMistakes ? 2 : 1);
+
+  const isDailyCompletedToday = Boolean(progress.dailyChallenge.completedByDate[todayDateKey]);
+  const dailyInProgressCount =
+    progress.inProgressStages[todayDailyBundle.blueprint.id]?.placedPartIds.length ?? 0;
 
   return (
     <div
       dir={language === 'ar' ? 'rtl' : 'ltr'}
       className="flex flex-col w-full h-full bg-[#F4F6F9] text-slate-900 overflow-hidden"
     >
-      {/* Top Bar with FR / العربية Language Switcher */}
+      {/* Top Bar with Daily Challenge + FR / EN / العربية Language Switcher */}
       <TopBar
         language={language}
         onSelectLanguage={handleSelectLanguage}
         visualStyle={progress.preferredStyle}
         onSelectStyle={handleSelectStyle}
         onOpenCatalog={() => setCatalogOpen(true)}
+        onOpenDailyChallenge={() => setDailyModalOpen(true)}
+        isDailyCompletedToday={isDailyCompletedToday}
+        isDailyActiveNow={Boolean(currentBlueprint.isDailyBonus)}
         onOpenDiscovery={() => setDiscoveryOpen(true)}
         onOpenMechanicGuide={() => {
           setMechanicGuideOpen((open) => {
@@ -528,10 +691,28 @@ export default function App() {
           setCatalogOpen(false);
           setProgressionOpen(true);
         }}
+        dailyVehicleName={localizedDailyBlueprint.name}
+        dailyRarePartName={todayDailyBundle.rareSpec.name[language]}
+        isDailyCompletedToday={isDailyCompletedToday}
+        onOpenDailyChallenge={() => setDailyModalOpen(true)}
         onSaveNow={handleManualSave}
         onExportSave={handleExportSave}
         onImportSaveFile={handleImportSaveFile}
         onResetAllProgress={handleResetAllProgress}
+      />
+
+      {/* Daily Mechanical Challenge & Rare Collector Parts Vault Modal */}
+      <DailyChallengeModal
+        isOpen={dailyModalOpen}
+        onClose={() => setDailyModalOpen(false)}
+        language={language}
+        todayDateKey={todayDateKey}
+        dailyBlueprint={localizedDailyBlueprint}
+        todayRareSpec={todayDailyBundle.rareSpec}
+        dailyState={progress.dailyChallenge}
+        isCurrentlyOnWorkbench={Boolean(currentBlueprint.isDailyBonus)}
+        inProgressPartCount={dailyInProgressCount}
+        onStartDailyBuild={handleStartDailyBuild}
       />
 
       {/* Progression & Achievement Badges Modal (Accessible from Catalog & Victory Screen) */}
@@ -566,12 +747,14 @@ export default function App() {
         isCompleted={isCompleted}
         starsEarned={currentStars}
         newlyUnlockedBadges={newlyUnlockedBadges}
+        rareRewardSpec={currentBlueprint.isDailyBonus ? todayDailyBundle.rareSpec : null}
+        onOpenDailyVault={() => setDailyModalOpen(true)}
         onOpenProgression={() => setProgressionOpen(true)}
         hasNextStage={hasNextStage}
         onNextStage={handleGoNextStage}
       />
 
-      {/* Automatic Interactive Guided Tour ("Tour du Propriétaire" / "جولة تعريفية") */}
+      {/* Automatic Interactive Guided Tour ("Tour du Propriétaire" / "Guided Tour" / "جولة تعريفية") */}
       <GuidedTourOverlay
         isOpen={tourOpen}
         language={language}

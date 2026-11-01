@@ -5,6 +5,7 @@ import {
   ChevronUp,
   CircleHelp,
   Compass,
+  Gem,
   Lock,
   RotateCcw,
   Save,
@@ -136,7 +137,9 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
               </span>
               <span aria-hidden="true">·</span>
               <span className="font-semibold text-slate-700">
-                {t.stageOf(blueprint.stageNumber, totalStages)}
+                {blueprint.isDailyBonus
+                  ? t.dailyBonusStageLabel
+                  : t.stageOf(blueprint.stageNumber, totalStages)}
               </span>
               <span aria-hidden="true">·</span>
               <span>{blueprint.tierLabel}</span>
@@ -176,16 +179,24 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
                     <Sparkles className="w-3.5 h-3.5 shrink-0" />
                     <span>{t.discoveryBtn}</span>
                   </button>
-                  {hasNextStage && (
+                  {(hasNextStage || blueprint.isDailyBonus) && (
                     <button
                       type="button"
                       onClick={onGoNextStage}
                       className="px-3.5 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
                     >
-                      {t.nextStageBtn}
+                      {blueprint.isDailyBonus ? t.returnToStagesBtn : t.nextStageBtn}
                     </button>
                   )}
                 </div>
+              ) : blueprint.isDailyBonus ? (
+                <button
+                  type="button"
+                  onClick={onGoNextStage}
+                  className="px-3 py-1 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors whitespace-nowrap cursor-pointer"
+                >
+                  {t.returnToStagesBtn}
+                </button>
               ) : (
                 <span className="hidden xl:inline text-xs text-slate-500">
                   {t.dragInstruction}
@@ -236,20 +247,30 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
                           ? 'bg-sky-50 border-sky-600 -translate-y-0.5 cursor-grab active:cursor-grabbing'
                           : isHinted
                             ? 'bg-amber-50 border-amber-500 -translate-y-0.5 cursor-grab'
-                            : isLocked
-                              ? 'bg-slate-50 border-slate-200 hover:border-slate-300 cursor-pointer'
-                              : 'bg-white border-slate-200 hover:border-sky-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
+                            : part.isRarePart && !isLocked
+                              ? 'bg-amber-50/65 border-amber-400 hover:border-amber-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
+                              : isLocked
+                                ? 'bg-slate-50 border-slate-200 hover:border-slate-300 cursor-pointer'
+                                : 'bg-white border-slate-200 hover:border-sky-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono tabular-nums text-[11px] text-slate-400">
                         {String(idx + 1).padStart(2, '0')}
+                        {part.isRarePart ? ` · ${t.rarePartCardLabel}` : ''}
                       </span>
-                      <span
-                        className="w-3.5 h-3.5 rounded-sm border border-black/10 shrink-0"
-                        style={{ backgroundColor: part.primaryColor }}
-                        aria-hidden="true"
-                      />
+                      {part.isRarePart ? (
+                        <Gem
+                          className="w-3.5 h-3.5 text-amber-600 shrink-0"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <span
+                          className="w-3.5 h-3.5 rounded-sm border border-black/10 shrink-0"
+                          style={{ backgroundColor: part.primaryColor }}
+                          aria-hidden="true"
+                        />
+                      )}
                     </div>
 
                     <div className="mt-1">

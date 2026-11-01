@@ -5,11 +5,13 @@ import {
   Award,
   BookOpen,
   Eye,
+  Gem,
   Lightbulb,
   Star,
   Trophy,
   X,
 } from 'lucide-react';
+import { RareCollectibleSpec } from '../data/dailyChallenges';
 import { renderBadgeIcon } from './ProgressionModal';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { BadgeEvaluation, LanguageCode, VehicleBlueprint } from '../types/game';
@@ -22,6 +24,8 @@ interface DiscoveryModalProps {
   isCompleted: boolean;
   starsEarned: number;
   newlyUnlockedBadges: BadgeEvaluation[];
+  rareRewardSpec?: RareCollectibleSpec | null;
+  onOpenDailyVault?: () => void;
   onOpenProgression: () => void;
   hasNextStage: boolean;
   onNextStage: () => void;
@@ -35,6 +39,8 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
   isCompleted,
   starsEarned,
   newlyUnlockedBadges,
+  rareRewardSpec,
+  onOpenDailyVault,
   onOpenProgression,
   hasNextStage,
   onNextStage,
@@ -57,7 +63,11 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
         <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span>{t.stageLabel(blueprint.stageNumber)}</span>
+              <span>
+                {blueprint.isDailyBonus
+                  ? t.dailyBonusStageLabel
+                  : t.stageLabel(blueprint.stageNumber)}
+              </span>
               <span aria-hidden="true">·</span>
               <span>{blueprint.tierLabel}</span>
               {isCompleted && (
@@ -105,6 +115,41 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Rare Collector Part Reward Banner (Daily Mechanical Challenge) */}
+              {blueprint.isDailyBonus && rareRewardSpec && (
+                <div className="p-4 bg-amber-50/75 border border-amber-300 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
+                      <Gem className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-amber-950">
+                        {t.dailyRareUnlockedBannerTitle}
+                      </p>
+                      <p className="mt-0.5 text-sm font-bold text-slate-900">
+                        {rareRewardSpec.name[language]}
+                      </p>
+                      <p className="text-xs text-slate-600">
+                        {rareRewardSpec.alloyBadge[language]}
+                      </p>
+                    </div>
+                  </div>
+
+                  {onOpenDailyVault && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onOpenDailyVault();
+                      }}
+                      className="px-3.5 py-2 text-xs font-semibold text-amber-950 bg-white border border-amber-300 hover:bg-amber-100/70 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    >
+                      {t.openDailyVaultBtn}
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Newly Unlocked Achievement Badges Celebration Banner */}
               {newlyUnlockedBadges.length > 0 && (
                 <div className="p-4 bg-amber-50 border border-amber-300 rounded-xl space-y-3">
@@ -212,7 +257,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
             <span>{t.admire3DBtn}</span>
           </button>
 
-          {isCompleted && hasNextStage && (
+          {isCompleted && (hasNextStage || blueprint.isDailyBonus) && (
             <button
               type="button"
               onClick={() => {
@@ -221,7 +266,9 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               }}
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors min-h-[40px] cursor-pointer"
             >
-              <span>{t.goToNextStageBtn}</span>
+              <span>
+                {blueprint.isDailyBonus ? t.returnToStagesBtn : t.goToNextStageBtn}
+              </span>
               <ForwardArrow className="w-4 h-4 shrink-0" />
             </button>
           )}

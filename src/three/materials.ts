@@ -185,6 +185,54 @@ export function createPartMaterialSet(
   isSoftwareGl: boolean,
   maxAnisotropy: number,
 ): PartMaterialSet {
+  if (spec.isRarePart) {
+    const brushedGold = createBrushedMetalTexture('#f59e0b', maxAnisotropy);
+    const brushedTitanium = createBrushedMetalTexture('#e2e8f0', maxAnisotropy);
+    return {
+      primary: new THREE.MeshPhysicalMaterial({
+        map: brushedGold,
+        color: '#fbbf24',
+        emissive: '#b45309',
+        emissiveIntensity: 0.16,
+        roughness: 0.18,
+        metalness: 0.92,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.08,
+      }),
+      secondary: new THREE.MeshPhysicalMaterial({
+        map: brushedTitanium,
+        color: '#f8fafc',
+        roughness: 0.22,
+        metalness: 0.88,
+        clearcoat: 0.9,
+      }),
+      darkRubber: new THREE.MeshStandardMaterial({
+        color: '#1e293b',
+        roughness: 0.65,
+        metalness: 0.25,
+      }),
+      metalAccent: new THREE.MeshPhysicalMaterial({
+        color: '#fef08a',
+        emissive: '#d97706',
+        emissiveIntensity: 0.22,
+        roughness: 0.14,
+        metalness: 0.96,
+        clearcoat: 1.0,
+      }),
+      glass: new THREE.MeshPhysicalMaterial({
+        color: '#fde68a',
+        roughness: 0.08,
+        metalness: 0.1,
+        transmission: isSoftwareGl ? 0 : 0.82,
+        transparent: true,
+        opacity: isSoftwareGl ? 0.48 : 1,
+        depthWrite: false,
+        ior: 1.52,
+        clearcoat: 1.0,
+      }),
+    };
+  }
+
   if (style === VisualStyleMode.WOOD) {
     const naturalWood = createWoodGrainTexture('#dfbe91', '#9c6b3b', maxAnisotropy);
     const paintedPrimary = createWoodGrainTexture(spec.primaryColor, '#4a2e14', maxAnisotropy);

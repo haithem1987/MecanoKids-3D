@@ -1228,6 +1228,625 @@ export function buildPartMeshGroup(
       break;
     }
 
+    case PartShapeKind.CATERPILLAR_TRACK: {
+      for (const side of [-1, 1]) {
+        const trackGroup = new THREE.Group();
+        const belt = new THREE.Mesh(
+          makeBeveledBox(0.32, sy, sz, 0.08),
+          mats.darkRubber,
+        );
+        belt.castShadow = true;
+        belt.receiveShadow = true;
+        trackGroup.add(belt);
+
+        const corePlate = new THREE.Mesh(
+          makeBeveledBox(0.34, sy * 0.52, sz * 0.8, 0.03),
+          mats.primary,
+        );
+        trackGroup.add(corePlate);
+
+        const wheelCount = 4;
+        for (let i = 0; i < wheelCount; i++) {
+          const zPos = (i / (wheelCount - 1) - 0.5) * (sz * 0.72);
+          const rollerGeo = new THREE.CylinderGeometry(sy * 0.34, sy * 0.34, 0.36, 14);
+          rollerGeo.rotateZ(Math.PI / 2);
+          const roller = new THREE.Mesh(rollerGeo, mats.metalAccent);
+          roller.position.set(0, -sy * 0.05, zPos);
+          trackGroup.add(roller);
+        }
+
+        trackGroup.position.set(side * (sx * 0.44), 0, 0);
+        root.add(trackGroup);
+      }
+
+      const crossAxle = new THREE.Mesh(
+        makeBeveledBox(sx * 0.85, sy * 0.32, sz * 0.42, 0.03),
+        mats.secondary,
+      );
+      root.add(crossAxle);
+      break;
+    }
+
+    case PartShapeKind.EXCAVATOR_ARM: {
+      const baseMount = new THREE.Mesh(
+        makeBeveledBox(sx * 0.75, sy * 0.32, 0.34, 0.03),
+        mats.secondary,
+      );
+      baseMount.position.set(0, -sy * 0.3, -sz * 0.38);
+      root.add(baseMount);
+
+      const lowerBoom = new THREE.Mesh(
+        makeBeveledBox(sx * 0.36, 0.22, sz * 0.65, 0.03),
+        mats.primary,
+      );
+      lowerBoom.position.set(0, sy * 0.08, -sz * 0.12);
+      lowerBoom.rotation.x = -0.52;
+      lowerBoom.castShadow = true;
+      root.add(lowerBoom);
+
+      const cylinderPiston = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.055, 0.065, sz * 0.48, 12),
+        mats.metalAccent,
+      );
+      cylinderPiston.position.set(0, sy * 0.22, -sz * 0.14);
+      cylinderPiston.rotation.x = 1.05;
+      root.add(cylinderPiston);
+
+      const upperStick = new THREE.Mesh(
+        makeBeveledBox(sx * 0.3, 0.18, sz * 0.58, 0.025),
+        mats.primary,
+      );
+      upperStick.position.set(0, sy * 0.12, sz * 0.28);
+      upperStick.rotation.x = 0.62;
+      upperStick.castShadow = true;
+      root.add(upperStick);
+
+      const bucket = new THREE.Mesh(
+        new THREE.CylinderGeometry(sx * 0.48, sx * 0.42, sx * 0.72, 12, 1, false, 0, Math.PI * 1.15),
+        mats.darkRubber,
+      );
+      bucket.rotation.z = Math.PI / 2;
+      bucket.position.set(0, -sy * 0.2, sz * 0.5);
+      bucket.castShadow = true;
+      root.add(bucket);
+      break;
+    }
+
+    case PartShapeKind.BULLDOZER_BLADE: {
+      const bladeShape = new THREE.Shape();
+      bladeShape.moveTo(-0.12, -sy * 0.48);
+      bladeShape.quadraticCurveTo(0.18, 0, -0.06, sy * 0.48);
+      bladeShape.lineTo(0.08, sy * 0.48);
+      bladeShape.quadraticCurveTo(0.32, 0, 0.06, -sy * 0.48);
+      bladeShape.closePath();
+
+      const bladeGeo = new THREE.ExtrudeGeometry(bladeShape, {
+        depth: sx,
+        bevelEnabled: true,
+        bevelThickness: 0.025,
+        bevelSize: 0.025,
+        bevelSegments: 2,
+      });
+      bladeGeo.center();
+      bladeGeo.rotateY(Math.PI / 2);
+
+      const blade = new THREE.Mesh(bladeGeo, mats.primary);
+      blade.position.set(0, 0, sz * 0.22);
+      blade.castShadow = true;
+      root.add(blade);
+
+      for (const side of [-1, 1]) {
+        const pushArm = new THREE.Mesh(
+          makeBeveledBox(0.12, 0.14, sz * 0.72, 0.02),
+          mats.metalAccent,
+        );
+        pushArm.position.set(side * sx * 0.36, -sy * 0.18, -sz * 0.22);
+        root.add(pushArm);
+      }
+      break;
+    }
+
+    case PartShapeKind.MIXER_DRUM: {
+      const points = [
+        new THREE.Vector2(0.01, -sz * 0.48),
+        new THREE.Vector2(sx * 0.42, -sz * 0.32),
+        new THREE.Vector2(sx * 0.5, 0.04),
+        new THREE.Vector2(sx * 0.28, sz * 0.48),
+        new THREE.Vector2(0.14, sz * 0.5),
+      ];
+      const drumGeo = new THREE.LatheGeometry(points, 22);
+      drumGeo.rotateX(Math.PI / 2);
+      const drumGroup = new THREE.Group();
+      const drum = new THREE.Mesh(drumGeo, mats.primary);
+      drum.castShadow = true;
+      drumGroup.add(drum);
+
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(sx * 0.48, 0.045, 10, 24),
+        mats.secondary,
+      );
+      ring.position.set(0, 0, -0.04);
+      drumGroup.add(ring);
+
+      drumGroup.rotation.x = -0.18;
+      root.add(drumGroup);
+      break;
+    }
+
+    case PartShapeKind.ROLLER_DRUM: {
+      const drumGeo = new THREE.CylinderGeometry(sy * 0.48, sy * 0.48, sx * 0.88, 26);
+      drumGeo.rotateZ(Math.PI / 2);
+      const drum = new THREE.Mesh(drumGeo, mats.metalAccent);
+      drum.castShadow = true;
+      drum.receiveShadow = true;
+      root.add(drum);
+
+      for (const side of [-1, 1]) {
+        const yoke = new THREE.Mesh(
+          makeBeveledBox(0.08, sy * 0.45, sz * 0.72, 0.02),
+          mats.primary,
+        );
+        yoke.position.set(side * sx * 0.48, 0.05, -sz * 0.2);
+        root.add(yoke);
+      }
+      break;
+    }
+
+    case PartShapeKind.FORKLIFT_MAST: {
+      for (const side of [-1, 1]) {
+        const rail = new THREE.Mesh(
+          makeBeveledBox(0.1, sy, 0.12, 0.015),
+          mats.darkRubber,
+        );
+        rail.position.set(side * sx * 0.32, 0, -sz * 0.25);
+        rail.castShadow = true;
+        root.add(rail);
+
+        const forkH = new THREE.Mesh(
+          makeBeveledBox(0.12, 0.06, sz * 0.78, 0.01),
+          mats.metalAccent,
+        );
+        forkH.position.set(side * sx * 0.26, -sy * 0.42, sz * 0.16);
+        forkH.castShadow = true;
+        root.add(forkH);
+      }
+
+      const carriage = new THREE.Mesh(
+        makeBeveledBox(sx * 0.76, sy * 0.28, 0.08, 0.015),
+        mats.primary,
+      );
+      carriage.position.set(0, -sy * 0.28, -sz * 0.18);
+      root.add(carriage);
+      break;
+    }
+
+    case PartShapeKind.HARVESTER_HEADER: {
+      const trough = new THREE.Mesh(
+        makeBeveledBox(sx, sy * 0.45, sz * 0.55, 0.03),
+        mats.primary,
+      );
+      trough.position.set(0, -sy * 0.18, -sz * 0.12);
+      trough.castShadow = true;
+      root.add(trough);
+
+      const reelShaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.06, 0.06, sx * 0.94, 14),
+        mats.metalAccent,
+      );
+      reelShaft.rotation.z = Math.PI / 2;
+      reelShaft.position.set(0, sy * 0.12, sz * 0.15);
+      root.add(reelShaft);
+
+      for (let i = 0; i < 5; i++) {
+        const ang = (i / 5) * Math.PI * 2;
+        const bar = new THREE.Mesh(
+          makeBeveledBox(sx * 0.92, 0.04, 0.05, 0.008),
+          mats.secondary,
+        );
+        bar.position.set(
+          0,
+          sy * 0.12 + Math.sin(ang) * sy * 0.3,
+          sz * 0.15 + Math.cos(ang) * sy * 0.3,
+        );
+        root.add(bar);
+      }
+      break;
+    }
+
+    case PartShapeKind.TRAIN_BOILER: {
+      const boiler = new THREE.Mesh(
+        new THREE.CylinderGeometry(sx * 0.46, sx * 0.48, sz * 0.85, 22),
+        mats.primary,
+      );
+      boiler.rotation.x = Math.PI / 2;
+      boiler.castShadow = true;
+      root.add(boiler);
+
+      const noseCone = new THREE.Mesh(
+        new THREE.SphereGeometry(sx * 0.46, 20, 16),
+        mats.secondary,
+      );
+      noseCone.scale.set(1, 0.92, 1.15);
+      noseCone.position.set(0, 0, sz * 0.4);
+      root.add(noseCone);
+
+      const headlamp = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.14, 0.14, 0.1, 16),
+        mats.glass,
+      );
+      headlamp.rotation.x = Math.PI / 2;
+      headlamp.position.set(0, sy * 0.16, sz * 0.56);
+      root.add(headlamp);
+      break;
+    }
+
+    case PartShapeKind.SUB_HULL: {
+      const hull = new THREE.Mesh(
+        new THREE.CapsuleGeometry(sx * 0.48, Math.max(0.5, sz - sx), 12, 24),
+        mats.primary,
+      );
+      hull.rotation.x = Math.PI / 2;
+      hull.scale.set(1, sy / sx, 1);
+      hull.castShadow = true;
+      hull.receiveShadow = true;
+      root.add(hull);
+
+      const bellyBand = new THREE.Mesh(
+        makeBeveledBox(sx * 0.72, sy * 0.18, sz * 0.76, 0.03),
+        mats.secondary,
+      );
+      bellyBand.position.set(0, -sy * 0.38, 0);
+      root.add(bellyBand);
+
+      for (const zOff of [-sz * 0.22, 0, sz * 0.22]) {
+        for (const side of [-1, 1]) {
+          const port = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.1, 0.1, 0.06, 14),
+            mats.glass,
+          );
+          port.rotation.z = Math.PI / 2;
+          port.position.set(side * sx * 0.47, 0.04, zOff);
+          port.renderOrder = 2;
+          root.add(port);
+        }
+      }
+      break;
+    }
+
+    case PartShapeKind.CONNING_TOWER: {
+      const sailTower = new THREE.Mesh(
+        makeBeveledBox(sx * 0.62, sy * 0.82, sz, 0.08),
+        mats.primary,
+      );
+      sailTower.castShadow = true;
+      root.add(sailTower);
+
+      const divePlanes = new THREE.Mesh(
+        makeBeveledBox(sx * 1.35, 0.07, sz * 0.42, 0.015),
+        mats.secondary,
+      );
+      divePlanes.position.set(0, sy * 0.1, sz * 0.1);
+      root.add(divePlanes);
+
+      const periscope = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.045, sy * 0.55, 12),
+        mats.metalAccent,
+      );
+      periscope.position.set(0, sy * 0.58, sz * 0.12);
+      root.add(periscope);
+
+      const scopeLens = new THREE.Mesh(
+        makeBeveledBox(0.1, 0.09, 0.16, 0.015),
+        mats.glass,
+      );
+      scopeLens.position.set(0, sy * 0.85, sz * 0.16);
+      root.add(scopeLens);
+      break;
+    }
+
+    case PartShapeKind.CATAMARAN_PONTOONS: {
+      for (const side of [-1, 1]) {
+        const pontoon = new THREE.Mesh(
+          new THREE.CapsuleGeometry(sy * 0.46, Math.max(0.5, sz - sy), 10, 18),
+          mats.primary,
+        );
+        pontoon.rotation.x = Math.PI / 2;
+        pontoon.position.set(side * sx * 0.42, 0, 0);
+        pontoon.castShadow = true;
+        pontoon.receiveShadow = true;
+        root.add(pontoon);
+      }
+
+      for (const zOff of [-sz * 0.26, sz * 0.26]) {
+        const crossStrut = new THREE.Mesh(
+          makeBeveledBox(sx * 0.86, sy * 0.25, 0.16, 0.02),
+          mats.metalAccent,
+        );
+        crossStrut.position.set(0, sy * 0.24, zOff);
+        root.add(crossStrut);
+      }
+      break;
+    }
+
+    case PartShapeKind.JET_TURBINE_PAIR: {
+      for (const side of [-1, 1]) {
+        const podGroup = new THREE.Group();
+        const nacelle = new THREE.Mesh(
+          new THREE.CylinderGeometry(sy * 0.46, sy * 0.38, sz, 20),
+          mats.primary,
+        );
+        nacelle.rotation.x = Math.PI / 2;
+        nacelle.castShadow = true;
+        podGroup.add(nacelle);
+
+        const intakeRim = new THREE.Mesh(
+          new THREE.TorusGeometry(sy * 0.43, 0.045, 10, 20),
+          mats.metalAccent,
+        );
+        intakeRim.position.set(0, 0, sz * 0.48);
+        podGroup.add(intakeRim);
+
+        const fanCore = new THREE.Mesh(
+          new THREE.CylinderGeometry(sy * 0.38, sy * 0.2, 0.14, 16),
+          mats.darkRubber,
+        );
+        fanCore.rotation.x = Math.PI / 2;
+        fanCore.position.set(0, 0, sz * 0.44);
+        podGroup.add(fanCore);
+
+        const pylon = new THREE.Mesh(
+          makeBeveledBox(0.08, sy * 0.45, sz * 0.55, 0.015),
+          mats.secondary,
+        );
+        pylon.position.set(0, sy * 0.42, 0);
+        podGroup.add(pylon);
+
+        podGroup.position.set(side * sx * 0.42, 0, 0);
+        root.add(podGroup);
+      }
+      break;
+    }
+
+    case PartShapeKind.DELTA_WING: {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, sz * 0.52);
+      shape.lineTo(sx * 0.5, -sz * 0.48);
+      shape.lineTo(sx * 0.18, -sz * 0.48);
+      shape.lineTo(0, -sz * 0.36);
+      shape.lineTo(-sx * 0.18, -sz * 0.48);
+      shape.lineTo(-sx * 0.5, -sz * 0.48);
+      shape.closePath();
+
+      const deltaGeo = new THREE.ExtrudeGeometry(shape, {
+        depth: Math.max(0.06, sy * 0.6),
+        bevelEnabled: true,
+        bevelThickness: 0.025,
+        bevelSize: 0.025,
+        bevelSegments: 2,
+      });
+      deltaGeo.center();
+      deltaGeo.rotateX(Math.PI / 2);
+
+      const wing = new THREE.Mesh(deltaGeo, mats.primary);
+      wing.castShadow = true;
+      wing.receiveShadow = true;
+      root.add(wing);
+
+      for (const side of [-1, 1]) {
+        const winglet = new THREE.Mesh(
+          makeBeveledBox(0.06, sy * 2.2, sz * 0.28, 0.015),
+          mats.secondary,
+        );
+        winglet.position.set(side * sx * 0.49, sy * 0.9, -sz * 0.34);
+        root.add(winglet);
+      }
+      break;
+    }
+
+    case PartShapeKind.ROCKET_STAGE: {
+      const stageCyl = new THREE.Mesh(
+        new THREE.CylinderGeometry(sx * 0.46, sx * 0.48, sy, 24),
+        mats.primary,
+      );
+      stageCyl.castShadow = true;
+      stageCyl.receiveShadow = true;
+      root.add(stageCyl);
+
+      for (const yFactor of [-0.38, 0.38]) {
+        const band = new THREE.Mesh(
+          new THREE.CylinderGeometry(sx * 0.49, sx * 0.49, sy * 0.12, 24),
+          mats.secondary,
+        );
+        band.position.set(0, sy * yFactor, 0);
+        root.add(band);
+      }
+
+      for (const side of [-1, 1]) {
+        const pipe = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.035, 0.035, sy * 0.88, 10),
+          mats.metalAccent,
+        );
+        pipe.position.set(side * sx * 0.49, 0, 0);
+        root.add(pipe);
+      }
+      break;
+    }
+
+    case PartShapeKind.ROCKET_NOZZLE_CLUSTER: {
+      const thrustPlate = new THREE.Mesh(
+        new THREE.CylinderGeometry(sx * 0.44, sx * 0.4, sy * 0.28, 20),
+        mats.secondary,
+      );
+      thrustPlate.position.set(0, sy * 0.32, 0);
+      root.add(thrustPlate);
+
+      const offsets: Array<[number, number]> = [
+        [0, 0],
+        [-sx * 0.24, 0],
+        [sx * 0.24, 0],
+        [0, -sz * 0.24],
+        [0, sz * 0.24],
+      ];
+
+      for (const [ox, oz] of offsets) {
+        const bell = new THREE.Mesh(
+          new THREE.CylinderGeometry(sx * 0.09, sx * 0.18, sy * 0.68, 16, 1, true),
+          mats.darkRubber,
+        );
+        bell.position.set(ox, -sy * 0.14, oz);
+        bell.castShadow = true;
+        root.add(bell);
+      }
+      break;
+    }
+
+    case PartShapeKind.ROCKET_FAIRING: {
+      const points = [
+        new THREE.Vector2(0.001, sy * 0.5),
+        new THREE.Vector2(sx * 0.22, sy * 0.24),
+        new THREE.Vector2(sx * 0.44, -sy * 0.12),
+        new THREE.Vector2(sx * 0.47, -sy * 0.5),
+        new THREE.Vector2(0, -sy * 0.5),
+      ];
+      const coneGeo = new THREE.LatheGeometry(points, 24);
+      const cone = new THREE.Mesh(coneGeo, mats.primary);
+      cone.castShadow = true;
+      root.add(cone);
+
+      const tip = new THREE.Mesh(
+        new THREE.SphereGeometry(sx * 0.09, 12, 12),
+        mats.metalAccent,
+      );
+      tip.position.set(0, sy * 0.48, 0);
+      root.add(tip);
+
+      const windowPort = new THREE.Mesh(
+        new THREE.SphereGeometry(sx * 0.14, 14, 14),
+        mats.glass,
+      );
+      windowPort.position.set(0, -sy * 0.08, sx * 0.36);
+      windowPort.renderOrder = 2;
+      root.add(windowPort);
+      break;
+    }
+
+    case PartShapeKind.SOLAR_PANEL_ARRAY: {
+      const centerHub = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.1, 0.24, 12),
+        mats.metalAccent,
+      );
+      centerHub.rotation.z = Math.PI / 2;
+      root.add(centerHub);
+
+      for (const side of [-1, 1]) {
+        const wingWidth = sx * 0.44;
+        const panel = new THREE.Mesh(
+          makeBeveledBox(wingWidth, sy, sz, 0.015),
+          mats.primary,
+        );
+        panel.position.set(side * (sx * 0.27), 0, 0);
+        panel.castShadow = true;
+        root.add(panel);
+
+        const trimBar = new THREE.Mesh(
+          makeBeveledBox(wingWidth * 0.94, sy + 0.025, 0.05, 0.008),
+          mats.metalAccent,
+        );
+        trimBar.position.set(side * (sx * 0.27), 0, 0);
+        root.add(trimBar);
+      }
+      break;
+    }
+
+    case PartShapeKind.PARABOLIC_DISH: {
+      const dishPoints = [
+        new THREE.Vector2(0.001, -sy * 0.2),
+        new THREE.Vector2(sx * 0.25, -sy * 0.12),
+        new THREE.Vector2(sx * 0.48, sy * 0.18),
+        new THREE.Vector2(sx * 0.5, sy * 0.22),
+      ];
+      const dishGeo = new THREE.LatheGeometry(dishPoints, 24);
+      const dish = new THREE.Mesh(dishGeo, mats.primary);
+      dish.castShadow = true;
+      root.add(dish);
+
+      const feedRod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.025, 0.035, sy * 0.65, 10),
+        mats.metalAccent,
+      );
+      feedRod.position.set(0, sy * 0.18, 0);
+      root.add(feedRod);
+
+      const receiver = new THREE.Mesh(
+        new THREE.SphereGeometry(0.085, 12, 12),
+        mats.secondary,
+      );
+      receiver.position.set(0, sy * 0.52, 0);
+      root.add(receiver);
+      break;
+    }
+
+    case PartShapeKind.ROVER_MAST_CAM: {
+      const mastPost = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.055, 0.07, sy * 0.78, 12),
+        mats.metalAccent,
+      );
+      mastPost.position.set(0, -sy * 0.08, 0);
+      mastPost.castShadow = true;
+      root.add(mastPost);
+
+      const camHead = new THREE.Mesh(
+        makeBeveledBox(sx, sy * 0.34, sz, 0.03),
+        mats.primary,
+      );
+      camHead.position.set(0, sy * 0.35, 0);
+      camHead.castShadow = true;
+      root.add(camHead);
+
+      for (const side of [-1, 1]) {
+        const lens = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.085, 0.085, 0.08, 14),
+          mats.glass,
+        );
+        lens.rotation.x = Math.PI / 2;
+        lens.position.set(side * sx * 0.25, sy * 0.35, sz * 0.52);
+        lens.renderOrder = 2;
+        root.add(lens);
+      }
+      break;
+    }
+
+    case PartShapeKind.DRONE_QUAD_ARMS: {
+      for (const sxSign of [-1, 1]) {
+        for (const szSign of [-1, 1]) {
+          const arm = new THREE.Mesh(
+            makeBeveledBox(sx * 0.52, 0.07, 0.1, 0.015),
+            mats.secondary,
+          );
+          arm.position.set(sxSign * sx * 0.22, 0, szSign * sz * 0.22);
+          arm.rotation.y = sxSign * szSign * (Math.PI / 4);
+          root.add(arm);
+
+          const guard = new THREE.Mesh(
+            new THREE.TorusGeometry(0.28, 0.03, 8, 20),
+            mats.primary,
+          );
+          guard.rotation.x = Math.PI / 2;
+          guard.position.set(sxSign * sx * 0.38, 0.04, szSign * sz * 0.38);
+          root.add(guard);
+
+          const blade = new THREE.Mesh(
+            makeBeveledBox(0.46, 0.02, 0.06, 0.005),
+            mats.darkRubber,
+          );
+          blade.position.set(sxSign * sx * 0.38, 0.06, szSign * sz * 0.38);
+          blade.rotation.y = (sxSign + szSign) * 0.5;
+          root.add(blade);
+        }
+      }
+      break;
+    }
+
     default: {
       const box = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.04), mats.primary);
       box.castShadow = true;

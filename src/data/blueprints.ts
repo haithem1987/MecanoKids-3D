@@ -5,8 +5,11 @@ import {
   VehicleBlueprint,
   VehicleCategory,
 } from '../types/game';
+import { buildBlueprintFromSeed, BlueprintSeed } from './catalogTemplates';
+import { FLEET_LAND_SEA_AIR_SEEDS } from './fleetLandSeaAir';
+import { FLEET_CONSTRUCTION_SPACE_SEEDS } from './fleetConstructionSpace';
 
-export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
+const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
   // =========================================================================
   // PALIER 1 — DÉCOUVERTE (4 à 5 pièces, aimantation généreuse)
   // =========================================================================
@@ -1160,3 +1163,64 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     ],
   },
 ];
+
+function assemble100Blueprints(): VehicleBlueprint[] {
+  const allSeeds: BlueprintSeed[] = [
+    ...FLEET_LAND_SEA_AIR_SEEDS,
+    ...FLEET_CONSTRUCTION_SPACE_SEEDS,
+  ];
+
+  const generated = allSeeds.map((seed) => buildBlueprintFromSeed(seed, 1));
+  const combined: VehicleBlueprint[] = [...HANDCRAFTED_BLUEPRINTS, ...generated];
+
+  const tiers: DifficultyTier[] = [
+    DifficultyTier.DISCOVERY,
+    DifficultyTier.WORKSHOP,
+    DifficultyTier.ENGINEER,
+    DifficultyTier.EXPERT,
+    DifficultyTier.MASTER,
+  ];
+
+  const categoryOrder: VehicleCategory[] = [
+    VehicleCategory.CAR,
+    VehicleCategory.BOAT,
+    VehicleCategory.PLANE,
+    VehicleCategory.CONSTRUCTION,
+    VehicleCategory.SPACE,
+  ];
+
+  const ordered: VehicleBlueprint[] = [];
+
+  for (const tier of tiers) {
+    const tierItems = combined.filter((bp) => bp.tier === tier);
+    // Interleave categories cleanly (round-robin across the 5 families) so progression feels varied!
+    const buckets = new Map<VehicleCategory, VehicleBlueprint[]>();
+    for (const cat of categoryOrder) {
+      buckets.set(
+        cat,
+        tierItems.filter((bp) => bp.category === cat),
+      );
+    }
+
+    let addedInRound = true;
+    while (addedInRound) {
+      addedInRound = false;
+      for (const cat of categoryOrder) {
+        const list = buckets.get(cat);
+        if (list && list.length > 0) {
+          const nextBp = list.shift()!;
+          ordered.push(nextBp);
+          addedInRound = true;
+        }
+      }
+    }
+  }
+
+  return ordered.map((bp, idx) => ({
+    ...bp,
+    stageNumber: idx + 1,
+  }));
+}
+
+export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = assemble100Blueprints();
+

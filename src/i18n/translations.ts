@@ -1,3 +1,4 @@
+import { localizeBlueprintToEnglish } from '../data/englishBlueprints';
 import { DiscoveryFacts, LanguageCode, VehicleBlueprint } from '../types/game';
 
 interface ArabicBlueprintTranslation {
@@ -437,25 +438,41 @@ export function getLocalizedBlueprint(
   lang: LanguageCode,
 ): VehicleBlueprint {
   if (lang === 'fr') return blueprint;
+  if (lang === 'en') return localizeBlueprintToEnglish(blueprint);
+
   const ar = ARABIC_BLUEPRINTS[blueprint.id];
-  if (!ar) return blueprint;
+  if (ar) {
+    return {
+      ...blueprint,
+      name: ar.name,
+      subtitle: ar.subtitle,
+      tierLabel: ar.tierLabel,
+      ageNote: ar.ageNote,
+      discovery: ar.discovery,
+      parts: blueprint.parts.map((part) => {
+        const arPart = ar.parts[part.id];
+        if (!arPart) return part;
+        return {
+          ...part,
+          name: arPart.name,
+          roleHint: arPart.roleHint,
+        };
+      }),
+    };
+  }
 
   return {
     ...blueprint,
-    name: ar.name,
-    subtitle: ar.subtitle,
-    tierLabel: ar.tierLabel,
-    ageNote: ar.ageNote,
-    discovery: ar.discovery,
-    parts: blueprint.parts.map((part) => {
-      const arPart = ar.parts[part.id];
-      if (!arPart) return part;
-      return {
-        ...part,
-        name: arPart.name,
-        roleHint: arPart.roleHint,
-      };
-    }),
+    name: blueprint.nameAr ?? blueprint.name,
+    subtitle: blueprint.subtitleAr ?? blueprint.subtitle,
+    tierLabel: blueprint.tierLabelAr ?? blueprint.tierLabel,
+    ageNote: blueprint.ageNoteAr ?? blueprint.ageNote,
+    discovery: blueprint.discoveryAr ?? blueprint.discovery,
+    parts: blueprint.parts.map((part) => ({
+      ...part,
+      name: part.nameAr ?? part.name,
+      roleHint: part.roleHintAr ?? part.roleHint,
+    })),
   };
 }
 
@@ -529,6 +546,14 @@ export interface UIStrings {
   filterCars: string;
   filterBoats: string;
   filterPlanes: string;
+  filterConstruction: string;
+  filterSpace: string;
+  allTiersLabel: string;
+  tierPillLabel: (tier: number) => string;
+  searchPlaceholder: string;
+  clearSearchLabel: string;
+  noStagesMatch: string;
+  showingCountLabel: (shown: number, total: number) => string;
   freeAccessActive: string;
   unlockAllBtn: string;
   unlockAllTitle: string;
@@ -538,9 +563,15 @@ export interface UIStrings {
   tier2Subtitle: string;
   tier3Title: string;
   tier3Subtitle: string;
+  tier4Title: string;
+  tier4Subtitle: string;
+  tier5Title: string;
+  tier5Subtitle: string;
   catCar: string;
   catBoat: string;
   catPlane: string;
+  catConstruction: string;
+  catSpace: string;
   stageLabel: (num: number) => string;
   partsCountLabel: (count: number) => string;
   statusCompleted: string;
@@ -620,6 +651,33 @@ export interface UIStrings {
   badgeLockedLabel: string;
   newBadgesUnlockedBannerTitle: (count: number) => string;
   viewAllBadgesBtn: string;
+  // Daily Mechanical Challenge ("Défi Mécanique du Jour") & Rare Parts Vault
+  dailyNavBtn: string;
+  dailyCompletedShort: string;
+  dailyBonusStageLabel: string;
+  returnToStagesBtn: string;
+  rarePartCardLabel: string;
+  dailyModalTitle: string;
+  dailyModalSubtitle: string;
+  closeDailyAria: string;
+  dailyResetInLabel: string;
+  dailyStreakLabel: string;
+  dailyStreakValue: (days: number) => string;
+  dailyBestStreakLabel: (days: number) => string;
+  dailyRareVaultKpiLabel: string;
+  dailyTodayVehicleSection: string;
+  dailyRareSpotlightLabel: string;
+  dailyPlayBtn: string;
+  dailyReplayBtn: string;
+  dailyActiveNowBtn: string;
+  dailyVaultTitle: string;
+  dailyVaultSubtitle: (collected: number, total: number) => string;
+  dailyVaultCollectedStatus: string;
+  dailyVaultLockedStatus: string;
+  dailyCatalogBannerTitle: string;
+  dailyCatalogBannerCta: string;
+  dailyRareUnlockedBannerTitle: string;
+  openDailyVaultBtn: string;
 }
 
 export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
@@ -680,26 +738,40 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     progressImportedToast: 'Sauvegarde restaurée avec succès !',
     progressImportErrorToast: 'Fichier de sauvegarde invalide.',
     progressResetToast: 'Toute la progression a été réinitialisée.',
-    catalogTitle: 'Carnet des Stages & Sauvegarde',
+    catalogTitle: 'Carnet des 100 Stages & Sauvegarde',
     catalogSubtitle:
-      'Ta progression et ton niveau actuel sont enregistrés automatiquement sur cet ordinateur.',
+      '100 objets mécaniques répartis en 5 paliers de difficulté · Sauvegarde automatique sur cet appareil.',
     closeCatalogAria: 'Fermer le catalogue',
-    filterAll: 'Tous',
-    filterCars: 'Voitures',
-    filterBoats: 'Bateaux',
-    filterPlanes: 'Avions & Hélicos',
+    filterAll: 'Tous (100)',
+    filterCars: 'Route & Rail',
+    filterBoats: 'Mer & Abysses',
+    filterPlanes: 'Air & Drones',
+    filterConstruction: 'Chantier & Agri',
+    filterSpace: 'Espace & Robots',
+    allTiersLabel: 'Tous les paliers',
+    tierPillLabel: (tier) => `Palier ${tier}`,
+    searchPlaceholder: 'Rechercher un véhicule, train, fusée, pelleteuse...',
+    clearSearchLabel: 'Effacer',
+    noStagesMatch: 'Aucun objet ne correspond à ta recherche.',
+    showingCountLabel: (shown, total) => `${shown} sur ${total} objets affichés`,
     freeAccessActive: 'Accès libre activé',
-    unlockAllBtn: 'Débloquer tout',
-    unlockAllTitle: "Permet d'essayer immédiatement tous les niveaux (accès parents / enseignants)",
-    tier1Title: '01. Palier Découverte — Premiers Assemblages',
-    tier1Subtitle: '4 à 5 pièces larges · Aimantation généreuse pour apprivoiser la 3D',
-    tier2Title: '02. Palier Atelier — Mécanismes par Couches',
-    tier2Subtitle: '7 à 8 pièces · Montage logique du moteur et de la coque avant la cabine',
-    tier3Title: '03. Palier Ingénieur — Grandes Constructions',
-    tier3Subtitle: '10 à 11 pièces · Sous-ensembles techniques précis et silhouettes progressives',
-    catCar: 'Voiture & Terre',
-    catBoat: 'Bateau & Mer',
-    catPlane: 'Avion & Air',
+    unlockAllBtn: 'Débloquer les 100',
+    unlockAllTitle: "Permet d'essayer immédiatement les 100 niveaux (accès parents / enseignants)",
+    tier1Title: '01. Palier Découverte — Premiers Assemblages (Stages 1 à 20)',
+    tier1Subtitle: '4 à 5 pièces larges · Aimantation généreuse (1,4 m) et toutes les silhouettes visibles',
+    tier2Title: '02. Palier Atelier — Mécanismes par Couches (Stages 21 à 40)',
+    tier2Subtitle: '7 à 8 pièces · Montage du moteur et de la coque avant la cabine (aimantation 1,15 m)',
+    tier3Title: '03. Palier Ingénieur — Grandes Constructions (Stages 41 à 60)',
+    tier3Subtitle: '9 à 11 pièces · Silhouettes progressives débloquées étape par étape (aimantation 0,95 m)',
+    tier4Title: '04. Palier Expert — Architectures Complexes (Stages 61 à 80)',
+    tier4Subtitle: '12 à 13 pièces · Haute précision d’assemblage (aimantation 0,78 m) et sous-ensembles techniques',
+    tier5Title: '05. Palier Maître Constructeur — Défis Ultimes (Stages 81 à 100)',
+    tier5Subtitle: '14 à 15 pièces · Précision chirurgicale (aimantation 0,65 m) sur les plus grandes machines du monde',
+    catCar: 'Route & Rail',
+    catBoat: 'Mer & Abysses',
+    catPlane: 'Air & Aviation',
+    catConstruction: 'Chantier & Agri',
+    catSpace: 'Espace & Robots',
     stageLabel: (num) => `Stage ${num}`,
     partsCountLabel: (count) => `${count} pièces`,
     statusCompleted: 'Terminé',
@@ -775,7 +847,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
       {
         title: '04. Styles 3D, Langues & Indice Mécanique',
         description:
-          'En haut, bascule à tout moment entre Bois, Blocs et Maquette Réaliste, change la langue (FR / العربية), ou clique sur « Indice Mécanique » si tu hésites !',
+          'En haut, bascule à tout moment entre Bois, Blocs et Maquette Réaliste, change la langue (FR / EN / العربية), relève le Défi du Jour ou clique sur « Indice Mécanique » !',
         tip: 'Une fiche découverte complète se débloque dès que le véhicule est terminé.',
       },
     ],
@@ -801,6 +873,256 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     newBadgesUnlockedBannerTitle: (count) =>
       count > 1 ? 'Nouveaux badges de réussite débloqués !' : 'Nouveau badge de réussite débloqué !',
     viewAllBadgesBtn: 'Voir tous mes badges',
+    dailyNavBtn: 'Défi du Jour',
+    dailyCompletedShort: 'Réussi',
+    dailyBonusStageLabel: 'Défi Mécanique du Jour',
+    returnToStagesBtn: 'Retour aux stages',
+    rarePartCardLabel: 'Pièce Rare Or 24K',
+    dailyModalTitle: 'Défi Mécanique du Jour',
+    dailyModalSubtitle:
+      'Chaque jour avant minuit, assemble un prototype bonus éphémère pour remporter sa pièce rare de collection en alliage d’or !',
+    closeDailyAria: 'Fermer le défi du jour',
+    dailyResetInLabel: 'Nouveau véhicule dans',
+    dailyStreakLabel: 'Série quotidienne',
+    dailyStreakValue: (days) => (days > 1 ? `${days} jours` : `${days} jour`),
+    dailyBestStreakLabel: (days) => `Record : ${days} j`,
+    dailyRareVaultKpiLabel: 'Pièces rares obtenues',
+    dailyTodayVehicleSection: 'Prototype Bonus Éphémère du Jour',
+    dailyRareSpotlightLabel: 'Pièce Rare incluse sur ce modèle',
+    dailyPlayBtn: 'Assembler le véhicule du jour',
+    dailyReplayBtn: 'Rejouer le prototype du jour',
+    dailyActiveNowBtn: 'En cours sur l’établi 3D',
+    dailyVaultTitle: 'Vitrine des 7 Pièces Rares d’Atelier',
+    dailyVaultSubtitle: (collected, total) =>
+      `${collected} sur ${total} pièces rares débloquées · Reviens chaque jour pour compléter la collection`,
+    dailyVaultCollectedStatus: 'Dans ta vitrine',
+    dailyVaultLockedStatus: 'Rotation quotidienne',
+    dailyCatalogBannerTitle: 'Défi Mécanique du Jour disponible !',
+    dailyCatalogBannerCta: 'Voir le Défi & les Pièces Rares',
+    dailyRareUnlockedBannerTitle: 'Pièce Rare du Jour ajoutée à ta vitrine !',
+    openDailyVaultBtn: 'Ouvrir la vitrine des pièces rares',
+  },
+
+  en: {
+    appName: 'MécanoKids 3D',
+    navAriaLabel: 'Main navigation and 3D visual styles',
+    stagesBtn: 'Stages & Save',
+    styleWood: 'Wood & Metal',
+    styleWoodShort: 'Wood',
+    styleBlocks: 'Modular Blocks',
+    styleBlocksShort: 'Blocks',
+    styleRealistic: 'Scale Model',
+    styleRealisticShort: 'Realistic',
+    discoveryBtn: 'Discovery Card',
+    hintBtn: 'Mechanical Hint',
+    langSwitchAria: 'Select language',
+    dockAriaLabel: 'Parts workbench and 3D controls',
+    openWorkbench: (placed, total) => `Open Workbench (${placed}/${total})`,
+    collapseWorkbench: 'Collapse Workbench',
+    shortcutH: 'Keyboard shortcut: H',
+    stageOf: (num, total) => `Stage ${num} of ${total}`,
+    partsCounter: (placed, total) => `Parts: ${placed} / ${total}`,
+    nextStageBtn: 'Next Stage',
+    dragInstruction:
+      'Drag a part onto its glowing 3D guide silhouette (or click the card then the model)',
+    partStatusPlaced: 'Snapped',
+    partStatusLockedAfter: (depName) => `After: ${depName}`,
+    partStatusHinted: 'Suggested next',
+    partStatusReady: 'Ready to install',
+    explodedViewLabel: 'Exploded view:',
+    cameraAnglesAria: 'Camera angles',
+    camIso: '3/4 View',
+    camFront: 'Front',
+    camSide: 'Side',
+    camTop: 'Top',
+    guideBtn: 'Guide',
+    guideBtnTitle: 'Replay interactive guided tour',
+    soundMuted: 'Muted',
+    soundActive: 'Sound',
+    muteAria: 'Mute sound',
+    unmuteAria: 'Unmute sound',
+    resetBtn: 'Restart',
+    autoSavedBadge: 'Auto-saved',
+    stageResetMsg: (vehicleName) => `Workbench reset for ${vehicleName}.`,
+    partSnappedMsg: (partName, roleHint) => `✓ ${partName} installed! ${roleHint}`,
+    placeFirstMsg: (missingName, partName) =>
+      `Install "${missingName}" first before mounting "${partName}".`,
+    partStagedMsg: (partName) =>
+      `"${partName}" selected: click its glowing silhouette or drag it onto the turntable!`,
+    dragReleaseToSnap: (partName) => `✓ Release to snap: ${partName}`,
+    dragPlaceFirst: (missingName) => `Install first: ${missingName}`,
+    dragApproachGuide: (partName) => `Move "${partName}" closer to its guide silhouette`,
+    dropRejectedMissingDep: (missingName, partName) =>
+      `Mechanical tip: install "${missingName}" first before attaching "${partName}"!`,
+    webglResetTitle: 'Resetting 3D Workshop',
+    webglResetDesc: 'The 3D viewport will resume automatically in a moment.',
+    progressSavedToast: 'Progress saved locally on this device.',
+    progressImportedToast: 'Backup file restored!',
+    progressImportErrorToast: 'Invalid save backup file.',
+    progressResetToast: 'All saved progress has been reset.',
+    catalogTitle: '100-Stage Workshop Catalog & Save',
+    catalogSubtitle:
+      '100 buildable 3D machines across 5 difficulty tiers · Automatic local save on this device.',
+    closeCatalogAria: 'Close catalog',
+    filterAll: 'All (100)',
+    filterCars: 'Road & Rail',
+    filterBoats: 'Sea & Deep Ocean',
+    filterPlanes: 'Air & Drones',
+    filterConstruction: 'Construction & Farm',
+    filterSpace: 'Space & Robotics',
+    allTiersLabel: 'All Tiers',
+    tierPillLabel: (tier) => `Tier ${tier}`,
+    searchPlaceholder: 'Search a car, train, rocket, excavator, submarine...',
+    clearSearchLabel: 'Clear filters',
+    noStagesMatch: 'No mechanical models match your search.',
+    showingCountLabel: (shown, total) => `Showing ${shown} of ${total} models`,
+    freeAccessActive: 'Free access active',
+    unlockAllBtn: 'Unlock all 100',
+    unlockAllTitle: 'Unlocks all 100 stages immediately (parent / teacher mode)',
+    tier1Title: '01. Discovery Tier — First Builds (Stages 1 to 20)',
+    tier1Subtitle: '4 to 5 large parts · Generous magnetic snap (1.4 m) with all silhouettes visible',
+    tier2Title: '02. Workshop Tier — Layered Mechanisms (Stages 21 to 40)',
+    tier2Subtitle: '7 to 8 parts · Install engine & hull structures before cabins (1.15 m snap)',
+    tier3Title: '03. Engineer Tier — Heavy Engineering (Stages 41 to 60)',
+    tier3Subtitle: '9 to 11 parts · Step-by-step progressive guide silhouettes (0.95 m snap)',
+    tier4Title: '04. Expert Tier — Complex Architectures (Stages 61 to 80)',
+    tier4Subtitle: '12 to 13 parts · High assembly precision (0.78 m snap) and multi-layer sub-assemblies',
+    tier5Title: '05. Master Builder Tier — Ultimate Machines (Stages 81 to 100)',
+    tier5Subtitle: '14 to 15 parts · Surgical precision (0.65 m snap) on iconic world-class machines',
+    catCar: 'Road & Rail',
+    catBoat: 'Sea & Ocean',
+    catPlane: 'Air & Aviation',
+    catConstruction: 'Construction & Farm',
+    catSpace: 'Space & Robotics',
+    stageLabel: (num) => `Stage ${num}`,
+    partsCountLabel: (count) => `${count} parts`,
+    statusCompleted: 'Completed',
+    statusCurrentActive: 'Active stage',
+    statusInProgress: (placed, total) => `In progress (${placed}/${total})`,
+    statusBuild: 'Build now',
+    unlockRequirement: (stagesNeeded) => `Complete ${stagesNeeded} stages`,
+    savePanelTitle: 'Local Progress Save (LocalStorage)',
+    savePanelDesc: (completed, total, stars, maxStars) =>
+      `${completed}/${total} vehicles completed · ${stars}/${maxStars} stars · Resumes on your active stage`,
+    saveNowBtn: 'Save now',
+    exportSaveBtn: 'Export (.json)',
+    importSaveBtn: 'Import',
+    resetAllBtn: 'Erase save',
+    confirmResetBtn: 'Confirm full reset',
+    cancelResetBtn: 'Cancel',
+    mechanicDrawerAria: 'Mechanical Assembly Guide',
+    mechanicTitle: 'Mechanical Guide',
+    mechanicSubtitle: 'Assembly order & engineering role of every part (100% offline)',
+    closeMechanicAria: 'Close mechanical guide',
+    nextStepBannerReady: 'Need a hint on which part to install next?',
+    nextStepBannerDone: 'All parts are assembled!',
+    highlightOn3DBtn: 'Highlight on 3D model',
+    recommendedNextTitle: 'Recommended next part',
+    allPartsChecklistTitle: 'Complete vehicle assembly plan',
+    vehicleCompletedCongrats: (vehicleName) =>
+      `Awesome work! ${vehicleName} is fully assembled. Drag the "Exploded view" slider to inspect every mechanical sub-assembly.`,
+    discoveryCompletedTitle: (vehicleName) => `Great job! ${vehicleName} is ready for action!`,
+    discoveryPreviewTitle: (vehicleName) => `Discovery Card: ${vehicleName}`,
+    closeDiscoveryAria: 'Close discovery card',
+    discoveryLockedTitle: 'Finish assembling the vehicle to unlock real-world engineering facts!',
+    discoveryLockedDesc: (partsCount, vehicleName) =>
+      `Once you snap all ${partsCount} parts of "${vehicleName}", you will unlock how the real machine works, its world records, and fun facts.`,
+    discoveryBadgeLocal: 'Mechanical Encyclopedia — Verified Real-World Facts',
+    howItWorksTitle: '1. How it works in real life',
+    realRecordTitle: '2. Real-world record & numbers',
+    didYouKnowTitle: '3. Did you know?',
+    admire3DBtn: 'Inspect in 3D',
+    goToNextStageBtn: 'Continue to next stage',
+    tourAriaLabel: 'Workshop Guided Tour',
+    tourKicker: 'Guided Tour',
+    tourStepCounter: (current, total) => `Step ${current} of ${total}`,
+    closeTourAria: 'Close guided tour',
+    tourSkipBtn: 'Skip tour',
+    tourPrevBtn: 'Previous',
+    tourNextBtn: 'Next',
+    tourPlayNowBtn: 'Start building',
+    tourSilhouetteLabel: (partName) => `Guide: ${partName}`,
+    tourSnappedBadge: 'Snapped!',
+    tourDragUpLabel: (partName) => `Drag "${partName}" upward`,
+    tourGreatFirstSnap: (vehicleName) =>
+      `Awesome! You just snapped your very first part onto ${vehicleName}!`,
+    tourRotateHint: 'Tip: drag the 3D background to orbit around the vehicle!',
+    tourSteps: [
+      {
+        title: '01. Pick your parts from the workbench',
+        description:
+          'All detached parts are lined up in the bottom tray. Always start with a part marked "Ready to install" (the main structural frame or hull).',
+        tip: 'Locked parts unlock automatically as soon as their supporting structure is in place.',
+      },
+      {
+        title: '02. Drag & snap onto the 3D guide silhouette',
+        description:
+          'Press and drag a part from the workbench toward its glowing silhouette on the 3D turntable. When it turns green, release to snap it!',
+        tip: 'You can try right now with the first part, or click a card then click its 3D silhouette.',
+      },
+      {
+        title: '03. Orbit camera & Exploded View',
+        description:
+          'Drag the background to inspect your machine from any angle, pick a quick camera preset, or slide "Exploded view" to study internal mechanisms.',
+        tip: 'Your progress saves automatically—reopening the app resumes right on your current stage.',
+      },
+      {
+        title: '04. 3D Styles, Languages & Daily Challenge',
+        description:
+          'In the top bar, switch anytime between Wood, Blocks, and Scale Model, change language (FR / EN / العربية), try the Daily Challenge, or tap "Mechanical Hint"!',
+        tip: 'Completing any vehicle unlocks its illustrated real-world Discovery Card.',
+      },
+    ],
+    openProgressionBtn: (unlocked, total) => `Badges & Progress (${unlocked}/${total})`,
+    progressionModalTitle: 'Progression Dashboard & Achievement Badges',
+    progressionModalSubtitle:
+      'Earn stars across stages and assemble with zero mistakes to unlock every workshop rank and badge.',
+    closeProgressionAria: 'Close progression modal',
+    backToCatalogBtn: 'Back to stage catalog',
+    rankLabel: 'Current mechanical rank',
+    maxRankReached: 'Maximum rank achieved — Congratulations!',
+    kpiStarsLabel: 'Total star score',
+    kpiCompletedLabel: 'Completed vehicles',
+    kpiPerfectLabel: 'Flawless (3★)',
+    kpiBadgesLabel: 'Unlocked badges',
+    familyScoresTitle: 'Star scores by vehicle family',
+    badgesSectionTitle: 'Achievement Badges Collection',
+    badgeFilterAll: (count) => `All (${count})`,
+    badgeFilterUnlocked: (count) => `Unlocked (${count})`,
+    badgeFilterLocked: (count) => `In progress (${count})`,
+    badgeUnlockedLabel: 'Unlocked',
+    badgeLockedLabel: 'In progress',
+    newBadgesUnlockedBannerTitle: (count) =>
+      count > 1 ? 'New achievement badges unlocked!' : 'New achievement badge unlocked!',
+    viewAllBadgesBtn: 'View all badges',
+    dailyNavBtn: 'Daily Challenge',
+    dailyCompletedShort: 'Done',
+    dailyBonusStageLabel: 'Daily Mechanical Challenge',
+    returnToStagesBtn: 'Back to stages',
+    rarePartCardLabel: '24K Gold Rare Part',
+    dailyModalTitle: 'Daily Mechanical Challenge',
+    dailyModalSubtitle:
+      'Every day before midnight, assemble a temporary bonus prototype to unlock its gleaming 24K gold collector rare part!',
+    closeDailyAria: 'Close daily challenge',
+    dailyResetInLabel: 'New bonus vehicle in',
+    dailyStreakLabel: 'Daily streak',
+    dailyStreakValue: (days) => (days === 1 ? '1 day' : `${days} days`),
+    dailyBestStreakLabel: (days) => `Best: ${days}d`,
+    dailyRareVaultKpiLabel: 'Rare parts collected',
+    dailyTodayVehicleSection: "Today's Temporary Bonus Prototype",
+    dailyRareSpotlightLabel: 'Collector Rare Part inside this build',
+    dailyPlayBtn: "Build today's bonus vehicle",
+    dailyReplayBtn: "Replay today's prototype",
+    dailyActiveNowBtn: 'Currently on 3D workbench',
+    dailyVaultTitle: 'Workshop Rare Parts Vault (7 Collector Pieces)',
+    dailyVaultSubtitle: (collected, total) =>
+      `${collected} of ${total} rare parts unlocked · Come back daily to complete the full vault`,
+    dailyVaultCollectedStatus: 'In your vault',
+    dailyVaultLockedStatus: 'Daily rotation',
+    dailyCatalogBannerTitle: "Today's Daily Mechanical Challenge is live!",
+    dailyCatalogBannerCta: 'Open Challenge & Rare Vault',
+    dailyRareUnlockedBannerTitle: "Today's Rare Part added to your vault!",
+    openDailyVaultBtn: 'Open Rare Parts Vault',
   },
 
   ar: {
@@ -860,26 +1182,40 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     progressImportedToast: 'تمت استعادة ملف الحفظ بنجاح!',
     progressImportErrorToast: 'ملف الحفظ غير صالح.',
     progressResetToast: 'تم مسح التقدم وإعادة الضبط بالكامل.',
-    catalogTitle: 'دفتر المراحل وحفظ التقدم',
+    catalogTitle: 'دفتر الـ 100 مرحلة وحفظ التقدم',
     catalogSubtitle:
-      'يُحفظ تقدمك والمستوى الذي وصلت إليه تلقائياً لتكمل اللعب من نفس المرحلة عند إعادة التشغيل.',
+      '100 مجسّم ميكانيكي عبر 5 مستويات صعوبة متدرجة · حفظ تلقائي على هذا الجهاز.',
     closeCatalogAria: 'إغلاق القائمة',
-    filterAll: 'الكل',
-    filterCars: 'سيارات',
-    filterBoats: 'قوارب وسفن',
-    filterPlanes: 'طائرات ومروحيات',
+    filterAll: 'الكل (100)',
+    filterCars: 'البر والقطارات',
+    filterBoats: 'البحار والأعماق',
+    filterPlanes: 'الطيران والدرون',
+    filterConstruction: 'البناء والزراعة',
+    filterSpace: 'الفضاء والروبوتات',
+    allTiersLabel: 'كل المستويات',
+    tierPillLabel: (tier) => `المستوى ${tier}`,
+    searchPlaceholder: 'ابحث عن سيارة، قطار، صاروخ، حفارة، غواصة...',
+    clearSearchLabel: 'مسح',
+    noStagesMatch: 'لا توجد مركبات مطابقة لبحثك.',
+    showingCountLabel: (shown, total) => `عرض ${shown} من أصل ${total} مجسّم`,
     freeAccessActive: 'الوضع الحر مفعّل',
-    unlockAllBtn: 'فتح كل المراحل',
-    unlockAllTitle: 'يتيح تجربة جميع المستويات فوراً (لأولياء الأمور والمعلمين)',
-    tier1Title: '01. مستوى الاستكشاف — التركيبات الأولى',
-    tier1Subtitle: '4 إلى 5 قطع كبيرة · جذب مغناطيسي واسع للتدرّب على الفضاء ثلاثي الأبعاد',
-    tier2Title: '02. مستوى الورشة — آليات متعددة الطبقات',
+    unlockAllBtn: 'فتح الـ 100 مرحلة',
+    unlockAllTitle: 'يتيح تجربة جميع المستويات الـ 100 فوراً (لأولياء الأمور والمعلمين)',
+    tier1Title: '01. مستوى الاستكشاف — التركيبات الأولى (المراحل 1 إلى 20)',
+    tier1Subtitle: '4 إلى 5 قطع كبيرة · جذب مغناطيسي واسع مع إظهار جميع الأطياف الإرشادية',
+    tier2Title: '02. مستوى الورشة — آليات متعددة الطبقات (المراحل 21 إلى 40)',
     tier2Subtitle: '7 إلى 8 قطع · ترتيب منطقي للمحرك والهيكل قبل المقصورة',
-    tier3Title: '03. مستوى المهندس — الإنشاءات الكبرى',
-    tier3Subtitle: '10 إلى 11 قطعة · تجميعات تقنية دقيقة وأطياف تدريجية',
-    catCar: 'مركبات برية',
-    catBoat: 'سفن وبحار',
-    catPlane: 'طيران وجو',
+    tier3Title: '03. مستوى المهندس — الإنشاءات الكبرى (المراحل 41 إلى 60)',
+    tier3Subtitle: '9 إلى 11 قطعة · أطياف تدريجية تظهر خطوة بخطوة مع تزايد الدقة',
+    tier4Title: '04. مستوى الخبير — الأنظمة المعقدة (المراحل 61 إلى 80)',
+    tier4Subtitle: '12 إلى 13 قطعة · دقة هندسية عالية وتجميعات فرعية متقدمة',
+    tier5Title: '05. مستوى كبير البناة — التحديات القصوى (المراحل 81 إلى 100)',
+    tier5Subtitle: '14 إلى 15 قطعة · أعلى درجات التركيز والدقة لتجميع أعظم الآلات والمركبات',
+    catCar: 'البر والقطارات',
+    catBoat: 'البحار والأعماق',
+    catPlane: 'الطيران والجو',
+    catConstruction: 'البناء والزراعة',
+    catSpace: 'الفضاء والروبوتات',
     stageLabel: (num) => `المرحلة ${num}`,
     partsCountLabel: (count) => `${count} قطع`,
     statusCompleted: 'مكتملة',
@@ -955,7 +1291,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
       {
         title: '04. غيّر النمط البصري واللغة واطلب تلميحاً',
         description:
-          'من الشريط العلوي، بدّل في أي وقت بين الخشب والمكعبات والنموذج الواقعي، وغيّر اللغة (FR / العربية)، أو اضغط «تلميح ميكانيكي» للمساعدة!',
+          'من الشريط العلوي، بدّل في أي وقت بين الخشب والمكعبات والنموذج الواقعي، وغيّر اللغة (FR / EN / العربية)، أو خُض تحدي اليوم الميكانيكي!',
         tip: 'تُفتح بطاقة اكتشاف علمية ممتعة عند إكمال كل مركبة.',
       },
     ],
@@ -981,5 +1317,33 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     newBadgesUnlockedBannerTitle: (count) =>
       count > 1 ? 'تم فتح أوسمة إنجاز جديدة!' : 'تم فتح وسام إنجاز جديد!',
     viewAllBadgesBtn: 'عرض جميع الأوسمة والتقدم',
+    dailyNavBtn: 'تحدي اليوم',
+    dailyCompletedShort: 'مكتمل',
+    dailyBonusStageLabel: 'التحدي الميكانيكي اليومي',
+    returnToStagesBtn: 'العودة إلى المراحل',
+    rarePartCardLabel: 'قطعة نادرة ذهب 24K',
+    dailyModalTitle: 'التحدي الميكانيكي اليومي',
+    dailyModalSubtitle:
+      'كل يوم قبل منتصف الليل، جمّع مركبة إضافية مؤقتة لربح قطعتها النادرة المطلية بالذهب وإضافتها إلى خزانتك!',
+    closeDailyAria: 'إغلاق تحدي اليوم',
+    dailyResetInLabel: 'مركبة جديدة خلال',
+    dailyStreakLabel: 'سلسلة الأيام المتتالية',
+    dailyStreakValue: (days) => (days === 1 ? 'يوم واحد' : `${days} أيام`),
+    dailyBestStreakLabel: (days) => `أفضل سلسلة: ${days}`,
+    dailyRareVaultKpiLabel: 'القطع النادرة المجموعة',
+    dailyTodayVehicleSection: 'مركبة اليوم الإضافية المؤقتة',
+    dailyRareSpotlightLabel: 'القطعة النادرة الخاصة داخل هذا النموذج',
+    dailyPlayBtn: 'ركّب مركبة تحدي اليوم',
+    dailyReplayBtn: 'إعادة تركيب مركبة اليوم',
+    dailyActiveNowBtn: 'معروضة الآن على طاولة 3D',
+    dailyVaultTitle: 'خزانة القطع النادرة السبع للورشة',
+    dailyVaultSubtitle: (collected, total) =>
+      `تم جمع ${collected} من أصل ${total} قطع نادرة · عُد يومياً لإكمال المجموعة الذهبية`,
+    dailyVaultCollectedStatus: 'في خزانتك',
+    dailyVaultLockedStatus: 'تناوب يومي',
+    dailyCatalogBannerTitle: 'التحدي الميكانيكي اليومي متاح الآن!',
+    dailyCatalogBannerCta: 'عرض التحدي وخزانة النوادر',
+    dailyRareUnlockedBannerTitle: 'تمت إضافة قطعة اليوم النادرة إلى خزانتك!',
+    openDailyVaultBtn: 'فتح خزانة القطع النادرة',
   },
 };
