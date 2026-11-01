@@ -1,7 +1,20 @@
-import React, { useState } from 'react';
-import { CheckCircle2, Lock, Star, Unlock, X } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import {
+  CheckCircle2,
+  Download,
+  Lock,
+  Save,
+  Star,
+  Trash2,
+  Trophy,
+  Unlock,
+  Upload,
+  X,
+} from 'lucide-react';
+import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
   DifficultyTier,
+  LanguageCode,
   PlayerProgress,
   VehicleBlueprint,
   VehicleCategory,
@@ -11,6 +24,7 @@ import {
 interface StageCatalogModalProps {
   isOpen: boolean;
   onClose: () => void;
+  language: LanguageCode;
   blueprints: VehicleBlueprint[];
   currentBlueprintId: string;
   progress: PlayerProgress;
@@ -18,11 +32,19 @@ interface StageCatalogModalProps {
   onSelectStyle: (style: VisualStyleMode) => void;
   onSelectBlueprint: (id: string) => void;
   onToggleFreeWorkshop: () => void;
+  unlockedBadgesCount: number;
+  totalBadgesCount: number;
+  onOpenProgression: () => void;
+  onSaveNow: () => void;
+  onExportSave: () => void;
+  onImportSaveFile: (file: File) => void;
+  onResetAllProgress: () => void;
 }
 
 export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   isOpen,
   onClose,
+  language,
   blueprints,
   currentBlueprintId,
   progress,
@@ -30,47 +52,64 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   onSelectStyle,
   onSelectBlueprint,
   onToggleFreeWorkshop,
+  unlockedBadgesCount,
+  totalBadgesCount,
+  onOpenProgression,
+  onSaveNow,
+  onExportSave,
+  onImportSaveFile,
+  onResetAllProgress,
 }) => {
   const [categoryFilter, setCategoryFilter] = useState<'all' | VehicleCategory>('all');
+  const [confirmingReset, setConfirmingReset] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!isOpen) return null;
 
-  const completedCount = Object.values(progress.completedStages).filter((r) => r.completed).length;
+  const t = UI_TRANSLATIONS[language];
+  const completedRecords = Object.values(progress.completedStages).filter((r) => r.completed);
+  const completedCount = completedRecords.length;
+  const totalStars = completedRecords.reduce((sum, r) => sum + (r.stars || 0), 0);
+  const maxStars = blueprints.length * 3;
 
   const isStageUnlocked = (bp: VehicleBlueprint): boolean => {
     if (progress.freeWorkshopUnlocked) return true;
-    // All Tier 1 Discovery vehicles (1 car, 1 boat, 1 plane) are unlocked from start!
+    if (bp.id === currentBlueprintId) return true;
     if (bp.tier === DifficultyTier.DISCOVERY) return true;
-    // Tier 2 unlocks after completing at least 2 stages (or previous stage)
     if (bp.tier === DifficultyTier.WORKSHOP) {
-      return completedCount >= 2 || Boolean(progress.completedStages[blueprints[bp.stageNumber - 2]?.id]?.completed);
+      return (
+        completedCount >= 2 ||
+        Boolean(progress.completedStages[blueprints[bp.stageNumber - 2]?.id]?.completed)
+      );
     }
-    // Tier 3 unlocks after completing at least 5 stages (or previous stage)
-    return completedCount >= 5 || Boolean(progress.completedStages[blueprints[bp.stageNumber - 2]?.id]?.completed);
+    return (
+      completedCount >= 5 ||
+      Boolean(progress.completedStages[blueprints[bp.stageNumber - 2]?.id]?.completed)
+    );
   };
 
   const tiers: Array<{ tier: DifficultyTier; title: string; subtitle: string }> = [
     {
       tier: DifficultyTier.DISCOVERY,
-      title: '01. Palier Découverte — Premiers Assemblages',
-      subtitle: '4 à 5 pièces larges · Aimantation généreuse pour apprivoiser la 3D',
+      title: t.tier1Title,
+      subtitle: t.tier1Subtitle,
     },
     {
       tier: DifficultyTier.WORKSHOP,
-      title: '02. Palier Atelier — Mécanismes par Couches',
-      subtitle: '7 à 8 pièces · Montage logique du moteur et de la coque avant la cabine',
+      title: t.tier2Title,
+      subtitle: t.tier2Subtitle,
     },
     {
       tier: DifficultyTier.ENGINEER,
-      title: '03. Palier Ingénieur — Grandes Constructions',
-      subtitle: '10 à 11 pièces · Sous-ensembles techniques précis et silhouettes progressives',
+      title: t.tier3Title,
+      subtitle: t.tier3Subtitle,
     },
   ];
 
   const categoryLabel = (cat: VehicleCategory): string => {
-    if (cat === VehicleCategory.CAR) return 'Voiture & Terre';
-    if (cat === VehicleCategory.BOAT) return 'Bateau & Mer';
-    return 'Avion & Air';
+    if (cat === VehicleCategory.CAR) return t.catCar;
+    if (cat === VehicleCategory.BOAT) return t.catBoat;
+    return t.catPlane;
   };
 
   return (
@@ -80,37 +119,46 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
       aria-modal="true"
       aria-labelledby="catalog-title"
     >
-      <div className="w-full max-w-4xl max-h-[90vh] bg-white border border-slate-200 rounded-xl shadow-lg flex flex-col overflow-hidden">
+      <div className="w-full max-w-4xl max-h-[92vh] bg-white border border-slate-200 rounded-xl shadow-lg flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-slate-200">
           <div>
             <h2 id="catalog-title" className="font-display text-2xl font-bold text-slate-900">
-              Carnet des Stages Mécaniques
+              {t.catalogTitle}
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Construis chaque véhicule pièce par pièce pour débloquer des machines de plus en plus sophistiquées.
-            </p>
+            <p className="mt-1 text-sm text-slate-600">{t.catalogSubtitle}</p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Fermer le catalogue"
-            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={onOpenProgression}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors whitespace-nowrap min-h-[40px] cursor-pointer"
+            >
+              <Trophy className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{t.openProgressionBtn(unlockedBadgesCount, totalBadgesCount)}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t.closeCatalogAria}
+              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Filter & Visual Mode Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-3.5 bg-slate-50 border-b border-slate-200">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-3.5 bg-slate-50 border-b border-slate-200">
           {/* Category Segmented Filter */}
           <div className="flex items-center gap-1 p-1 bg-slate-200/75 rounded-lg">
             {(
               [
-                ['all', 'Tous'],
-                [VehicleCategory.CAR, 'Voitures'],
-                [VehicleCategory.BOAT, 'Bateaux'],
-                [VehicleCategory.PLANE, 'Avions & Hélicos'],
+                ['all', t.filterAll],
+                [VehicleCategory.CAR, t.filterCars],
+                [VehicleCategory.BOAT, t.filterBoats],
+                [VehicleCategory.PLANE, t.filterPlanes],
               ] as const
             ).map(([val, label]) => (
               <button
@@ -133,9 +181,9 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
             <div className="flex items-center gap-1 p-1 bg-slate-200/75 rounded-lg">
               {(
                 [
-                  [VisualStyleMode.WOOD, 'Bois & Métal'],
-                  [VisualStyleMode.BLOCKS, 'Blocs Modulaires'],
-                  [VisualStyleMode.REALISTIC, 'Maquette Réaliste'],
+                  [VisualStyleMode.WOOD, t.styleWood],
+                  [VisualStyleMode.BLOCKS, t.styleBlocks],
+                  [VisualStyleMode.REALISTIC, t.styleRealistic],
                 ] as const
               ).map(([mode, label]) => (
                 <button
@@ -161,10 +209,10 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                   ? 'bg-sky-50 border-sky-300 text-sky-800'
                   : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
               }`}
-              title="Permet d'essayer immédiatement tous les niveaux (accès parents / enseignants)"
+              title={t.unlockAllTitle}
             >
-              <Unlock className="w-3.5 h-3.5" />
-              <span>{progress.freeWorkshopUnlocked ? 'Accès libre activé' : 'Débloquer tout'}</span>
+              <Unlock className="w-3.5 h-3.5 shrink-0" />
+              <span>{progress.freeWorkshopUnlocked ? t.freeAccessActive : t.unlockAllBtn}</span>
             </button>
           </div>
         </div>
@@ -190,6 +238,8 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                   {items.map((bp) => {
                     const unlocked = isStageUnlocked(bp);
                     const record = progress.completedStages[bp.id];
+                    const inProg = progress.inProgressStages[bp.id];
+                    const placedCount = inProg?.placedPartIds.length ?? 0;
                     const isCurrent = bp.id === currentBlueprintId;
 
                     return (
@@ -203,26 +253,31 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                             onClose();
                           }
                         }}
-                        className={`text-left p-4 rounded-xl border transition-colors flex flex-col justify-between min-h-[152px] ${
+                        className={`text-start p-4 rounded-xl border transition-colors flex flex-col justify-between min-h-[156px] ${
                           !unlocked
                             ? 'bg-slate-50 border-slate-200 opacity-65 cursor-not-allowed'
                             : isCurrent
-                              ? 'bg-sky-50/60 border-sky-600 cursor-pointer'
+                              ? 'bg-sky-50/70 border-sky-600 cursor-pointer'
                               : 'bg-white border-slate-200 hover:border-sky-500 cursor-pointer'
                         }`}
                       >
                         <div>
-                          {/* Quiet unboxed metadata line */}
                           <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
                             <span>
-                              Stage <span className="font-mono tabular-nums font-semibold text-slate-700">{bp.stageNumber}</span>
+                              {t.stageLabel(bp.stageNumber)}
                               {' · '}
                               {categoryLabel(bp.category)}
                             </span>
                             {record?.completed ? (
-                              <span className="inline-flex items-center gap-0.5 text-amber-500" aria-label={`${record.stars} étoiles`}>
+                              <span
+                                className="inline-flex items-center gap-0.5 text-amber-500"
+                                aria-label={`${record.stars}`}
+                              >
                                 {Array.from({ length: record.stars }).map((_, idx) => (
-                                  <Star key={idx} className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                                  <Star
+                                    key={idx}
+                                    className="w-3.5 h-3.5 fill-amber-400 text-amber-500"
+                                  />
                                 ))}
                               </span>
                             ) : !unlocked ? (
@@ -238,23 +293,27 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                           </p>
                         </div>
 
-                        <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
                           <span className="font-mono tabular-nums text-slate-600">
-                            {bp.parts.length} pièces
+                            {t.partsCountLabel(bp.parts.length)}
                           </span>
 
-                          {record?.completed ? (
+                          {placedCount > 0 && placedCount < bp.parts.length ? (
+                            <span className="font-semibold text-amber-700">
+                              {t.statusInProgress(placedCount, bp.parts.length)}
+                            </span>
+                          ) : record?.completed ? (
                             <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Terminé</span>
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                              <span>{t.statusCompleted}</span>
                             </span>
                           ) : unlocked ? (
                             <span className="font-semibold text-sky-700">
-                              {isCurrent ? 'En cours' : 'Construire'}
+                              {isCurrent ? t.statusCurrentActive : t.statusBuild}
                             </span>
                           ) : (
                             <span className="text-slate-400">
-                              Gagne {bp.tier === DifficultyTier.WORKSHOP ? '2 stages' : '5 stages'}
+                              {t.unlockRequirement(bp.tier === DifficultyTier.WORKSHOP ? 2 : 5)}
                             </span>
                           )}
                         </div>
@@ -265,6 +324,90 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
               </div>
             );
           })}
+        </div>
+
+        {/* Dedicated LocalStorage Save Management Bar */}
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold text-slate-900">{t.savePanelTitle}</p>
+            <p className="text-xs text-slate-500">
+              {t.savePanelDesc(completedCount, blueprints.length, totalStars, maxStars)}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  onImportSaveFile(file);
+                }
+                e.target.value = '';
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={onSaveNow}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors cursor-pointer min-h-[36px]"
+            >
+              <Save className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.saveNowBtn}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onExportSave}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer min-h-[36px]"
+            >
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.exportSaveBtn}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer min-h-[36px]"
+            >
+              <Upload className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.importSaveBtn}</span>
+            </button>
+
+            {confirmingReset ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirmingReset(false);
+                    onResetAllProgress();
+                  }}
+                  className="px-3 py-1.5 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors cursor-pointer min-h-[36px]"
+                >
+                  {t.confirmResetBtn}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingReset(false)}
+                  className="px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-lg transition-colors cursor-pointer min-h-[36px]"
+                >
+                  {t.cancelResetBtn}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmingReset(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors cursor-pointer min-h-[36px]"
+              >
+                <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                <span>{t.resetAllBtn}</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,3 +1,5 @@
+export type LanguageCode = 'fr' | 'ar';
+
 export enum VisualStyleMode {
   WOOD = 'wood',
   BLOCKS = 'blocks',
@@ -92,6 +94,12 @@ export interface PartSpec {
   animation?: PartAnimationKind;
 }
 
+export interface DiscoveryFacts {
+  howItWorks: string;
+  realRecord: string;
+  didYouKnow: string;
+}
+
 export interface VehicleBlueprint {
   id: string;
   stageNumber: number;
@@ -101,38 +109,58 @@ export interface VehicleBlueprint {
   tier: DifficultyTier;
   tierLabel: string;
   ageNote: string;
-  realWorldQuery: string;
+  discovery: DiscoveryFacts;
   parts: PartSpec[];
-}
-
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  isFastHint?: boolean;
-}
-
-export interface DiscoverySource {
-  title: string;
-  uri: string;
-}
-
-export interface DiscoverySheet {
-  vehicleId: string;
-  content: string;
-  sources: DiscoverySource[];
 }
 
 export interface StageCompletionRecord {
   completed: boolean;
   stars: number;
   bestMistakes: number;
+  completedAt?: number;
+}
+
+export enum BadgeIconKind {
+  WRENCH = 'wrench',
+  TARGET = 'target',
+  COMPASS = 'compass',
+  CAR = 'car',
+  ANCHOR = 'anchor',
+  PLANE = 'plane',
+  AWARD = 'award',
+  STAR = 'star',
+  TROPHY = 'trophy',
+}
+
+export interface BadgeEvaluation {
+  id: string;
+  icon: BadgeIconKind;
+  accentColor: 'sky' | 'amber' | 'emerald' | 'indigo' | 'rose';
+  title: string;
+  description: string;
+  unlocked: boolean;
+  currentValue: number;
+  targetValue: number;
+  progressLabel: string;
+  unlockedAt?: number;
+}
+
+export interface StageInProgressRecord {
+  placedPartIds: string[];
+  mistakesCount: number;
+  updatedAt: number;
 }
 
 export interface PlayerProgress {
+  currentBlueprintId: string;
+  inProgressStages: Record<string, StageInProgressRecord>;
   completedStages: Record<string, StageCompletionRecord>;
+  unlockedBadges: Record<string, number>;
+  language: LanguageCode;
   preferredStyle: VisualStyleMode;
+  cameraPreset: CameraPreset;
   freeWorkshopUnlocked: boolean;
   muted: boolean;
   tutorialSeen: boolean;
+  lastSavedAt: number;
 }

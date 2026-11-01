@@ -19,7 +19,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.DISCOVERY,
     tierLabel: 'Palier 1 · Découverte',
     ageNote: 'Idéal dès 6 ans · 4 pièces',
-    realWorldQuery: 'voiture électrique solaire fonctionnement roues châssis enfants',
+    discovery: {
+      howItWorks:
+        "Les cellules photovoltaïques sur le toit transforment la lumière du soleil en électricité stockée dans une batterie sous le châssis, qui fait tourner un moteur électrique silencieux relié aux roues arrière.",
+      realRecord:
+        "Lors du World Solar Challenge en Australie, des voitures solaires expérimentales traversent plus de 3 000 km de désert uniquement grâce à l'énergie du soleil, à plus de 85 km/h de moyenne !",
+      didYouKnow:
+        "Quand une voiture électrique freine, son moteur fonctionne à l'envers comme une dynamo de vélo et recharge automatiquement la batterie.",
+    },
     parts: [
       {
         id: 'chassis',
@@ -91,7 +98,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.DISCOVERY,
     tierLabel: 'Palier 1 · Découverte',
     ageNote: 'Idéal dès 6 ans · 5 pièces',
-    realWorldQuery: 'voilier quille voile comment avance face au vent explication',
+    discovery: {
+      howItWorks:
+        "La coque flotte grâce à la poussée d'Archimède, la lourde quille sous l'eau empêche le bateau de pencher trop fort, et la voile courbée aspire le voilier vers l'avant comme une aile d'avion verticale.",
+      realRecord:
+        "Les grands voiliers océaniques modernes du Vendée Globe peuvent faire le tour complet de la Terre sans escale ni moteur en environ 65 à 74 jours !",
+      didYouKnow:
+        "Un voilier peut remonter vers la direction d'où vient le vent en naviguant en zigzag : les marins appellent cette manœuvre « tirer des bords ».",
+    },
     parts: [
       {
         id: 'hull',
@@ -176,7 +190,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.DISCOVERY,
     tierLabel: 'Palier 1 · Découverte',
     ageNote: 'Idéal dès 6 ans · 5 pièces',
-    realWorldQuery: 'avion monomoteur aile portance hélice fonctionnement simple',
+    discovery: {
+      howItWorks:
+        "L'hélice avant tire l'avion dans l'air comme une vis géante. En glissant rapidement sur le profil bombé de l'aile haute, l'air crée une force vers le haut appelée la portance.",
+      realRecord:
+        "Le Cessna 172, l'avion d'aéroclub à aile haute le plus célèbre de l'histoire, a été construit à plus de 44 000 exemplaires depuis 1956 !",
+      didYouKnow:
+        "L'aile placée tout en haut du fuselage rend l'avion naturellement stable comme un pendule et permet aux élèves pilotes d'admirer les paysages sous eux.",
+    },
     parts: [
       {
         id: 'fuselage',
@@ -264,7 +285,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.WORKSHOP,
     tierLabel: 'Palier 2 · Atelier',
     ageNote: '7 à 9 ans · 7 pièces',
-    realWorldQuery: 'camion de pompiers grande échelle citerne eau fonctionnement',
+    discovery: {
+      howItWorks:
+        "Une fois arrivé sur place, le moteur diesel bascule sa puissance des roues vers une énorme pompe centrifuge qui projette l'eau de la citerne à haute pression, pendant que des vérins hydrauliques déploient l'échelle.",
+      realRecord:
+        "Les grandes échelles aériennes des pompiers atteignent couramment 30 à 32 mètres de haut — soit le 10e étage d'un immeuble — et certains modèles géants dépassent 68 mètres !",
+      didYouKnow:
+        "Avant de lever sa grande échelle, le camion déploie toujours des pieds stabilisateurs sur les côtés pour ne jamais basculer.",
+    },
     parts: [
       {
         id: 'chassis',
@@ -379,7 +407,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.WORKSHOP,
     tierLabel: 'Palier 2 · Atelier',
     ageNote: '7 à 9 ans · 7 pièces',
-    realWorldQuery: 'bateau remorqueur portuaire puissance hélice fonctionnement',
+    discovery: {
+      howItWorks:
+        "Malgré sa petite taille, presque tout l'intérieur de sa coque abrite un immense moteur marin relié à des hélices orientables capables de pousser ou tirer dans toutes les directions.",
+      realRecord:
+        "Un remorqueur portuaire de 30 mètres développe souvent plus de 5 000 chevaux et peut manœuvrer un porte-conteneurs de 400 mètres pesant 200 000 tonnes !",
+      didYouKnow:
+        "Les gros boudins noirs à l'avant sont de véritables amortisseurs géants en caoutchouc qui permettent d'appuyer contre la coque d'un navire sans l'abîmer.",
+    },
     parts: [
       {
         id: 'hull',
@@ -493,7 +528,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.WORKSHOP,
     tierLabel: 'Palier 2 · Atelier',
     ageNote: '7 à 9 ans · 8 pièces',
-    realWorldQuery: 'avion biplan voltige moteur en étoile portance histoire',
+    discovery: {
+      howItWorks:
+        "Ses deux ailes superposées reliées par des mâts rigides offrent une grande portance pour une envergure très courte, ce qui permet de pivoter et réaliser des tonneaux ultra-rapides.",
+      realRecord:
+        "Un biplan de voltige moderne comme le Pitts Special peut tourner sur lui-même (roulis) à plus de 300 degrés par seconde — presque un tour complet en une seconde !",
+      didYouKnow:
+        "Le moteur en étoile dispose ses cylindres tout autour de l'hélice pour que chacun reçoive directement le vent frais et refroidisse sans radiateur d'eau.",
+    },
     parts: [
       {
         id: 'fuselage',
@@ -623,7 +665,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.ENGINEER,
     tierLabel: 'Palier 3 · Ingénieur',
     ageNote: '8 à 10 ans · 10 pièces',
-    realWorldQuery: 'formule 1 aérodynamisme aileron appui halo moteur hybride explication',
+    discovery: {
+      howItWorks:
+        "Ses ailerons avant et arrière fonctionnent exactement à l'inverse d'une aile d'avion : au lieu de soulever la voiture, l'air l'écrase contre le bitume pour prendre les virages à très grande vitesse.",
+      realRecord:
+        "Une monoplace de Formule 1 dépasse 350 km/h en ligne droite et génère tellement d'appui aérodynamique qu'elle pourrait théoriquement rouler au plafond d'un tunnel dès 180 km/h !",
+      didYouKnow:
+        "L'arceau Halo en titane au-dessus du cockpit pèse seulement 7 kg mais peut supporter le poids de deux bus à impériale empilés (12 tonnes).",
+    },
     parts: [
       {
         id: 'floor',
@@ -779,7 +828,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.ENGINEER,
     tierLabel: 'Palier 3 · Ingénieur',
     ageNote: '8 à 10 ans · 10 pièces',
-    realWorldQuery: 'navire océanographique robot sous-marin ROV exploration abysses',
+    discovery: {
+      howItWorks:
+        "Grâce à son GPS et ses propulseurs orientables à 360°, le navire reste immobile au mètre près en pleine mer pendant que son portique descend le robot ROV au bout d'un câble à fibre optique.",
+      realRecord:
+        "Les robots sous-marins scientifiques (ROV) explorent les abysses jusqu'à plus de 6 000 mètres de profondeur, là où l'obscurité est totale et la pression dépasse 600 fois celle de la surface !",
+      didYouKnow:
+        "Les moteurs d'un navire océanographique sont montés sur des coussins anti-vibrations spéciaux pour rester ultra-silencieux et ne pas brouiller les sonars sous la coque.",
+    },
     parts: [
       {
         id: 'hull',
@@ -936,7 +992,14 @@ export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [
     tier: DifficultyTier.ENGINEER,
     tierLabel: 'Palier 3 · Ingénieur',
     ageNote: '8 à 10 ans · 11 pièces',
-    realWorldQuery: 'hélicoptère secours montagne rotor principal rotor anticouple fonctionnement',
+    discovery: {
+      howItWorks:
+        "Les quatre grandes pales supérieures tournent pour créer la portance même sans avancer, tandis que le petit rotor arrière anticouple pousse sur le côté pour empêcher la cabine de tournoyer sur elle-même.",
+      realRecord:
+        "En 2005, un hélicoptère de secours Écureuil a réussi l'exploit mondial de se poser puis redécoller au sommet du mont Everest, à 8 848 mètres d'altitude !",
+      didYouKnow:
+        "En montagne, lorsque les rochers sont trop pentus pour poser les patins, le pilote reste en vol stationnaire pendant que le treuil descend le secouriste au bout d'un câble d'acier.",
+    },
     parts: [
       {
         id: 'floor-frame',

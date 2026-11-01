@@ -4,12 +4,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {
   CameraPreset,
+  LanguageCode,
   PartAnimationKind,
   PartSpec,
   VehicleBlueprint,
   VehicleCategory,
   VisualStyleMode,
 } from '../types/game';
+import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
   createGuideGhostMaterial,
   createRadialShadowTexture,
@@ -46,6 +48,7 @@ export interface DragFeedbackOverlay {
 }
 
 interface WorkshopCanvasProps {
+  language: LanguageCode;
   blueprint: VehicleBlueprint;
   placedPartIds: string[];
   visualStyle: VisualStyleMode;
@@ -84,6 +87,7 @@ function disposeObject3D(obj: THREE.Object3D): void {
 }
 
 export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
+  language,
   blueprint,
   placedPartIds,
   visualStyle,
@@ -104,6 +108,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
   // Mutable refs synchronized with React props so WebGL canvas never tears down
   const propsRef = useRef({
+    language,
     blueprint,
     placedPartIds,
     visualStyle,
@@ -119,6 +124,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
   useEffect(() => {
     propsRef.current = {
+      language,
       blueprint,
       placedPartIds,
       visualStyle,
@@ -132,6 +138,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       onStartCanvasDrag,
     };
   }, [
+    language,
     blueprint,
     placedPartIds,
     visualStyle,
@@ -767,15 +774,17 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
             }
           }
 
+          const t = UI_TRANSLATIONS[currentProps.language];
           _projectedVec.copy(_targetVec).project(engine.camera);
           setDragHud({
             partName: spec.name,
             status: 'magnet',
-            message: `✓ Relâche pour fixer : ${spec.name}`,
+            message: t.dragReleaseToSnap(spec.name),
             x: ((_projectedVec.x + 1) / 2) * rect.width,
             y: ((-_projectedVec.y + 1) / 2) * rect.height - 46,
           });
         } else {
+          const t = UI_TRANSLATIONS[currentProps.language];
           engine.draggedMesh.group.position.copy(_intersectPt);
           if (engine.draggedMesh.magnetized) {
             engine.draggedMesh.magnetized = false;
@@ -789,11 +798,11 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
           if (withinSnap && missingDeps.length > 0) {
             const firstMissingName =
-              currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? 'la base';
+              currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? '';
             setDragHud({
               partName: spec.name,
               status: 'locked',
-              message: `Pose d'abord : ${firstMissingName}`,
+              message: t.dragPlaceFirst(firstMissingName),
               x: e.clientX - rect.left,
               y: e.clientY - rect.top - 48,
             });
@@ -801,7 +810,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
             setDragHud({
               partName: spec.name,
               status: 'dragging',
-              message: `Approche "${spec.name}" de sa silhouette guide`,
+              message: t.dragApproachGuide(spec.name),
               x: e.clientX - rect.left,
               y: e.clientY - rect.top - 48,
             });
@@ -815,6 +824,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       const engine = engineRef.current;
       if (!engine || !currentProps.activeDragPartId || !engine.draggedMesh) return;
 
+      const t = UI_TRANSLATIONS[currentProps.language];
       const spec = engine.draggedMesh.spec;
       const placedSet = new Set(currentProps.placedPartIds);
       const missingDeps = spec.dependsOn.filter((d) => !placedSet.has(d));
@@ -824,10 +834,10 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         currentProps.onPartSnapped(spec.id);
       } else if (missingDeps.length > 0) {
         const firstMissingName =
-          currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? 'la base';
+          currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? '';
         soundEngine.playGentleBounce();
         currentProps.onPartDropRejected(
-          `Astuce mécanique : installe d'abord "${firstMissingName}" avant de fixer "${spec.name}" !`,
+          t.dropRejectedMissingDep(firstMissingName, spec.name),
         );
       } else {
         soundEngine.playGentleBounce();
@@ -860,11 +870,12 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           soundEngine.playSnapSuccess(currentProps.visualStyle);
           currentProps.onPartSnapped(silEntry.spec.id);
         } else {
+          const t = UI_TRANSLATIONS[currentProps.language];
           const firstMissingName =
-            currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? 'la base';
+            currentProps.blueprint.parts.find((p) => p.id === missingDeps[0])?.name ?? '';
           soundEngine.playGentleBounce();
           currentProps.onPartDropRejected(
-            `Installe d'abord "${firstMissingName}" avant de poser "${silEntry.spec.name}" !`,
+            t.dropRejectedMissingDep(firstMissingName, silEntry.spec.name),
           );
         }
       }
@@ -903,14 +914,17 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     };
   }, []);
 
+  const t = UI_TRANSLATIONS[language];
+
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div dir="ltr" className="relative w-full h-full overflow-hidden">
       {/* Isolated WebGL mount container */}
       <div ref={canvasMountRef} className="w-full h-full" />
 
       {/* Accessible Semantic Drag & Snap Feedback Overlay (no backdrop-blur over WebGL) */}
       {dragHud && (
         <div
+          dir={language === 'ar' ? 'rtl' : 'ltr'}
           style={{
             transform: `translate3d(${Math.max(16, dragHud.x)}px, ${Math.max(16, dragHud.y)}px, 0) translateX(-50%)`,
           }}
@@ -928,14 +942,15 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
       {/* WebGL Context Lost Fallback */}
       {webglLost && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-slate-50 p-6 text-center">
+        <div
+          dir={language === 'ar' ? 'rtl' : 'ltr'}
+          className="absolute inset-0 z-30 flex items-center justify-center bg-slate-50 p-6 text-center"
+        >
           <div className="max-w-md bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
             <h2 className="text-lg font-bold text-slate-900 mb-2">
-              Réinitialisation de l'atelier 3D
+              {t.webglResetTitle}
             </h2>
-            <p className="text-sm text-slate-600">
-              L'affichage 3D reprend automatiquement dans un instant.
-            </p>
+            <p className="text-sm text-slate-600">{t.webglResetDesc}</p>
           </div>
         </div>
       )}

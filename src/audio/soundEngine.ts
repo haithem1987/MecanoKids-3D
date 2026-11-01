@@ -121,6 +121,18 @@ class WorkshopSoundEngine {
     });
   }
 
+  public playBadgeUnlocked(): void {
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const notes = [659.25, 880, 1174.66, 1318.51];
+    notes.forEach((freq, idx) => {
+      const start = now + idx * 0.075;
+      this.triggerTone(ctx, 'sine', freq, freq * 1.015, start, 0.24, 0.12);
+    });
+  }
+
   private triggerTone(
     ctx: AudioContext,
     type: OscillatorType,

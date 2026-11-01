@@ -1,65 +1,49 @@
 import React from 'react';
-import { ArrowRight, BookOpen, ExternalLink, Eye, Star, X } from 'lucide-react';
-import { DiscoverySheet, VehicleBlueprint } from '../types/game';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Award,
+  BookOpen,
+  Eye,
+  Lightbulb,
+  Star,
+  Trophy,
+  X,
+} from 'lucide-react';
+import { renderBadgeIcon } from './ProgressionModal';
+import { UI_TRANSLATIONS } from '../i18n/translations';
+import { BadgeEvaluation, LanguageCode, VehicleBlueprint } from '../types/game';
 
 interface DiscoveryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  language: LanguageCode;
   blueprint: VehicleBlueprint;
   isCompleted: boolean;
   starsEarned: number;
-  discovery: DiscoverySheet | null;
-  loading: boolean;
-  error: string | null;
-  onRetryDiscovery: () => void;
+  newlyUnlockedBadges: BadgeEvaluation[];
+  onOpenProgression: () => void;
   hasNextStage: boolean;
   onNextStage: () => void;
-}
-
-function renderFormattedText(raw: string): React.ReactNode {
-  const lines = raw
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
-
-  return (
-    <div className="space-y-3">
-      {lines.map((line, idx) => {
-        const cleaned = line.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '');
-        const segments = cleaned.split(/(\*\*[^*]+\*\*)/g);
-        return (
-          <p key={idx} className="text-sm text-slate-700 leading-relaxed">
-            {segments.map((seg, sIdx) => {
-              if (seg.startsWith('**') && seg.endsWith('**')) {
-                return (
-                  <strong key={sIdx} className="font-semibold text-slate-900">
-                    {seg.slice(2, -2)}
-                  </strong>
-                );
-              }
-              return <React.Fragment key={sIdx}>{seg}</React.Fragment>;
-            })}
-          </p>
-        );
-      })}
-    </div>
-  );
 }
 
 export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
   isOpen,
   onClose,
+  language,
   blueprint,
   isCompleted,
   starsEarned,
-  discovery,
-  loading,
-  error,
-  onRetryDiscovery,
+  newlyUnlockedBadges,
+  onOpenProgression,
   hasNextStage,
   onNextStage,
 }) => {
   if (!isOpen) return null;
+
+  const t = UI_TRANSLATIONS[language];
+  const isRtl = language === 'ar';
+  const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
 
   return (
     <div
@@ -73,7 +57,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
         <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-slate-200 bg-slate-50">
           <div>
             <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span>Stage {blueprint.stageNumber}</span>
+              <span>{t.stageLabel(blueprint.stageNumber)}</span>
               <span aria-hidden="true">·</span>
               <span>{blueprint.tierLabel}</span>
               {isCompleted && (
@@ -92,15 +76,15 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               className="mt-1 font-display text-2xl font-bold text-slate-900"
             >
               {isCompleted
-                ? `Bravo ! ${blueprint.name} est prêt à partir !`
-                : `Fiche Découverte : ${blueprint.name}`}
+                ? t.discoveryCompletedTitle(blueprint.name)
+                : t.discoveryPreviewTitle(blueprint.name)}
             </h2>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            aria-label="Fermer la fiche découverte"
+            aria-label={t.closeDiscoveryAria}
             className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -108,74 +92,113 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
           {!isCompleted ? (
             <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl">
               <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm mb-2">
-                <BookOpen className="w-4 h-4 text-sky-600" />
-                <span>Termine l&apos;assemblage pour débloquer les secrets du monde réel !</span>
+                <BookOpen className="w-4 h-4 text-sky-600 shrink-0" />
+                <span>{t.discoveryLockedTitle}</span>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Dès que tu auras fixé les{' '}
-                <span className="font-mono tabular-nums font-semibold">{blueprint.parts.length}</span>{' '}
-                pièces de <strong>{blueprint.name}</strong>, cette fiche recherchera sur Google des
-                records et anecdotes réelles sur le véritable engin.
+                {t.discoveryLockedDesc(blueprint.parts.length, blueprint.name)}
               </p>
             </div>
-          ) : loading ? (
-            <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-              <p className="text-sm font-semibold text-slate-800">
-                Recherche d&apos;informations réelles vérifiées sur {blueprint.name}...
-              </p>
-              <p className="text-xs text-slate-500">
-                Exploration encyclopédique Google Search en cours pour préparer ta fiche découverte.
-              </p>
-            </div>
-          ) : error ? (
-            <div className="p-5 bg-red-50 border border-red-200 rounded-xl space-y-3">
-              <p className="text-sm text-red-800">{error}</p>
-              <button
-                type="button"
-                onClick={onRetryDiscovery}
-                className="px-3.5 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors cursor-pointer"
-              >
-                Réessayer le chargement
-              </button>
-            </div>
-          ) : discovery ? (
-            <>
-              <div className="p-5 bg-sky-50/50 border border-sky-100 rounded-xl">
-                <div className="flex items-center gap-2 text-xs font-semibold text-sky-800 mb-3">
-                  <BookOpen className="w-4 h-4" />
-                  <span>Dans le monde réel — Faits vérifiés via Google Search</span>
-                </div>
-                {renderFormattedText(discovery.content)}
-              </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Newly Unlocked Achievement Badges Celebration Banner */}
+              {newlyUnlockedBadges.length > 0 && (
+                <div className="p-4 bg-amber-50 border border-amber-300 rounded-xl space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                      <Trophy className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>{t.newBadgesUnlockedBannerTitle(newlyUnlockedBadges.length)}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onOpenProgression();
+                      }}
+                      className="text-xs font-semibold text-sky-700 hover:text-sky-900 hover:underline cursor-pointer"
+                    >
+                      {t.viewAllBadgesBtn}
+                    </button>
+                  </div>
 
-              {discovery.sources.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold text-slate-500 mb-2">
-                    Sources web pour approfondir avec un adulte :
-                  </h3>
-                  <ul className="space-y-1.5">
-                    {discovery.sources.map((src) => (
-                      <li key={src.uri}>
-                        <a
-                          href={src.uri}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs text-sky-700 hover:text-sky-900 hover:underline"
-                        >
-                          <ExternalLink className="w-3 h-3 shrink-0" />
-                          <span className="truncate max-w-md">{src.title}</span>
-                        </a>
-                      </li>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {newlyUnlockedBadges.map((b) => (
+                      <div
+                        key={b.id}
+                        className="flex items-center gap-2.5 p-2.5 bg-white border border-amber-200 rounded-lg"
+                      >
+                        <div className="w-8 h-8 rounded-md bg-amber-500 text-white flex items-center justify-center shrink-0">
+                          {renderBadgeIcon(b.icon, 'w-4 h-4')}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-900 truncate">{b.title}</p>
+                          <p className="text-[11px] text-slate-600 line-clamp-1">{b.description}</p>
+                        </div>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
-            </>
-          ) : null}
+
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-sky-800">
+                  <BookOpen className="w-4 h-4 shrink-0" />
+                  <span>{t.discoveryBadgeLocal}</span>
+                </div>
+
+                {newlyUnlockedBadges.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenProgression();
+                    }}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 hover:text-amber-900 cursor-pointer"
+                  >
+                    <Trophy className="w-3.5 h-3.5 shrink-0" />
+                    <span>{t.viewAllBadgesBtn}</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="p-4 bg-sky-50/60 border border-sky-100 rounded-xl">
+                <h3 className="text-sm font-bold text-slate-900 mb-1.5">
+                  {t.howItWorksTitle}
+                </h3>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  {blueprint.discovery.howItWorks}
+                </p>
+              </div>
+
+              <div className="p-4 bg-amber-50/60 border border-amber-100 rounded-xl">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Award className="w-4 h-4 text-amber-600 shrink-0" />
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {t.realRecordTitle}
+                  </h3>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  {blueprint.discovery.realRecord}
+                </p>
+              </div>
+
+              <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Lightbulb className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {t.didYouKnowTitle}
+                  </h3>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  {blueprint.discovery.didYouKnow}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer Actions */}
@@ -185,8 +208,8 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
             onClick={onClose}
             className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg transition-colors min-h-[40px] cursor-pointer"
           >
-            <Eye className="w-4 h-4" />
-            <span>Admirer le modèle en 3D</span>
+            <Eye className="w-4 h-4 shrink-0" />
+            <span>{t.admire3DBtn}</span>
           </button>
 
           {isCompleted && hasNextStage && (
@@ -198,8 +221,8 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               }}
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors min-h-[40px] cursor-pointer"
             >
-              <span>Passer au stage suivant</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{t.goToNextStageBtn}</span>
+              <ForwardArrow className="w-4 h-4 shrink-0" />
             </button>
           )}
         </div>

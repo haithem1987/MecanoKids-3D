@@ -1,6 +1,6 @@
 # MécanoKids 3D — Guide d'Installation & Lancement Local (Windows)
 
-Jeu web éducatif d'assemblage mécanique 3D pour enfants (voitures, bateaux, avions et engins spéciaux) avec progression par stages, 3 styles visuels en temps réel, compagnon **Mécano Léo** (Gemini) et **Fiches Découvertes** vérifiées via Google Search.
+Jeu web éducatif **100 % autonome (aucune clé API ni dépendance IA requise)** d'assemblage mécanique 3D pour enfants (voitures, bateaux, avions et hélicoptères), disponible en **Français (`FR`)** et en **Arabe (`العربية` RTL)**, avec **sauvegarde locale automatique (`localStorage`)** qui reprend exactement sur le même niveau et les mêmes pièces montées après redémarrage.
 
 ---
 
@@ -13,8 +13,8 @@ Jeu web éducatif d'assemblage mécanique 3D pour enfants (voitures, bateaux, av
      node -v
      npm -v
      ```
-2. **Clé API Gemini** *(optionnelle pour jouer en 3D, requise pour la mascotte Mécano Léo et les fiches découvertes Google Search)* :
-   - Récupérer une clé sur [Google AI Studio](https://aistudio.google.com/apikey).
+
+*(Aucune clé API n'est nécessaire : les indices mécaniques et les fiches découvertes encyclopédiques fonctionnent directement hors-ligne en français et en arabe.)*
 
 ---
 
@@ -22,14 +22,8 @@ Jeu web éducatif d'assemblage mécanique 3D pour enfants (voitures, bateaux, av
 
 Une fois le projet téléchargé ou cloné depuis GitHub :
 
-1. Ouvrez le fichier `.env` (ou laissez le script le créer au premier lancement) et remplacez `MY_GEMINI_API_KEY` par votre vraie clé :
-   ```env
-   GEMINI_API_KEY="votre_cle_api_gemini_ici"
-   APP_URL="http://localhost:3000"
-   ```
-2. Double-cliquez sur **`start-windows.bat`** :
+1. Double-cliquez sur **`start-windows.bat`** :
    - Il vérifie la présence de Node.js,
-   - Crée automatiquement `.env` s'il n'existe pas encore,
    - Lance `npm install` automatiquement au premier démarrage,
    - Ouvre votre navigateur sur **`http://localhost:3000`** et démarre le jeu.
 
@@ -39,32 +33,40 @@ Une fois le projet téléchargé ou cloné depuis GitHub :
 
 ### Avec PowerShell
 ```powershell
-# 1. Cloner le dépôt GitHub et entrer dans le dossier
-git clone <URL_DE_VOTRE_DEPOT_GITHUB>
-cd <NOM_DU_DOSSIER>
+# 1. Mettre à jour ou cloner le dépôt GitHub
+git pull
 
-# 2. Créer le fichier d'environnement local (puis éditer GEMINI_API_KEY dans .env)
-Copy-Item .env.example .env
-
-# 3. Installer toutes les dépendances
+# 2. Installer toutes les dépendances
 npm install
 
-# 4. Lancer le jeu en mode développement (avec rechargement à chaud)
+# 3. Lancer le jeu en mode développement
 npm run dev
 ```
 
 ### Avec l'Invite de commandes classique (`cmd.exe`)
 ```bat
-copy .env.example .env
+git pull
 npm install
 npm run dev
 ```
 
-Puis ouvrez **`http://localhost:3000`** dans Chrome, Edge ou Firefox (ne pas ouvrir `http://0.0.0.0:3000` sur Windows).
+Puis ouvrez **`http://localhost:3000`** dans Chrome, Edge ou Firefox.
 
 ---
 
-## 4. Toutes les Commandes `npm` Disponibles (Compatibles Windows)
+## 4. Fonctionnalités Clés
+
+- **9 véhicules mécaniques en 3D** répartis en 3 paliers progressifs (Découverte, Atelier, Ingénieur).
+- **Bilingue Français / Arabe (`FR` / `العربية`)** avec bascule instantanée dans la barre supérieure et mise en page RTL complète.
+- **Sauvegarde locale automatique (`localStorage`)** :
+  - Mémorise le **niveau en cours**, les **pièces déjà assemblées** sur chaque véhicule, les **étoiles gagnées**, la **langue choisie**, le **style 3D** et l'angle caméra.
+  - Permet également d'**exporter / importer un fichier `.json`** de sauvegarde depuis le menu *Stages & Sauvegarde*.
+- **3 styles visuels 3D temps réel** : *Bois & Métal*, *Blocs Modulaires*, *Maquette Réaliste*.
+- **Guide Mécanique & Fiches Découvertes hors-ligne** intégrés pour chaque véhicule.
+
+---
+
+## 5. Toutes les Commandes `npm` Disponibles (Compatibles Windows)
 
 | Commande | Rôle |
 | :--- | :--- |
@@ -73,19 +75,3 @@ Puis ouvrez **`http://localhost:3000`** dans Chrome, Edge ou Firefox (ne pas ouv
 | `npm run start:local-prod` | Lance la version compilée (`dist/`) avec le serveur Express local sous Windows |
 | `npm run lint` | Vérifie le typage TypeScript complet du projet sans erreur |
 | `npm run clean` | Supprime proprement le dossier `dist/` (compatible CMD & PowerShell Windows) |
-
----
-
-## 5. Dépannage Rapide sous Windows
-
-- **Erreur PowerShell `L'exécution de scripts est désactivée sur ce système` (`npm.ps1`)** :
-  Exécutez cette commande une seule fois dans PowerShell :
-  ```powershell
-  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-  ```
-  *(Ou utilisez `npm.cmd run dev` / `start-windows.bat`).*
-- **Le port `3000` est déjà occupé sur votre PC** :
-  Sous PowerShell, vous pouvez lancer sur un autre port, par exemple `3001` :
-  ```powershell
-  $env:PORT=3001; npm run dev
-  ```

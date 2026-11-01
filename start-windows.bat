@@ -16,16 +16,6 @@ if %ERRORLEVEL% neq 0 (
   exit /b 1
 )
 
-if not exist ".env" (
-  if exist ".env.example" (
-    copy ".env.example" ".env" >nul
-    echo [INFO] Fichier .env créé à partir de .env.example.
-    echo        Pensez à renseigner GEMINI_API_KEY dans le fichier .env
-    echo        pour activer Mécano Léo et les Fiches Découvertes !
-    echo.
-  )
-)
-
 if not exist "node_modules" (
   echo [1/2] Installation des dépendances npm en cours...
   call npm install
@@ -37,7 +27,8 @@ if not exist "node_modules" (
   echo.
 )
 
-echo [2/2] Démarrage du serveur MécanoKids 3D sur http://localhost:3000 ...
+echo [2/2] Démarrage de MécanoKids 3D sur http://localhost:3000 ...
+echo       Aucune clé API requise — sauvegarde automatique locale activée.
 echo       Appuyez sur Ctrl+C pour arrêter le serveur.
 echo.
 start "" "http://localhost:3000"
