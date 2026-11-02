@@ -6,6 +6,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { WifiOff } from 'lucide-react';
 import { evaluatePlayerProgression, syncUnlockedBadgesMap } from './data/badges';
+import { resolveEntitlements } from './utils/entitlements';
 import { VEHICLE_BLUEPRINTS } from './data/blueprints';
 import {
   buildDailyBlueprintForDate,
@@ -91,6 +92,12 @@ export default function App() {
   }, [profileStore]);
 
   const progress = activeProfile.progress;
+
+  // TODO: pass entitlements to gating components when Lot V UI lands
+  const _entitlements = useMemo(
+    () => resolveEntitlements(progress.licenseState),
+    [progress.licenseState],
+  );
 
   const setProgress = useCallback(
     (updater: PlayerProgress | ((prev: PlayerProgress) => PlayerProgress)) => {

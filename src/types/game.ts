@@ -265,7 +265,12 @@ export interface DailyStreakState {
   unlockedMilestones: Record<string, number>;
 }
 
+// Imported here to keep PlayerProgress self-contained; source of truth is entitlements.ts
+import type { LicenseState } from '../utils/entitlements';
+export type { LicenseState };
+
 export interface PlayerProgress {
+  licenseState: LicenseState;
   currentBlueprintId: string;
   lastStandardBlueprintId: string;
   inProgressStages: Record<string, StageInProgressRecord>;
