@@ -71,6 +71,7 @@ import { ParentalGateModal } from './components/ParentalGateModal';
 import { ParentSpaceModal } from './components/ParentSpaceModal';
 import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
+import { LandingPage } from './components/LandingPage';
 
 interface ActiveDiagnosticSession {
   blueprintId: string;
@@ -79,7 +80,12 @@ interface ActiveDiagnosticSession {
   seed: number;
 }
 
+const LANDING_SEEN_KEY = 'mkids_landing_seen';
+
 export default function App() {
+  const [showLanding, setShowLanding] = useState<boolean>(
+    () => !localStorage.getItem(LANDING_SEEN_KEY),
+  );
   const [profileStore, setProfileStore] = useState<MultiProfileStore>(loadMultiProfileStore);
   const [todayDateKey, setTodayDateKey] = useState<string>(() => getTodayDateKey());
   const isOnline = useOnlineStatus();
@@ -1877,6 +1883,19 @@ export default function App() {
     return snapshotCaptureRef.current ? snapshotCaptureRef.current() : null;
   }, []);
 
+  if (showLanding) {
+    return (
+      <LandingPage
+        language={language}
+        onSelectLanguage={handleSelectLanguage}
+        onStart={() => {
+          localStorage.setItem(LANDING_SEEN_KEY, '1');
+          setShowLanding(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div
       dir={language === 'ar' ? 'rtl' : 'ltr'}
@@ -2315,6 +2334,10 @@ export default function App() {
         onDiplomaDownloaded={() => flashStatus(t.parentDiplomaDownloadedToast)}
         isOnline={isOnline}
         initialTab={parentSpaceInitialTab}
+        onShowLanding={() => {
+          setParentSpaceOpen(false);
+          setShowLanding(true);
+        }}
       />
 
       {/* Automatic Interactive Guided Tour */}

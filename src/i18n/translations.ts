@@ -905,6 +905,17 @@ export interface UIStrings {
   sessionCurtainSubtitle: (profileName: string, completedCount: number) => string;
   sessionCurtainGraceBanner: (secondsLeft: number) => string;
   sessionCurtainParentExtendBtn: string;
+  // Lot C1 — Landing page
+  landingHeroTitle: string;
+  landingHeroCTA: string;
+  landingBadgeNoAds: string;
+  landingBadgeOffline: string;
+  landingBadgeTTS: string;
+  landingUniversesTitle: string;
+  landingPricingTitle: string;
+  landingSchoolTitle: string;
+  landingSchoolSubmit: string;
+  landingSchoolThanks: string;
 }
 
 export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
@@ -1399,6 +1410,16 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     sessionCurtainGraceBanner: (secondsLeft) =>
       `Fin de séance proche : il te reste ${secondsLeft}s pour fixer tes dernières pièces sur ce véhicule.`,
     sessionCurtainParentExtendBtn: 'Accès Parent (Prolonger ou régler)',
+    landingHeroTitle: 'Construis tes premières machines !',
+    landingHeroCTA: 'Essayer gratuitement →',
+    landingBadgeNoAds: '0 % Publicité',
+    landingBadgeOffline: '100 % Hors-ligne',
+    landingBadgeTTS: 'Synthèse vocale FR/EN/AR',
+    landingUniversesTitle: '5 univers mécaniques',
+    landingPricingTitle: 'Tarifs',
+    landingSchoolTitle: 'Votre école est intéressée ?',
+    landingSchoolSubmit: 'Envoyer une demande',
+    landingSchoolThanks: 'Merci, nous vous contacterons !',
   },
 
   en: {
@@ -1892,6 +1913,16 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     sessionCurtainGraceBanner: (secondsLeft) =>
       `Session wrapping up: ${secondsLeft}s remaining to snap the final parts onto this vehicle.`,
     sessionCurtainParentExtendBtn: 'Parent Access (Extend or adjust)',
+    landingHeroTitle: 'Build your first machines!',
+    landingHeroCTA: 'Try for free →',
+    landingBadgeNoAds: '0% Ads',
+    landingBadgeOffline: '100% Offline',
+    landingBadgeTTS: 'Voice FR/EN/AR',
+    landingUniversesTitle: '5 mechanical universes',
+    landingPricingTitle: 'Pricing',
+    landingSchoolTitle: 'Is your school interested?',
+    landingSchoolSubmit: 'Send a request',
+    landingSchoolThanks: 'Thank you, we will contact you!',
   },
 
   ar: {
@@ -2384,5 +2415,15 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     sessionCurtainGraceBanner: (secondsLeft) =>
       `شارفت الجلسة على الانتهاء: لديك ${secondsLeft} ثانية لتثبيت القطع الأخيرة في هذه المركبة.`,
     sessionCurtainParentExtendBtn: 'دخول ولي الأمر (تمديد أو تعديل)',
+    landingHeroTitle: 'ابنِ أولى آلاتك!',
+    landingHeroCTA: 'جرّب مجاناً ←',
+    landingBadgeNoAds: '0% إعلانات',
+    landingBadgeOffline: '100% بلا إنترنت',
+    landingBadgeTTS: 'نطق FR/EN/AR',
+    landingUniversesTitle: '5 عوالم ميكانيكية',
+    landingPricingTitle: 'الأسعار',
+    landingSchoolTitle: 'هل مدرستك مهتمة؟',
+    landingSchoolSubmit: 'إرسال طلب',
+    landingSchoolThanks: 'شكراً، سنتواصل معك قريباً!',
   },
 };
