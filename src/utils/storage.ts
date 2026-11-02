@@ -87,6 +87,7 @@ export function createDefaultProgress(
   keepTutorialSeen = false,
 ): PlayerProgress {
   return {
+    licenseState: { tier: 'discovery' as const },
     currentBlueprintId: VEHICLE_BLUEPRINTS[0].id,
     lastStandardBlueprintId: VEHICLE_BLUEPRINTS[0].id,
     inProgressStages: {},
@@ -370,7 +371,24 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
   const environmentMode: WorkbenchEnvironmentMode =
     obj.environmentMode === 'studio' ? 'studio' : 'auto_thematic';
 
+  const VALID_TIERS = new Set(['discovery', 'family', 'school']);
+  const rawLic = obj.licenseState as Record<string, unknown> | undefined;
+  const licTier =
+    rawLic && typeof rawLic.tier === 'string' && VALID_TIERS.has(rawLic.tier)
+      ? (rawLic.tier as 'discovery' | 'family' | 'school')
+      : 'discovery';
+  const licenseState = {
+    tier: licTier,
+    ...(rawLic?.schoolOrg && typeof rawLic.schoolOrg === 'string'
+      ? { schoolOrg: rawLic.schoolOrg }
+      : {}),
+    ...(rawLic?.expiresAt && typeof rawLic.expiresAt === 'string'
+      ? { expiresAt: rawLic.expiresAt }
+      : {}),
+  };
+
   return {
+    licenseState,
     currentBlueprintId: candidateBpId,
     lastStandardBlueprintId,
     inProgressStages,
