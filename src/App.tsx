@@ -53,6 +53,8 @@ import { soundEngine } from './audio/soundEngine';
 import { TopBar } from './components/TopBar';
 import { WorkshopCanvas } from './components/WorkshopCanvas';
 import { BottomPartsDock } from './components/BottomPartsDock';
+import { PartsTray } from './components/PartsTray';
+import { usePartsTrayController } from './hooks/usePartsTrayController';
 import { StageCatalogModal } from './components/StageCatalogModal';
 import { DailyChallengeModal } from './components/DailyChallengeModal';
 import { SpeedLeaderboardModal } from './components/SpeedLeaderboardModal';
@@ -128,6 +130,14 @@ export default function App() {
   const [explodedFactor, setExplodedFactor] = useState<number>(0);
   const [cameraPresetNonce, setCameraPresetNonce] = useState<number>(0);
   const [dockCollapsed, setDockCollapsed] = useState<boolean>(false);
+
+  const {
+    trayVisible: partsTrayVisible,
+    onPartPicked: partsTrayOnPartPicked,
+    onPartSnapped: partsTrayOnPartSnapped,
+    onPartRejected: partsTrayOnPartRejected,
+    onManualToggle: partsTrayOnManualToggle,
+  } = usePartsTrayController(progress.partsTrayAutoHide);
 
   // Axe 1, 2 & 3 interactive states
   const [xRayMode, setXRayMode] = useState<boolean>(false);
@@ -1557,6 +1567,7 @@ export default function App() {
       setStagedPartId(null);
       setActiveDragPartId(null);
       setHintPartId((prev) => (prev === partId ? null : prev));
+      partsTrayOnPartSnapped();
     },
     [
       activeDiagnostic,
@@ -1564,6 +1575,7 @@ export default function App() {
       currentRawBlueprint,
       flashStatus,
       language,
+      partsTrayOnPartSnapped,
       recordActiveWorkshopEngagement,
       setProgress,
       standardPlacedPartIds,
@@ -1595,8 +1607,9 @@ export default function App() {
         });
       }
       flashStatus(reason);
+      partsTrayOnPartRejected();
     },
-    [activeDiagnostic, currentBlueprint.id, flashStatus, setProgress],
+    [activeDiagnostic, currentBlueprint.id, flashStatus, partsTrayOnPartRejected, setProgress],
   );
 
   const handleStartPartDrag = useCallback(
@@ -1608,6 +1621,7 @@ export default function App() {
       setStagedPartId(partId);
       setActiveDragPartId(partId);
       setExplodedFactor(0);
+      // tray collapse deferred to onPartDraggedOut (pointer leaving the tray) to avoid interrupting the gesture
     },
     [activeDiagnostic, progress.preferredStyle],
   );
@@ -1660,6 +1674,15 @@ export default function App() {
   const handleSelectStyle = useCallback(
     (style: VisualStyleMode) => {
       setProgress((p) => ({ ...p, preferredStyle: style }));
+    },
+    [setProgress],
+  );
+
+  const handleChangePartsTrayPosition = useCallback(
+    (pos: 'bottom' | 'left' | 'right') => {
+      setProgress((p) => ({ ...p, partsTrayPosition: pos }));
+      // When moving the tray to a side panel, collapse the bottom dock to give more room to the canvas
+      setDockCollapsed(pos !== 'bottom');
     },
     [setProgress],
   );
@@ -1940,12 +1963,34 @@ export default function App() {
         />
       </main>
 
+      {/* Side PartsTray (left / right positions) */}
+      {progress.partsTrayPosition !== 'bottom' && (
+        <PartsTray
+          language={language}
+          blueprint={currentBlueprint}
+          placedPartIds={effectivePlacedPartIds}
+          faultyPartIds={effectiveFaultyPartIds}
+          liveryPreset={currentLivery}
+          stagedPartId={stagedPartId}
+          activeDragPartId={activeDragPartId}
+          hintPartId={effectiveHintPartId}
+          visible={partsTrayVisible}
+          position={progress.partsTrayPosition}
+          onStartPartDrag={handleStartPartDrag}
+          onClickPartCard={handleClickPartCard}
+          onToggleVisible={partsTrayOnManualToggle}
+          onChangePosition={handleChangePartsTrayPosition}
+          onPartDraggedOut={partsTrayOnPartPicked}
+        />
+      )}
+
       {/* Collapsible Unified Bottom Parts & Controls Dock */}
       <BottomPartsDock
         language={language}
         blueprint={currentBlueprint}
         totalStages={VEHICLE_BLUEPRINTS.length}
         placedPartIds={effectivePlacedPartIds}
+        faultyPartIds={effectiveFaultyPartIds}
         liveryPreset={currentLivery}
         testDriveActive={testDriveActive}
         onToggleTestDrive={handleToggleTestDrive}
@@ -1995,12 +2040,17 @@ export default function App() {
         onSaveNow={handleManualSave}
         onStartPartDrag={handleStartPartDrag}
         onClickPartCard={handleClickPartCard}
+        onPartDraggedOut={partsTrayOnPartPicked}
         onOpenCatalog={() => setCatalogOpen(true)}
         onOpenVictoryModal={() => setDiscoveryOpen(true)}
         hasNextStage={hasNextStage}
         onGoNextStage={handleGoNextStage}
         onOpenTour={handleOpenTour}
         statusMessage={statusMessage}
+        partsTrayVisible={partsTrayVisible}
+        partsTrayPosition={progress.partsTrayPosition}
+        onTogglePartsTray={partsTrayOnManualToggle}
+        onChangePartsTrayPosition={handleChangePartsTrayPosition}
       />
 
       {/* Family Multi-Profiles, Trilingual Web Speech & Offline PWA Modal */}

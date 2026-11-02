@@ -109,6 +109,8 @@ export function createDefaultProgress(
     muted: false,
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
+    partsTrayPosition: 'bottom',
+    partsTrayAutoHide: true,
     lastSavedAt: Date.now(),
   };
 }
@@ -394,6 +396,11 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     muted: Boolean(obj.muted),
     voiceAutoRead: Boolean(obj.voiceAutoRead),
     tutorialSeen: Boolean(obj.tutorialSeen),
+    partsTrayPosition:
+      obj.partsTrayPosition === 'left' || obj.partsTrayPosition === 'right'
+        ? obj.partsTrayPosition
+        : 'bottom',
+    partsTrayAutoHide: obj.partsTrayAutoHide !== false,
     lastSavedAt: typeof obj.lastSavedAt === 'number' ? obj.lastSavedAt : Date.now(),
   };
 }

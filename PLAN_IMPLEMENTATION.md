@@ -10,10 +10,54 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 
 ## Statut d'Avancement de l'Implémentation
 
+> **Révision du 1er novembre 2026** : les priorités ont été revues après les premiers tests avec des enfants (5 et 10 ans, sur PC grand écran), qui sont très positifs. L'analyse et le nouvel ordre sont détaillés en **section 0**. Les Lots B, C et D restent valables sur le fond, mais sont découpés, allégés et repoussés.
+
 - [x] **Lot A — Confiance Parentale, Sas Adulte, Bulletin STEM & Diplômes Imprimables** *(Implémenté & Vérifié — v1.1)*
-- [ ] **Lot B — Segmentation Freemium Éthique & Licences Hors-Ligne (Ed25519)** *(À suivre)*
-- [ ] **Lot C — Vitrine d'Acquisition, SEO Trilingue & Boucles Virales** *(Planifié)*
-- [ ] **Lot D — Synchronisation Cloud Parentale, Paiements & Publication Mobile** *(Planifié)*
+- [ ] **Lot U — Ergonomie de Sélection des Pièces** *(Priorité 1 — issu des tests enfants, voir §2bis)*
+- [ ] **Consolidation technique** — découpage d'`App.tsx`, tests Vitest, hygiène du dépôt *(Priorité 2)*
+- [ ] **Tests utilisateurs sur tablette & écoles pilotes** *(Priorité 3)*
+- [ ] **Lot C1 — Vitrine légère & liste d'attente écoles** *(Priorité 4 — extrait du Lot C)*
+- [ ] **Lot V — Première Vente** : Lot B allégé + paiement minimal, sans compte ni base de données *(Priorité 5 — voir §5bis, remplace l'enchaînement B puis D)*
+- [ ] **Lot C2 — SEO avancé & boucles virales** *(Plus tard)*
+- [ ] **Lot D2 — Synchronisation Cloud, Capacitor & magasins d'applications** *(Plus tard, si la demande est confirmée)*
+
+---
+
+## 0. Revue Critique & Nouvelles Priorités (1er novembre 2026)
+
+### 0.1 Constat
+- Le projet a quelques jours (premier commit le 31 octobre 2026). Les premiers tests avec deux enfants (5 et 10 ans, PC grand écran, lancement en local) sont très positifs : **le jeu plaît**. Une difficulté a été observée : **la sélection des pièces** (traitée par le Lot U).
+- Le plan initial enchaînait quatre lots de monétisation avant d'avoir validé l'usage réel (tablettes, enfants non-lecteurs) et l'intention d'achat (parents, écoles). Le risque principal n'est pas l'infrastructure de paiement : c'est l'ergonomie pour l'enfant et la preuve que quelqu'un est prêt à payer.
+
+### 0.2 Points forts à conserver
+- Les **4 invariants d'architecture** (§1.1) : hors-ligne intégral pour l'enfant, zéro donnée personnelle côté enfant, base de code unique, fusion monotone des sauvegardes.
+- Le **Lot A**, livré et soigné (question du sas en toutes lettres, chiffres arabes acceptés, grâce de fin d'assemblage du minuteur) : un vrai argument pour les parents.
+- Le **moteur de droits centralisé** (`entitlements.ts`, §3.2) : aucune règle d'accès codée en dur dans l'interface.
+
+### 0.3 Problèmes identifiés
+1. **Ordre B → C → D incohérent** : le Lot B verrouille 80 véhicules alors qu'aucun moyen de paiement n'existe avant le Lot D. Livré seul, il retire de la valeur sans rien rapporter. → La limite gratuite et un premier moyen de paiement sont livrés **ensemble** (Lot V).
+2. **Lot D surdimensionné pour une première vente** : Firebase Auth, Firestore, webhooks Stripe, RevenueCat et Capacitor. Une version minimale suffit : lien de paiement Stripe → clé de licence signée envoyée par e-mail, valable **pour les familles comme pour les écoles**. Pas de compte, pas de base de données.
+3. **KPI non mesurables** : les objectifs de `COMMERCIALISATION.md` §8 (activation, rétention J+1 / J+7, conversion) ne peuvent pas être mesurés, puisqu'aucune mesure n'est prévue. **Décision à prendre** : mesure anonyme et agrégée sans cookie (de type Plausible), limitée à la vitrine et à l'espace adulte, et/ou tests utilisateurs observés à intervalles réguliers.
+4. **Base de code fragile pour toucher aux paiements** : `App.tsx` fait environ 2 250 lignes avec 34 `useState`, et le projet n'a aucun test automatisé, alors que le plan décrit des fonctions « testables unitairement ».
+5. **Contradiction existante** : le bouton « Accès libre 100 niveaux » (`freeWorkshopUnlocked`) de l'Espace Parents contredit le modèle gratuit / payant. **À trancher avant le Lot V** : suppression, ou conservation sous forme de démo enseignant limitée dans le temps.
+6. **Vérification des clés trop complexe** : le repli ECDSA P-256 prévu pour les anciens Safari impose deux paires de clés et deux signatures par licence. Préférer une petite bibliothèque JavaScript Ed25519 (`@noble/ed25519`, quelques Ko) qui fonctionne sur tous les navigateurs. Accepter qu'un verrou côté appareil se contourne (modification du `localStorage`) : la cible n'est pas le piratage, inutile d'y investir davantage.
+7. **Grille tarifaire qui se concurrence elle-même** (`COMMERCIALISATION.md` §4) : 12,99 € à vie contre 4,99 € / an, l'offre annuelle reste moins chère pendant 2,6 ans. Proposer **un seul prix Famille** au lancement (achat unique, à tester entre 9,99 € et 14,99 €), en plus des offres École.
+8. **Angles morts B2B et magasins** :
+   - **Écoles publiques françaises** : paiement sur devis et bon de commande, facturation obligatoire via **Chorus Pro**. Un enseignant ne paie pas par carte : prévoir un parcours « devis → facture » dès le Lot V.
+   - **App Store** : une clé achetée sur le web qui débloque l'application iOS relève des règles d'Apple sur les achats intégrés, qui évoluent. À vérifier **avant** de figer l'architecture du Lot D2.
+9. **Ton des documents** : plusieurs chiffres étaient des promesses non mesurées (« élimine 100 % des tickets », « désamorce 80 % des questions », scores Lighthouse). Ils sont désormais présentés comme des **hypothèses à vérifier**.
+10. **Hygiène du dépôt** : `dev-dist/` absent du `.gitignore` ; `bun.lock` et `package-lock.json` coexistent (choisir un seul gestionnaire de paquets).
+
+### 0.4 Nouvel ordre des priorités
+
+| Priorité | Contenu | Pourquoi |
+| :---: | :--- | :--- |
+| **1** | **Lot U** — Ergonomie de sélection des pièces (§2bis), puis nouveau test avec les enfants | Seul problème observé en test réel ; touche le cœur du jeu |
+| **2** | **Consolidation** — extraire la logique d'`App.tsx` (en commençant par la barre des pièces), Vitest sur `storage`, `parentalGate`, `stemAnalytics`, `sessionTimer`, puis `entitlements` et fusion ; ménage du dépôt | Base saine avant de toucher aux paiements |
+| **3** | **Tests sur tablette** (Android d'entrée de gamme + iPad ancien) et contact de 2–3 écoles ou clubs pilotes | Support réel des familles et des écoles ; vérifier l'intention d'achat B2B |
+| **4** | **Lot C1** — Vitrine légère : page d'accueil, balises SEO de base, formulaire « école intéressée / liste d'attente », mesure anonyme si décidée | Attirer des testeurs et mesurer l'intérêt |
+| **5** | **Lot V** — Première vente (§5bis) | Encaisser un premier euro sans Firebase |
+| **Plus tard** | **Lot C2** (QR codes, défis partageables, SEO avancé) et **Lot D2** (sync Cloud, Capacitor, magasins, RevenueCat) | Seulement si la demande est confirmée |
 
 ---
 
@@ -105,9 +149,59 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 
 ---
 
+## 2bis. LOT U — Ergonomie de Sélection des Pièces (Priorité 1)
+
+> **Origine** : tests avec des enfants de 5 et 10 ans sur PC grand écran (novembre 2026). Le jeu plaît beaucoup, mais **la navigation pour sélectionner les pièces est difficile**.
+
+### 2bis.1 Diagnostic du code actuel
+- `BottomPartsDock.tsx` est une barre fixe en bas au centre (`w-[95vw] max-w-[1040px]`) qui mélange trois rangées : infos du véhicule, **pièces**, et une douzaine de boutons d'outils (caméra, rayons X, décor, studio, son, réinitialisation…).
+- Les pièces défilent **horizontalement** (`overflow-x-auto`) : la molette verticale de la souris n'a aucun effet, l'enfant ne voit que 4 à 5 cartes.
+- Les pièces déjà posées restent à leur place, grisées : au fil du montage, la prochaine pièce disponible dérive hors de vue vers la droite.
+- La barre, haute de trois rangées, masque le bas de la scène 3D (châssis, roues).
+- Les cartes sont **uniquement textuelles** (nom, état, petit carré de couleur) : inadaptées aux enfants qui ne lisent pas encore.
+
+### 2bis.2 Spécifications Fonctionnelles
+1. **Emplacement de la barre des pièces au choix**
+   - Trois positions fixes : **Bas** (actuel), **Gauche**, **Droite**. À gauche et à droite, les pièces s'affichent en **colonne verticale** (défilement naturel à la molette, adapté aux grands écrans).
+   - Pas de déplacement libre à la souris : pour un enfant de 5 ans, une barre déplaçable finit au mauvais endroit ou à moitié hors de l'écran.
+   - Sélecteur par un petit bouton directement sur la barre ; choix **mémorisé par profil**. En arabe (RTL), Gauche et Droite restent des positions physiques à l'écran.
+2. **Repli et réouverture automatiques** (option activée par défaut, désactivable dans les réglages)
+
+| Moment | Comportement attendu |
+| :--- | :--- |
+| L'enfant prend une pièce (clic sur la carte ou glisser) | La barre se replie ; en glisser, seulement quand le pointeur quitte la barre, pour ne pas couper le geste |
+| Barre repliée, pièce en main | Une étiquette compacte reste visible : « Pièce en main : *Roue avant* ✕ », avec un bouton pour annuler et rouvrir |
+| Pièce posée correctement | La barre se rouvre et défile jusqu'à **la prochaine pièce disponible** |
+| Pièce refusée (mauvais endroit, dépendance manquante) | La barre se rouvre aussi, sinon l'enfant reste bloqué |
+| Pièce verrouillée (une autre pièce doit être posée avant) | La barre ne se replie pas ; le message d'aide s'affiche |
+| Mode Diagnostic & Réparation | Même logique ; réouverture seulement s'il reste des pièces à remonter |
+| Repli manuel (bouton ou raccourci `H`) | Jamais rouvert automatiquement : le choix de l'enfant est respecté |
+
+3. **Séparation pièces / outils** : les boutons caméra, éclaté, rayons X, décor, studio, sans silhouette, diagnostic, son et réinitialisation passent dans une **barre d'outils distincte** et compacte. La barre des pièces ne contient plus que les pièces ; la replier ne fait pas disparaître les outils.
+4. **Ordre des pièces** : les pièces posées passent en fin de liste (section repliable « Déjà posées ») ; la prochaine pièce disponible est toujours amenée au premier plan.
+5. **Miniature visuelle de chaque pièce** sur sa carte, pour les non-lecteurs (5–6 ans). C'est probablement le gain le plus important pour les plus jeunes.
+6. **Cibles tactiles agrandies** (préparation tablette) : cartes et boutons d'au moins 48 px, espacement suffisant pour les petits doigts.
+
+### 2bis.3 Implémentation Technique
+- **Nouveaux réglages par profil** dans le store : `partsTrayPosition: 'bottom' | 'left' | 'right'` (défaut `'bottom'` en attendant les tests comparatifs) et `partsTrayAutoHide: boolean` (défaut `true`). Migration rétrocompatible dans les fonctions de nettoyage de `storage.ts`.
+- **Points d'ancrage existants dans `App.tsx`** : `handleStartPartDrag` et `handleClickPartCard` (prise), `handlePartSnapped` (pose), `onPartDropRejected` (refus), état `dockCollapsed`. Distinguer l'état « replié automatiquement » de « replié manuellement ».
+- **Glisser-déposer** : l'écoute de `pointerup` est déjà sur `window` dans `WorkshopCanvas.tsx`, donc replier la barre pendant le glisser ne casse pas le geste.
+- **Découpage** : extraire `PartsTray` et `WorkshopToolbar` de `BottomPartsDock.tsx`, et la logique de repli dans un hook `usePartsTrayController` testable sans navigateur. C'est aussi la première étape de la consolidation d'`App.tsx`.
+- **Miniatures** : rendu Three.js hors écran au chargement du véhicule, à partir de `partGeometries.ts`, mis en cache (`dataURL`) par pièce et par finition. Aucune ressource réseau.
+
+### 2bis.4 Critères de Validation
+- L'enfant de 5 ans trouve et pose une pièce **sans aide adulte**.
+- Aucune situation où la barre reste fermée alors qu'il reste des pièces et qu'aucune n'est en main.
+- Test comparatif avec les deux enfants : noter la position préférée de chacun et s'il désactive le repli automatique, puis **fixer les valeurs par défaut** en conséquence.
+- **Coût d'infrastructure** : 0 €.
+
+---
+
 ## 3. LOT B — Segmentation Freemium Éthique & Licences Hors-Ligne (Famille / École)
 
 > **Objectif métier** : Introduire la frontière entre l'offre gratuite d'appel et les offres payantes (*Pass Famille* et *Édition École*) sans jamais dégrader la fluidité du jeu ni nécessiter de connexion permanente pour les écoles.
+
+> **Révision nov. 2026** : ce lot est livré sous forme allégée dans le **Lot V** (§5bis), en même temps qu'un premier moyen de paiement. Voir §0.3, points 1, 5, 6 et 7.
 
 ### 3.1 Spécifications Fonctionnelles
 1. **Périmètre exact des droits (*Entitlements Matrix*)** :
@@ -136,8 +230,8 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 - **Vérification cryptographique asymétrique hors-ligne (Ed25519 via Web Crypto API)** :
   - Format de clé : `MK3D1.<payload_base32_ou_base64url>.<signature_ed25519>`.
   - Le `payload` JSON minimal contient `{ t: "school" | "family", org: "Ecole Jules Verne", exp: "2027-09-30", v: 1 }`.
-  - L'application embarque uniquement la **clé publique Ed25519** (32 octets, non secrète) et vérifie la signature via `window.crypto.subtle.verify('Ed25519', publicKey, sig, data)` (avec repli ECDSA P-256 pour compatibilité Safari plus anciens).
-  - **Avantage décisif** : **Zéro base de données requise au moment de la vérification sur les tablettes scolaires**, tout en rendant mathématiquement impossible la génération de fausses clés par un tiers.
+  - L'application embarque uniquement la **clé publique Ed25519** (32 octets, non secrète) et vérifie la signature via `window.crypto.subtle.verify('Ed25519', publicKey, sig, data)` (**révision nov. 2026** : préférer la bibliothèque `@noble/ed25519`, compatible avec tous les navigateurs, plutôt qu'un repli ECDSA P-256, voir §0.3 point 6).
+  - **Avantage décisif** : **Zéro base de données requise au moment de la vérification sur les tablettes scolaires**, tout en rendant impossible en pratique la fabrication de fausses clés sans la clé privée (le contournement local du verrou reste possible, voir §0.3 point 6).
 
 ### 3.3 Best Practices, Infrastructure & Coûts (Lot B)
 - **Best Practices** :
@@ -151,6 +245,8 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 ## 4. LOT C — Vitrine d'Acquisition, SEO Trilingue & Boucles Virales
 
 > **Objectif métier** : Maximiser le trafic organique qualifié (parents & enseignants en `FR` / `EN` / `AR`) et transformer chaque création d'enfant partagée par un parent en vecteur d'acquisition gratuit.
+
+> **Révision nov. 2026** : ce lot est découpé en **Lot C1** (vitrine légère et liste d'attente écoles, priorité 4) et **Lot C2** (SEO avancé, QR codes, défis partageables, plus tard).
 
 ### 4.1 Spécifications Fonctionnelles
 1. **Routage d'entrée intelligent (Vitrine vs Reprise Directe)** :
@@ -170,7 +266,7 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 ### 4.2 Implémentation Technique & Architecture
 - **Découpage du Bundle (*Code-Splitting*) pour les Core Web Vitals** :
   - Séparer la Vitrine d'Accueil (React + Tailwind léger < 45 Ko gzip) du moteur 3D Three.js (`React.lazy(() => import('./WorkshopApp'))`) avec préchargement en arrière-plan (`requestIdleCallback`) dès l'affichage de la vitrine :
-    - **Score Lighthouse Performance / SEO > 95/100**,
+    - **Objectif** (à mesurer) : score Lighthouse Performance / SEO > 95/100,
     - Chargement instantané du canevas 3D lorsque l'utilisateur clique sur *« Essayer gratuitement »*.
 - **Injection Métadonnées Dynamiques sur `server.ts`** :
   - Dans `server.ts` (en production), inspecter `?lang=fr|en|ar` (ou l'en-tête `Accept-Language`) avant de servir `index.html` afin d'injecter les balises `<title>`, `<meta property="og:*">` et `dir="rtl|ltr"` dans la bonne langue pour les aperçus WhatsApp, iMessage, Facebook et Googlebot.
@@ -183,13 +279,15 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 - **Best Practices** :
   - *Conformité Partage Enfant* : Le bouton de téléchargement/partage de Carte Postale n'expose jamais de nom de famille, géolocalisation ou photo réelle de l'enfant — uniquement le véhicule 3D et le pseudo/prénom local choisi.
 - **Coût d'infrastructure** : **0 € à ~5 € / mois** (mise en cache CDN Cloudflare ou Cloud Run des fichiers statiques compilés).
-- **Coût de support client** : **Nul** ; la section FAQ intégrée sur la vitrine désamorce en amont 80 % des questions pré-achat (compatibilité tablettes, fonctionnement hors-ligne, facturation écoles).
+- **Coût de support client** : **Nul** ; la section FAQ intégrée sur la vitrine devrait désamorcer une large part des questions pré-achat (hypothèse à mesurer) (compatibilité tablettes, fonctionnement hors-ligne, facturation écoles).
 
 ---
 
 ## 5. LOT D — Synchronisation Cloud Parentale, Paiements & Publication Boutiques (iOS / Android)
 
 > **Objectif métier** : Encaisser les paiements en production (Web Stripe + Apple App Store + Google Play), pérenniser les sauvegardes familiales multi-appareils et publier sur les magasins d'applications tablettes.
+
+> **Révision nov. 2026** : la partie paiement minimale passe dans le **Lot V** (§5bis). Le reste (Firebase, synchronisation, RevenueCat, Capacitor) devient le **Lot D2**, à lancer seulement si la demande est confirmée, après vérification des règles Apple sur les achats intégrés (§0.3, point 8).
 
 ### 5.1 Spécifications Fonctionnelles
 1. **Compte Parent Cloud Optionnel (100 % derrière Sas Parental)**
@@ -228,6 +326,28 @@ Ce document détaille le plan d'exécution complet des **4 Lots de commercialisa
 
 ---
 
+## 5bis. LOT V — Première Vente (Lot B allégé + Paiement Minimal)
+
+> **Révision du 1er novembre 2026** : remplace l'enchaînement « Lot B complet puis Lot D complet ». Objectif : encaisser les premières ventes Famille et École **sans compte utilisateur ni base de données**.
+
+### 5bis.1 Périmètre
+1. **Moteur de droits** `entitlements.ts` tel que décrit au §3.2, avec la limite gratuite (20 véhicules, Défi du Jour). *À valider* : limiter l'offre gratuite à 1 seul profil gêne les fratries et les essais en classe ; envisager 2 profils.
+2. **Clé de licence signée unique** pour les familles et les écoles (format `MK3D1.<payload>.<signature>`, §3.2), vérifiée hors-ligne avec `@noble/ed25519`. Le `payload` indique `t: "family" | "school"`.
+3. **Paiement Famille** : lien de paiement Stripe (*Payment Link*) → webhook sur `server.ts` (ou fonction serverless) qui signe la clé et l'envoie par e-mail (Resend ou Postmark) → page « Retrouver ma clé » par e-mail.
+4. **Parcours École** : formulaire de demande de devis → devis PDF → facture (via **Chorus Pro** pour les établissements publics) → clé envoyée à réception du bon de commande. Le paiement par carte reste possible pour les écoles privées et les clubs.
+5. **Décision** sur le bouton `freeWorkshopUnlocked` (§0.3 point 5).
+6. **Rétrocompatibilité bienveillante** (§3.1) : tout véhicule déjà terminé reste acquis.
+7. Tout passage vers l'achat traverse le **Sas Parental** (Lot A).
+
+### 5bis.2 Hors périmètre (reporté au Lot D2)
+Firebase Auth, Firestore et synchronisation multi-appareils, RevenueCat, StoreKit / Google Play Billing, Capacitor.
+
+### 5bis.3 Coûts
+- **Infrastructure** : ~0 € / mois (une route serveur et un service d'e-mail en offre gratuite).
+- **Commissions** : uniquement Stripe sur les ventes encaissées (§6.2).
+
+---
+
 ## 6. Étude FinOps : Coûts d'Infrastructure & Coûts de Support Client
 
 Grâce au choix d'un rendu 3D procédural côté client et d'une synchronisation Firestore uniquement par événements d'étape (et non temps réel continu), la structure de coûts reste remarquablement basse même à grande échelle.
@@ -263,7 +383,7 @@ Dans les applications grand public, le support client est souvent le premier co�
 1. **Portail Client Stripe en libre-service** : Un bouton *« Télécharger ma facture / Gérer mon reçu »* dans l'Espace Parents ouvre le portail Stripe officiel sans intervention humaine.
 2. **Restauration d'achat unifiée en 1 clic** : Bouton visible dans l'Espace Parents resynchronisant instantanément Firestore + StoreKit/Play Billing.
 3. **Clés Écoles auto-descriptives** : En cas d'erreur de frappe d'un enseignant, l'interface distingue *« Faute de frappe (somme de contrôle invalide) »* de *« Licence expirée le JJ/MM/AAAA »*, supprimant les allers-retours par e-mail.
-4. **Connexion Parent sans mot de passe (Google Sign-In / Magic Link)** : Élimine 100 % des tickets de réinitialisation de mot de passe.
+4. **Connexion Parent sans mot de passe (Google Sign-In / Magic Link)** : Supprime les demandes de réinitialisation de mot de passe, puisqu'il n'y a aucun mot de passe à gérer.
 5. **Code de Diagnostic Anonyme dans l'Espace Parents** : Affichage en bas de modale de la version de l'application, du statut PWA hors-ligne et du type de licence active (`v1.x · Offline Ready · Tier: Family`).
 
 | Indicateur Support | 1 000 MAU | 10 000 MAU + 30 Écoles | 100 000 MAU + 300 Écoles |
@@ -273,18 +393,25 @@ Dans les applications grand public, le support client est souvent le premier co�
 
 ---
 
-## 7. Chronogramme d'Exécution Recommandé
+## 7. Chronogramme d'Exécution (révisé le 1er novembre 2026)
 
-L'ordre d'implémentation suivant permet de livrer de la valeur testable à chaque étape sans dette technique ni refonte :
+L'ordre ci-dessous remplace le chronogramme initial (A → B → C → D). Il fait passer les retours des tests avec les enfants avant la monétisation, et livre la limite gratuite en même temps qu'un premier moyen de paiement.
 
-1. **Étape 1 — Implémentation du Lot A (100 % local, zéro dépendance externe)** *(Terminé)*
-   - Sas Parental trilingue → Tableau de bord STEM → Minuteur bienveillant → Générateur de Diplômes HD imprimables.
-2. **Étape 2 — Implémentation du Lot B (Moteur Freemium & Clés Écoles Ed25519)** *(Prochaine étape)*
-   - Matrice d'accès 20 véhicules gratuits / 100 véhicules complets → Modale d'offre Famille & École → Vérificateur cryptographique hors-ligne + Outils CSV Enseignant.
-3. **Étape 3 — Implémentation du Lot C (Vitrine, SEO Schema.org & Viralité)**
-   - Landing page intégrée avec découpage de bundle (`React.lazy`) → Métadonnées dynamiques `FR/EN/AR` sur `server.ts` → QR Code local sur Cartes Postales & Liens de Défi Chrono.
-4. **Étape 4 — Implémentation du Lot D (Cloud Sync, Paiements & Stores)**
-   - Provisionnement Firebase (Auth Parent + Firestore avec règles de sécurité strictes et fusion monotone) → Intégration Stripe Checkout + Webhooks → Configuration Capacitor iOS/Android.
+1. **Étape 1 — Lot A** *(Terminé)*
+   - Sas Parental trilingue → Tableau de bord STEM → Minuteur bienveillant → Diplômes HD imprimables.
+2. **Étape 2 — Lot U : Ergonomie de sélection des pièces** *(Priorité 1, §2bis)*
+   - Emplacement de la barre (Bas / Gauche / Droite) → Repli et réouverture automatiques → Séparation pièces / outils → Ordre des pièces → Miniatures → **Nouveau test avec les enfants**.
+3. **Étape 3 — Consolidation technique**
+   - Extraction progressive de la logique d'`App.tsx` en hooks et modules → Vitest sur `storage`, `parentalGate`, `stemAnalytics`, `sessionTimer` → `dev-dist/` dans `.gitignore` → un seul gestionnaire de paquets.
+4. **Étape 4 — Tests sur tablette & écoles pilotes**
+   - Android d'entrée de gamme et iPad ancien : fluidité, glisser au doigt, compréhension sans lecture → Contact de 2 à 3 écoles ou clubs pilotes pour vérifier l'intention d'achat.
+5. **Étape 5 — Lot C1 : Vitrine légère**
+   - Page d'accueil trilingue avec « Essayer gratuitement » → Balises SEO de base → Formulaire « école intéressée / liste d'attente » → Décision sur la mesure anonyme agrégée (§0.3 point 3).
+6. **Étape 6 — Lot V : Première vente** *(§5bis)*
+   - `entitlements.ts` + limite gratuite → Clé signée Famille / École → Lien de paiement Stripe + envoi de la clé par e-mail → Parcours devis / Chorus Pro pour les écoles.
+7. **Étape 7 — Selon la demande constatée**
+   - **Lot C2** : QR codes sur cartes postales et diplômes, défis chronométrés partageables, SEO avancé (JSON-LD, métadonnées dynamiques).
+   - **Lot D2** : sync Cloud parentale (Firebase), Capacitor iOS / Android, achats intégrés (RevenueCat), après vérification des règles Apple.
 
 ---
 
@@ -310,3 +437,9 @@ L'ordre d'implémentation suivant permet de livrer de la valeur testable à chaq
    - Décompte actif seconde par seconde mis automatiquement en pause lorsque l'onglet est masqué (`document.hidden`) ou lorsque le parent consulte l'*Espace Parents*.
    - Application stricte de la **Grâce de fin d'assemblage** (`ASSEMBLY_GRACE_MIN_COMPLETION_RATIO = 0.5`, `ASSEMBLY_GRACE_MAX_SECONDS = 180`) : aucun véhicule monté à plus de 50 % n'est interrompu brutalement ; un bandeau discret informe du temps restant pour poser les dernières pièces avant l'affichage apaisant du rideau de fermeture.
 
+
+### Revue critique & re-priorisation — 1er novembre 2026
+- Premiers tests utilisateurs (enfants de 5 et 10 ans, PC grand écran, lancement local) : jeu très apprécié ; difficulté constatée sur la sélection des pièces.
+- Ajout de la **section 0** (revue critique), du **Lot U** (§2bis, priorité 1) et du **Lot V** (§5bis, première vente allégée).
+- Lots B, C et D conservés comme référence, mais découpés : B + paiement minimal → Lot V ; C → C1 (vitrine légère) et C2 (plus tard) ; D → D2 (plus tard).
+- Chiffres non mesurés reformulés en hypothèses ; vérification des clés simplifiée (`@noble/ed25519` au lieu du repli ECDSA).

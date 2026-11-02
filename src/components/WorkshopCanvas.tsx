@@ -1207,7 +1207,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
   return (
     <div dir="ltr" className="relative w-full h-full overflow-hidden">
       {/* Isolated WebGL mount container */}
-      <div ref={canvasMountRef} className="w-full h-full" />
+      {/* touch-action:none prevents browser scroll/zoom from stealing pointer events during part drag */}
+      <div ref={canvasMountRef} className="w-full h-full" style={{ touchAction: 'none' }} />
 
       {/* Accessible Semantic Drag & Snap Feedback Overlay (no backdrop-blur over WebGL) */}
       {dragHud && (

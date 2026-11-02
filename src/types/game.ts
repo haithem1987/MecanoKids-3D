@@ -288,6 +288,8 @@ export interface PlayerProgress {
   muted: boolean;
   voiceAutoRead: boolean;
   tutorialSeen: boolean;
+  partsTrayPosition: 'bottom' | 'left' | 'right';
+  partsTrayAutoHide: boolean;
   lastSavedAt: number;
 }
 
