@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Politique de confidentialité — MécanoKids 3D</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+    header { margin-bottom: 2.5rem; border-bottom: 2px solid #2563eb; padding-bottom: 1.25rem; }
+    header a { color: #2563eb; text-decoration: none; font-size: 0.875rem; }
+    header a:hover { text-decoration: underline; }
+    h1 { font-size: 1.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.25rem; }
+    .meta { font-size: 0.8rem; color: #64748b; }
+    h2 { font-size: 1.1rem; font-weight: 700; color: #1e40af; margin: 2rem 0 0.75rem; }
+    p, li { font-size: 0.95rem; color: #334155; margin-bottom: 0.5rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+    th { background: #dbeafe; color: #1e3a8a; text-align: left; padding: 0.5rem 0.75rem; }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    tr:nth-child(even) td { background: #f1f5f9; }
+    .badge {
+      display: inline-block; background: #dbeafe; color: #1e40af;
+      font-size: 0.75rem; font-weight: 600; border-radius: 0.25rem;
+      padding: 0.1rem 0.5rem; margin-left: 0.4rem;
+    }
+    .highlight { background: #eff6ff; border-left: 3px solid #2563eb; padding: 0.75rem 1rem; border-radius: 0 0.375rem 0.375rem 0; margin: 1rem 0; }
+    footer { margin-top: 3rem; font-size: 0.8rem; color: #94a3b8; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="/">&larr; Retour à MécanoKids 3D</a>
+      <h1>Politique de confidentialité</h1>
+      <p class="meta">MécanoKids 3D &mdash; Dernière mise à jour : janvier 2026</p>
+    </header>
+
+    <div class="highlight">
+      <strong>En bref :</strong> MécanoKids 3D est un jeu éducatif hors-ligne. La progression des enfants reste sur <em>votre appareil</em> (localStorage). Aucun traceur publicitaire. Aucun cookie de pistage. Le seul envoi de données personnelles vers un serveur est la soumission volontaire du formulaire de contact école.
+    </div>
+
+    <h2>1. Responsable du traitement</h2>
+    <p>
+      <strong>[NOM_SOCIÉTÉ]</strong><br />
+      Adresse : [ADRESSE]<br />
+      E-mail DPO : <a href="mailto:[EMAIL_DPO]">[EMAIL_DPO]</a>
+    </p>
+
+    <h2>2. Données collectées et finalités</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Données</th>
+          <th>Stockage</th>
+          <th>Finalité</th>
+          <th>Base légale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Progression de jeu (niveaux, scores, badges, profils enfants)</td>
+          <td>Appareil local (localStorage)</td>
+          <td>Continuité du jeu, espace parent STEM</td>
+          <td>Intérêt légitime (art. 6.1.f RGPD)</td>
+        </tr>
+        <tr>
+          <td>Pseudonyme + temps de course (leaderboard)</td>
+          <td>Supabase (UE)</td>
+          <td>Classement mondial optionnel</td>
+          <td>Consentement du parent (art. 6.1.a RGPD)</td>
+        </tr>
+        <tr>
+          <td>Prénom, établissement, e-mail, message (formulaire école)</td>
+          <td>Supabase (UE)</td>
+          <td>Traitement des demandes d'information institutionnelle</td>
+          <td>Consentement explicite (art. 6.1.a RGPD)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. Données des enfants <span class="badge">Art. 8 RGPD</span></h2>
+    <p>
+      MécanoKids 3D est destiné aux enfants de 5 à 12 ans. Conformément à l'article 8 du RGPD et à la directive ePrivacy :
+    </p>
+    <ul>
+      <li>Aucun compte en ligne n'est créé pour les enfants.</li>
+      <li>La progression est stockée <strong>uniquement en local</strong> sur l'appareil familial ou scolaire.</li>
+      <li>L'accès à l'Espace Parent (statistiques STEM, minuterie, diplômes) est protégé par une <strong>barrière parentale</strong> (défi mathématique adulte).</li>
+      <li>Le leaderboard ne publie qu'un <strong>pseudonyme</strong> choisi par le parent et un temps de course. Aucun identifiant persistant n'est transmis.</li>
+      <li>Nous ne collectons pas l'adresse IP, le lieu ou toute autre donnée pouvant identifier un enfant.</li>
+    </ul>
+
+    <h2>4. Durée de conservation</h2>
+    <ul>
+      <li><strong>Données locales</strong> : conservées jusqu'à effacement par l'utilisateur (bouton « Supprimer mes données » dans l'Espace Parent ou via les paramètres du navigateur).</li>
+      <li><strong>Leaderboard</strong> (Supabase) : 12 mois glissants, puis suppression automatique.</li>
+      <li><strong>Formulaire école</strong> (Supabase) : 24 mois à compter de la soumission, ou sur demande d'effacement.</li>
+    </ul>
+
+    <h2>5. Destinataires des données</h2>
+    <p>
+      Supabase Inc. (sous-traitant, hébergement UE) — contrat de traitement de données conforme au RGPD (DPA disponible sur supabase.com). Aucune autre transmission à des tiers.
+    </p>
+
+    <h2>6. Cookies et traceurs</h2>
+    <p>
+      MécanoKids 3D <strong>n'utilise aucun cookie</strong> de pistage publicitaire, aucun outil d'analyse tiers (Google Analytics, Facebook Pixel, etc.). Le seul stockage utilisé est le <code>localStorage</code> du navigateur, strictement nécessaire au fonctionnement hors-ligne du jeu.
+    </p>
+
+    <h2>7. Vos droits (RGPD, art. 15-22)</h2>
+    <ul>
+      <li><strong>Accès &amp; portabilité</strong> : exportez votre profil en JSON depuis l'Espace Parent (bouton « Sauvegarder »).</li>
+      <li><strong>Rectification</strong> : modifiez le nom du profil dans l'application.</li>
+      <li><strong>Effacement</strong> : utilisez le bouton <em>« Supprimer mes données »</em> dans l'Espace Parent pour effacer toutes les données locales. Pour les données Supabase (leaderboard, formulaire école), contactez-nous à <a href="mailto:[EMAIL_DPO]">[EMAIL_DPO]</a>.</li>
+      <li><strong>Opposition</strong> : vous pouvez désactiver le leaderboard en mode Local dans les paramètres (l'app fonctionne intégralement hors-ligne).</li>
+      <li><strong>Réclamation</strong> : vous avez le droit d'introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">CNIL</a> (France) ou de votre autorité nationale de protection des données.</li>
+    </ul>
+
+    <h2>8. Sécurité</h2>
+    <p>
+      Les clés de licence sont stockées sous forme de <strong>hachage SHA-256</strong> (non réversible). Les communications avec Supabase sont chiffrées en TLS. L'application est distribuée via HTTPS.
+    </p>
+
+    <h2>9. Modifications</h2>
+    <p>
+      Toute modification substantielle sera signalée par la mise à jour de la date en haut de cette page. En cas de changement affectant les droits des enfants, une notification sera affichée dans l'application.
+    </p>
+
+    <h2>10. Contact</h2>
+    <p>
+      Pour toute question relative à la protection de vos données :<br />
+      <a href="mailto:[EMAIL_DPO]">[EMAIL_DPO]</a>
+    </p>
+
+    <footer>
+      MécanoKids 3D &mdash; [NOM_SOCIÉTÉ] &mdash; <a href="/">Retour au jeu</a>
+    </footer>
+  </div>
+</body>
+</html>

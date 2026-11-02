@@ -318,7 +318,7 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
 
       <footer className="border-t border-slate-100 px-6 py-6 text-center text-sm text-slate-400">
         MécanoKids 3D — {language === 'ar' ? 'لعبة تعليمية' : language === 'en' ? 'Educational game' : 'Jeu éducatif'} · © 2026 ·{' '}
-        <a href="#" className="underline hover:text-sky-600">
+        <a href="/privacy.html" className="underline hover:text-sky-600">
           {language === 'ar' ? 'سياسة الخصوصية' : language === 'en' ? 'Privacy policy' : 'Politique de confidentialité'}
         </a>
       </footer>

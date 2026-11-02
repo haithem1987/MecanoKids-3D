@@ -2478,6 +2478,10 @@ export default function App() {
           setParentSpaceOpen(false);
           setShowLanding(true);
         }}
+        onDeleteAllData={() => {
+          localStorage.clear();
+          window.location.reload();
+        }}
       />
 
       {/* Lot E: Teacher Dashboard (school tier) */}

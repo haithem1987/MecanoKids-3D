@@ -11,3 +11,8 @@ coverage/
 # Oh-My-Claude internal
 .omc/
 .claude/worktrees/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

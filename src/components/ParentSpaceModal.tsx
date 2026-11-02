@@ -7,6 +7,7 @@ import {
   Printer,
   RotateCcw,
   ShieldCheck,
+  Trash2,
   X,
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
@@ -53,6 +54,7 @@ interface ParentSpaceModalProps {
   isOnline: boolean;
   initialTab?: ParentTabId;
   onShowLanding?: () => void;
+  onDeleteAllData?: () => void;
 }
 
 export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
@@ -73,7 +75,9 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
   isOnline,
   initialTab = 'stem',
   onShowLanding,
+  onDeleteAllData,
 }) => {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const t = UI_TRANSLATIONS[language];
   const [activeTab, setActiveTab] = useState<ParentTabId>(initialTab);
   const [selectedProfileId, setSelectedProfileId] = useState<string>(activeProfileId);
@@ -580,13 +584,37 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
         </div>
 
         {/* Quiet Zero-Touch Support Diagnostic Footer */}
-        <div className="px-5 sm:px-7 py-3 bg-slate-50 border-t border-slate-200 text-[11px] font-mono tabular-nums text-slate-500 flex items-center justify-between gap-4">
+        <div className="px-5 sm:px-7 py-3 bg-slate-50 border-t border-slate-200 text-[11px] font-mono tabular-nums text-slate-500 flex items-center justify-between gap-4 flex-wrap">
           <span>{t.parentDiagnosticFooter(profiles.length, isOnline)}</span>
-          {onShowLanding && (
-            <button onClick={onShowLanding} className="text-sky-600 underline shrink-0 hover:text-sky-800">
-              {language === 'ar' ? 'الواجهة الرئيسية' : language === 'en' ? 'View showcase' : 'Voir la vitrine'}
-            </button>
-          )}
+          <div className="flex items-center gap-3 shrink-0">
+            {onShowLanding && (
+              <button onClick={onShowLanding} className="text-sky-600 underline hover:text-sky-800">
+                {language === 'ar' ? 'الواجهة الرئيسية' : language === 'en' ? 'View showcase' : 'Voir la vitrine'}
+              </button>
+            )}
+            {onDeleteAllData && !confirmDelete && (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 underline"
+              >
+                <Trash2 className="w-3 h-3" />
+                {language === 'ar' ? 'حذف بياناتي' : language === 'en' ? 'Delete my data' : 'Supprimer mes données'}
+              </button>
+            )}
+            {onDeleteAllData && confirmDelete && (
+              <span className="flex items-center gap-2">
+                <span className="text-rose-600 font-semibold">
+                  {language === 'ar' ? 'تأكيد الحذف؟' : language === 'en' ? 'Confirm delete?' : 'Confirmer ?'}
+                </span>
+                <button onClick={onDeleteAllData} className="text-rose-600 font-bold hover:text-rose-800 underline">
+                  {language === 'ar' ? 'نعم' : language === 'en' ? 'Yes' : 'Oui'}
+                </button>
+                <button onClick={() => setConfirmDelete(false)} className="text-slate-500 hover:text-slate-700 underline">
+                  {language === 'ar' ? 'لا' : language === 'en' ? 'No' : 'Non'}
+                </button>
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
