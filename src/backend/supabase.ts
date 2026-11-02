@@ -65,6 +65,14 @@ export class SupabaseAdapter implements BackendAdapter {
     };
   }
 
+  async storeLicenseKey(data: { keyHash: string; tier: 'family' | 'school'; expiresAt: string | null }): Promise<void> {
+    await this.client.from('license_keys').insert({
+      key_hash: data.keyHash,
+      tier: data.tier,
+      expires_at: data.expiresAt ?? null,
+    });
+  }
+
   async postSchoolInquiry(data: SchoolInquiry): Promise<void> {
     await this.client.from('school_inquiries').insert({
       first_name: data.firstName,

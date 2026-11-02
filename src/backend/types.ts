@@ -20,4 +20,5 @@ export interface BackendAdapter {
   ): Promise<{ valid: true; tier: 'family' | 'school'; org?: string; expiresAt?: string } | { valid: false }>;
   postSchoolInquiry(data: SchoolInquiry): Promise<void>;
   syncProgress?(userId: string, progress: unknown): Promise<void>;
+  storeLicenseKey?(data: { keyHash: string; tier: 'family' | 'school'; expiresAt: string | null }): Promise<void>;
 }

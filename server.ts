@@ -4,6 +4,7 @@ import type { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getBackendAdapter } from './src/backend/index.js';
+import Stripe from 'stripe';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,15 +54,136 @@ function securityHeaders(_req: Request, res: Response, next: NextFunction): void
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ── Stripe helpers ────────────────────────────────────────────────────────────
+
+function getStripeClient(): Stripe | null {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key || key.startsWith('sk_REPLACE')) return null;
+  return new Stripe(key, { apiVersion: '2026-10-28.endive' as Stripe.LatestApiVersion });
+}
+
+async function sha256hex(text: string): Promise<string> {
+  const { createHash } = await import('crypto');
+  return createHash('sha256').update(text).digest('hex');
+}
+
+function generateLicenseKey(): string {
+  const seg = () => Math.random().toString(36).toUpperCase().slice(2, 6).padEnd(4, '0');
+  return `MK3D-${seg()}-${seg()}-${seg()}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 async function startServer() {
   const app = express();
+  // Webhook must receive raw body — register before json middleware
+  app.use('/api/webhook', express.raw({ type: 'application/json' }));
   app.use(express.json({ limit: '512kb' }));
   app.use(securityHeaders);
 
   const adapter = getBackendAdapter();
 
+  const stripe = getStripeClient();
+
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ ok: true, app: 'MécanoKids 3D' });
+  });
+
+  // ── Stripe checkout ───────────────────────────────────────────────────────
+
+  app.post('/api/checkout', rateLimiter, async (req: Request, res: Response) => {
+    if (!stripe) { res.status(503).json({ error: 'payments_unavailable' }); return; }
+    const { plan } = req.body as Record<string, unknown>;
+    if (plan !== 'family' && plan !== 'school') {
+      res.status(400).json({ error: 'invalid plan' }); return;
+    }
+    const priceId = plan === 'family'
+      ? process.env.STRIPE_PRICE_FAMILY_YEAR
+      : process.env.STRIPE_PRICE_SCHOOL_YEAR;
+    if (!priceId || priceId.startsWith('price_REPLACE')) {
+      res.status(503).json({ error: 'price_not_configured' }); return;
+    }
+    const base = process.env.APP_BASE_URL ?? 'http://localhost:7301';
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      line_items: [{ price: priceId, quantity: 1 }],
+      automatic_tax: { enabled: false }, // activer après enregistrement TVA Stripe
+      success_url: `${base}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${base}/?checkout=cancel`,
+      integration_identifier: `mecanokids-${plan}-jkxrtqwp`,
+    });
+    res.json({ url: session.url });
+  });
+
+  // POST /api/checkout/verify?session_id=xxx → retourne { tier, licenseKey }
+  app.get('/api/checkout/verify', async (req: Request, res: Response) => {
+    if (!stripe) { res.status(503).json({ error: 'payments_unavailable' }); return; }
+    const sessionId = req.query.session_id;
+    if (typeof sessionId !== 'string' || !sessionId.startsWith('cs_')) {
+      res.status(400).json({ error: 'invalid session_id' }); return;
+    }
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status !== 'paid' && session.status !== 'complete') {
+        res.status(402).json({ error: 'not_paid' }); return;
+      }
+      const metadata = session.metadata ?? {};
+      const licenseKey = metadata.license_key ?? null;
+      const tier = metadata.tier ?? 'family';
+      res.json({ tier, licenseKey });
+    } catch {
+      res.status(500).json({ error: 'verification_failed' });
+    }
+  });
+
+  // ── Stripe webhook ────────────────────────────────────────────────────────
+
+  app.post('/api/webhook', async (req: Request, res: Response) => {
+    if (!stripe) { res.sendStatus(503); return; }
+    const sig = req.headers['stripe-signature'];
+    const secret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!sig || !secret || secret.startsWith('whsec_REPLACE')) {
+      res.sendStatus(400); return;
+    }
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(req.body as Buffer, sig, secret);
+    } catch {
+      res.sendStatus(400); return;
+    }
+
+    if (
+      event.type === 'checkout.session.completed' ||
+      event.type === 'checkout.session.async_payment_succeeded'
+    ) {
+      const session = event.data.object as Stripe.Checkout.Session;
+      if (session.payment_status !== 'paid') { res.sendStatus(200); return; }
+
+      const subId = typeof session.subscription === 'string'
+        ? session.subscription : (session.subscription as Stripe.Subscription | null)?.id;
+      const sub = subId ? await stripe.subscriptions.retrieve(subId) : null;
+      const rawTier = (sub?.metadata?.tier ?? session.metadata?.tier ?? 'family');
+      const tier: 'family' | 'school' = rawTier === 'school' ? 'school' : 'family';
+
+      // Generate license key and store in Supabase
+      const licenseKey = generateLicenseKey();
+      const keyHash = await sha256hex(licenseKey);
+      const periodEnd = (sub as unknown as { current_period_end?: number } | null)?.current_period_end;
+      const expiresAt = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
+      try {
+        const adapter = getBackendAdapter();
+        await adapter.storeLicenseKey?.({ keyHash, tier, expiresAt });
+      } catch (err) {
+        console.error('Failed to store license key:', err);
+      }
+
+      // Attach key to session metadata for /verify
+      await stripe.checkout.sessions.update(session.id, {
+        metadata: { ...session.metadata, license_key: licenseKey, tier },
+      });
+    }
+
+    res.sendStatus(200);
   });
 
   app.get('/api/leaderboard/:blueprintId', async (req: Request, res: Response) => {

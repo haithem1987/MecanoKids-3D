@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check, GraduationCap, Key, Lock, Sparkles, X } from 'lucide-react';
+import { CheckoutButton } from './CheckoutButton';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   isOpen,
   onClose,
   reason,
-  onUpgradeClick,
+  onUpgradeClick: _onUpgradeClick,
   onHaveKey,
 }) => {
   if (!isOpen) return null;
@@ -134,14 +135,11 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
 
         {/* Footer CTA */}
         <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={onUpgradeClick}
-            className="flex-1 min-w-[160px] flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors cursor-pointer shadow-sm"
-          >
-            <Sparkles className="w-4 h-4 shrink-0" />
-            Acheter 12,99 €/an
-          </button>
+          <CheckoutButton
+            plan="family"
+            label="Acheter 12,99 €/an"
+            className="flex-1 min-w-[160px] flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors cursor-pointer shadow-sm disabled:opacity-60"
+          />
           <a
             href="mailto:contact@mecanokids.fr"
             className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-colors"

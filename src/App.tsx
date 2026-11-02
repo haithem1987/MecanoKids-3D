@@ -335,6 +335,32 @@ export default function App() {
     !activeDiagnostic && standardPlacedPartIds.length === currentBlueprint.parts.length;
 
   // Keep No-Silhouette clean-run tracker synchronized when starting fresh at 0 parts
+  // Handle Stripe checkout return (?checkout=success&session_id=cs_xxx)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('checkout');
+    const sessionId = params.get('session_id');
+    if (status !== 'success' || !sessionId) return;
+    // Clean URL immediately
+    window.history.replaceState({}, '', window.location.pathname);
+    fetch(`/api/checkout/verify?session_id=${encodeURIComponent(sessionId)}`)
+      .then((r) => r.json())
+      .then((data: { tier?: string; licenseKey?: string }) => {
+        if (data.tier === 'family' || data.tier === 'school') {
+          setProgress((prev) => ({
+            ...prev,
+            licenseState: { tier: data.tier as 'family' | 'school' },
+          }));
+          setStatusMessage(
+            data.tier === 'family'
+              ? '🎉 Pass Famille activé ! Bonne construction !'
+              : '🎉 Licence École activée !',
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (standardPlacedPartIds.length === 0) {
       cleanNoSilhouetteRunRef.current = Boolean(progress.noSilhouetteMode);
