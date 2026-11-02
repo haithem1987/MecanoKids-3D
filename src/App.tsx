@@ -1940,6 +1940,30 @@ export default function App() {
         />
       </main>
 
+      {/* "Pièce en main" floating pill when dock is collapsed and a part is active */}
+      {dockCollapsed && (activeDragPartId ?? stagedPartId) && (() => {
+        const activeId = activeDragPartId ?? stagedPartId;
+        const part = currentBlueprint.parts.find((p) => p.id === activeId);
+        if (!part) return null;
+        return (
+          <div className="fixed bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-300 rounded-full shadow text-xs font-medium text-slate-800 select-none">
+            <span>🔧 {part.name} — en main</span>
+            <span className="text-slate-300">·</span>
+            <button
+              type="button"
+              onClick={() => {
+                setStagedPartId(null);
+                setActiveDragPartId(null);
+              }}
+              className="text-slate-500 hover:text-slate-900 cursor-pointer"
+              aria-label="Annuler la sélection"
+            >
+              Annuler ✕
+            </button>
+          </div>
+        );
+      })()}
+
       {/* Collapsible Unified Bottom Parts & Controls Dock */}
       <BottomPartsDock
         language={language}

@@ -37,6 +37,7 @@ import {
 } from '../types/game';
 import { formatStopwatchMs } from '../utils/speedrun';
 import { speechEngine } from '../utils/speech';
+import { getPartShapeSvg } from '../utils/partShape';
 
 interface BottomPartsDockProps {
   language: LanguageCode;
@@ -352,15 +353,16 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
             className="flex items-stretch gap-2.5 overflow-x-auto py-3 select-none"
           >
             {(() => {
-              const firstAvailableId =
-                blueprint.parts.find(
-                  (p) =>
-                    !placedSet.has(p.id) &&
-                    !faultySet.has(p.id) &&
-                    getMissingDepName(p) === null,
-                )?.id ?? blueprint.parts[0]?.id;
+              const unplaced = blueprint.parts.filter((p) => !placedSet.has(p.id));
+              const placed = blueprint.parts.filter((p) => placedSet.has(p.id));
+              const sorted = [...unplaced, ...placed];
 
-              return blueprint.parts.map((part, idx) => {
+              const firstAvailableId =
+                unplaced.find(
+                  (p) => !faultySet.has(p.id) && getMissingDepName(p) === null,
+                )?.id ?? sorted[0]?.id;
+
+              return sorted.map((part, idx) => {
                 const paintedSpec = applyLiveryToPartSpec(part, liveryPreset);
                 const isPlaced = placedSet.has(part.id);
                 const isFaultyMounted = !isPlaced && faultySet.has(part.id);
@@ -368,99 +370,115 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
                 const isLocked = !isPlaced && !isFaultyMounted && missingDep !== null;
                 const isSelected = stagedPartId === part.id || activeDragPartId === part.id;
                 const isHinted = hintPartId === part.id && !isPlaced;
+                const originalIdx = blueprint.parts.indexOf(part);
+
+                // Separator before the first placed part
+                const showSeparator = isPlaced && idx > 0 && !placedSet.has(sorted[idx - 1].id);
 
                 return (
-                  <button
-                    key={part.id}
-                    type="button"
-                    data-tour={part.id === firstAvailableId ? 'first-part-card' : undefined}
-                    disabled={isPlaced}
-                    onPointerDown={(e) => {
-                      if (isPlaced || isFaultyMounted) return;
-                      if (e.button === 0 || e.pointerType !== 'mouse') {
-                        onStartPartDrag(part.id);
-                      }
-                    }}
-                    onClick={() => {
-                      if (!isPlaced) {
-                        onClickPartCard(part.id);
-                      }
-                    }}
-                    title={`${part.name} — ${part.roleHint}`}
-                    className={`group shrink-0 w-44 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[76px] ${
-                      isPlaced
-                        ? 'bg-slate-50 border-slate-200 opacity-65 cursor-default'
-                        : isFaultyMounted
-                          ? 'bg-amber-50 border-amber-500 cursor-pointer'
-                          : isSelected
-                            ? 'bg-sky-50 border-sky-600 -translate-y-0.5 cursor-grab active:cursor-grabbing'
-                            : isHinted
-                              ? 'bg-amber-50 border-amber-500 -translate-y-0.5 cursor-grab'
-                              : part.isRarePart && !isLocked
-                                ? 'bg-amber-50/65 border-amber-400 hover:border-amber-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
-                                : isLocked
-                                  ? 'bg-slate-50 border-slate-200 hover:border-slate-300 cursor-pointer'
-                                  : 'bg-white border-slate-200 hover:border-sky-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono tabular-nums text-[11px] text-slate-400">
-                        {String(idx + 1).padStart(2, '0')}
-                        {part.isRarePart ? ` · ${t.rarePartCardLabel}` : ''}
-                      </span>
-                      {isFaultyMounted ? (
-                        <AlertTriangle
-                          className="w-3.5 h-3.5 text-amber-600 shrink-0"
-                          aria-hidden="true"
-                        />
-                      ) : part.isRarePart ? (
-                        <Gem
-                          className="w-3.5 h-3.5 text-amber-600 shrink-0"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <span
-                          className="w-3.5 h-3.5 rounded-sm border border-black/10 shrink-0"
-                          style={{ backgroundColor: paintedSpec.primaryColor }}
-                          aria-hidden="true"
-                        />
-                      )}
-                    </div>
-
-                    <div className="mt-1">
-                      <p className="text-xs font-semibold text-slate-900 truncate">
-                        {part.name}
-                      </p>
-                      <div className="mt-1 flex items-center gap-1 text-[11px]">
-                        {isPlaced ? (
-                          <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
-                            <Check className="w-3 h-3 shrink-0" />
-                            <span className="truncate">{t.partStatusPlaced}</span>
-                          </span>
-                        ) : isFaultyMounted ? (
-                          <span className="inline-flex items-center gap-1 text-amber-800 font-semibold">
-                            <Wrench className="w-3 h-3 shrink-0" />
-                            <span className="truncate">{t.diagnosticBtn}</span>
-                          </span>
-                        ) : isLocked ? (
-                          <span className="inline-flex items-center gap-1 text-slate-500">
-                            <Lock className="w-3 h-3 shrink-0" />
-                            <span className="truncate">
-                              {t.partStatusLockedAfter(missingDep ?? '')}
-                            </span>
-                          </span>
-                        ) : isHinted ? (
-                          <span className="text-amber-700 font-semibold truncate">
-                            {t.partStatusHinted}
-                          </span>
+                  <React.Fragment key={part.id}>
+                    {showSeparator && (
+                      <div className="shrink-0 flex flex-col items-center justify-center gap-1 px-1">
+                        <div className="w-px h-12 bg-slate-200" />
+                        <span className="text-[10px] text-slate-400 whitespace-nowrap rotate-90 origin-center">
+                          {placed.length}✓
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      data-tour={part.id === firstAvailableId ? 'first-part-card' : undefined}
+                      disabled={isPlaced}
+                      onPointerDown={(e) => {
+                        if (isPlaced || isFaultyMounted) return;
+                        if (e.button === 0 || e.pointerType !== 'mouse') {
+                          onStartPartDrag(part.id);
+                        }
+                      }}
+                      onClick={() => {
+                        if (!isPlaced) {
+                          onClickPartCard(part.id);
+                        }
+                      }}
+                      title={`${part.name} — ${part.roleHint}`}
+                      className={`group shrink-0 w-44 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[76px] ${
+                        isPlaced
+                          ? 'bg-slate-50 border-slate-200 opacity-65 cursor-default'
+                          : isFaultyMounted
+                            ? 'bg-amber-50 border-amber-500 cursor-pointer'
+                            : isSelected
+                              ? 'bg-sky-50 border-sky-600 -translate-y-0.5 cursor-grab active:cursor-grabbing'
+                              : isHinted
+                                ? 'bg-amber-50 border-amber-500 -translate-y-0.5 cursor-grab'
+                                : part.isRarePart && !isLocked
+                                  ? 'bg-amber-50/65 border-amber-400 hover:border-amber-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
+                                  : isLocked
+                                    ? 'bg-slate-50 border-slate-200 hover:border-slate-300 cursor-pointer'
+                                    : 'bg-white border-slate-200 hover:border-sky-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono tabular-nums text-[11px] text-slate-400">
+                          {String(originalIdx + 1).padStart(2, '0')}
+                          {part.isRarePart ? ` · ${t.rarePartCardLabel}` : ''}
+                        </span>
+                        {isFaultyMounted ? (
+                          <AlertTriangle
+                            className="w-3.5 h-3.5 text-amber-600 shrink-0"
+                            aria-hidden="true"
+                          />
+                        ) : part.isRarePart ? (
+                          <Gem
+                            className="w-3.5 h-3.5 text-amber-600 shrink-0"
+                            aria-hidden="true"
+                          />
                         ) : (
-                          <span className="text-sky-700 font-medium truncate">
-                            {t.partStatusReady}
-                          </span>
+                          <span
+                            className="shrink-0"
+                            style={{ width: 40, height: 40 }}
+                            dangerouslySetInnerHTML={{
+                              __html: getPartShapeSvg(part.roleHint, paintedSpec.primaryColor),
+                            }}
+                            aria-hidden="true"
+                          />
                         )}
                       </div>
-                    </div>
-                  </button>
+
+                      <div className="mt-1">
+                        <p className="text-xs font-semibold text-slate-900 truncate">
+                          {part.name}
+                        </p>
+                        <div className="mt-1 flex items-center gap-1 text-[11px]">
+                          {isPlaced ? (
+                            <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
+                              <Check className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{t.partStatusPlaced}</span>
+                            </span>
+                          ) : isFaultyMounted ? (
+                            <span className="inline-flex items-center gap-1 text-amber-800 font-semibold">
+                              <Wrench className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{t.diagnosticBtn}</span>
+                            </span>
+                          ) : isLocked ? (
+                            <span className="inline-flex items-center gap-1 text-slate-500">
+                              <Lock className="w-3 h-3 shrink-0" />
+                              <span className="truncate">
+                                {t.partStatusLockedAfter(missingDep ?? '')}
+                              </span>
+                            </span>
+                          ) : isHinted ? (
+                            <span className="text-amber-700 font-semibold truncate">
+                              {t.partStatusHinted}
+                            </span>
+                          ) : (
+                            <span className="text-sky-700 font-medium truncate">
+                              {t.partStatusReady}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  </React.Fragment>
                 );
               });
             })()}
