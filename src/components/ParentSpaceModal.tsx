@@ -52,6 +52,7 @@ interface ParentSpaceModalProps {
   onDiplomaDownloaded: () => void;
   isOnline: boolean;
   initialTab?: ParentTabId;
+  onShowLanding?: () => void;
 }
 
 export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
@@ -71,6 +72,7 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
   onDiplomaDownloaded,
   isOnline,
   initialTab = 'stem',
+  onShowLanding,
 }) => {
   const t = UI_TRANSLATIONS[language];
   const [activeTab, setActiveTab] = useState<ParentTabId>(initialTab);
@@ -578,8 +580,13 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
         </div>
 
         {/* Quiet Zero-Touch Support Diagnostic Footer */}
-        <div className="px-5 sm:px-7 py-3 bg-slate-50 border-t border-slate-200 text-[11px] font-mono tabular-nums text-slate-500">
-          {t.parentDiagnosticFooter(profiles.length, isOnline)}
+        <div className="px-5 sm:px-7 py-3 bg-slate-50 border-t border-slate-200 text-[11px] font-mono tabular-nums text-slate-500 flex items-center justify-between gap-4">
+          <span>{t.parentDiagnosticFooter(profiles.length, isOnline)}</span>
+          {onShowLanding && (
+            <button onClick={onShowLanding} className="text-sky-600 underline shrink-0 hover:text-sky-800">
+              {language === 'ar' ? 'الواجهة الرئيسية' : language === 'en' ? 'View showcase' : 'Voir la vitrine'}
+            </button>
+          )}
         </div>
       </div>
     </div>

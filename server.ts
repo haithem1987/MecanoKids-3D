@@ -17,6 +17,19 @@ async function startServer() {
     res.json({ ok: true, app: 'MécanoKids 3D' });
   });
 
+  app.post('/api/school-inquiry', (req: Request, res: Response) => {
+    const { firstName, school, email, message } = req.body ?? {};
+    if (!firstName || typeof firstName !== 'string' || firstName.length > 50)
+      return void res.json({ ok: false, error: 'Prénom invalide (max 50 caractères).' });
+    if (!school || typeof school !== 'string' || school.length > 100)
+      return void res.json({ ok: false, error: 'Établissement invalide (max 100 caractères).' });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || typeof email !== 'string' || !emailRegex.test(email))
+      return void res.json({ ok: false, error: 'Email invalide.' });
+    console.log(`[SCHOOL INQUIRY] firstName="${firstName}" school="${school}" email="${email}" message="${message ?? ''}"`);
+    res.json({ ok: true, message: 'Votre demande a bien été reçue.' });
+  });
+
   const isProduction =
     process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
 
