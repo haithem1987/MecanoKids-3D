@@ -43,6 +43,7 @@ function makeProgress(overrides: Partial<PlayerProgress> = {}): PlayerProgress {
     lastSavedAt: 0,
     partsTrayPosition: 'bottom',
     partsTrayAutoHide: true,
+    licenseState: { tier: 'discovery' },
     ...overrides,
   }
 }
