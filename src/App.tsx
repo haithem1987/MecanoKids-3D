@@ -74,6 +74,7 @@ import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 import { LandingPage } from './components/LandingPage';
 import { UpgradeModal } from './components/UpgradeModal';
+import { LicenseActivationModal } from './components/LicenseActivationModal';
 import { canPlayStage } from './utils/entitlements';
 
 interface ActiveDiagnosticSession {
@@ -173,6 +174,7 @@ export default function App() {
   // Modals, Profiles, Daily Challenge, Streak, Leaderboard, Progression, Guide Drawer & Guided Tour
   const [upgradeModalOpen, setUpgradeModalOpen] = useState<boolean>(false);
   const [upgradeReason, setUpgradeReason] = useState<'stages' | 'profiles' | 'liveries'>('stages');
+  const [licenseActivationOpen, setLicenseActivationOpen] = useState<boolean>(false);
   const [profilesOpen, setProfilesOpen] = useState<boolean>(false);
   const [catalogOpen, setCatalogOpen] = useState<boolean>(false);
   const [streakModalOpen, setStreakModalOpen] = useState<boolean>(false);
@@ -2338,6 +2340,20 @@ export default function App() {
         onUpgradeClick={() => {
           flashStatus('Bientôt disponible');
           setUpgradeModalOpen(false);
+        }}
+        onHaveKey={() => {
+          setUpgradeModalOpen(false);
+          setLicenseActivationOpen(true);
+        }}
+      />
+
+      {/* License key activation */}
+      <LicenseActivationModal
+        isOpen={licenseActivationOpen}
+        onClose={() => setLicenseActivationOpen(false)}
+        language={language}
+        onActivate={(licenseState) => {
+          setProgress((prev) => ({ ...prev, licenseState }));
         }}
       />
 

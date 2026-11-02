@@ -1,11 +1,12 @@
 import React from 'react';
-import { Check, GraduationCap, Lock, Sparkles, X } from 'lucide-react';
+import { Check, GraduationCap, Key, Lock, Sparkles, X } from 'lucide-react';
 
 interface UpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
   reason?: 'stages' | 'profiles' | 'liveries';
   onUpgradeClick: () => void;
+  onHaveKey?: () => void;
 }
 
 const REASON_MESSAGES: Record<NonNullable<UpgradeModalProps['reason']>, string> = {
@@ -45,6 +46,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   onClose,
   reason,
   onUpgradeClick,
+  onHaveKey,
 }) => {
   if (!isOpen) return null;
 
@@ -147,6 +149,16 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
             <GraduationCap className="w-4 h-4 shrink-0" />
             Contacter pour une école
           </a>
+          {onHaveKey && (
+            <button
+              type="button"
+              onClick={onHaveKey}
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+            >
+              <Key className="w-4 h-4 shrink-0" />
+              J&apos;ai déjà une clé
+            </button>
+          )}
         </div>
       </div>
     </div>

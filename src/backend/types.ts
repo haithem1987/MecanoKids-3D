@@ -17,7 +17,7 @@ export interface BackendAdapter {
   postScore(blueprintId: string, entry: Omit<LeaderboardEntry, 'blueprintId'>): Promise<void>;
   validateLicenseKey(
     key: string,
-  ): Promise<{ valid: true; tier: 'school'; org?: string; expiresAt?: string } | { valid: false }>;
+  ): Promise<{ valid: true; tier: 'family' | 'school'; org?: string; expiresAt?: string } | { valid: false }>;
   postSchoolInquiry(data: SchoolInquiry): Promise<void>;
   syncProgress?(userId: string, progress: unknown): Promise<void>;
 }

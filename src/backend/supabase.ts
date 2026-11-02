@@ -45,7 +45,7 @@ export class SupabaseAdapter implements BackendAdapter {
 
   async validateLicenseKey(
     key: string,
-  ): Promise<{ valid: true; tier: 'school'; org?: string; expiresAt?: string } | { valid: false }> {
+  ): Promise<{ valid: true; tier: 'family' | 'school'; org?: string; expiresAt?: string } | { valid: false }> {
     const hash = await sha256hex(key);
     const { data } = await this.client
       .from('license_keys')
@@ -59,7 +59,7 @@ export class SupabaseAdapter implements BackendAdapter {
     if (expired) return { valid: false };
     return {
       valid: true,
-      tier: 'school',
+      tier: (data.tier as 'family' | 'school') ?? 'school',
       org: data.org as string | undefined,
       expiresAt: data.expires_at as string | undefined,
     };

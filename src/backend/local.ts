@@ -1,4 +1,10 @@
 import type { BackendAdapter, LeaderboardEntry, SchoolInquiry } from './types';
+import type { Tier } from '../utils/entitlements';
+
+const TEST_KEYS: Record<string, { tier: Tier; expiresAt?: string }> = {
+  'MK3D-DEMO-FAMI-LY01': { tier: 'family' },
+  'MK3D-DEMO-SCHO-OL01': { tier: 'school' },
+};
 
 const MAX_LEADERBOARD = 100;
 
@@ -37,8 +43,10 @@ export class LocalAdapter implements BackendAdapter {
     }
   }
 
-  async validateLicenseKey(_key: string): Promise<{ valid: false }> {
-    return { valid: false };
+  async validateLicenseKey(key: string): Promise<{ valid: true; tier: 'family' | 'school'; org?: string; expiresAt?: string } | { valid: false }> {
+    const match = TEST_KEYS[key.trim().toUpperCase()];
+    if (!match) return { valid: false };
+    return { valid: true, tier: match.tier as 'family' | 'school', expiresAt: match.expiresAt };
   }
 
   async postSchoolInquiry(data: SchoolInquiry): Promise<void> {

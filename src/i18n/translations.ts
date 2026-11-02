@@ -918,6 +918,16 @@ export interface UIStrings {
   landingSchoolSubmit: string;
   landingSchoolThanks: string;
 
+  // License activation modal
+  licenseModalTitle: string;
+  licenseModalSubtitle: string;
+  licenseInputPlaceholder: string;
+  licenseActivateBtn: string;
+  licenseActivating: string;
+  licenseSuccessMsg: string;
+  licenseInvalidMsg: string;
+  licenseHaveKeyBtn: string;
+
   // Lot E — Teacher Dashboard (school tier)
   teacherNavBtn: string;
   teacherDashboardTitle: string;
@@ -1461,6 +1471,15 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     teacherLicenseActivatedToast: 'Licence école activée avec succès.',
     teacherSchoolLabel: 'École',
 
+    licenseModalTitle: 'Activer une clé de licence',
+    licenseModalSubtitle: 'Entre ta clé pour débloquer le Pass Famille ou le plan École.',
+    licenseInputPlaceholder: 'ex : MK3D-XXXX-XXXX-XXXX',
+    licenseActivateBtn: 'Activer',
+    licenseActivating: 'Vérification…',
+    licenseSuccessMsg: '✓ Licence activée !',
+    licenseInvalidMsg: 'Clé invalide ou expirée.',
+    licenseHaveKeyBtn: "J'ai déjà une clé",
+
   },
 
   en: {
@@ -1984,6 +2003,15 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     teacherLicenseActivatedToast: 'School license activated successfully.',
     teacherSchoolLabel: 'School',
 
+    licenseModalTitle: 'Activate a license key',
+    licenseModalSubtitle: 'Enter your key to unlock the Family Pass or School plan.',
+    licenseInputPlaceholder: 'e.g. MK3D-XXXX-XXXX-XXXX',
+    licenseActivateBtn: 'Activate',
+    licenseActivating: 'Checking…',
+    licenseSuccessMsg: '✓ License activated!',
+    licenseInvalidMsg: 'Invalid or expired key.',
+    licenseHaveKeyBtn: 'I already have a key',
+
   },
 
   ar: {
@@ -2505,6 +2533,15 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     teacherLicenseInvalidMsg: 'تنسيق المفتاح غير صالح. تحقق من المفتاح المقدم.',
     teacherLicenseActivatedToast: 'تم تفعيل ترخيص المدرسة بنجاح.',
     teacherSchoolLabel: 'المدرسة',
+
+    licenseModalTitle: 'تفعيل مفتاح الترخيص',
+    licenseModalSubtitle: 'أدخل مفتاحك لفتح الباقة العائلية أو خطة المدرسة.',
+    licenseInputPlaceholder: 'مثال: MK3D-XXXX-XXXX-XXXX',
+    licenseActivateBtn: 'تفعيل',
+    licenseActivating: 'جارٍ التحقق…',
+    licenseSuccessMsg: '✓ تم تفعيل الترخيص!',
+    licenseInvalidMsg: 'المفتاح غير صالح أو منتهي الصلاحية.',
+    licenseHaveKeyBtn: 'لديّ مفتاح بالفعل',
 
   },
 };
