@@ -24,7 +24,7 @@ export class SupabaseAdapter implements BackendAdapter {
       .limit(limit);
 
     if (error || !data) return [];
-    return data.map((row) => ({
+    return data.map((row: Record<string, unknown>) => ({
       blueprintId,
       profileName: row.profile_name as string,
       timeMs: row.time_ms as number,

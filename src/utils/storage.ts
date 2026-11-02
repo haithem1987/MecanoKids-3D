@@ -14,7 +14,6 @@ import {
   EngineeringPatentRecord,
   LanguageCode,
   LicenseState,
-  LicenseTier,
   LiveryPresetId,
   MultiProfileStore,
   PlayerProfile,
@@ -29,6 +28,7 @@ import {
   WorkbenchEnvironmentMode,
 } from '../types/game';
 import { VALID_LIVERY_IDS } from '../data/liveries';
+import type { Tier as LicenseTier } from './entitlements';
 import { createEmptyDailyStreakState, sanitizeDailyStreak } from './dailyStreak';
 import { createDefaultParentalSettings, sanitizeParentalSettings } from './sessionTimer';
 import { MAX_SPEEDRUN_HISTORY } from './speedrun';
@@ -109,7 +109,6 @@ export function createDefaultProgress(
     preferredStyle: VisualStyleMode.WOOD,
     cameraPreset: CameraPreset.ISO,
     freeWorkshopUnlocked: false,
-    licenseState: { tier: 'discovery' },
     muted: false,
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
@@ -227,8 +226,8 @@ function sanitizeLicenseState(raw: unknown): LicenseState | undefined {
   if (!tier) return undefined;
   return {
     tier,
-    schoolOrg: typeof obj.schoolOrg === 'string' ? obj.schoolOrg : undefined,
-    activatedAt: typeof obj.activatedAt === 'number' ? obj.activatedAt : undefined,
+    ...(typeof obj.schoolOrg === 'string' ? { schoolOrg: obj.schoolOrg } : {}),
+    ...(typeof obj.expiresAt === 'string' ? { expiresAt: obj.expiresAt } : {}),
   };
 }
 
@@ -430,16 +429,6 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     cameraPreset,
     freeWorkshopUnlocked:
       Boolean(obj.freeWorkshopUnlocked) || Boolean(dailyStreak.unlockedMilestones.streak_14),
-    licenseState:
-      obj.licenseState &&
-      typeof obj.licenseState === 'object' &&
-      (obj.licenseState as Record<string, unknown>).tier === 'family'
-        ? { tier: 'family' as const }
-        : obj.licenseState &&
-            typeof obj.licenseState === 'object' &&
-            (obj.licenseState as Record<string, unknown>).tier === 'school'
-          ? { tier: 'school' as const }
-          : { tier: 'discovery' as const },
     muted: Boolean(obj.muted),
     voiceAutoRead: Boolean(obj.voiceAutoRead),
     tutorialSeen: Boolean(obj.tutorialSeen),
@@ -449,7 +438,6 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
         : 'bottom',
     partsTrayAutoHide: obj.partsTrayAutoHide !== false,
     lastSavedAt: typeof obj.lastSavedAt === 'number' ? obj.lastSavedAt : Date.now(),
-    licenseState: sanitizeLicenseState(obj.licenseState),
   };
 }
 
