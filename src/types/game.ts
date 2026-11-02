@@ -265,6 +265,14 @@ export interface DailyStreakState {
   unlockedMilestones: Record<string, number>;
 }
 
+export type LicenseTier = 'discovery' | 'family' | 'school';
+
+export interface LicenseState {
+  tier: LicenseTier;
+  schoolOrg?: string;
+  activatedAt?: number;
+}
+
 export interface PlayerProgress {
   currentBlueprintId: string;
   lastStandardBlueprintId: string;
@@ -289,6 +297,7 @@ export interface PlayerProgress {
   voiceAutoRead: boolean;
   tutorialSeen: boolean;
   lastSavedAt: number;
+  licenseState?: LicenseState;
 }
 
 export type ProfileAvatarColor = 'sky' | 'amber' | 'emerald' | 'indigo' | 'rose';

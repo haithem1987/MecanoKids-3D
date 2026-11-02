@@ -5,6 +5,7 @@ import {
   Download,
   Flame,
   Globe,
+  GraduationCap,
   Lightbulb,
   Share,
   ShieldCheck,
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { LanguageCode, PlayerProfile, VisualStyleMode } from '../types/game';
+import { resolveEntitlements } from '../utils/entitlements';
 import { usePWAInstall } from '../utils/pwa';
 import { PROFILE_COLOR_STYLES, renderProfileAvatarIcon } from './ProfilesModal';
 
@@ -38,6 +40,7 @@ interface TopBarProps {
   onOpenMechanicGuide: () => void;
   onOpenParentSpace: () => void;
   remainingSessionMinutes: number | null;
+  onOpenTeacherDashboard?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -62,10 +65,12 @@ export const TopBar: React.FC<TopBarProps> = ({
   onOpenMechanicGuide,
   onOpenParentSpace,
   remainingSessionMinutes,
+  onOpenTeacherDashboard,
 }) => {
   const t = UI_TRANSLATIONS[language];
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [iosGuideOpen, setIosGuideOpen] = useState<boolean>(false);
+  const hasTeacherTools = resolveEntitlements(activeProfile.progress.licenseState).teacherTools;
 
   return (
     <>
@@ -180,6 +185,20 @@ export const TopBar: React.FC<TopBarProps> = ({
               </span>
             )}
           </button>
+
+          {/* Lot E: Teacher Dashboard (school tier only) */}
+          {hasTeacherTools && onOpenTeacherDashboard && (
+            <button
+              type="button"
+              onClick={onOpenTeacherDashboard}
+              title={t.teacherNavBtn}
+              aria-label={t.teacherNavBtn}
+              className="inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+              <span className="hidden 2xl:inline">{t.teacherNavBtn}</span>
+            </button>
+          )}
 
           {/* In-App PWA Install Prompt (Hidden once installed in standalone mode) */}
           {!isInstalled && isInstallable && (
