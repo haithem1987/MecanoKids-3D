@@ -14,6 +14,7 @@ import {
   Wrench,
 } from 'lucide-react';
 import { applyLiveryToPartSpec } from '../data/liveries';
+import { getPartShapeSvg } from '../utils/partShape';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
   LanguageCode,
@@ -138,7 +139,12 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
     </button>
   );
 
-  const partCards = blueprint.parts.map((part, idx) => {
+  const unplaced = blueprint.parts.filter((p) => !placedSet.has(p.id));
+  const placed = blueprint.parts.filter((p) => placedSet.has(p.id));
+  const sorted = [...unplaced, ...placed];
+
+  const partCards = sorted.map((part, sortedIdx) => {
+    const originalIdx = blueprint.parts.indexOf(part);
     const paintedSpec = applyLiveryToPartSpec(part, liveryPreset);
     const isPlaced = placedSet.has(part.id);
     const isFaultyMounted = !isPlaced && faultySet.has(part.id);
@@ -146,8 +152,16 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
     const isLocked = !isPlaced && !isFaultyMounted && missingDep !== null;
     const isSelected = stagedPartId === part.id || activeDragPartId === part.id;
     const isHinted = hintPartId === part.id && !isPlaced;
+    const showSeparator = isPlaced && sortedIdx > 0 && !placedSet.has(sorted[sortedIdx - 1].id);
 
     return (
+      <React.Fragment key={part.id}>
+        {showSeparator && (
+          <div className={`shrink-0 flex ${isVertical ? 'flex-row items-center' : 'flex-col items-center justify-center'} gap-1 px-1`}>
+            <div className={isVertical ? 'h-px w-8 bg-slate-200' : 'w-px h-12 bg-slate-200'} />
+            <span className="text-[10px] text-slate-400 whitespace-nowrap">{placed.length}✓</span>
+          </div>
+        )}
       <button
         key={part.id}
         type="button"
@@ -184,7 +198,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         {/* Miniature: color swatch thumbnail */}
         <div className="flex items-center justify-between gap-2">
           <span className="font-mono tabular-nums text-[11px] text-slate-400">
-            {String(idx + 1).padStart(2, '0')}
+            {String(originalIdx + 1).padStart(2, '0')}
             {part.isRarePart ? ` · ${t.rarePartCardLabel}` : ''}
           </span>
           {isFaultyMounted ? (
@@ -193,8 +207,9 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
             <Gem className="w-3.5 h-3.5 text-amber-600 shrink-0" aria-hidden="true" />
           ) : (
             <span
-              className="w-5 h-5 rounded border border-black/10 shrink-0"
-              style={{ backgroundColor: paintedSpec.primaryColor }}
+              className="shrink-0"
+              style={{ width: 40, height: 40 }}
+              dangerouslySetInnerHTML={{ __html: getPartShapeSvg(part.roleHint, paintedSpec.primaryColor) }}
               aria-hidden="true"
             />
           )}
@@ -226,6 +241,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
           </div>
         </div>
       </button>
+      </React.Fragment>
     );
   });
 
