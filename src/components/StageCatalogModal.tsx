@@ -25,6 +25,7 @@ import {
   VisualStyleMode,
 } from '../types/game';
 import { formatStopwatchMs } from '../utils/speedrun';
+import { canPlayStage } from '../utils/entitlements';
 
 interface StageCatalogModalProps {
   isOpen: boolean;
@@ -49,6 +50,7 @@ interface StageCatalogModalProps {
   onExportSave: () => void;
   onImportSaveFile: (file: File) => void;
   onResetAllProgress: () => void;
+  onOpenUpgrade: (reason: 'stages') => void;
 }
 
 const TIER_UNLOCK_THRESHOLDS: Record<DifficultyTier, number> = {
@@ -82,6 +84,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   onExportSave,
   onImportSaveFile,
   onResetAllProgress,
+  onOpenUpgrade,
 }) => {
   const [categoryFilter, setCategoryFilter] = useState<'all' | VehicleCategory>('all');
   const [tierFilter, setTierFilter] = useState<'all' | DifficultyTier>('all');
@@ -423,6 +426,8 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                     {items.map((bp) => {
                       const unlocked = isStageUnlocked(bp);
+                      const paywalled =
+                        unlocked && !canPlayStage(progress.licenseState, bp.stageNumber);
                       const record = progress.completedStages[bp.id];
                       const inProg = progress.inProgressStages[bp.id];
                       const placedCount = inProg?.placedPartIds.length ?? 0;
@@ -432,19 +437,23 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                         <button
                           key={bp.id}
                           type="button"
-                          disabled={!unlocked}
+                          disabled={!unlocked && !paywalled}
                           onClick={() => {
-                            if (unlocked) {
+                            if (paywalled) {
+                              onOpenUpgrade('stages');
+                            } else if (unlocked) {
                               onSelectBlueprint(bp.id);
                               onClose();
                             }
                           }}
                           className={`text-start p-4 rounded-xl border transition-colors flex flex-col justify-between min-h-[152px] ${
-                            !unlocked
-                              ? 'bg-slate-50 border-slate-200 opacity-65 cursor-not-allowed'
-                              : isCurrent
-                                ? 'bg-sky-50/70 border-sky-600 cursor-pointer'
-                                : 'bg-white border-slate-200 hover:border-sky-500 cursor-pointer'
+                            paywalled
+                              ? 'bg-amber-50/60 border-amber-200 hover:border-amber-400 cursor-pointer'
+                              : !unlocked
+                                ? 'bg-slate-50 border-slate-200 opacity-65 cursor-not-allowed'
+                                : isCurrent
+                                  ? 'bg-sky-50/70 border-sky-600 cursor-pointer'
+                                  : 'bg-white border-slate-200 hover:border-sky-500 cursor-pointer'
                           }`}
                         >
                           <div>
@@ -465,6 +474,11 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                                       className="w-3.5 h-3.5 fill-amber-400 text-amber-500"
                                     />
                                   ))}
+                                </span>
+                              ) : paywalled ? (
+                                <span className="inline-flex items-center gap-1 text-amber-700 font-semibold text-[10px] bg-amber-100 px-1.5 py-0.5 rounded">
+                                  <Lock className="w-3 h-3 shrink-0" />
+                                  Pass Famille
                                 </span>
                               ) : !unlocked ? (
                                 <Lock className="w-3.5 h-3.5 text-slate-400" />
@@ -487,7 +501,11 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                                 : ''}
                             </span>
 
-                            {placedCount > 0 && placedCount < bp.parts.length ? (
+                            {paywalled ? (
+                              <span className="font-semibold text-amber-700 text-xs">
+                                Débloquer
+                              </span>
+                            ) : placedCount > 0 && placedCount < bp.parts.length ? (
                               <span className="font-semibold text-amber-700">
                                 {t.statusInProgress(placedCount, bp.parts.length)}
                               </span>
