@@ -51,6 +51,7 @@ import {
   saveMultiProfileStore,
 } from './utils/storage';
 import { soundEngine } from './audio/soundEngine';
+import { getBackendAdapter, LeaderboardEntry } from './backend';
 import { TopBar } from './components/TopBar';
 import { WorkshopCanvas } from './components/WorkshopCanvas';
 import { BottomPartsDock } from './components/BottomPartsDock';
@@ -73,6 +74,7 @@ import { TeacherDashboard } from './components/TeacherDashboard';
 import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 import { LandingPage } from './components/LandingPage';
+import { OnboardingModal } from './components/OnboardingModal';
 import { UpgradeModal } from './components/UpgradeModal';
 import { LicenseActivationModal } from './components/LicenseActivationModal';
 import { canPlayStage } from './utils/entitlements';
@@ -85,8 +87,12 @@ interface ActiveDiagnosticSession {
 }
 
 const LANDING_SEEN_KEY = 'mkids_landing_seen';
+const ONBOARDING_DONE_KEY = 'mkids_onboarding_v1';
 
 export default function App() {
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(
+    () => !localStorage.getItem(ONBOARDING_DONE_KEY),
+  );
   const [showLanding, setShowLanding] = useState<boolean>(
     () => !localStorage.getItem(LANDING_SEEN_KEY),
   );
@@ -192,6 +198,10 @@ export default function App() {
   const pendingAdultActionRef = useRef<(() => void) | null>(null);
   const [recentUnlockedBadgeIds, setRecentUnlockedBadgeIds] = useState<string[]>([]);
   const [lastTimedResult, setLastTimedResult] = useState<TimedCompletionResult | null>(null);
+  const [onlineLeaderboard, setOnlineLeaderboard] = useState<LeaderboardEntry[] | null>(null);
+  const [onlineLeaderboardLoading, setOnlineLeaderboardLoading] = useState<boolean>(false);
+  const lastPostedBlueprintRef = useRef<string | null>(null);
+  const [lastTimedBlueprintId, setLastTimedBlueprintId] = useState<string | null>(null);
   const [tourOpen, setTourOpen] = useState<boolean>(() => !activeProfile.progress.tutorialSeen);
   const [tourStep, setTourStep] = useState<number>(0);
 
@@ -199,6 +209,32 @@ export default function App() {
   const [timerArmed, setTimerArmed] = useState<boolean>(false);
   const [liveDeltaMs, setLiveDeltaMs] = useState<number>(0);
   const segmentStartRef = useRef<number | null>(null);
+
+  // Post score + fetch online leaderboard after a timed completion
+  useEffect(() => {
+    if (!lastTimedResult || !lastTimedBlueprintId || !isOnline) return;
+    const blueprintId = lastTimedBlueprintId;
+    if (lastPostedBlueprintRef.current === blueprintId) return;
+    lastPostedBlueprintRef.current = blueprintId;
+    setOnlineLeaderboard(null);
+    setOnlineLeaderboardLoading(true);
+    const adapter = getBackendAdapter();
+    adapter
+      .postScore(blueprintId, {
+        profileName: activeProfile.name,
+        timeMs: lastTimedResult.timeMs,
+        date: new Date().toISOString(),
+      })
+      .catch(() => {})
+      .finally(() => {
+        adapter
+          .getLeaderboard(blueprintId, 10)
+          .then((entries) => setOnlineLeaderboard(entries))
+          .catch(() => {})
+          .finally(() => setOnlineLeaderboardLoading(false));
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTimedResult, lastTimedBlueprintId]);
 
   // Keep todayDateKey fresh across midnight rollovers
   useEffect(() => {
@@ -1418,6 +1454,7 @@ export default function App() {
         }
 
         setLastTimedResult(timedOutcome);
+        if (timedOutcome) setLastTimedBlueprintId(currentBlueprint.id);
         const streakOutcome = recordDailyEngagement(prevSnap.dailyStreak, todayDateKey);
         const unlockedFreePass = Boolean(
           streakOutcome.nextStreak.unlockedMilestones.streak_14,
@@ -1913,6 +1950,41 @@ export default function App() {
     return snapshotCaptureRef.current ? snapshotCaptureRef.current() : null;
   }, []);
 
+  const handleOnboardingComplete = useCallback(
+    (
+      lang: LanguageCode,
+      name: string,
+      avatarColor: ProfileAvatarColor,
+      avatarIcon: ProfileAvatarIcon,
+    ) => {
+      const currentCount = latestStoreRef.current.profiles.length;
+      const newProf = createNewPlayerProfile({
+        name,
+        avatarColor,
+        avatarIcon,
+        language: lang,
+        index: currentCount + 1,
+      });
+      const nextStore: MultiProfileStore = {
+        ...latestStoreRef.current,
+        activeProfileId: newProf.id,
+        profiles: [newProf],
+      };
+      setProfileStore(nextStore);
+      saveMultiProfileStore(nextStore);
+      localStorage.setItem(ONBOARDING_DONE_KEY, '1');
+      localStorage.setItem(LANDING_SEEN_KEY, '1');
+      setShowOnboarding(false);
+      setShowLanding(false);
+      setTourOpen(!newProf.progress.tutorialSeen);
+    },
+    [],
+  );
+
+  if (showOnboarding) {
+    return <OnboardingModal onComplete={handleOnboardingComplete} />;
+  }
+
   if (showLanding) {
     return (
       <LandingPage
@@ -2215,6 +2287,8 @@ export default function App() {
         currentBlueprint={currentBlueprint}
         onStartTimedStage={handleStartTimedStage}
         onClearLeaderboard={handleClearLeaderboard}
+        onlineEntries={onlineLeaderboard}
+        onlineLoading={onlineLeaderboardLoading}
       />
 
       {/* Progression & Achievement Badges Modal */}
