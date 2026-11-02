@@ -3,6 +3,7 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getBackendAdapter } from './src/backend/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,21 +14,63 @@ async function startServer() {
   const app = express();
   app.use(express.json({ limit: '512kb' }));
 
+  const adapter = getBackendAdapter();
+
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ ok: true, app: 'MécanoKids 3D' });
   });
 
-  app.post('/api/school-inquiry', (req: Request, res: Response) => {
-    const { firstName, school, email, message } = req.body ?? {};
-    if (!firstName || typeof firstName !== 'string' || firstName.length > 50)
-      return void res.json({ ok: false, error: 'Prénom invalide (max 50 caractères).' });
-    if (!school || typeof school !== 'string' || school.length > 100)
-      return void res.json({ ok: false, error: 'Établissement invalide (max 100 caractères).' });
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || typeof email !== 'string' || !emailRegex.test(email))
-      return void res.json({ ok: false, error: 'Email invalide.' });
-    console.log(`[SCHOOL INQUIRY] firstName="${firstName}" school="${school}" email="${email}" message="${message ?? ''}"`);
-    res.json({ ok: true, message: 'Votre demande a bien été reçue.' });
+  app.get('/api/leaderboard/:blueprintId', async (req: Request, res: Response) => {
+    const { blueprintId } = req.params;
+    const limit = Math.min(Number(req.query.limit) || 10, 100);
+    try {
+      const entries = await adapter.getLeaderboard(blueprintId, limit);
+      res.json(entries);
+    } catch {
+      res.status(500).json({ error: 'leaderboard unavailable' });
+    }
+  });
+
+  app.post('/api/score', async (req: Request, res: Response) => {
+    const { blueprintId, profileName, timeMs, date } = req.body as Record<string, unknown>;
+    if (
+      typeof blueprintId !== 'string' ||
+      typeof profileName !== 'string' ||
+      typeof timeMs !== 'number' ||
+      typeof date !== 'string'
+    ) {
+      res.status(400).json({ error: 'invalid payload' });
+      return;
+    }
+    try {
+      await adapter.postScore(blueprintId, { profileName, timeMs, date });
+      res.json({ ok: true });
+    } catch {
+      res.status(500).json({ error: 'score submission failed' });
+    }
+  });
+
+  app.post('/api/school-inquiry', async (req: Request, res: Response) => {
+    const { firstName, school, email, message } = req.body as Record<string, unknown>;
+    if (
+      typeof firstName !== 'string' ||
+      typeof school !== 'string' ||
+      typeof email !== 'string'
+    ) {
+      res.status(400).json({ error: 'invalid payload' });
+      return;
+    }
+    try {
+      await adapter.postSchoolInquiry({
+        firstName,
+        school,
+        email,
+        message: typeof message === 'string' ? message : undefined,
+      });
+      res.json({ ok: true });
+    } catch {
+      res.status(500).json({ error: 'inquiry submission failed' });
+    }
   });
 
   const isProduction =
