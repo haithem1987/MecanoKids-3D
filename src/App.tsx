@@ -68,6 +68,8 @@ import { ParentalGateModal } from './components/ParentalGateModal';
 import { ParentSpaceModal } from './components/ParentSpaceModal';
 import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
+import { UpgradeModal } from './components/UpgradeModal';
+import { canPlayStage } from './utils/entitlements';
 
 interface ActiveDiagnosticSession {
   blueprintId: string;
@@ -145,6 +147,8 @@ export default function App() {
   const statusTimerRef = useRef<number | null>(null);
 
   // Modals, Profiles, Daily Challenge, Streak, Leaderboard, Progression, Guide Drawer & Guided Tour
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState<boolean>(false);
+  const [upgradeReason, setUpgradeReason] = useState<'stages' | 'profiles' | 'liveries'>('stages');
   const [profilesOpen, setProfilesOpen] = useState<boolean>(false);
   const [catalogOpen, setCatalogOpen] = useState<boolean>(false);
   const [streakModalOpen, setStreakModalOpen] = useState<boolean>(false);
@@ -1681,7 +1685,13 @@ export default function App() {
       return;
     }
     if (hasNextStage) {
-      handleSelectBlueprint(VEHICLE_BLUEPRINTS[currentIndex + 1].id);
+      const nextBp = VEHICLE_BLUEPRINTS[currentIndex + 1];
+      if (!canPlayStage(progress.licenseState, nextBp.stageNumber)) {
+        setUpgradeReason('stages');
+        setUpgradeModalOpen(true);
+        return;
+      }
+      handleSelectBlueprint(nextBp.id);
     }
   }, [
     currentBlueprint.isDailyBonus,
@@ -1689,6 +1699,7 @@ export default function App() {
     handleSelectBlueprint,
     hasNextStage,
     progress.lastStandardBlueprintId,
+    progress.licenseState,
   ]);
 
   const handleOpenTour = useCallback(() => {
@@ -2052,6 +2063,10 @@ export default function App() {
         onExportSave={() => requireAdultVerification(handleExportSave)}
         onImportSaveFile={(file) => requireAdultVerification(() => handleImportSaveFile(file))}
         onResetAllProgress={() => requireAdultVerification(handleResetAllProgress)}
+        onOpenUpgrade={(reason) => {
+          setUpgradeReason(reason);
+          setUpgradeModalOpen(true);
+        }}
       />
 
       {/* Daily Mechanical Challenge & Rare Collector Parts Vault Modal */}
@@ -2122,6 +2137,12 @@ export default function App() {
           soundEngine.playGentleBounce();
           flashStatus(t.liveryLockedStreakHint(days));
         }}
+        licenseState={progress.licenseState}
+        onOpenUpgrade={() => {
+          setStudioOpen(false);
+          setUpgradeReason('liveries');
+          setUpgradeModalOpen(true);
+        }}
         captureSnapshot={triggerSnapshotCapture}
         onPostcardDownloaded={() => flashStatus(t.postcardDownloadedToast)}
       />
@@ -2189,6 +2210,17 @@ export default function App() {
         onOpenStudio={() => setStudioOpen(true)}
         hasNextStage={hasNextStage}
         onNextStage={handleGoNextStage}
+      />
+
+      {/* Lot B: Paywall Upgrade Modal */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        reason={upgradeReason}
+        onUpgradeClick={() => {
+          flashStatus('Bientôt disponible');
+          setUpgradeModalOpen(false);
+        }}
       />
 
       {/* Lot A: Gentle End-of-Session Curtain */}

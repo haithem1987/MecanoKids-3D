@@ -285,6 +285,7 @@ export interface PlayerProgress {
   preferredStyle: VisualStyleMode;
   cameraPreset: CameraPreset;
   freeWorkshopUnlocked: boolean;
+  licenseState: LicenseState;
   muted: boolean;
   voiceAutoRead: boolean;
   tutorialSeen: boolean;
@@ -302,6 +303,12 @@ export interface PlayerProfile {
   createdAt: number;
   updatedAt: number;
   progress: PlayerProgress;
+}
+
+export type LicenseTier = 'discovery' | 'family' | 'school';
+
+export interface LicenseState {
+  tier: LicenseTier;
 }
 
 export type DailyLimitMinutesOption = 15 | 20 | 30 | 45;

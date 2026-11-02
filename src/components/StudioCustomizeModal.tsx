@@ -5,6 +5,8 @@ import { LIVERY_PRESETS, LiveryPresetSpec } from '../data/liveries';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { LanguageCode, LiveryPresetId, VehicleBlueprint } from '../types/game';
 import { composePostcardDataUrl, downloadDataUrlAsPng } from '../utils/postcard';
+import { canUseLivery } from '../utils/entitlements';
+import { LicenseState } from '../types/game';
 
 interface StudioCustomizeModalProps {
   isOpen: boolean;
@@ -19,6 +21,8 @@ interface StudioCustomizeModalProps {
   currentLivery: LiveryPresetId;
   onSelectLivery: (liveryId: LiveryPresetId, label: string) => void;
   onLockedLiveryAttempt?: (requiredDays: number) => void;
+  licenseState: LicenseState;
+  onOpenUpgrade?: () => void;
   captureSnapshot: () => string | null;
   onPostcardDownloaded: () => void;
 }
@@ -36,6 +40,8 @@ export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
   currentLivery,
   onSelectLivery,
   onLockedLiveryAttempt,
+  licenseState,
+  onOpenUpgrade,
   captureSnapshot,
   onPostcardDownloaded,
 }) => {
@@ -94,7 +100,13 @@ export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
 
   const t = UI_TRANSLATIONS[language];
 
+  const freeLiveryIds = LIVERY_PRESETS.slice(0, 3).map((p) => p.id);
+
   const handleChooseLivery = (preset: LiveryPresetSpec) => {
+    if (!canUseLivery(licenseState, preset.id, freeLiveryIds)) {
+      onOpenUpgrade?.();
+      return;
+    }
     if (preset.requiredStreakDays && bestStreak < preset.requiredStreakDays) {
       onLockedLiveryAttempt?.(preset.requiredStreakDays);
       return;
@@ -154,25 +166,31 @@ export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {LIVERY_PRESETS.map((preset) => {
                 const isSelected = currentLivery === preset.id;
-                const isLocked = Boolean(
+                const isStreakLocked = Boolean(
                   preset.requiredStreakDays && bestStreak < preset.requiredStreakDays,
                 );
+                const isPaywalled = !canUseLivery(licenseState, preset.id, freeLiveryIds);
+                const isLocked = isStreakLocked || isPaywalled;
                 return (
                   <button
                     key={preset.id}
                     type="button"
                     onClick={() => handleChooseLivery(preset)}
                     title={
-                      isLocked && preset.requiredStreakDays
-                        ? t.liveryLockedStreakHint(preset.requiredStreakDays)
-                        : preset.label[language]
+                      isPaywalled
+                        ? 'Pass Famille requis'
+                        : isStreakLocked && preset.requiredStreakDays
+                          ? t.liveryLockedStreakHint(preset.requiredStreakDays)
+                          : preset.label[language]
                     }
                     className={`flex items-center justify-between gap-2.5 p-2.5 rounded-lg border text-start transition-colors cursor-pointer min-h-[48px] ${
-                      isLocked
-                        ? 'bg-slate-50 border-slate-200 text-slate-500 hover:border-amber-300'
-                        : isSelected
-                          ? 'bg-sky-50 border-sky-600 text-slate-900'
-                          : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
+                      isPaywalled
+                        ? 'bg-amber-50/70 border-amber-200 text-slate-500 hover:border-amber-400'
+                        : isStreakLocked
+                          ? 'bg-slate-50 border-slate-200 text-slate-500 hover:border-amber-300'
+                          : isSelected
+                            ? 'bg-sky-50 border-sky-600 text-slate-900'
+                            : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -190,7 +208,11 @@ export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
                         {preset.label[language]}
                       </span>
                     </div>
-                    {isLocked ? (
+                    {isPaywalled ? (
+                      <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded shrink-0">
+                        ✨
+                      </span>
+                    ) : isStreakLocked ? (
                       <Lock className="w-3.5 h-3.5 text-amber-600 shrink-0" aria-hidden="true" />
                     ) : isSelected ? (
                       <Check className="w-4 h-4 text-sky-600 shrink-0" aria-hidden="true" />

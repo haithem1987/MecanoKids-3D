@@ -106,6 +106,7 @@ export function createDefaultProgress(
     preferredStyle: VisualStyleMode.WOOD,
     cameraPreset: CameraPreset.ISO,
     freeWorkshopUnlocked: false,
+    licenseState: { tier: 'discovery' },
     muted: false,
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
@@ -391,6 +392,16 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     cameraPreset,
     freeWorkshopUnlocked:
       Boolean(obj.freeWorkshopUnlocked) || Boolean(dailyStreak.unlockedMilestones.streak_14),
+    licenseState:
+      obj.licenseState &&
+      typeof obj.licenseState === 'object' &&
+      (obj.licenseState as Record<string, unknown>).tier === 'family'
+        ? { tier: 'family' as const }
+        : obj.licenseState &&
+            typeof obj.licenseState === 'object' &&
+            (obj.licenseState as Record<string, unknown>).tier === 'school'
+          ? { tier: 'school' as const }
+          : { tier: 'discovery' as const },
     muted: Boolean(obj.muted),
     voiceAutoRead: Boolean(obj.voiceAutoRead),
     tutorialSeen: Boolean(obj.tutorialSeen),
