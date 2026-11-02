@@ -13,6 +13,8 @@ import {
   DifficultyTier,
   EngineeringPatentRecord,
   LanguageCode,
+  LicenseState,
+  LicenseTier,
   LiveryPresetId,
   MultiProfileStore,
   PlayerProfile,
@@ -212,6 +214,22 @@ function sanitizeSpeedrunRecords(raw: unknown): SpeedrunRecord[] {
   }
   valid.sort((a, b) => a.timeMs - b.timeMs);
   return valid.slice(0, MAX_SPEEDRUN_HISTORY);
+}
+
+const VALID_LICENSE_TIERS = new Set<LicenseTier>(['discovery', 'family', 'school']);
+
+function sanitizeLicenseState(raw: unknown): LicenseState | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const obj = raw as Record<string, unknown>;
+  const tier = typeof obj.tier === 'string' && VALID_LICENSE_TIERS.has(obj.tier as LicenseTier)
+    ? (obj.tier as LicenseTier)
+    : undefined;
+  if (!tier) return undefined;
+  return {
+    tier,
+    schoolOrg: typeof obj.schoolOrg === 'string' ? obj.schoolOrg : undefined,
+    activatedAt: typeof obj.activatedAt === 'number' ? obj.activatedAt : undefined,
+  };
 }
 
 export function sanitizeProgress(raw: unknown): PlayerProgress {
@@ -431,6 +449,7 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
         : 'bottom',
     partsTrayAutoHide: obj.partsTrayAutoHide !== false,
     lastSavedAt: typeof obj.lastSavedAt === 'number' ? obj.lastSavedAt : Date.now(),
+    licenseState: sanitizeLicenseState(obj.licenseState),
   };
 }
 

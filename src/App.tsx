@@ -69,6 +69,7 @@ import { QuizModal } from './components/QuizModal';
 import { StreakModal } from './components/StreakModal';
 import { ParentalGateModal } from './components/ParentalGateModal';
 import { ParentSpaceModal } from './components/ParentSpaceModal';
+import { TeacherDashboard } from './components/TeacherDashboard';
 import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 import { LandingPage } from './components/LandingPage';
@@ -182,6 +183,7 @@ export default function App() {
   const [discoveryOpen, setDiscoveryOpen] = useState<boolean>(false);
   const [parentalGateOpen, setParentalGateOpen] = useState<boolean>(false);
   const [parentSpaceOpen, setParentSpaceOpen] = useState<boolean>(false);
+  const [teacherDashboardOpen, setTeacherDashboardOpen] = useState<boolean>(false);
   const [parentSpaceInitialTab, setParentSpaceInitialTab] = useState<'stem' | 'timer' | 'diplomas'>('stem');
   const [graceElapsedSeconds, setGraceElapsedSeconds] = useState<number>(0);
   const adultSessionExpiresRef = useRef<number>(0);
@@ -1761,6 +1763,21 @@ export default function App() {
     setProgress((p) => (p.tutorialSeen ? p : { ...p, tutorialSeen: true }));
   }, [setProgress]);
 
+  const handleActivateLicense = useCallback(
+    (key: string) => {
+      setProgress((p) => ({
+        ...p,
+        licenseState: {
+          tier: 'school',
+          schoolOrg: p.licenseState?.schoolOrg ?? 'Mon école',
+          activatedAt: Date.now(),
+        },
+      }));
+      flashStatus(t.teacherLicenseActivatedToast);
+    },
+    [flashStatus, setProgress, t.teacherLicenseActivatedToast],
+  );
+
   const handleManualSave = useCallback(() => {
     saveMultiProfileStore(latestStoreRef.current);
     flashStatus(t.progressSavedToast);
@@ -1944,6 +1961,7 @@ export default function App() {
           });
         }}
         onOpenParentSpace={() => handleOpenParentSpace('stem')}
+        onOpenTeacherDashboard={() => setTeacherDashboardOpen(true)}
         remainingSessionMinutes={
           gentleTimerStatus.remainingSeconds !== null
             ? Math.ceil(gentleTimerStatus.remainingSeconds / 60)
@@ -2370,6 +2388,16 @@ export default function App() {
           setParentSpaceOpen(false);
           setShowLanding(true);
         }}
+      />
+
+      {/* Lot E: Teacher Dashboard (school tier) */}
+      <TeacherDashboard
+        isOpen={teacherDashboardOpen}
+        onClose={() => setTeacherDashboardOpen(false)}
+        language={language}
+        profiles={profileStore.profiles}
+        activeProfileId={activeProfile.id}
+        onActivateLicense={handleActivateLicense}
       />
 
       {/* Automatic Interactive Guided Tour */}

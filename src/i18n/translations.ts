@@ -1,4 +1,4 @@
-import { localizeBlueprintToEnglish } from '../data/englishBlueprints';
+﻿import { localizeBlueprintToEnglish } from '../data/englishBlueprints';
 import { DiscoveryFacts, LanguageCode, VehicleBlueprint } from '../types/game';
 
 interface ArabicBlueprintTranslation {
@@ -905,6 +905,7 @@ export interface UIStrings {
   sessionCurtainSubtitle: (profileName: string, completedCount: number) => string;
   sessionCurtainGraceBanner: (secondsLeft: number) => string;
   sessionCurtainParentExtendBtn: string;
+
   // Lot C1 — Landing page
   landingHeroTitle: string;
   landingHeroCTA: string;
@@ -916,6 +917,26 @@ export interface UIStrings {
   landingSchoolTitle: string;
   landingSchoolSubmit: string;
   landingSchoolThanks: string;
+
+  // Lot E — Teacher Dashboard (school tier)
+  teacherNavBtn: string;
+  teacherDashboardTitle: string;
+  teacherDashboardSubtitle: (org: string) => string;
+  closeTeacherDashboardAria: string;
+  teacherStudentsTitle: string;
+  teacherNoStudents: string;
+  teacherStagesLabel: (completed: number, total: number) => string;
+  teacherStreakLabel: (days: number) => string;
+  teacherBadgesLabel: (count: number) => string;
+  teacherExportPdfBtn: string;
+  teacherLicenseSectionTitle: string;
+  teacherLicenseSectionDesc: string;
+  teacherLicenseKeyPlaceholder: string;
+  teacherActivateBtn: string;
+  teacherLicenseInvalidMsg: string;
+  teacherLicenseActivatedToast: string;
+  teacherSchoolLabel: string;
+
 }
 
 export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
@@ -1410,6 +1431,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     sessionCurtainGraceBanner: (secondsLeft) =>
       `Fin de séance proche : il te reste ${secondsLeft}s pour fixer tes dernières pièces sur ce véhicule.`,
     sessionCurtainParentExtendBtn: 'Accès Parent (Prolonger ou régler)',
+
     landingHeroTitle: 'Construis tes premières machines !',
     landingHeroCTA: 'Essayer gratuitement →',
     landingBadgeNoAds: '0 % Publicité',
@@ -1420,6 +1442,25 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     landingSchoolTitle: 'Votre école est intéressée ?',
     landingSchoolSubmit: 'Envoyer une demande',
     landingSchoolThanks: 'Merci, nous vous contacterons !',
+
+    teacherNavBtn: 'Enseignant 🎓',
+    teacherDashboardTitle: 'Espace Enseignant',
+    teacherDashboardSubtitle: (org: string) => `École : ${org}`,
+    closeTeacherDashboardAria: "Fermer l'espace enseignant",
+    teacherStudentsTitle: 'Élèves',
+    teacherNoStudents: 'Aucun profil élève trouvé.',
+    teacherStagesLabel: (c, t) => `${c} / ${t} stages`,
+    teacherStreakLabel: (d) => `Série : ${d}j`,
+    teacherBadgesLabel: (n) => `${n} badges`,
+    teacherExportPdfBtn: 'Exporter PDF',
+    teacherLicenseSectionTitle: 'Licence École',
+    teacherLicenseSectionDesc: 'Saisissez la clé de licence fournie par votre établissement.',
+    teacherLicenseKeyPlaceholder: 'Clé de licence (SK-… ou base64)',
+    teacherActivateBtn: 'Activer',
+    teacherLicenseInvalidMsg: 'Format de clé invalide. Vérifiez la clé fournie.',
+    teacherLicenseActivatedToast: 'Licence école activée avec succès.',
+    teacherSchoolLabel: 'École',
+
   },
 
   en: {
@@ -1913,6 +1954,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     sessionCurtainGraceBanner: (secondsLeft) =>
       `Session wrapping up: ${secondsLeft}s remaining to snap the final parts onto this vehicle.`,
     sessionCurtainParentExtendBtn: 'Parent Access (Extend or adjust)',
+
     landingHeroTitle: 'Build your first machines!',
     landingHeroCTA: 'Try for free →',
     landingBadgeNoAds: '0% Ads',
@@ -1923,6 +1965,25 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     landingSchoolTitle: 'Is your school interested?',
     landingSchoolSubmit: 'Send a request',
     landingSchoolThanks: 'Thank you, we will contact you!',
+
+    teacherNavBtn: 'Teacher 🎓',
+    teacherDashboardTitle: 'Teacher Dashboard',
+    teacherDashboardSubtitle: (org: string) => `School: ${org}`,
+    closeTeacherDashboardAria: 'Close teacher dashboard',
+    teacherStudentsTitle: 'Students',
+    teacherNoStudents: 'No student profiles found.',
+    teacherStagesLabel: (c, t) => `${c} / ${t} stages`,
+    teacherStreakLabel: (d) => `Streak: ${d}d`,
+    teacherBadgesLabel: (n) => `${n} badges`,
+    teacherExportPdfBtn: 'Export PDF',
+    teacherLicenseSectionTitle: 'School License',
+    teacherLicenseSectionDesc: 'Enter the license key provided by your institution.',
+    teacherLicenseKeyPlaceholder: 'License key (SK-… or base64)',
+    teacherActivateBtn: 'Activate',
+    teacherLicenseInvalidMsg: 'Invalid key format. Please check the provided key.',
+    teacherLicenseActivatedToast: 'School license activated successfully.',
+    teacherSchoolLabel: 'School',
+
   },
 
   ar: {
@@ -2415,6 +2476,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     sessionCurtainGraceBanner: (secondsLeft) =>
       `شارفت الجلسة على الانتهاء: لديك ${secondsLeft} ثانية لتثبيت القطع الأخيرة في هذه المركبة.`,
     sessionCurtainParentExtendBtn: 'دخول ولي الأمر (تمديد أو تعديل)',
+
     landingHeroTitle: 'ابنِ أولى آلاتك!',
     landingHeroCTA: 'جرّب مجاناً ←',
     landingBadgeNoAds: '0% إعلانات',
@@ -2425,5 +2487,24 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     landingSchoolTitle: 'هل مدرستك مهتمة؟',
     landingSchoolSubmit: 'إرسال طلب',
     landingSchoolThanks: 'شكراً، سنتواصل معك قريباً!',
+
+    teacherNavBtn: 'معلم 🎓',
+    teacherDashboardTitle: 'فضاء المعلم',
+    teacherDashboardSubtitle: (org: string) => `المدرسة: ${org}`,
+    closeTeacherDashboardAria: 'إغلاق فضاء المعلم',
+    teacherStudentsTitle: 'الطلاب',
+    teacherNoStudents: 'لم يتم العثور على ملفات الطلاب.',
+    teacherStagesLabel: (c, t) => `${c} / ${t} مراحل`,
+    teacherStreakLabel: (d) => `السلسلة: ${d}ي`,
+    teacherBadgesLabel: (n) => `${n} شارات`,
+    teacherExportPdfBtn: 'تصدير PDF',
+    teacherLicenseSectionTitle: 'ترخيص المدرسة',
+    teacherLicenseSectionDesc: 'أدخل مفتاح الترخيص المقدم من مؤسستك.',
+    teacherLicenseKeyPlaceholder: 'مفتاح الترخيص (SK-… أو base64)',
+    teacherActivateBtn: 'تفعيل',
+    teacherLicenseInvalidMsg: 'تنسيق المفتاح غير صالح. تحقق من المفتاح المقدم.',
+    teacherLicenseActivatedToast: 'تم تفعيل ترخيص المدرسة بنجاح.',
+    teacherSchoolLabel: 'المدرسة',
+
   },
 };

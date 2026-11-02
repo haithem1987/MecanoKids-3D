@@ -297,6 +297,7 @@ export interface PlayerProgress {
   partsTrayPosition: 'bottom' | 'left' | 'right';
   partsTrayAutoHide: boolean;
   lastSavedAt: number;
+  licenseState?: LicenseState;
 }
 
 export type ProfileAvatarColor = 'sky' | 'amber' | 'emerald' | 'indigo' | 'rose';

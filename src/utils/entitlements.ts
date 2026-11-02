@@ -1,4 +1,4 @@
-export type Tier = 'discovery' | 'family' | 'school';
+﻿export type Tier = 'discovery' | 'family' | 'school';
 
 export interface LicenseState {
   tier: Tier;
