@@ -72,7 +72,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - respect de `prefers-reduced-motion`.
 - **CA** : impossible de perdre le véhicule hors champ.
 
-### [ ] Q5 — Rendre le hors-ligne réel
+### [x] Q5 — Rendre le hors-ligne réel — polices auto-hébergées (@fontsource), globPatterns étendu, registerType→prompt + bannière de mise à jour SW, suppression des liens Google Fonts
 - **Fichiers** : `vite.config.ts`, `index.html`, `src/index.css`, `public/offline.html`.
 - **Travail** :
   - `globPatterns` étendu à `glb,gltf,ktx2,mp3,ogg,wav,json,webp` ;

@@ -51,6 +51,7 @@ import {
   saveMultiProfileStore,
 } from './utils/storage';
 import { soundEngine } from './audio/soundEngine';
+import { useServiceWorkerUpdate } from './utils/pwa';
 import { TopBar } from './components/TopBar';
 import { WorkshopCanvas } from './components/WorkshopCanvas';
 import { BottomPartsDock } from './components/BottomPartsDock';
@@ -89,6 +90,8 @@ const LANDING_SEEN_KEY = 'mkids_landing_seen';
 const ONBOARDING_DONE_KEY = 'mkids_onboarding_v1';
 
 export default function App() {
+  const { needsRefresh, applyUpdate } = useServiceWorkerUpdate();
+
   const [showOnboarding, setShowOnboarding] = useState<boolean>(
     () => !localStorage.getItem(ONBOARDING_DONE_KEY),
   );
@@ -2029,6 +2032,16 @@ export default function App() {
       dir={language === 'ar' ? 'rtl' : 'ltr'}
       className="flex flex-col w-full h-full bg-[#F4F6F9] text-slate-900 overflow-hidden"
     >
+      {/* Service Worker update banner */}
+      {needsRefresh && (
+        <div className="fixed top-0 inset-x-0 z-50 flex items-center justify-between gap-3 px-4 py-2 bg-sky-700 text-white text-sm font-medium shadow-md">
+          <span>{t.swUpdateAvailable}</span>
+          <button type="button" onClick={applyUpdate} className="shrink-0 px-3 py-1 rounded-md bg-white text-sky-700 font-semibold text-xs hover:bg-sky-50 transition-colors cursor-pointer">
+            {t.swUpdateBtn}
+          </button>
+        </div>
+      )}
+
       {/* Top Bar with Active Profile + Garage + Daily Streak Flame + Daily Challenge + Stopwatch + FR / EN / العربية */}
       <TopBar
         language={language}

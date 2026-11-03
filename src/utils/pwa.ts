@@ -2,17 +2,40 @@ import { useEffect, useState } from 'react';
 import { registerSW } from 'virtual:pwa-register';
 
 let swRegistered = false;
+let _updateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
+const _updateListeners: Array<() => void> = [];
+let _needsRefresh = false;
 
 export function initServiceWorker(): void {
   if (swRegistered || typeof window === 'undefined') return;
   swRegistered = true;
   try {
-    registerSW({
+    _updateSW = registerSW({
       immediate: true,
+      onNeedRefresh() {
+        _needsRefresh = true;
+        _updateListeners.forEach((fn) => fn());
+      },
     });
   } catch {
     // Ignore SW registration restrictions in sandboxed environments
   }
+}
+
+export function useServiceWorkerUpdate() {
+  const [needsRefresh, setNeedsRefresh] = useState(_needsRefresh);
+
+  useEffect(() => {
+    const notify = () => setNeedsRefresh(true);
+    _updateListeners.push(notify);
+    return () => {
+      const idx = _updateListeners.indexOf(notify);
+      if (idx !== -1) _updateListeners.splice(idx, 1);
+    };
+  }, []);
+
+  const applyUpdate = () => _updateSW?.(true);
+  return { needsRefresh, applyUpdate };
 }
 
 interface BeforeInstallPromptEvent extends Event {

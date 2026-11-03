@@ -523,6 +523,8 @@ export interface UIStrings {
   unmuteAria: string;
   undoBtn: string;
   recenterBtn: string;
+  swUpdateAvailable: string;
+  swUpdateBtn: string;
   resetBtn: string;
   autoSavedBadge: string;
   // Status & Canvas messages
@@ -992,6 +994,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     unmuteAria: 'Activer le son',
     undoBtn: 'Annuler',
     recenterBtn: 'Recentrer',
+    swUpdateAvailable: 'Nouvelle version disponible — rechargez pour l\'installer',
+    swUpdateBtn: 'Relancer',
     resetBtn: 'Recommencer',
     autoSavedBadge: 'Sauvegarde auto',
     stageResetMsg: (vehicleName) => `Établi remis à zéro pour ${vehicleName}.`,
@@ -1526,6 +1530,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     unmuteAria: 'Unmute sound',
     undoBtn: 'Undo',
     recenterBtn: 'Recenter',
+    swUpdateAvailable: 'New version available — reload to install',
+    swUpdateBtn: 'Reload',
     resetBtn: 'Restart',
     autoSavedBadge: 'Auto-saved',
     stageResetMsg: (vehicleName) => `Workbench reset for ${vehicleName}.`,
@@ -2060,6 +2066,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     unmuteAria: 'تفعيل الصوت',
     undoBtn: 'تراجع',
     recenterBtn: 'توسيط',
+    swUpdateAvailable: 'إصدار جديد متاح — أعد التحميل للتثبيت',
+    swUpdateBtn: 'إعادة تحميل',
     resetBtn: 'إعادة المرحلة',
     autoSavedBadge: 'حفظ تلقائي',
     stageResetMsg: (vehicleName) => `تمت إعادة ضبط طاولة العمل لمركبة «${vehicleName}».`,
