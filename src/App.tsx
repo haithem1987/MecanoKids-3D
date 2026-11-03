@@ -2132,6 +2132,20 @@ export default function App() {
         );
       })()}
 
+      {/* Floating "Étape suivante" CTA — visible dès que l'assemblage est terminé, hors du dock */}
+      {isCompleted && (hasNextStage || currentBlueprint.isDailyBonus) && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+          <button
+            type="button"
+            onClick={handleGoNextStage}
+            className="flex items-center gap-3 px-8 py-4 text-base font-bold text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-800 rounded-2xl shadow-lg transition-colors min-h-[64px] select-none"
+          >
+            <span>{currentBlueprint.isDailyBonus ? t.returnToStagesBtn : t.nextStageBtn}</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      )}
+
       {/* Collapsible Unified Bottom Parts & Controls Dock */}
       <BottomPartsDock
         language={language}
