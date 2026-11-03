@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Globe,
-  Loader2,
   Play,
   Star,
   Timer,
@@ -10,7 +8,6 @@ import {
   X,
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
-import { LeaderboardEntry } from '../backend/types';
 import {
   DifficultyTier,
   LanguageCode,
@@ -35,8 +32,6 @@ interface SpeedLeaderboardModalProps {
   currentBlueprint: VehicleBlueprint;
   onStartTimedStage: (blueprintId: string) => void;
   onClearLeaderboard: () => void;
-  onlineEntries?: LeaderboardEntry[] | null;
-  onlineLoading?: boolean;
 }
 
 export const SpeedLeaderboardModal: React.FC<SpeedLeaderboardModalProps> = ({
@@ -50,10 +45,9 @@ export const SpeedLeaderboardModal: React.FC<SpeedLeaderboardModalProps> = ({
   currentBlueprint,
   onStartTimedStage,
   onClearLeaderboard,
-  onlineEntries,
-  onlineLoading,
+
 }) => {
-  const [activeTab, setActiveTab] = useState<'stage_bests' | 'all_runs' | 'mondial'>('stage_bests');
+  const [activeTab, setActiveTab] = useState<'stage_bests' | 'all_runs'>('stage_bests');
   const [tierFilter, setTierFilter] = useState<'all' | DifficultyTier>('all');
   const [confirmClear, setConfirmClear] = useState<boolean>(false);
 
@@ -241,21 +235,6 @@ export const SpeedLeaderboardModal: React.FC<SpeedLeaderboardModalProps> = ({
               >
                 {t.leaderboardTabTopRuns(records.length)}
               </button>
-              {onlineEntries !== undefined && (
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('mondial')}
-                  className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                    activeTab === 'mondial'
-                      ? 'bg-white text-sky-700 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <Globe className="w-3 h-3 shrink-0" />
-                  <span>Mondial</span>
-                  {onlineLoading && <Loader2 className="w-3 h-3 shrink-0 animate-spin" />}
-                </button>
-              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-100 rounded-lg">
@@ -295,57 +274,8 @@ export const SpeedLeaderboardModal: React.FC<SpeedLeaderboardModalProps> = ({
             </div>
           </div>
 
-          {/* Online Mondial Tab */}
-          {activeTab === 'mondial' && (
-            <div>
-              {onlineLoading ? (
-                <div className="p-8 flex flex-col items-center gap-3 text-slate-500">
-                  <Loader2 className="w-6 h-6 animate-spin text-sky-600" />
-                  <p className="text-xs">Chargement du classement mondial…</p>
-                </div>
-              ) : !onlineEntries || onlineEntries.length === 0 ? (
-                <div className="p-8 bg-slate-50 border border-slate-200 rounded-xl text-center space-y-2">
-                  <Globe className="w-8 h-8 text-slate-400 mx-auto" />
-                  <p className="text-sm font-bold text-slate-700">Pas encore de scores en ligne</p>
-                  <p className="text-xs text-slate-500">Termine un stage en mode chronomètre pour apparaître ici.</p>
-                </div>
-              ) : (
-                <div className="border border-slate-200 rounded-xl overflow-x-auto">
-                  <table className="w-full text-start text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
-                        <th className="py-2.5 px-3.5 text-start w-12">{t.leaderboardColRank}</th>
-                        <th className="py-2.5 px-3.5 text-start">Joueur</th>
-                        <th className="py-2.5 px-3.5 text-start">{t.leaderboardColTime}</th>
-                        <th className="py-2.5 px-3.5 text-start hidden sm:table-cell">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {onlineEntries.map((entry, idx) => (
-                        <tr key={`${entry.profileName}-${idx}`} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-3 px-3.5 font-mono tabular-nums font-bold text-slate-700">
-                            <span className={idx === 0 ? 'text-amber-600' : idx === 1 ? 'text-slate-600' : idx === 2 ? 'text-amber-800' : ''}>
-                              #{idx + 1}
-                            </span>
-                          </td>
-                          <td className="py-3 px-3.5 font-display text-sm font-bold text-slate-900">{entry.profileName}</td>
-                          <td className="py-3 px-3.5 font-mono tabular-nums text-sm font-bold text-sky-700 whitespace-nowrap">
-                            {formatStopwatchMs(entry.timeMs)}
-                          </td>
-                          <td className="py-3 px-3.5 text-slate-500 hidden sm:table-cell">
-                            {new Date(entry.date).toLocaleDateString()}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Local Leaderboard Table or Empty State */}
-          {activeTab !== 'mondial' && (displayedList.length === 0 ? (
+          {(displayedList.length === 0 ? (
             <div className="p-8 bg-slate-50 border border-slate-200 rounded-xl text-center space-y-3">
               <div className="w-10 h-10 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center mx-auto">
                 <Trophy className="w-5 h-5" />

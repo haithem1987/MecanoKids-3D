@@ -51,7 +51,6 @@ import {
   saveMultiProfileStore,
 } from './utils/storage';
 import { soundEngine } from './audio/soundEngine';
-import { getBackendAdapter, LeaderboardEntry } from './backend';
 import { TopBar } from './components/TopBar';
 import { WorkshopCanvas } from './components/WorkshopCanvas';
 import { BottomPartsDock } from './components/BottomPartsDock';
@@ -198,10 +197,6 @@ export default function App() {
   const pendingAdultActionRef = useRef<(() => void) | null>(null);
   const [recentUnlockedBadgeIds, setRecentUnlockedBadgeIds] = useState<string[]>([]);
   const [lastTimedResult, setLastTimedResult] = useState<TimedCompletionResult | null>(null);
-  const [onlineLeaderboard, setOnlineLeaderboard] = useState<LeaderboardEntry[] | null>(null);
-  const [onlineLeaderboardLoading, setOnlineLeaderboardLoading] = useState<boolean>(false);
-  const lastPostedBlueprintRef = useRef<string | null>(null);
-  const [lastTimedBlueprintId, setLastTimedBlueprintId] = useState<string | null>(null);
   const [tourOpen, setTourOpen] = useState<boolean>(() => !activeProfile.progress.tutorialSeen);
   const [tourStep, setTourStep] = useState<number>(0);
 
@@ -210,31 +205,6 @@ export default function App() {
   const [liveDeltaMs, setLiveDeltaMs] = useState<number>(0);
   const segmentStartRef = useRef<number | null>(null);
 
-  // Post score + fetch online leaderboard after a timed completion
-  useEffect(() => {
-    if (!lastTimedResult || !lastTimedBlueprintId || !isOnline) return;
-    const blueprintId = lastTimedBlueprintId;
-    if (lastPostedBlueprintRef.current === blueprintId) return;
-    lastPostedBlueprintRef.current = blueprintId;
-    setOnlineLeaderboard(null);
-    setOnlineLeaderboardLoading(true);
-    const adapter = getBackendAdapter();
-    adapter
-      .postScore(blueprintId, {
-        profileName: activeProfile.name,
-        timeMs: lastTimedResult.timeMs,
-        date: new Date().toISOString(),
-      })
-      .catch(() => {})
-      .finally(() => {
-        adapter
-          .getLeaderboard(blueprintId, 10)
-          .then((entries) => setOnlineLeaderboard(entries))
-          .catch(() => {})
-          .finally(() => setOnlineLeaderboardLoading(false));
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastTimedResult, lastTimedBlueprintId]);
 
   // Keep todayDateKey fresh across midnight rollovers
   useEffect(() => {
@@ -1480,7 +1450,6 @@ export default function App() {
         }
 
         setLastTimedResult(timedOutcome);
-        if (timedOutcome) setLastTimedBlueprintId(currentBlueprint.id);
         const streakOutcome = recordDailyEngagement(prevSnap.dailyStreak, todayDateKey);
         const unlockedFreePass = Boolean(
           streakOutcome.nextStreak.unlockedMilestones.streak_14,
@@ -2313,8 +2282,6 @@ export default function App() {
         currentBlueprint={currentBlueprint}
         onStartTimedStage={handleStartTimedStage}
         onClearLeaderboard={handleClearLeaderboard}
-        onlineEntries={onlineLeaderboard}
-        onlineLoading={onlineLeaderboardLoading}
       />
 
       {/* Progression & Achievement Badges Modal */}
