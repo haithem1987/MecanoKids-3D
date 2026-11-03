@@ -521,6 +521,7 @@ export interface UIStrings {
   soundActive: string;
   muteAria: string;
   unmuteAria: string;
+  undoBtn: string;
   resetBtn: string;
   autoSavedBadge: string;
   // Status & Canvas messages
@@ -988,6 +989,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     soundActive: 'Son',
     muteAria: 'Couper le son',
     unmuteAria: 'Activer le son',
+    undoBtn: 'Annuler',
     resetBtn: 'Recommencer',
     autoSavedBadge: 'Sauvegarde auto',
     stageResetMsg: (vehicleName) => `Établi remis à zéro pour ${vehicleName}.`,
@@ -1520,6 +1522,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     soundActive: 'Sound',
     muteAria: 'Mute sound',
     unmuteAria: 'Unmute sound',
+    undoBtn: 'Undo',
     resetBtn: 'Restart',
     autoSavedBadge: 'Auto-saved',
     stageResetMsg: (vehicleName) => `Workbench reset for ${vehicleName}.`,
@@ -2052,6 +2055,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     soundActive: 'صوت',
     muteAria: 'كتم الصوت',
     unmuteAria: 'تفعيل الصوت',
+    undoBtn: 'تراجع',
     resetBtn: 'إعادة المرحلة',
     autoSavedBadge: 'حفظ تلقائي',
     stageResetMsg: (vehicleName) => `تمت إعادة ضبط طاولة العمل لمركبة «${vehicleName}».`,

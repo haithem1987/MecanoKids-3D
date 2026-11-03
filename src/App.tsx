@@ -204,6 +204,8 @@ export default function App() {
   const [timerArmed, setTimerArmed] = useState<boolean>(false);
   const [liveDeltaMs, setLiveDeltaMs] = useState<number>(0);
   const segmentStartRef = useRef<number | null>(null);
+  const undoStackRef = useRef<string[][]>([]);
+  const [canUndo, setCanUndo] = useState(false);
 
 
   // Keep todayDateKey fresh across midnight rollovers
@@ -1133,6 +1135,8 @@ export default function App() {
     (blueprintId: string) => {
       flushActiveStopwatchSegment(currentBlueprint.id);
       speechEngine.stop();
+      undoStackRef.current = [];
+      setCanUndo(false);
       setTimerArmed(false);
       setLiveDeltaMs(0);
       setLastTimedResult(null);
@@ -1279,8 +1283,33 @@ export default function App() {
     setRecentUnlockedBadgeIds([]);
     setExplodedFactor(0);
     setCameraPresetNonce((n) => n + 1);
+    undoStackRef.current = [];
+    setCanUndo(false);
     flashStatus(t.stageResetMsg(currentBlueprint.name));
   }, [currentBlueprint.id, currentBlueprint.name, flashStatus, setProgress, t]);
+
+  const handleUndo = useCallback(() => {
+    const stack = undoStackRef.current;
+    if (stack.length === 0) return;
+    const prev = stack[stack.length - 1];
+    undoStackRef.current = stack.slice(0, -1);
+    setCanUndo(undoStackRef.current.length > 0);
+    setProgress((p) => {
+      const cur = p.inProgressStages[currentBlueprint.id];
+      return {
+        ...p,
+        inProgressStages: {
+          ...p.inProgressStages,
+          [currentBlueprint.id]: {
+            placedPartIds: prev,
+            mistakesCount: cur?.mistakesCount ?? 0,
+            elapsedMs: cur?.elapsedMs ?? 0,
+            updatedAt: Date.now(),
+          },
+        },
+      };
+    });
+  }, [currentBlueprint.id, setProgress]);
 
   const handlePartSnapped = useCallback(
     (partId: string) => {
@@ -1360,6 +1389,8 @@ export default function App() {
       const alreadyPlaced = standardPlacedPartIds.includes(partId);
       if (alreadyPlaced) return;
 
+      undoStackRef.current = [...undoStackRef.current, [...standardPlacedPartIds]];
+      setCanUndo(true);
       const updatedPlaced = [...standardPlacedPartIds, partId];
       const justCompleted = updatedPlaced.length === currentBlueprint.parts.length;
 
@@ -2198,6 +2229,8 @@ export default function App() {
         personalBestMs={currentPersonalBestMs}
         onToggleTimerMode={() => handleToggleTimerMode()}
         onOpenLeaderboard={() => setLeaderboardOpen(true)}
+        onUndo={handleUndo}
+        canUndo={!activeDiagnostic && canUndo}
         onResetStage={handleResetStage}
         onSaveNow={handleManualSave}
         onStartPartDrag={handleStartPartDrag}

@@ -58,7 +58,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - « clic » sonore et `navigator.vibrate` court quand c'est disponible.
 - **CA** : poser une pièce à moins d'une demi-pièce de distance réussit ; l'aperçu fantôme se distingue sans couleur.
 
-### [ ] Q3 — Ajouter Annuler et « recommencer l'étape »
+### [x] Q3 — Ajouter Annuler et « recommencer l'étape » *(fait : pile undo dans App.tsx, bouton Annuler ≥48px dans WorkshopToolbar, bouton Recommencer existant conservé, 5 tests unitaires)*
 - **Fichiers** : `WorkshopToolbar.tsx` et l'état d'assemblage.
 - **CA** : Annuler défait la dernière pose, y compris plusieurs fois de suite ; les deux boutons restent toujours visibles et font ≥ 64 px ; tests unitaires sur la pile d'historique.
 

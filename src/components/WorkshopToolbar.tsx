@@ -40,6 +40,8 @@ interface WorkshopToolbarProps {
   onOpenTour: () => void;
   muted: boolean;
   onToggleMute: () => void;
+  onUndo: () => void;
+  canUndo: boolean;
   onResetStage: () => void;
   explodedFactor: number;
   onChangeExploded: (val: number) => void;
@@ -67,6 +69,8 @@ export const WorkshopToolbar: React.FC<WorkshopToolbarProps> = ({
   onOpenTour,
   muted,
   onToggleMute,
+  onUndo,
+  canUndo,
   onResetStage,
   explodedFactor,
   onChangeExploded,
@@ -285,6 +289,17 @@ export const WorkshopToolbar: React.FC<WorkshopToolbarProps> = ({
           ) : (
             <Volume2 className="w-3.5 h-3.5 shrink-0" />
           )}
+        </button>
+
+        <button
+          type="button"
+          onClick={onUndo}
+          disabled={!canUndo}
+          title={t.undoBtn}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[48px] cursor-pointer disabled:opacity-40 disabled:cursor-default text-slate-700 bg-slate-100 hover:enabled:bg-slate-200"
+        >
+          <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden sm:inline">{t.undoBtn}</span>
         </button>
 
         <button

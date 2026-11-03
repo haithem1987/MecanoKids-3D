@@ -64,6 +64,8 @@ interface BottomPartsDockProps {
   personalBestMs: number | null;
   onToggleTimerMode: () => void;
   onOpenLeaderboard: () => void;
+  onUndo: () => void;
+  canUndo: boolean;
   onResetStage: () => void;
   onSaveNow: () => void;
   onStartPartDrag: (partId: string) => void;
@@ -123,6 +125,8 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
   personalBestMs,
   onToggleTimerMode,
   onOpenLeaderboard,
+  onUndo,
+  canUndo,
   onResetStage,
   onSaveNow,
   onStartPartDrag,
@@ -370,6 +374,8 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
             onOpenTour={onOpenTour}
             muted={muted}
             onToggleMute={onToggleMute}
+            onUndo={onUndo}
+            canUndo={canUndo}
             onResetStage={onResetStage}
             explodedFactor={explodedFactor}
             onChangeExploded={onChangeExploded}
