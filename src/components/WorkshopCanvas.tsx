@@ -226,6 +226,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     anchorIndicator: THREE.Mesh | null;
     cameraTransition: { active: boolean; pos: THREE.Vector3; target: THREE.Vector3 };
     isSoftwareGl: boolean;
+    reducedMotion: boolean;
     maxAnisotropy: number;
     triggerSparks: (origin: [number, number, number]) => void;
   } | null>(null);
@@ -280,10 +281,12 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     camera.position.set(4.4, 3.2, 4.9);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = !isSoftwareGl;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    controls.enableDamping = !isSoftwareGl && !reducedMotion;
     controls.dampingFactor = 0.07;
     controls.minDistance = 2.6;
     controls.maxDistance = 12.5;
+    controls.minPolarAngle = 0;
     controls.maxPolarAngle = Math.PI * 0.485;
     controls.target.set(0, 0.9, 0);
     controls.update();
@@ -461,6 +464,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       anchorIndicator: null,
       cameraTransition,
       isSoftwareGl,
+      reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
       maxAnisotropy,
       triggerSparks,
     };
@@ -539,12 +543,12 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       const currentProps = propsRef.current;
 
       if (eng) {
-        // Smooth camera preset interpolation
+        // Smooth camera preset interpolation (instant if prefers-reduced-motion)
         if (eng.cameraTransition.active) {
-          const factor = 1 - Math.exp(-6.5 * dt);
+          const factor = eng.reducedMotion ? 1 : 1 - Math.exp(-6.5 * dt);
           eng.camera.position.lerp(eng.cameraTransition.pos, factor);
           eng.controls.target.lerp(eng.cameraTransition.target, factor);
-          if (eng.camera.position.distanceTo(eng.cameraTransition.pos) < 0.03) {
+          if (eng.reducedMotion || eng.camera.position.distanceTo(eng.cameraTransition.pos) < 0.03) {
             eng.cameraTransition.active = false;
           }
         }
@@ -747,6 +751,19 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     eng.cameraTransition.target.set(preset.target[0], preset.target[1], preset.target[2]);
     eng.cameraTransition.active = true;
   }, [cameraPreset, cameraPresetNonce]);
+
+  // 2a-bis. Auto-orient toward the staged part's anchor (guided mode only, no active drag)
+  useEffect(() => {
+    const eng = engineRef.current;
+    if (!eng || activeDragPartId) return;
+    if (!stagedPartId) return;
+    const spec = blueprint.parts.find((p) => p.id === stagedPartId);
+    if (!spec) return;
+    // Pan the orbit target toward the anchor; keep camera position (just reorient the pivot)
+    eng.cameraTransition.target.set(spec.targetPos[0], spec.targetPos[1], spec.targetPos[2]);
+    eng.cameraTransition.pos.copy(eng.camera.position);
+    eng.cameraTransition.active = true;
+  }, [stagedPartId, activeDragPartId, blueprint.parts]);
 
   // 2b. Rebuild Thematic Turntable Surface, Perimeter Props & Test-Drive FX when Category, Environment Mode, or Visual Style changes
   useEffect(() => {
@@ -1256,6 +1273,24 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           {dragHud.status === 'magnet' ? '✓ ' : dragHud.status === 'locked' ? '⚠ ' : ''}{dragHud.message}
         </div>
       )}
+
+      {/* Floating Recenter button — always visible, bottom-right of canvas */}
+      <button
+        type="button"
+        aria-label={t.recenterBtn}
+        title={t.recenterBtn}
+        onClick={() => {
+          const eng = engineRef.current;
+          if (!eng) return;
+          const preset = CAMERA_PRESET_VECTORS[cameraPreset];
+          eng.cameraTransition.pos.set(preset.pos[0], preset.pos[1], preset.pos[2]);
+          eng.cameraTransition.target.set(preset.target[0], preset.target[1], preset.target[2]);
+          eng.cameraTransition.active = true;
+        }}
+        className="pointer-events-auto absolute bottom-4 end-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-slate-200 shadow text-slate-600 hover:text-slate-900 transition-colors text-base select-none"
+      >
+        ⌖
+      </button>
 
       {/* WebGL Context Lost Fallback */}
       {webglLost && (

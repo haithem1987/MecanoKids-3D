@@ -62,7 +62,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 - **Fichiers** : `WorkshopToolbar.tsx` et l'état d'assemblage.
 - **CA** : Annuler défait la dernière pose, y compris plusieurs fois de suite ; les deux boutons restent toujours visibles et font ≥ 64 px ; tests unitaires sur la pile d'historique.
 
-### [ ] Q4 — Borner la caméra
+### [x] Q4 — Borner la caméra *(fait : minDistance/maxDistance/maxPolarAngle existants confirmés, reducedMotion instant, bouton ⌖ Recentrer flottant, auto-orient vers ancrage à la sélection d'une pièce)*
 - **Fichiers** : `WorkshopCanvas.tsx`.
 - **Travail** :
   - limiter l'angle polaire (jamais sous le sol) ;
