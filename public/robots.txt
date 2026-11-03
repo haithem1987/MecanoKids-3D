@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mecanokids3d.com/sitemap.xml

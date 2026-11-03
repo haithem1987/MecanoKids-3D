@@ -82,7 +82,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - remplacer `skipWaiting` automatique par un bandeau « nouvelle version, relancer », après sauvegarde de l'état.
 - **CA** : test Playwright « mode avion » (charger, couper le réseau, recharger, ouvrir 3 véhicules) qui passe en CI ; aucune requête vers `fonts.googleapis.com` ni `fonts.gstatic.com`.
 
-### [ ] Q6 — Nettoyer le côté web public
+### [x] Q6 — Nettoyer le côté web public — robots.txt, sitemap.xml, _headers (immutable assets / no-cache SW), 404.html
 - **Travail** :
   - `public/robots.txt`, `public/sitemap.xml` ;
   - une vraie page 404 hors routes SPA ;
