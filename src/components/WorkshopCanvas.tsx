@@ -223,6 +223,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     faultyPartEntries: Map<string, { group: THREE.Group; spec: PartSpec; baseY: number }>;
     silhouetteEntries: Map<string, { group: THREE.Group; spec: PartSpec; stateKey: string }>;
     draggedMesh: { partId: string; group: THREE.Group; spec: PartSpec; magnetized: boolean } | null;
+    anchorIndicator: THREE.Mesh | null;
     cameraTransition: { active: boolean; pos: THREE.Vector3; target: THREE.Vector3 };
     isSoftwareGl: boolean;
     maxAnisotropy: number;
@@ -457,6 +458,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       faultyPartEntries: new Map(),
       silhouetteEntries: new Map(),
       draggedMesh: null,
+      anchorIndicator: null,
       cameraTransition,
       isSoftwareGl,
       maxAnisotropy,
@@ -673,6 +675,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         if (eng.draggedMesh && !currentProps.activeDragPartId && currentProps.stagedPartId) {
           eng.draggedMesh.group.position.y = 1.65 + Math.sin(elapsed * 3.0) * 0.06;
           eng.draggedMesh.group.rotation.y = Math.sin(elapsed * 1.4) * 0.25;
+        }
+
+        // Pulsing anchor ring
+        if (eng.anchorIndicator) {
+          const pulse = 0.85 + Math.sin(elapsed * 4.0) * 0.15;
+          eng.anchorIndicator.scale.setScalar(pulse);
+          (eng.anchorIndicator.material as THREE.MeshBasicMaterial).opacity = 0.35 + Math.sin(elapsed * 4.0) * 0.2;
         }
 
         // Update celebration sparks
@@ -936,11 +945,16 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
     const activeId = activeDragPartId || stagedPartId;
 
-    // Clear existing floating part
+    // Clear existing floating part + anchor indicator
     if (eng.draggedMesh) {
       disposeObject3D(eng.draggedMesh.group);
       eng.dragContainer.clear();
       eng.draggedMesh = null;
+    }
+    if (eng.anchorIndicator) {
+      disposeObject3D(eng.anchorIndicator);
+      eng.scene.remove(eng.anchorIndicator);
+      eng.anchorIndicator = null;
     }
 
     if (!activeId) {
@@ -969,6 +983,18 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       spec: tintedSpec,
       magnetized: false,
     };
+
+    // Anchor ring at target position
+    if (rawSpec) {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(rawSpec.snapRadius * 0.75, 0.04, 8, 32),
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55, depthWrite: false }),
+      );
+      ring.position.set(rawSpec.targetPos[0], rawSpec.targetPos[1], rawSpec.targetPos[2]);
+      ring.rotation.x = Math.PI / 2;
+      eng.scene.add(ring);
+      eng.anchorIndicator = ring;
+    }
 
     if (activeDragPartId) {
       eng.controls.enabled = false;
@@ -1016,6 +1042,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           engine.draggedMesh.group.position.lerp(_targetVec, 0.58);
           if (!engine.draggedMesh.magnetized) {
             engine.draggedMesh.magnetized = true;
+            navigator.vibrate?.(50);
             soundEngine.playMagnetHover();
             if (silEntry) {
               silEntry.group.visible = true;
@@ -1093,6 +1120,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       const missingDeps = spec.dependsOn.filter((d) => !placedSet.has(d));
 
       if (engine.draggedMesh.magnetized && missingDeps.length === 0 && !occupiedByFaulty) {
+        navigator.vibrate?.(80);
         soundEngine.playSnapSuccess(currentProps.visualStyle);
         currentProps.onPartSnapped(spec.id);
       } else if (occupiedByFaulty) {
@@ -1225,7 +1253,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
                 : 'bg-slate-900 text-white border-slate-800'
           }`}
         >
-          {dragHud.message}
+          {dragHud.status === 'magnet' ? '✓ ' : dragHud.status === 'locked' ? '⚠ ' : ''}{dragHud.message}
         </div>
       )}
 

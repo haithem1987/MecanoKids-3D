@@ -50,7 +50,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - le tiroir ne masque jamais le point d'ancrage actif ;
   - ça fonctionne au doigt sur une tablette de 10 pouces.
 
-### [ ] Q2 — Rendre l'aimantation tolérante et visible
+### [x] Q2 — Rendre l'aimantation tolérante et visible *(fait : anneau TorusGeometry pulsé à targetPos, icône ✓/⚠ dans le DragHud, vibrate(50) à l'entrée de zone, vibrate(80) au snap)*
 - **Travail** :
   - points de connexion visibles ;
   - rayon d'aimantation ≥ taille de la pièce, réglable par profil d'âge ;
