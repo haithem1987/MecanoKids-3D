@@ -6,13 +6,13 @@ describe('isLowEndDevice', () => {
     expect(isLowEndDevice(4, 2)).toBe(false);
   });
 
-  it('returns true when hardwareConcurrency <= 2', () => {
-    expect(isLowEndDevice(2, 2)).toBe(true);
-    expect(isLowEndDevice(1, 2)).toBe(true);
+  it('returns true when both conditions met (low concurrency AND low dpr)', () => {
+    expect(isLowEndDevice(2, 1)).toBe(true);
+    expect(isLowEndDevice(1, 0.5)).toBe(true);
   });
 
-  it('returns true when devicePixelRatio <= 1', () => {
-    expect(isLowEndDevice(4, 1)).toBe(true);
-    expect(isLowEndDevice(4, 0.5)).toBe(true);
+  it('returns false when only one condition is met', () => {
+    expect(isLowEndDevice(2, 2)).toBe(false); // low concurrency, normal dpr
+    expect(isLowEndDevice(4, 1)).toBe(false); // normal concurrency, low dpr
   });
 });

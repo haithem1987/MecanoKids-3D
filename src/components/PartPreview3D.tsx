@@ -8,7 +8,7 @@ export function isLowEndDevice(
   concurrency = typeof navigator !== 'undefined' ? navigator.hardwareConcurrency : 4,
   dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 2,
 ): boolean {
-  return concurrency <= 2 || dpr <= 1;
+  return concurrency <= 2 && dpr <= 1;
 }
 
 interface PartPreview3DProps {
