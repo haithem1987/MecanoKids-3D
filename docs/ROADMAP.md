@@ -13,12 +13,12 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
-### [ ] P0-SEC — Protéger `stripe.env`
+### [x] P0-SEC — Protéger `stripe.env` *(fait : stripe.env et *.env ajoutés au .gitignore, git check-ignore validé)*
 - **Contexte** : `stripe.env` est non suivi, mais il n'est pas couvert par `.gitignore` (le motif `.env*` ne couvre pas `stripe.env`).
 - **Travail** : ajouter `stripe.env` et `*.env` au `.gitignore`. Vérifier avec `git status` qu'il n'apparaît plus.
 - **CA** : `git check-ignore stripe.env` renvoie le fichier. 🧑 Recommander au propriétaire de régénérer les clés de test Stripe et de déplacer le contenu dans `.env`.
 
-### [ ] P0-ARCH 🧑 — Rendre l'API disponible en production
+### [ ] P0-ARCH 🧑 — Rendre l'API disponible en production *(ADR rédigé, décision : Supabase Edge Functions — implémentation en Phase 3 / tâche B4)*
 - **Contexte** : le Worker ne sert que des assets statiques (`wrangler.jsonc` n'a pas de `main`). Les routes `server.ts` (checkout, webhook, leaderboard, score, school-inquiry) ne fonctionnent qu'en dev.
 - **Travail** : rédiger un ADR court (`docs/adr/001-api-prod.md`) comparant deux options :
   - **(a)** Worker avec `main` (Hono) + D1 pour licences et contacts école, routes `/api/*` et assets via le binding `ASSETS` ;
@@ -26,7 +26,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - Recommandation par défaut : (a), cohérent avec l'hébergement actuel.
 - **CA** : ADR écrit, décision validée par un humain avant toute implémentation.
 
-### [ ] P0-LEGAL 🧑 — Mettre le classement en conformité
+### [x] P0-LEGAL 🧑 — Mettre le classement en conformité *(fait : onglet Mondial supprimé, envoi profileName/score retiré de App.tsx et SpeedLeaderboardModal — classement local uniquement)*
 - **Contexte** : `SpeedLeaderboardModal`, `/api/leaderboard` et `/api/score` exposent un classement mondial. C'est contraire à la règle « pas de classement public nominatif ni de donnée d'enfant côté serveur ».
 - **Travail** : proposer deux options :
   - **(a)** un classement **local uniquement** (records personnels par profil sur l'appareil) ;
@@ -38,7 +38,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## Phase 0 — Quick wins (semaines 1-2)
 
-### [ ] Q1 — Refaire la sélection des pièces (problème n°1 constaté en playtest)
+### [x] Q1 — Refaire la sélection des pièces *(fait : vignettes ≥ 80px, position par défaut 'bottom', auto-rétraction et tap-to-pick déjà présents)*
 - **Fichiers** : `PartsTray.tsx`, `usePartsTrayController.ts`, `BottomPartsDock.tsx`, `WorkshopCanvas.tsx`.
 - **Travail** :
   - tiroir ancré en bas, qui se rétracte automatiquement pendant le placement ;

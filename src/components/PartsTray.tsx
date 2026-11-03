@@ -177,7 +177,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
           if (!isPlaced) onClickPartCard(part.id);
         }}
         title={`${part.name} — ${part.roleHint}`}
-        className={`group shrink-0 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[76px] min-w-[120px] ${
+        className={`group shrink-0 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[80px] min-w-[80px] ${
           isVertical ? 'w-full' : 'w-36'
         } ${
           isPlaced

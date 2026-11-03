@@ -112,7 +112,7 @@ export function createDefaultProgress(
     muted: false,
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
-    partsTrayPosition: 'left',
+    partsTrayPosition: 'bottom',
     partsTrayAutoHide: true,
     lastSavedAt: Date.now(),
   };
