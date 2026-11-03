@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
   Check,
@@ -22,6 +22,7 @@ import {
   PartSpec,
   VehicleBlueprint,
 } from '../types/game';
+import { isLowEndDevice, PartPreview3D } from './PartPreview3D';
 
 export type TrayPosition = 'bottom' | 'left' | 'right';
 
@@ -65,6 +66,21 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   const placedSet = new Set(placedPartIds);
   const faultySet = new Set(faultyPartIds);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [previewPart, setPreviewPart] = useState<PartSpec | null>(null);
+  const canPreview = !isLowEndDevice();
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  // Close preview on outside click
+  useEffect(() => {
+    if (!previewPart) return;
+    const handleClick = (e: MouseEvent) => {
+      if (previewRef.current && !previewRef.current.contains(e.target as Node)) {
+        setPreviewPart(null);
+      }
+    };
+    document.addEventListener('pointerdown', handleClick);
+    return () => document.removeEventListener('pointerdown', handleClick);
+  }, [previewPart]);
 
   const getMissingDepName = (part: PartSpec): string | null => {
     for (const depId of part.dependsOn) {
@@ -175,6 +191,10 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         }}
         onClick={() => {
           if (!isPlaced) onClickPartCard(part.id);
+          if (canPreview && !isPlaced) setPreviewPart(part);
+        }}
+        onPointerEnter={() => {
+          if (canPreview && !isPlaced) setPreviewPart(part);
         }}
         title={`${part.name} — ${part.roleHint}`}
         className={`group shrink-0 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[76px] min-w-[120px] ${
@@ -249,6 +269,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
     const side = position === 'left' ? 'left-3' : 'right-3';
     return (
       <div
+        ref={previewRef}
         className={`pointer-events-none fixed ${side} top-1/2 -translate-y-1/2 z-20 flex ${
           position === 'left' ? 'flex-row' : 'flex-row-reverse'
         } items-center gap-1`}
@@ -261,13 +282,20 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
 
         {/* Cards panel */}
         {visible && (
-          <div
-            ref={scrollRef}
-            className="pointer-events-auto flex flex-col gap-2 p-2 bg-white border border-slate-200 rounded-xl shadow-sm overflow-y-auto max-h-[70vh] select-none"
-            style={{ width: 160 }}
-            onPointerLeave={() => { if (activeDragPartId) onPartDraggedOut?.(); }}
-          >
-            {partCards}
+          <div className="pointer-events-auto flex flex-col gap-2">
+            {canPreview && previewPart && (
+              <div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden" style={{ width: 160, height: 160 }}>
+                <PartPreview3D part={previewPart} size={160} />
+              </div>
+            )}
+            <div
+              ref={scrollRef}
+              className="flex flex-col gap-2 p-2 bg-white border border-slate-200 rounded-xl shadow-sm overflow-y-auto max-h-[70vh] select-none"
+              style={{ width: 160 }}
+              onPointerLeave={() => { if (activeDragPartId) onPartDraggedOut?.(); }}
+            >
+              {partCards}
+            </div>
           </div>
         )}
       </div>
@@ -276,7 +304,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
 
   // Bottom position: horizontal strip rendered inline (inside BottomPartsDock)
   return (
-    <div data-tour="parts-tray" className="flex flex-col gap-1.5">
+    <div data-tour="parts-tray" className="flex flex-col gap-1.5" ref={previewRef}>
       {/* Header row: toggle + position picker */}
       <div className="flex items-center justify-between px-0.5">
         <div className="flex items-center gap-1">
@@ -287,6 +315,15 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         </div>
         {positionPicker}
       </div>
+
+      {/* 3D preview panel */}
+      {canPreview && previewPart && (
+        <div className="flex justify-start ps-1">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden" style={{ width: 200, height: 200 }}>
+            <PartPreview3D part={previewPart} size={200} />
+          </div>
+        </div>
+      )}
 
       {/* Cards row */}
       {visible && (
