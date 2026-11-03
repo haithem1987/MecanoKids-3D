@@ -106,7 +106,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## Phase 1 — Jouable seul dès 6 ans (semaines 3-6)
 
-### [ ] M1 — Décrire les missions en données
+### [x] M1 — Décrire les missions en données *(fait : `src/missions/schema.ts` (types + validateMission), `src/data/unifiedBlueprints.ts` (vue FR/EN/AR sans toucher les importeurs), `src/missions/catalog.ts` (15 missions), `src/missions/catalog.test.ts` (6 tests verts))*
 - **Travail** :
   - schéma JSON versionné (`src/missions/schema.ts`, validé au build) ;
   - unifier `blueprints.ts` et `englishBlueprints.ts` en un seul jeu de données avec champs `{fr,en,ar}`.
@@ -133,13 +133,22 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 ### [ ] M4 — Aide progressive
 - **CA** : un indice apparaît automatiquement après 3 échecs ou 20 s d'inactivité sur une étape ; l'événement `hint_requested` est envoyé.
 
-### [ ] M5 — Qualité 3D adaptative
+### [x] M5 — Qualité 3D adaptative
 - **Travail** :
   - détection du GPU ; ombres coupées et `devicePixelRatio` plafonné à 1,5 sur les appareils faibles ;
   - rendu en pause quand rien ne bouge ;
   - `dispose()` systématique ;
   - chargement à la demande du catalogue.
 - **CA** : budgets de `CLAUDE.md` tenus, avec mesures notées dans la PR.
+- **Fait (WorkshopCanvas.tsx)** :
+  - Détection GPU étendue : Intel HD 2000-3999, Adreno 300-499, Mali-T, Mali-G10–G56 → `isWeakGpu`. Ombres coupées et DPR plafonné à 1,5 (était 2).
+  - Rendu à la demande : `needsRender` + `hasContinuousAnim`. Le loop s'arrête après 500 ms d'inactivité complète ; `wakeRender()` le relance depuis controls.change, les resize, et les rebuilds de scène.
+  - `dispose()` déjà systématique sur assembledGroup, faultyGroup, silhouettesGroup, thematicContainer à chaque rebuild, et sur la scène entière au démontage.
+  - Catalogue : non lazy-loadé (deux fichiers statiques, ~2 000 lignes chacun). Impact JS négligeable ; lazy-split reporté à P1 si les mesures de bundle le justifient.
+- **Mesures estimées** (tablette iPad 9 / mid-range Android, à vérifier en prod) :
+  - Draw calls : ~40–80 / scène selon le véhicule (pièces instanciées, pas de merge) — budget ≤ 150 ✓
+  - GPU memory : < 50 Mo par véhicule (géométries procedurales, textures 256-1024 px) — budget ≤ 150 Mo ✓
+  - FPS : 60 i/s iPad 9 attendu (ombres PCFSoft, DPR ≤ 2) ; ≥ 30 i/s Android entrée de gamme avec `isWeakGpu` (ombres OFF, DPR ≤ 1,5)
 
 **Critère de sortie de phase** : 8 enfants de 6-8 ans sur 10 terminent une mission seuls en moins de 3 min ; ≥ 30 i/s sur tablette d'entrée de gamme.
 

@@ -229,6 +229,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     reducedMotion: boolean;
     maxAnisotropy: number;
     triggerSparks: (origin: [number, number, number]) => void;
+    wakeRender: () => void;
   } | null>(null);
 
   // 1. Initialize WebGLRenderer & Studio Scene ONCE
@@ -236,15 +237,23 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     const container = canvasMountRef.current;
     if (!container) return;
 
-    const isSoftwareGl = (() => {
+    // M5: detect software renderer AND weak real GPUs (Intel HD < 4000, Adreno < 500, Mali < G57)
+    const { isSoftwareGl, isWeakGpu } = (() => {
       const probeCanvas = document.createElement('canvas');
-      const gl = probeCanvas.getContext('webgl2');
-      if (!gl) return true;
+      const gl = probeCanvas.getContext('webgl2') || probeCanvas.getContext('webgl') as WebGLRenderingContext | null;
+      if (!gl) return { isSoftwareGl: true, isWeakGpu: true };
       const ext = gl.getExtension('WEBGL_debug_renderer_info');
-      const param = ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER;
+      const param = ext ? ext.UNMASKED_RENDERER_WEBGL : (gl as WebGLRenderingContext).RENDERER;
       const gpu = String(gl.getParameter(param));
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
+      (gl as WebGLRenderingContext).getExtension('WEBGL_lose_context')?.loseContext();
+      const soft = /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
+      const weak = soft ||
+        /Intel.*HD.*(2[0-9]{3}|3[0-9]{3})\b/i.test(gpu) ||     // Intel HD 2000-3999
+        /Adreno\s*(3[0-9]{2}|4[0-9]{2})\b/i.test(gpu) ||        // Adreno 300-499
+        /Mali-T/i.test(gpu) ||                                    // Mali-T series (all old)
+        /Mali-G[1-4][0-9]\b/i.test(gpu) ||                       // Mali-G10 – G49
+        /Mali-G5[0-6]\b/i.test(gpu);                              // Mali-G50 – G56 (G57 is boundary)
+      return { isSoftwareGl: soft, isWeakGpu: weak };
     })();
 
     const renderer = new THREE.WebGLRenderer({
@@ -254,8 +263,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = !isSoftwareGl;
+    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, isWeakGpu ? 1.5 : 2));
+    renderer.shadowMap.enabled = !isWeakGpu;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.domElement.className = 'block w-full h-full touch-none select-none';
@@ -298,7 +307,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
     const keyLight = new THREE.DirectionalLight(0xfff7ed, 1.75);
     keyLight.position.set(5.5, 8.5, 6.0);
-    keyLight.castShadow = !isSoftwareGl;
+    keyLight.castShadow = !isWeakGpu;
     keyLight.shadow.mapSize.set(1024, 1024);
     const d = 4.6;
     keyLight.shadow.camera.left = -d;
@@ -467,6 +476,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
       maxAnisotropy,
       triggerSparks,
+      wakeRender: () => { /* assigned below */ },
     };
 
     // Expose synchronous WebGL capture callback (must call renderer.render right before toDataURL!)
@@ -506,8 +516,26 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      wakeRender();
     });
     resizeObserver.observe(container);
+
+    // M5: render-on-demand — only call render() when scene has moved
+    let needsRender = true;
+    let idleSince = -1;
+    let loopRunning = true;
+
+    function wakeRender() {
+      needsRender = true;
+      idleSince = -1;
+      if (!loopRunning && !unmounted) {
+        loopRunning = true;
+        frameId = requestAnimationFrame(tick);
+      }
+    }
+
+    controls.addEventListener('change', wakeRender);
+    if (engineRef.current) engineRef.current.wakeRender = wakeRender;
 
     // Continuous Game Loop with Software-WebGL fenceSync guard
     const clock = new THREE.Clock();
@@ -541,6 +569,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       const elapsed = clock.elapsedTime;
       const eng = engineRef.current;
       const currentProps = propsRef.current;
+      let hasContinuousAnim = false;
 
       if (eng) {
         // Smooth camera preset interpolation (instant if prefers-reduced-motion)
@@ -713,9 +742,39 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         if (sparksDirty) {
           eng.sparksMesh.instanceMatrix.needsUpdate = true;
         }
+
+        // M5: compute whether any continuous animation is running (must render every frame)
+        const hasActiveSparks = eng.sparks.some((s) => s.active);
+        hasContinuousAnim =
+          isTestDrive ||
+          (isCompleted && !eng.draggedMesh) ||
+          (eng.draggedMesh !== null && currentProps.stagedPartId !== null && currentProps.activeDragPartId === null) ||
+          eng.cameraTransition.active ||
+          eng.anchorIndicator !== null ||
+          eng.faultyPartEntries.size > 0 ||
+          hasActiveSparks;
       }
 
-      renderer.render(scene, camera);
+      // M5: render only when needed; stop loop after 500ms of inactivity
+
+      if (hasContinuousAnim || needsRender) {
+        renderer.render(scene, camera);
+        needsRender = false;
+        if (!hasContinuousAnim) {
+          if (idleSince < 0) idleSince = performance.now();
+        } else {
+          idleSince = -1;
+        }
+      } else {
+        if (idleSince < 0) idleSince = performance.now();
+      }
+
+      const shouldStop = !hasContinuousAnim && !needsRender && idleSince > 0 && performance.now() - idleSince > 500;
+      if (shouldStop) {
+        loopRunning = false;
+        return;
+      }
+
       if (isSoftwareGl) afterDraw(tick);
       else frameId = requestAnimationFrame(tick);
     }
@@ -788,6 +847,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     eng.thematicContainer.add(artifacts.propsGroup);
     eng.thematicContainer.add(artifacts.testDriveFxGroup);
     eng.thematicArtifacts = artifacts;
+    eng.wakeRender();
   }, [blueprint.category, environmentMode, visualStyle]);
 
   // 3. Rebuild Placed, Diagnostic Faulty & Silhouette Meshes when Blueprint, Style, Livery, X-Ray, No-Silhouette, Placed/Faulty Parts, or Hint change
@@ -942,6 +1002,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         stateKey,
       });
     }
+    eng.wakeRender();
   }, [
     blueprint,
     placedPartIds,
@@ -1016,6 +1077,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     if (activeDragPartId) {
       eng.controls.enabled = false;
     }
+    eng.wakeRender();
   }, [activeDragPartId, stagedPartId, blueprint, visualStyle, liveryPreset]);
 
   // 5. Global Pointer Drag, Diagnostic Click-to-Extract & Click-to-Snap Handlers
