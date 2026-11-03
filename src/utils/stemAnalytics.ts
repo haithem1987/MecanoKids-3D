@@ -342,3 +342,76 @@ export function computeStemCompetencyReport(
     highestUnlockedDiploma,
   };
 }
+
+// --- Événements anonymes (aucun identifiant enfant) ---
+
+export type AnalyticsEvent =
+  | 'game_started'
+  | 'tutorial_completed'
+  | 'mission_started'
+  | 'part_selected'
+  | 'part_snapped'
+  | 'assembly_failed'
+  | 'undo_used'
+  | 'hint_requested'
+  | 'mission_completed'
+  | 'diagnostic_solved'
+  | 'paywall_shown'
+  | 'purchase_completed';
+
+interface EventEntry {
+  event: AnalyticsEvent;
+  props?: Record<string, unknown>;
+}
+
+const _queue: EventEntry[] = [];
+
+export function track(event: AnalyticsEvent, props?: Record<string, unknown>): void {
+  _queue.push({ event, props });
+  if (typeof window !== 'undefined') {
+    (window as unknown as { zaraz?: { track: (e: string, p?: unknown) => void } }).zaraz?.track(
+      event,
+      props,
+    );
+  }
+}
+
+/** Exposed only for unit tests */
+export function _getQueue(): ReadonlyArray<EventEntry> {
+  return _queue;
+}
+export function _clearQueue(): void {
+  _queue.length = 0;
+}
+
+// --- Sentry (erreurs WebGL uniquement, lazy-loadé) ---
+
+let _sentryLoaded = false;
+
+export async function captureWebGLError(err: unknown): Promise<void> {
+  const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;
+  if (!dsn) return;
+  try {
+    const sentry = await import('@sentry/browser');
+    if (!_sentryLoaded) {
+      sentry.init({ dsn, release: import.meta.env.VITE_APP_VERSION as string | undefined });
+      _sentryLoaded = true;
+    }
+    sentry.captureException(err, { tags: { subsystem: 'webgl' } });
+  } catch {
+    // Ignore si Sentry ne peut pas se charger (hors-ligne, CSP, etc.)
+  }
+}
+
+// --- Cloudflare Web Analytics beacon ---
+
+export function initAnalytics(): void {
+  const token = import.meta.env.VITE_CF_ANALYTICS_TOKEN as string | undefined;
+  if (!token || typeof document === 'undefined') return;
+  if (document.querySelector('script[data-cf-beacon]')) return;
+  const script = document.createElement('script');
+  script.defer = true;
+  script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+  script.setAttribute('data-cf-beacon', JSON.stringify({ token }));
+  document.head.appendChild(script);
+}

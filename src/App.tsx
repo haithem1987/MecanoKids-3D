@@ -5,6 +5,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { WifiOff } from 'lucide-react';
+import { track } from './utils/stemAnalytics';
 import { evaluatePlayerProgression, syncUnlockedBadgesMap } from './data/badges';
 import { resolveEntitlements } from './utils/entitlements';
 import { VEHICLE_BLUEPRINTS } from './data/blueprints';
@@ -1136,6 +1137,7 @@ export default function App() {
 
   const handleSelectBlueprint = useCallback(
     (blueprintId: string) => {
+      track('mission_started', { blueprintId });
       flushActiveStopwatchSegment(currentBlueprint.id);
       speechEngine.stop();
       undoStackRef.current = [];
@@ -1294,6 +1296,7 @@ export default function App() {
   const handleUndo = useCallback(() => {
     const stack = undoStackRef.current;
     if (stack.length === 0) return;
+    track('undo_used', { blueprintId: currentBlueprint.id });
     const prev = stack[stack.length - 1];
     undoStackRef.current = stack.slice(0, -1);
     setCanUndo(undoStackRef.current.length > 0);
@@ -1376,6 +1379,7 @@ export default function App() {
             };
           });
 
+          track('diagnostic_solved', { blueprintId: currentBlueprint.id });
           window.setTimeout(() => {
             soundEngine.playStageVictory();
           }, 140);
@@ -1392,10 +1396,12 @@ export default function App() {
       const alreadyPlaced = standardPlacedPartIds.includes(partId);
       if (alreadyPlaced) return;
 
+      track('part_snapped', { partId, blueprintId: currentBlueprint.id });
       undoStackRef.current = [...undoStackRef.current, [...standardPlacedPartIds]];
       setCanUndo(true);
       const updatedPlaced = [...standardPlacedPartIds, partId];
       const justCompleted = updatedPlaced.length === currentBlueprint.parts.length;
+      if (justCompleted) track('mission_completed', { blueprintId: currentBlueprint.id });
 
       if (!justCompleted) {
         setTimerArmed(true);
@@ -1793,6 +1799,7 @@ export default function App() {
     if (hasNextStage) {
       const nextBp = VEHICLE_BLUEPRINTS[currentIndex + 1];
       if (!canPlayStage(progress.licenseState, nextBp.stageNumber)) {
+        track('paywall_shown', { reason: 'stages' });
         setUpgradeReason('stages');
         setUpgradeModalOpen(true);
         return;
@@ -1828,7 +1835,11 @@ export default function App() {
 
   const handleFinishTour = useCallback(() => {
     setTourOpen(false);
-    setProgress((p) => (p.tutorialSeen ? p : { ...p, tutorialSeen: true }));
+    setProgress((p) => {
+      if (p.tutorialSeen) return p;
+      track('tutorial_completed');
+      return { ...p, tutorialSeen: true };
+    });
   }, [setProgress]);
 
   const handleActivateLicense = useCallback(

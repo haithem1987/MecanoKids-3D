@@ -90,7 +90,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - aligner la balise canonique sur le domaine réel.
 - **CA** : `curl -I /robots.txt` renvoie du `text/plain`, pas le HTML de l'application.
 
-### [ ] Q7 — Ajouter la mesure, de façon anonyme
+### [x] Q7 — Ajouter la mesure, de façon anonyme — track() + initAnalytics() (CWA beacon) + captureWebGLError() (Sentry lazy), 6 événements câblés dans App.tsx, 5 tests
 - **Fichiers** : `utils/stemAnalytics.ts`.
 - **Travail** :
   - Cloudflare Web Analytics, sans cookie ;

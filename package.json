@@ -20,6 +20,7 @@
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/outfit": "^5.3.0",
     "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "@sentry/browser": "^11.10.0",
     "@supabase/supabase-js": "^2.118.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.1",

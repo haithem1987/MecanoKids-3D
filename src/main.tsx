@@ -18,5 +18,7 @@ import './index.css';
 import { initServiceWorker } from './utils/pwa';
 
 initServiceWorker();
+import { initAnalytics } from './utils/stemAnalytics';
+initAnalytics();
 
 createRoot(document.getElementById('root')!).render(<App />);
