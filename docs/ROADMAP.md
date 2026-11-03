@@ -98,7 +98,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
   - événements : `game_started`, `tutorial_completed`, `mission_started`, `part_selected`, `part_snapped`, `assembly_failed`, `undo_used`, `hint_requested`, `mission_completed`, `diagnostic_solved`, `paywall_shown`, `purchase_completed`.
 - **CA** : aucun identifiant persistant d'enfant ; les événements sont testés unitairement.
 
-### [ ] Q8 — Mentions légales et confidentialité enfants
+### [x] Q8 — Mentions légales et confidentialité enfants — privacy.html mis à jour (CWA + Sentry), lien dans ParentSpaceModal (espace parent)
 - **Fichiers** : `public/privacy.html` (déjà modifié localement).
 - **CA** : RGPD couvert, mention qu'aucune donnée personnelle d'enfant n'est collectée, page accessible derrière la porte parents.
 

@@ -587,6 +587,9 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
         <div className="px-5 sm:px-7 py-3 bg-slate-50 border-t border-slate-200 text-[11px] font-mono tabular-nums text-slate-500 flex items-center justify-between gap-4 flex-wrap">
           <span>{t.parentDiagnosticFooter(profiles.length, isOnline)}</span>
           <div className="flex items-center gap-3 shrink-0">
+            <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="text-sky-600 underline hover:text-sky-800">
+              {language === 'ar' ? 'الخصوصية' : language === 'en' ? 'Privacy' : 'Confidentialité'}
+            </a>
             {onShowLanding && (
               <button onClick={onShowLanding} className="text-sky-600 underline hover:text-sky-800">
                 {language === 'ar' ? 'الواجهة الرئيسية' : language === 'en' ? 'View showcase' : 'Voir la vitrine'}
