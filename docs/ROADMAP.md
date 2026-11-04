@@ -160,7 +160,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 ## Phase 2 — Apprentissage et classe (semaines 7-11)
 
 - [ ] C1 — Explications et défis de transfert (diagnostic) pour les 15 missions. 🧑 Relecture par un enseignant de cycle 2-3.
-- [ ] C2 — Mode enseignant : code de classe sans compte élève, attribution de missions, progression par compétence. Fichier : `TeacherDashboard.tsx`.
+- [x] C2 — Mode enseignant : code de classe sans compte élève, attribution de missions, progression par compétence. Fichier : `TeacherDashboard.tsx`. (grille élèves × missions vert/orange/rouge, code 6 car. localStorage, assignation 1-3 missions depuis MISSIONS catalog)
 - [x] C3 — 12 fiches pédagogiques imprimables pour le cycle 2-3.
 - [x] C4 — Mode TBI (grandes cibles) et mode classe silencieux, avec volumes séparés pour la musique, les effets et la voix.
   - **Fait** : 4 champs dans `PlayerProgress` (`volumeSfx`, `volumeVoice`, `classroomSilent`, `tbiMode`) ; `soundEngine.setVolumeSfx()` via `sfxVolume * peakGain` ; `speechEngine.setVoiceVolume()` sur `utterance.volume` ; onglet "Classe" dans `ParentSpaceModal` (toggles + sliders) ; `data-tbi` sur root + CSS min 64px.

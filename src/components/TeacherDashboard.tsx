@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
-import { Download, GraduationCap, Printer, X } from 'lucide-react';
+import { Copy, Download, GraduationCap, Printer, X } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { LanguageCode, PlayerProfile, VehicleCategory } from '../types/game';
 import { resolveEntitlements } from '../utils/entitlements';
 import { VEHICLE_BLUEPRINTS } from '../data/blueprints';
+import { MISSIONS } from '../missions/catalog';
 import { PROFILE_COLOR_STYLES, renderProfileAvatarIcon } from './ProfilesModal';
+
+const LS_CLASS_CODE = 'oc_classroom_code';
+const LS_ASSIGNED_MISSIONS = 'oc_assigned_missions';
+
+function lsGet(key: string): string {
+  try { return localStorage.getItem(key) ?? ''; } catch { return ''; }
+}
+function lsSet(key: string, val: string): void {
+  try { localStorage.setItem(key, val); } catch {}
+}
 
 interface TeacherDashboardProps {
   isOpen: boolean;
@@ -56,6 +67,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   const t = UI_TRANSLATIONS[language];
   const [licenseKey, setLicenseKey] = useState('');
   const [keyError, setKeyError] = useState(false);
+  const [classCode, setClassCode] = useState<string>(() => lsGet(LS_CLASS_CODE));
+  const [assignedMissions, setAssignedMissions] = useState<string[]>(() => {
+    try { return JSON.parse(lsGet(LS_ASSIGNED_MISSIONS) || '[]') as string[]; } catch { return []; }
+  });
+  const [codeCopied, setCodeCopied] = useState(false);
 
   if (!isOpen) return null;
 
@@ -81,6 +97,37 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   function handleExportPdf() {
     window.print();
+  }
+
+  function generateCode() {
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    setClassCode(code);
+    lsSet(LS_CLASS_CODE, code);
+  }
+
+  async function copyCode() {
+    try { await navigator.clipboard.writeText(classCode); } catch {}
+    setCodeCopied(true);
+    setTimeout(() => setCodeCopied(false), 2000);
+  }
+
+  function toggleMission(id: string) {
+    setAssignedMissions((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((m) => m !== id)
+        : prev.length < 3 ? [...prev, id] : prev;
+      lsSet(LS_ASSIGNED_MISSIONS, JSON.stringify(next));
+      return next;
+    });
+  }
+
+  type CellStatus = 'done' | 'error' | 'progress' | 'none';
+  function getCellStatus(profile: PlayerProfile, bpId: string): CellStatus {
+    if (profile.progress.completedStages[bpId]?.completed) return 'done';
+    const mistakes = profile.progress.inProgressStages[bpId]?.mistakesCount ?? 0;
+    if (mistakes >= 3) return 'error';
+    if (mistakes >= 1) return 'progress';
+    return 'none';
   }
 
   const isSchool = resolveEntitlements(licenseState).teacherTools;
@@ -286,6 +333,136 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                 })}
               </svg>
             </section>
+          )}
+
+          {/* Class code + mission assignment + progress grid — school tier only */}
+          {isSchool && (
+            <>
+              {/* Class code */}
+              <section className="border-t border-slate-100 pt-5">
+                <h3 className="text-sm font-semibold text-slate-700 mb-1">{t.teacherClassCodeTitle}</h3>
+                <p className="text-xs text-slate-500 mb-3">{t.teacherClassCodeDesc}</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 px-3 py-2 rounded-lg bg-slate-100 text-slate-800 font-mono text-base font-bold tracking-widest text-center select-all">
+                    {classCode || '——'}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={copyCode}
+                    disabled={!classCode}
+                    className="min-h-[48px] px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-40"
+                    aria-label={t.teacherClassCodeCopied}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={generateCode}
+                    className="min-h-[48px] px-3 py-2 text-xs font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    {codeCopied ? t.teacherClassCodeCopied : t.teacherClassCodeGenerate}
+                  </button>
+                </div>
+              </section>
+
+              {/* Mission assignment */}
+              <section className="border-t border-slate-100 pt-5">
+                <h3 className="text-sm font-semibold text-slate-700 mb-1">{t.teacherMissionsTitle}</h3>
+                <p className="text-xs text-slate-500 mb-3">{t.teacherMissionsDesc}</p>
+                <ul className="space-y-1.5">
+                  {MISSIONS.map((m) => {
+                    const checked = assignedMissions.includes(m.id);
+                    const disabled = !checked && assignedMissions.length >= 3;
+                    return (
+                      <li key={m.id}>
+                        <label className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-colors cursor-pointer ${
+                          checked ? 'bg-sky-50 border-sky-200' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                        } ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={disabled}
+                            onChange={() => toggleMission(m.id)}
+                            className="w-4 h-4 accent-sky-600"
+                          />
+                          <span className="text-xs text-slate-700 flex-1 min-w-0 truncate">
+                            {m.objectifs[0]?.[language === 'ar' ? 'ar' : language === 'en' ? 'en' : 'fr'] ?? m.id}
+                          </span>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+
+              {/* Progress grid */}
+              {assignedMissions.length > 0 && sortedProfiles.length > 0 && (
+                <section className="border-t border-slate-100 pt-5">
+                  <h3 className="text-sm font-semibold text-slate-700 mb-3">{t.teacherProgressGridTitle}</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs border-separate border-spacing-y-1">
+                      <thead>
+                        <tr>
+                          <th className="text-start ps-2 pb-1 text-slate-500 font-medium w-28"></th>
+                          {assignedMissions.map((mid) => {
+                            const mission = MISSIONS.find((m) => m.id === mid);
+                            const label = mission?.objectifs[0]?.[language === 'ar' ? 'ar' : language === 'en' ? 'en' : 'fr'] ?? mid;
+                            return (
+                              <th key={mid} className="pb-1 text-center text-slate-500 font-medium max-w-[80px]">
+                                <span className="block truncate max-w-[80px] mx-auto">{label}</span>
+                              </th>
+                            );
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedProfiles.map((profile) => (
+                          <tr key={profile.id}>
+                            <td className="ps-2 py-1">
+                              <span className="truncate max-w-[112px] block font-medium text-slate-700">{profile.name}</span>
+                            </td>
+                            {assignedMissions.map((mid) => {
+                              const mission = MISSIONS.find((m) => m.id === mid);
+                              const bpId = mission?.vehicule ?? mid;
+                              const status = getCellStatus(profile, bpId);
+                              const { bg, label } = {
+                                done:     { bg: 'bg-emerald-500', label: t.teacherProgressDone },
+                                error:    { bg: 'bg-rose-400',    label: t.teacherProgressError },
+                                progress: { bg: 'bg-amber-400',   label: t.teacherProgressInProgress },
+                                none:     { bg: 'bg-slate-200',   label: t.teacherProgressNotStarted },
+                              }[status];
+                              return (
+                                <td key={mid} className="text-center py-1">
+                                  <span
+                                    title={label}
+                                    aria-label={label}
+                                    className={`inline-block w-5 h-5 rounded-full ${bg}`}
+                                  />
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Legend */}
+                  <div className="flex flex-wrap gap-3 mt-3">
+                    {([
+                      { bg: 'bg-emerald-500', label: t.teacherProgressDone },
+                      { bg: 'bg-amber-400',   label: t.teacherProgressInProgress },
+                      { bg: 'bg-rose-400',    label: t.teacherProgressError },
+                      { bg: 'bg-slate-200',   label: t.teacherProgressNotStarted },
+                    ] as { bg: string; label: string }[]).map(({ bg, label }) => (
+                      <span key={label} className="flex items-center gap-1.5 text-xs text-slate-500">
+                        <span className={`inline-block w-3 h-3 rounded-full ${bg}`} />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </>
           )}
 
           {/* License activation */}
