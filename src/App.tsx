@@ -2248,6 +2248,8 @@ export default function App() {
           onClickPartCard={handleClickPartCard}
           onToggleVisible={partsTrayOnManualToggle}
           onChangePosition={handleChangePartsTrayPosition}
+          visualStyle={progress.preferredStyle}
+          onSelectStyle={handleSelectStyle}
           onPartDraggedOut={partsTrayOnPartPicked}
         />
       )}

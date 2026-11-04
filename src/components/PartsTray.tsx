@@ -21,7 +21,14 @@ import {
   LiveryPresetId,
   PartSpec,
   VehicleBlueprint,
+  VisualStyleMode,
 } from '../types/game';
+
+const STYLE_OPTS = [
+  { mode: VisualStyleMode.WOOD,     emoji: '🪵', title: 'Bois / Wood / خشب' },
+  { mode: VisualStyleMode.BLOCKS,   emoji: '🧱', title: 'Blocs / Blocks / مكعبات' },
+  { mode: VisualStyleMode.REALISTIC, emoji: '✨', title: 'Réaliste / Realistic / واقعي' },
+];
 
 export type TrayPosition = 'bottom' | 'left' | 'right';
 
@@ -40,6 +47,8 @@ interface PartsTrayProps {
   onClickPartCard: (partId: string) => void;
   onToggleVisible: () => void;
   onChangePosition: (pos: TrayPosition) => void;
+  visualStyle: VisualStyleMode;
+  onSelectStyle: (style: VisualStyleMode) => void;
   /** Called when the pointer leaves the tray while a drag is active — collapses the tray without interrupting the gesture */
   onPartDraggedOut?: () => void;
 }
@@ -59,6 +68,8 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   onClickPartCard,
   onToggleVisible,
   onChangePosition,
+  visualStyle,
+  onSelectStyle,
   onPartDraggedOut,
 }) => {
   const t = UI_TRANSLATIONS[language];
@@ -92,6 +103,24 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   }, [visible]);
 
   const isVertical = position === 'left' || position === 'right';
+
+  const stylePicker = (
+    <div className="flex items-center gap-0.5 shrink-0">
+      {STYLE_OPTS.map(({ mode, emoji, title }) => (
+        <button
+          key={mode}
+          type="button"
+          onClick={() => onSelectStyle(mode)}
+          title={title}
+          className={`flex items-center justify-center rounded-lg transition-colors cursor-pointer text-sm min-h-[32px] min-w-[32px] ${
+            visualStyle === mode ? 'bg-sky-100' : 'hover:bg-slate-100'
+          }`}
+        >
+          {emoji}
+        </button>
+      ))}
+    </div>
+  );
 
   const positionPicker = (
     <div className="flex items-center gap-1 shrink-0">
@@ -253,9 +282,26 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
           position === 'left' ? 'flex-row' : 'flex-row-reverse'
         } items-center gap-1`}
       >
-        {/* Toggle tab */}
-        <div className="pointer-events-auto flex flex-col items-center bg-white border border-slate-200 rounded-lg shadow-sm py-1">
+        {/* Toggle tab: chevron + style picker + position picker */}
+        <div className="pointer-events-auto flex flex-col items-center bg-white border border-slate-200 rounded-lg shadow-sm py-1 gap-0.5">
           {toggleButton}
+          <div className="w-6 h-px bg-slate-100 my-0.5" />
+          <div className="flex flex-col items-center gap-0.5 px-0.5">
+            {STYLE_OPTS.map(({ mode, emoji, title }) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => onSelectStyle(mode)}
+                title={title}
+                className={`flex items-center justify-center rounded-lg text-sm transition-colors cursor-pointer min-h-[32px] min-w-[32px] ${
+                  visualStyle === mode ? 'bg-sky-100' : 'hover:bg-slate-100'
+                }`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+          <div className="w-6 h-px bg-slate-100 my-0.5" />
           {positionPicker}
         </div>
 
@@ -277,7 +323,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   // Bottom position: horizontal strip rendered inline (inside BottomPartsDock)
   return (
     <div data-tour="parts-tray" className="flex flex-col gap-1.5">
-      {/* Header row: toggle + position picker */}
+      {/* Header row: toggle + style picker + position picker */}
       <div className="flex items-center justify-between px-0.5">
         <div className="flex items-center gap-1">
           {toggleButton}
@@ -285,7 +331,11 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
             {t.partsCounter(placedPartIds.length, blueprint.parts.length)}
           </span>
         </div>
-        {positionPicker}
+        <div className="flex items-center gap-2">
+          {stylePicker}
+          <div className="w-px h-5 bg-slate-200" />
+          {positionPicker}
+        </div>
       </div>
 
       {/* Cards row */}

@@ -352,6 +352,8 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
                 onClickPartCard={onClickPartCard}
                 onToggleVisible={onTogglePartsTray}
                 onChangePosition={onChangePartsTrayPosition}
+                visualStyle={visualStyle}
+                onSelectStyle={onSelectStyle}
                 onPartDraggedOut={onPartDraggedOut}
               />
             </div>
@@ -384,8 +386,6 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
             onChangeExploded={onChangeExploded}
             cameraPreset={cameraPreset}
             onSelectCamera={onSelectCamera}
-            visualStyle={visualStyle}
-            onSelectStyle={onSelectStyle}
           />
         </div>
       )}

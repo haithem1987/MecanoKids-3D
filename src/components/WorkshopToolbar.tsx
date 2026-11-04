@@ -19,7 +19,6 @@ import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
   CameraPreset,
   LanguageCode,
-  VisualStyleMode,
   WorkbenchEnvironmentMode,
 } from '../types/game';
 import { speechEngine } from '../utils/speech';
@@ -50,15 +49,7 @@ interface WorkshopToolbarProps {
   onChangeExploded: (val: number) => void;
   cameraPreset: CameraPreset;
   onSelectCamera: (preset: CameraPreset) => void;
-  visualStyle: VisualStyleMode;
-  onSelectStyle: (style: VisualStyleMode) => void;
 }
-
-const STYLE_OPTIONS = [
-  { mode: VisualStyleMode.WOOD,     emoji: '🪵', labelKey: 'styleWoodShort' as const },
-  { mode: VisualStyleMode.BLOCKS,   emoji: '🧱', labelKey: 'styleBlocksShort' as const },
-  { mode: VisualStyleMode.REALISTIC, emoji: '✨', labelKey: 'styleRealisticShort' as const },
-];
 
 const CAMERA_OPTIONS = [
   { preset: CameraPreset.ISO,   labelKey: 'camIso' as const },
@@ -93,8 +84,6 @@ export const WorkshopToolbar: React.FC<WorkshopToolbarProps> = ({
   onChangeExploded,
   cameraPreset,
   onSelectCamera,
-  visualStyle,
-  onSelectStyle,
 }) => {
   const t = UI_TRANSLATIONS[language];
   const [overflowOpen, setOverflowOpen] = useState(false);
@@ -116,29 +105,6 @@ export const WorkshopToolbar: React.FC<WorkshopToolbarProps> = ({
       data-tour="camera-controls"
       className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100"
     >
-      {/* ── Visual style pills ── */}
-      <div
-        className="flex items-center gap-0.5 p-1 bg-slate-100 rounded-xl"
-        role="group"
-        aria-label={t.styleWood + ' / ' + t.styleBlocks + ' / ' + t.styleRealistic}
-      >
-        {STYLE_OPTIONS.map(({ mode, emoji, labelKey }) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => onSelectStyle(mode)}
-            className={`flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap cursor-pointer min-h-[36px] ${
-              visualStyle === mode
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <span aria-hidden="true">{emoji}</span>
-            <span className="hidden sm:inline">{t[labelKey]}</span>
-          </button>
-        ))}
-      </div>
-
       {/* ── Camera angle pills ── */}
       <div
         className="flex items-center gap-0.5 p-1 bg-slate-100 rounded-xl"

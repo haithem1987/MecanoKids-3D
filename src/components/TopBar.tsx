@@ -73,7 +73,20 @@ export const TopBar: React.FC<TopBarProps> = ({
   const [iosGuideOpen, setIosGuideOpen] = useState<boolean>(false);
   const [navMenuOpen, setNavMenuOpen] = useState<boolean>(false);
   const navMenuRef = useRef<HTMLDivElement>(null);
+  const [langMenuOpen, setLangMenuOpen] = useState<boolean>(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
   const hasTeacherTools = resolveEntitlements(activeProfile.progress.licenseState).teacherTools;
+
+  useEffect(() => {
+    if (!langMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [langMenuOpen]);
 
   useEffect(() => {
     if (!navMenuOpen) return;
@@ -318,46 +331,43 @@ export const TopBar: React.FC<TopBarProps> = ({
             <span className="hidden md:inline">{t.leaderboardNavBtn}</span>
           </button>
 
-          <div
-            role="group"
-            aria-label={t.langSwitchAria}
-            className="flex items-center gap-0.5 p-1 bg-slate-100 border border-slate-200/80 rounded-lg"
-          >
-            <Globe className="w-3.5 h-3.5 text-slate-500 mx-1 hidden lg:block shrink-0" />
+          {/* Language — compact globe dropdown */}
+          <div ref={langMenuRef} className="relative">
             <button
               type="button"
-              onClick={() => onSelectLanguage('fr')}
-              className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                language === 'fr'
-                  ? 'bg-white text-sky-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              onClick={() => setLangMenuOpen((o) => !o)}
+              aria-label={t.langSwitchAria}
+              aria-expanded={langMenuOpen}
+              className={`flex items-center gap-1 px-2 py-2 rounded-lg transition-colors cursor-pointer min-h-[40px] ${
+                langMenuOpen ? 'bg-sky-100 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
-              FR
+              <Globe className="w-4 h-4 shrink-0" />
+              <span className="text-xs font-semibold hidden sm:inline">
+                {language === 'fr' ? 'FR' : language === 'en' ? 'EN' : 'ع'}
+              </span>
             </button>
-            <button
-              type="button"
-              onClick={() => onSelectLanguage('en')}
-              className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                language === 'en'
-                  ? 'bg-white text-sky-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              onClick={() => onSelectLanguage('ar')}
-              style={{ fontFamily: "'Cairo', sans-serif" }}
-              className={`px-2 py-1 text-xs font-bold rounded-md transition-colors cursor-pointer ${
-                language === 'ar'
-                  ? 'bg-white text-sky-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              العربية
-            </button>
+            {langMenuOpen && (
+              <div className="absolute end-0 top-full mt-1 z-50 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 min-w-[140px]">
+                {([
+                  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+                  { code: 'en', label: 'English', flag: '🇬🇧' },
+                  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+                ] as { code: 'fr' | 'en' | 'ar'; label: string; flag: string }[]).map(({ code, label, flag }) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => { onSelectLanguage(code); setLangMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors cursor-pointer ${
+                      language === code ? 'bg-sky-50 text-sky-700 font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{flag}</span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Hamburger nav menu — visible below xl where Zone 2 nav is hidden */}
