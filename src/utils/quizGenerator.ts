@@ -78,6 +78,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'Il roule sur asphalte grâce à des pneus slicks larges et un aileron de déportance.',
       'Il flotte sur les vagues grâce à une quille et des voiles capturant le vent.',
     ],
+    [VehicleCategory.ELECTRONICS]: [
+      'Il se propulse en brûlant du kérosène dans une chambre de combustion à haute pression.',
+      'Il flotte sur l\'eau grâce à une coque étanche et déplace des tonnes de fret maritime.',
+    ],
   },
   en: {
     [VehicleCategory.CAR]: [
@@ -104,6 +108,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'It grips the asphalt using slick wide tires and a downforce aerodynamic wing.',
       'It floats on water using a keel and sails that capture the wind.',
     ],
+    [VehicleCategory.ELECTRONICS]: [
+      'It propels itself by burning kerosene in a high-pressure combustion chamber.',
+      'It floats on water using a watertight hull and carries tons of maritime cargo.',
+    ],
   },
   ar: {
     [VehicleCategory.CAR]: [
@@ -129,6 +137,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
     [VehicleCategory.AEROSPACE]: [
       'يتمسك بالإسفلت عبر إطارات سباق عريضة وجناح ديناميكي للضغط نحو الأسفل.',
       'يطفو على الماء بشكل عارضة توازن وأشرعة تلتقط قوة الريح.',
+    ],
+    [VehicleCategory.ELECTRONICS]: [
+      'يندفع بحرق الكيروسين في غرفة احتراق عالية الضغط.',
+      'يطفو على الماء بهيكل محكم الإغلاق وينقل أطناناً من البضائع البحرية.',
     ],
   },
 };

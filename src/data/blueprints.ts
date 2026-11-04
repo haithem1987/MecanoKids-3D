@@ -9,6 +9,7 @@ import { buildBlueprintFromSeed, BlueprintSeed } from './catalogTemplates';
 import { FLEET_LAND_SEA_AIR_SEEDS } from './fleetLandSeaAir';
 import { FLEET_CONSTRUCTION_SPACE_SEEDS } from './fleetConstructionSpace';
 import { FLEET_AEROSPACE_SEEDS } from './fleetAerospatiale';
+import { FLEET_ELECTRONIQUE_SEEDS } from './fleetElectronique';
 
 const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
   // =========================================================================
@@ -1867,6 +1868,7 @@ function assemble100Blueprints(): VehicleBlueprint[] {
     ...FLEET_LAND_SEA_AIR_SEEDS,
     ...FLEET_CONSTRUCTION_SPACE_SEEDS,
     ...FLEET_AEROSPACE_SEEDS,
+    ...FLEET_ELECTRONIQUE_SEEDS,
   ];
 
   const generated = allSeeds.map((seed) => buildBlueprintFromSeed(seed, 1));
@@ -1887,6 +1889,7 @@ function assemble100Blueprints(): VehicleBlueprint[] {
     VehicleCategory.CONSTRUCTION,
     VehicleCategory.SPACE,
     VehicleCategory.AEROSPACE,
+    VehicleCategory.ELECTRONICS,
   ];
 
   const ordered: VehicleBlueprint[] = [];

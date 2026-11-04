@@ -61,11 +61,11 @@ accentColor:    #facc15  (LED jaune/or)
 ```
 
 **Critères d'acceptation**
-- [ ] 5 seeds dans `src/data/fleetElectronique.ts`
-- [ ] 8 `PartShapeKind` ajoutés sans casser les guards existants
-- [ ] Validation circuit = connexions complètes, pas seulement positions
-- [ ] Discovery trilingue avec explication du courant électrique
-- [ ] `npm run lint` et `npm test` passent
+- [x] 5 seeds dans `src/data/fleetElectronique.ts` (LED, ventilateur, alarme, solaire, radio AM)
+- [x] 8 `PartShapeKind` ajoutés (BREADBOARD…SOLAR_PANEL) — default branch les rend comme boîtes
+- [x] Validation circuit dans `src/hooks/useCircuitValidator.ts` (graphe de dépendances, 4 tests)
+- [x] Discovery trilingue FR/EN/AR avec explication du courant électrique
+- [x] `npm run lint` et `npm test` passent (101 tests)
 
 ---
 

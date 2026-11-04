@@ -14,6 +14,7 @@ export enum VehicleCategory {
   CONSTRUCTION = 'chantier',
   SPACE = 'espace',
   AEROSPACE = 'aerospatiale',
+  ELECTRONICS = 'electronique',
 }
 
 export enum DifficultyTier {
@@ -87,6 +88,15 @@ export enum PartShapeKind {
   PARABOLIC_DISH = 'parabolic_dish',
   ROVER_MAST_CAM = 'rover_mast_cam',
   DRONE_QUAD_ARMS = 'drone_quad_arms',
+  // Electronics universe
+  BREADBOARD = 'breadboard',
+  RESISTOR = 'resistor',
+  LED_COMPONENT = 'led_component',
+  BATTERY_CELL = 'battery_cell',
+  CAPACITOR = 'capacitor',
+  WIRE_JUMPER = 'wire_jumper',
+  MICRO_MOTOR = 'micro_motor',
+  SOLAR_PANEL = 'solar_panel',
 }
 
 export enum PartAnimationKind {
