@@ -28,6 +28,7 @@ const STYLE_OPTS = [
   { mode: VisualStyleMode.WOOD,     emoji: '🪵', title: 'Bois / Wood / خشب' },
   { mode: VisualStyleMode.BLOCKS,   emoji: '🧱', title: 'Blocs / Blocks / مكعبات' },
   { mode: VisualStyleMode.REALISTIC, emoji: '✨', title: 'Réaliste / Realistic / واقعي' },
+  { mode: VisualStyleMode.COMICS,   emoji: '💥', title: 'Comics / Comics / كوميكس' },
 ];
 
 export type TrayPosition = 'bottom' | 'left' | 'right';

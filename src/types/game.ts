@@ -4,6 +4,7 @@ export enum VisualStyleMode {
   WOOD = 'wood',
   BLOCKS = 'blocks',
   REALISTIC = 'realistic',
+  COMICS = 'comics',
 }
 
 export enum VehicleCategory {

@@ -36,7 +36,7 @@ class WorkshopSoundEngine {
     const gain = ctx.createGain();
 
     osc.type = style === VisualStyleMode.WOOD ? 'triangle' : 'sine';
-    const baseFreq = style === VisualStyleMode.BLOCKS ? 520 : style === VisualStyleMode.REALISTIC ? 440 : 380;
+    const baseFreq = style === VisualStyleMode.BLOCKS ? 520 : style === VisualStyleMode.REALISTIC ? 440 : style === VisualStyleMode.COMICS ? 600 : 380;
     osc.frequency.setValueAtTime(baseFreq, now);
     osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.32, now + 0.09);
 

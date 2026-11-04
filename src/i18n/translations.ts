@@ -494,6 +494,8 @@ export interface UIStrings {
   styleBlocksShort: string;
   styleRealistic: string;
   styleRealisticShort: string;
+  styleComics: string;
+  styleComicsShort: string;
   discoveryBtn: string;
   hintBtn: string;
   langSwitchAria: string;
@@ -1023,6 +1025,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     styleBlocksShort: 'Blocs',
     styleRealistic: 'Maquette Réaliste',
     styleRealisticShort: 'Réaliste',
+    styleComics: 'Style Comics',
+    styleComicsShort: 'Comics',
     discoveryBtn: 'Fiche Découverte',
     hintBtn: 'Indice Mécanique',
     langSwitchAria: 'Choisir la langue',
@@ -1618,6 +1622,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     styleBlocksShort: 'Blocks',
     styleRealistic: 'Scale Model',
     styleRealisticShort: 'Realistic',
+    styleComics: 'Comics Style',
+    styleComicsShort: 'Comics',
     discoveryBtn: 'Discovery Card',
     hintBtn: 'Mechanical Hint',
     langSwitchAria: 'Select language',
@@ -2213,6 +2219,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     styleBlocksShort: 'مكعبات',
     styleRealistic: 'نموذج واقعي',
     styleRealisticShort: 'واقعي',
+    styleComics: 'ستايل كوميكس',
+    styleComicsShort: 'كوميكس',
     discoveryBtn: 'بطاقة الاكتشاف',
     hintBtn: 'تلميح ميكانيكي',
     langSwitchAria: 'تغيير اللغة',

@@ -264,6 +264,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                     [VisualStyleMode.WOOD, t.styleWoodShort],
                     [VisualStyleMode.BLOCKS, t.styleBlocksShort],
                     [VisualStyleMode.REALISTIC, t.styleRealisticShort],
+                    [VisualStyleMode.COMICS, t.styleComicsShort],
                   ] as const
                 ).map(([mode, label]) => (
                   <button

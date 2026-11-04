@@ -118,6 +118,20 @@ export function createTurntableTexture(
         ctx.stroke();
       }
     }
+  } else if (style === VisualStyleMode.COMICS) {
+    // halftone dots on yellow
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#1e293b';
+    const dotStep = 24;
+    for (let x = 0; x < 512; x += dotStep) {
+      for (let y = 0; y < 512; y += dotStep) {
+        const offset = ((x / dotStep) % 2) * (dotStep / 2);
+        ctx.beginPath();
+        ctx.arc(x + 4, y + 4 + offset, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
   } else {
     ctx.fillStyle = '#dde4ee';
     ctx.fillRect(0, 0, 512, 512);
@@ -507,6 +521,14 @@ export interface PartMaterialSet {
   glass: THREE.Material;
 }
 
+function createToonGradientMap(): THREE.DataTexture {
+  // 3-step toon ramp: shadow / mid / highlight
+  const data = new Uint8Array([80, 160, 255]);
+  const tex = new THREE.DataTexture(data, 3, 1, THREE.RedFormat);
+  tex.needsUpdate = true;
+  return tex;
+}
+
 export function createPartMaterialSet(
   spec: PartSpec,
   style: VisualStyleMode,
@@ -557,6 +579,24 @@ export function createPartMaterialSet(
         depthWrite: false,
         ior: 1.52,
         clearcoat: 1.0,
+      }),
+    };
+  }
+
+  if (style === VisualStyleMode.COMICS) {
+    const gradMap = createToonGradientMap();
+    const toon = (color: string) =>
+      new THREE.MeshToonMaterial({ color, gradientMap: gradMap });
+    return {
+      primary: toon(spec.primaryColor),
+      secondary: toon(spec.secondaryColor),
+      darkRubber: toon('#1e293b'),
+      metalAccent: toon('#f59e0b'),
+      glass: new THREE.MeshToonMaterial({
+        color: '#7dd3fc',
+        gradientMap: gradMap,
+        transparent: true,
+        opacity: 0.72,
       }),
     };
   }

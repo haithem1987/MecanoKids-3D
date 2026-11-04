@@ -241,10 +241,10 @@ Ombre aplat :  oklch(45% 0.28 30)   → rouge sombre
 ```
 
 **Critères d'acceptation**
-- [ ] `VisualStyleMode.COMICS` ajouté sans casser les guards switch existants
-- [ ] Au moins 1 seed existant peut être rendu en mode COMICS
-- [ ] 60 i/s sur iPad 9 (toon shader < 0.5 ms GPU)
-- [ ] `prefers-reduced-motion` : désactiver l'outline animé
+- [x] `VisualStyleMode.COMICS` ajouté sans casser les guards switch existants
+- [x] Au moins 1 seed existant peut être rendu en mode COMICS (`MeshToonMaterial` + outline BackSide dans `buildPartMeshGroup`)
+- [ ] 60 i/s sur iPad 9 (toon shader < 0.5 ms GPU) — test manuel tablette requis
+- [x] `prefers-reduced-motion` : outline BackSide statique, pas d'animation à désactiver
 
 ---
 

@@ -1858,5 +1858,18 @@ export function buildPartMeshGroup(
     root.rotation.set(spec.targetRot[0], spec.targetRot[1], spec.targetRot[2]);
   }
 
+  if (style === VisualStyleMode.COMICS && !overrideMaterial) {
+    const outlineMat = new THREE.MeshBasicMaterial({
+      color: '#0f172a',
+      side: THREE.BackSide,
+    });
+    root.traverse((obj) => {
+      if (!(obj instanceof THREE.Mesh)) return;
+      const outline = new THREE.Mesh(obj.geometry, outlineMat);
+      outline.scale.setScalar(1.06);
+      obj.add(outline);
+    });
+  }
+
   return root;
 }
