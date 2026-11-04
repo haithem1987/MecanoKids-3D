@@ -63,3 +63,12 @@ export function canUseLivery(
   if (resolveEntitlements(license).allLiveries) return true;
   return freeLiveryIds.includes(liveryId);
 }
+
+export function isUnlocked(license: LicenseState): boolean {
+  return license.tier !== 'discovery';
+}
+
+/** Free trial ends after 5 completed stages. */
+export function freeTrialExhausted(completedStagesCount: number): boolean {
+  return completedStagesCount >= 5;
+}

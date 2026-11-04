@@ -3,6 +3,8 @@ import {
   canCreateProfile,
   canPlayStage,
   canUseLivery,
+  freeTrialExhausted,
+  isUnlocked,
   resolveEntitlements,
 } from './entitlements';
 
@@ -40,4 +42,16 @@ describe('school tier', () => {
   it('canCreateProfile with 50 profiles = true', () =>
     expect(canCreateProfile(license, 50)).toBe(true));
   it('teacherTools = true', () => expect(resolveEntitlements(license).teacherTools).toBe(true));
+});
+
+describe('freeTrialExhausted', () => {
+  it('false at 4 completed', () => expect(freeTrialExhausted(4)).toBe(false));
+  it('true at 5 completed', () => expect(freeTrialExhausted(5)).toBe(true));
+  it('true at 10 completed', () => expect(freeTrialExhausted(10)).toBe(true));
+});
+
+describe('isUnlocked', () => {
+  it('false for discovery', () => expect(isUnlocked({ tier: 'discovery' })).toBe(false));
+  it('true for family', () => expect(isUnlocked({ tier: 'family' })).toBe(true));
+  it('true for school', () => expect(isUnlocked({ tier: 'school' })).toBe(true));
 });

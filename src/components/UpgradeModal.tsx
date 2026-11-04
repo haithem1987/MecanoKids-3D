@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check, GraduationCap, Key, Lock, Sparkles, X } from 'lucide-react';
 import { CheckoutButton } from './CheckoutButton';
+import type { LanguageCode } from '../types/game';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -8,7 +9,14 @@ interface UpgradeModalProps {
   reason?: 'stages' | 'profiles' | 'liveries';
   onUpgradeClick: () => void;
   onHaveKey?: () => void;
+  language?: LanguageCode;
 }
+
+const FAMILY_PRICE: Record<LanguageCode, { main: string; note: string; cta: string }> = {
+  fr: { main: '7,99 €', note: 'prix de lancement — puis 9,99 €', cta: 'Acheter 7,99 €' },
+  en: { main: '7.99 €', note: 'launch price — then 9.99 €', cta: 'Buy 7.99 €' },
+  ar: { main: '39 AED', note: 'سعر الإطلاق', cta: 'اشترِ 39 AED' },
+};
 
 const REASON_MESSAGES: Record<NonNullable<UpgradeModalProps['reason']>, string> = {
   stages: '🔒 Les stages 21 à 100 sont réservés au Pass Famille.',
@@ -48,7 +56,9 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   reason,
   onUpgradeClick: _onUpgradeClick,
   onHaveKey,
+  language = 'fr',
 }) => {
+  const price = FAMILY_PRICE[language];
   if (!isOpen) return null;
 
   return (
@@ -124,7 +134,9 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
                   <td className="py-2.5 pr-4 text-slate-700 font-medium">Tarif</td>
                   <td className="text-center px-3 py-2.5 text-slate-500 bg-slate-50/50">Gratuit</td>
                   <td className="text-center px-3 py-2.5 bg-sky-50/60 ring-2 ring-sky-300 ring-inset">
-                    <span className="text-sky-900 font-bold">12,99 €/an</span>
+                    <span className="text-sky-900 font-bold">{price.main}</span>
+                    <br />
+                    <span className="text-xs text-sky-600">{price.note}</span>
                   </td>
                   <td className="text-center px-3 py-2.5 text-indigo-700 bg-indigo-50/50">Sur devis</td>
                 </tr>
@@ -137,7 +149,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
         <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center gap-3">
           <CheckoutButton
             plan="family"
-            label="Acheter 12,99 €/an"
+            label={price.cta}
             className="flex-1 min-w-[160px] flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors cursor-pointer shadow-sm disabled:opacity-60"
           />
           <a

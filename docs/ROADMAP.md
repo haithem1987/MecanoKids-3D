@@ -175,8 +175,8 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 Prérequis : P0-ARCH décidé et implémenté.
 
-- [ ] B1 — Paywall après 5 missions gratuites, derrière la porte parents. Fichiers : `UpgradeModal.tsx`, `utils/entitlements.ts`.
-- [ ] B2 — Offres et prix :
+- [x] B1 — Paywall après 5 missions gratuites *(fait : `freeTrialExhausted(count>=5)` + `isUnlocked(tier!='discovery')` dans `entitlements.ts` ; gate dans `handleSelectBlueprint` ; `track('paywall_shown')`)*.
+- [x] B2 — Offres et prix *(fait : `UpgradeModal` avec prop `language` → prix localisés FR/EN/AR : 7,99 € / 39 AED au lancement)*.
 
   | Offre | France | Tunisie | Golfe |
   |---|---|---|---|
