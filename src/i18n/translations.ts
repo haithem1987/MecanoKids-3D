@@ -755,6 +755,7 @@ export interface UIStrings {
   voiceAutoToggleShort: string;
   voiceAutoEnabledToast: string;
   voiceAutoDisabledToast: string;
+  replayInstructionAria: string;
   voiceUnsupportedLabel: string;
   pwaSectionTitle: string;
   pwaSectionDesc: string;
@@ -878,6 +879,18 @@ export interface UIStrings {
   parentTabStem: string;
   parentTabTimer: string;
   parentTabDiplomas: string;
+  parentTabProfile: string;
+  ageProfileSelectorTitle: string;
+  ageProfileSelectorSubtitle: string;
+  ageProfile57Label: string;
+  ageProfile57Desc: string;
+  ageProfile810Label: string;
+  ageProfile810Desc: string;
+  ageProfile1112Label: string;
+  ageProfile1112Desc: string;
+  ageProfileConfirmBtn: string;
+  parentAgeProfileSectionTitle: string;
+  parentAgeProfileCurrentLabel: string;
   parentStemOverviewTitle: string;
   parentStemIndexLabel: string;
   parentKpiCompleted: string;
@@ -1258,6 +1271,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     voiceAutoToggleShort: 'Voix auto',
     voiceAutoEnabledToast: 'Lecture vocale automatique activée.',
     voiceAutoDisabledToast: 'Lecture vocale automatique désactivée.',
+    replayInstructionAria: 'Réécouter la dernière consigne',
     voiceUnsupportedLabel: 'Synthèse vocale non prise en charge sur ce navigateur.',
     pwaSectionTitle: 'Application Hors-Ligne (PWA)',
     pwaSectionDesc:
@@ -1411,6 +1425,18 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabStem: 'Bulletin STEM',
     parentTabTimer: 'Minuteur Bienveillant',
     parentTabDiplomas: 'Diplômes Imprimables',
+    parentTabProfile: "Profil d'Age",
+    ageProfileSelectorTitle: "Quel est l'age de l'enfant ?",
+    ageProfileSelectorSubtitle: "On adapte l'aide, la tolerance et l'affichage a son niveau.",
+    ageProfile57Label: '5 - 7 ans',
+    ageProfile57Desc: 'Silhouette visible, pieces plus faciles a accrocher, indices automatiques.',
+    ageProfile810Label: '8 - 10 ans',
+    ageProfile810Desc: 'Mode equilibre, aide a la demande.',
+    ageProfile1112Label: '11 - 12 ans',
+    ageProfile1112Desc: 'Pas de silhouette, accrochage precis, defi complet.',
+    ageProfileConfirmBtn: 'Valider',
+    parentAgeProfileSectionTitle: "Profil d'Age de l'Enfant",
+    parentAgeProfileCurrentLabel: 'Profil actuel',
     parentStemOverviewTitle: 'Compétences d’Ingénierie Développées',
     parentStemIndexLabel: 'Indice global de maîtrise STEM',
     parentKpiCompleted: 'Machines assemblées',
@@ -1794,6 +1820,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     voiceAutoToggleShort: 'Auto Voice',
     voiceAutoEnabledToast: 'Automatic voice narration enabled.',
     voiceAutoDisabledToast: 'Automatic voice narration disabled.',
+    replayInstructionAria: 'Replay last instruction',
     voiceUnsupportedLabel: 'Speech synthesis is not supported in this browser.',
     pwaSectionTitle: 'Offline Installable App (PWA)',
     pwaSectionDesc:
@@ -1947,6 +1974,18 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabStem: 'STEM Report',
     parentTabTimer: 'Gentle Timer',
     parentTabDiplomas: 'Printable Diplomas',
+    parentTabProfile: 'Age Profile',
+    ageProfileSelectorTitle: 'How old is the child?',
+    ageProfileSelectorSubtitle: 'We adapt the help, snap tolerance and display to their level.',
+    ageProfile57Label: '5 - 7 years',
+    ageProfile57Desc: 'Silhouette visible, easier parts to snap, automatic hints.',
+    ageProfile810Label: '8 - 10 years',
+    ageProfile810Desc: 'Balanced mode, help on demand.',
+    ageProfile1112Label: '11 - 12 years',
+    ageProfile1112Desc: 'No silhouette, precise snapping, full challenge.',
+    ageProfileConfirmBtn: 'Confirm',
+    parentAgeProfileSectionTitle: 'Age Profile',
+    parentAgeProfileCurrentLabel: 'Current profile',
     parentStemOverviewTitle: 'Engineering & Cognitive Skills Practiced',
     parentStemIndexLabel: 'Overall STEM Mastery Index',
     parentKpiCompleted: 'Machines built',
@@ -2329,6 +2368,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     voiceAutoToggleShort: 'قراءة تلقائية',
     voiceAutoEnabledToast: 'تم تفعيل القراءة الصوتية التلقائية للقطع.',
     voiceAutoDisabledToast: 'تم إيقاف القراءة الصوتية التلقائية.',
+    replayInstructionAria: 'إعادة سماع آخر تعليمة',
     voiceUnsupportedLabel: 'القراءة الصوتية غير مدعومة في هذا المتصفح.',
     pwaSectionTitle: 'تثبيت اللعبة للعمل بدون إنترنت (PWA)',
     pwaSectionDesc:
@@ -2482,6 +2522,18 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabStem: 'تقرير مهارات STEM',
     parentTabTimer: 'المؤقّت اللطيف',
     parentTabDiplomas: 'الشهادات والطباعة',
+    parentTabProfile: 'الفئة العمرية',
+    ageProfileSelectorTitle: 'كم عمر الطفل?',
+    ageProfileSelectorSubtitle: 'نضبط المساعدة والحساسية والعرض حسب مستواه.',
+    ageProfile57Label: '5 - 7 سنوات',
+    ageProfile57Desc: 'الظل مرئي، قطع أسهل للتثبيت، تلميحات تلقائية.',
+    ageProfile810Label: '8 - 10 سنوات',
+    ageProfile810Desc: 'وضع متوازن، المساعدة عند الطلب.',
+    ageProfile1112Label: '11 - 12 سنة',
+    ageProfile1112Desc: 'بلا ظل، تثبيت دقيق، تحدٍ كامل.',
+    ageProfileConfirmBtn: 'تأكيد',
+    parentAgeProfileSectionTitle: 'الفئة العمرية للطفل',
+    parentAgeProfileCurrentLabel: 'الملف الحالي',
     parentStemOverviewTitle: 'المهارات الهندسية والذهنية المكتسبة',
     parentStemIndexLabel: 'المؤشر العام لإتقان مهارات STEM',
     parentKpiCompleted: 'مركبات منجزة',
