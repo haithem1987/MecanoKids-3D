@@ -269,6 +269,8 @@ export interface DailyStreakState {
 import type { LicenseState } from '../utils/entitlements';
 export type { LicenseState };
 
+export type AgeProfile = '5-7' | '8-10' | '11-12';
+
 export interface PlayerProgress {
   licenseState: LicenseState;
   currentBlueprintId: string;
@@ -290,6 +292,7 @@ export interface PlayerProgress {
   preferredStyle: VisualStyleMode;
   cameraPreset: CameraPreset;
   freeWorkshopUnlocked: boolean;
+  ageProfile?: AgeProfile;
   muted: boolean;
   voiceAutoRead: boolean;
   tutorialSeen: boolean;

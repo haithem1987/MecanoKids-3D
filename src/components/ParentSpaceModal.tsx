@@ -8,10 +8,12 @@ import {
   RotateCcw,
   ShieldCheck,
   Trash2,
+  User,
   X,
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
+  AgeProfile,
   DailyLimitMinutesOption,
   LanguageCode,
   ParentalSettings,
@@ -34,7 +36,7 @@ import {
 } from '../utils/stemAnalytics';
 import { PROFILE_COLOR_STYLES, renderProfileAvatarIcon } from './ProfilesModal';
 
-type ParentTabId = 'stem' | 'timer' | 'diplomas';
+type ParentTabId = 'stem' | 'timer' | 'diplomas' | 'profile';
 
 interface ParentSpaceModalProps {
   isOpen: boolean;
@@ -55,6 +57,8 @@ interface ParentSpaceModalProps {
   initialTab?: ParentTabId;
   onShowLanding?: () => void;
   onDeleteAllData?: () => void;
+  ageProfile?: AgeProfile;
+  onChangeAgeProfile?: (profile: AgeProfile) => void;
 }
 
 export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
@@ -76,6 +80,8 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
   initialTab = 'stem',
   onShowLanding,
   onDeleteAllData,
+  ageProfile,
+  onChangeAgeProfile,
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const t = UI_TRANSLATIONS[language];
@@ -286,6 +292,18 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
             >
               <Award className="w-3.5 h-3.5 shrink-0" />
               <span>{t.parentTabDiplomas}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('profile')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                activeTab === 'profile'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <User className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.parentTabProfile}</span>
             </button>
           </div>
         </div>
@@ -579,6 +597,43 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
                   </p>
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'profile' && (
+            <div className="space-y-5">
+              <h3 className="font-display text-base font-bold text-slate-900">
+                {t.parentAgeProfileSectionTitle}
+              </h3>
+              <p className="text-xs text-slate-500">{t.parentAgeProfileCurrentLabel} : <strong>{ageProfile ?? '8-10'}</strong></p>
+              <div className="grid grid-cols-1 gap-2.5">
+                {(['5-7', '8-10', '11-12'] as AgeProfile[]).map((id) => {
+                  const labelKey = id === '5-7' ? 'ageProfile57Label' : id === '8-10' ? 'ageProfile810Label' : 'ageProfile1112Label';
+                  const descKey = id === '5-7' ? 'ageProfile57Desc' : id === '8-10' ? 'ageProfile810Desc' : 'ageProfile1112Desc';
+                  const emoji = id === '5-7' ? '🧡' : id === '8-10' ? '⚙️' : '🏆';
+                  const isSelected = (ageProfile ?? '8-10') === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => onChangeAgeProfile?.(id)}
+                      className={`flex items-start gap-3 p-4 rounded-xl border-2 text-start transition-colors cursor-pointer min-h-[64px] ${
+                        isSelected
+                          ? 'border-sky-500 bg-sky-50'
+                          : 'border-slate-200 bg-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-2xl shrink-0 mt-0.5" aria-hidden="true">{emoji}</span>
+                      <div>
+                        <p className={`font-semibold text-sm ${isSelected ? 'text-sky-700' : 'text-slate-900'}`}>
+                          {t[labelKey]}
+                        </p>
+                        <p className="text-xs text-slate-600 mt-0.5">{t[descKey]}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ import {
   RARE_COLLECTIBLES_CATALOG,
 } from '../data/dailyChallenges';
 import {
+  AgeProfile,
   CameraPreset,
   DailyChallengeState,
   DailyCompletionEntry,
@@ -38,6 +39,8 @@ export const PROFILES_STORAGE_KEY = 'mecanokids_3d_profiles_v1';
 const LEGACY_STORAGE_KEY = 'mecanokids_3d_progress_v1';
 
 export const MAX_LOCAL_PROFILES = 8;
+
+const VALID_AGE_PROFILES = new Set<AgeProfile>(['5-7', '8-10', '11-12']);
 
 const VALID_STYLES = new Set<string>([
   VisualStyleMode.WOOD,
@@ -437,6 +440,10 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
         ? obj.partsTrayPosition
         : 'bottom',
     partsTrayAutoHide: obj.partsTrayAutoHide !== false,
+    ageProfile:
+      typeof obj.ageProfile === 'string' && VALID_AGE_PROFILES.has(obj.ageProfile as AgeProfile)
+        ? (obj.ageProfile as AgeProfile)
+        : undefined,
     lastSavedAt: typeof obj.lastSavedAt === 'number' ? obj.lastSavedAt : Date.now(),
   };
 }

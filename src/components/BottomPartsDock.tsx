@@ -57,6 +57,7 @@ interface BottomPartsDockProps {
   onSelectStyle: (style: VisualStyleMode) => void;
   muted: boolean;
   onToggleMute: () => void;
+  onReplayInstruction: () => void;
   voiceAutoRead: boolean;
   onToggleVoiceAutoRead: () => void;
   timerModeEnabled: boolean;
@@ -118,6 +119,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
   onSelectStyle,
   muted,
   onToggleMute,
+  onReplayInstruction,
   voiceAutoRead,
   onToggleVoiceAutoRead,
   timerModeEnabled,
@@ -374,6 +376,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
             onOpenTour={onOpenTour}
             muted={muted}
             onToggleMute={onToggleMute}
+            onReplayInstruction={onReplayInstruction}
             onUndo={onUndo}
             canUndo={canUndo}
             onResetStage={onResetStage}

@@ -125,10 +125,11 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 - **Fichiers** : `utils/speech.ts`.
 - **CA** : chaque consigne peut être réécoutée ; mode guidé jouable sans savoir lire.
 
-### [ ] M3 — Profils d'âge
+### [x] M3 — Profils d'âge
 - **Profils** : 5-7, 8-10 et 11-12 ans, choisis au démarrage avec 3 visuels.
 - **Ce qu'ils règlent** : niveau d'aide, quantité de texte, vitesse, tolérance d'aimantation, mode guidé ou libre.
 - **CA** : le profil persiste et se change derrière la porte parents.
+- **Fait** : `AgeProfile` type + `AgeProfileSelector` modal au premier lancement ; `getSnapMultiplier` (×1.5/×1/×0.8) appliqué au blueprint via memo dans `App.tsx` ; auto-hint pour 5-7 ; onglet Profil dans `ParentSpaceModal` ; persistance via `storage.ts` ; i18n FR/EN/AR.
 
 ### [ ] M4 — Aide progressive
 - **CA** : un indice apparaît automatiquement après 3 échecs ou 20 s d'inactivité sur une étape ; l'événement `hint_requested` est envoyé.

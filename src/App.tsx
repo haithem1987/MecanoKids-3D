@@ -20,6 +20,7 @@ import {
   UI_TRANSLATIONS,
 } from './i18n/translations';
 import {
+  AgeProfile,
   CameraPreset,
   DailyLimitMinutesOption,
   LanguageCode,
@@ -32,6 +33,7 @@ import {
   SpeedrunRecord,
   VisualStyleMode,
 } from './types/game';
+import { getSnapMultiplier } from './utils/ageProfile';
 import {
   getEffectiveDailyStreak,
   recordDailyEngagement,
@@ -75,6 +77,7 @@ import { TeacherDashboard } from './components/TeacherDashboard';
 import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
 import { LandingPage } from './components/LandingPage';
+import { AgeProfileSelector } from './components/AgeProfileSelector';
 import { OnboardingModal } from './components/OnboardingModal';
 import { UpgradeModal } from './components/UpgradeModal';
 import { LicenseActivationModal } from './components/LicenseActivationModal';
@@ -254,10 +257,15 @@ export default function App() {
     todayDailyBundle.blueprint,
   ]);
 
-  const currentBlueprint = useMemo(
-    () => getLocalizedBlueprint(currentRawBlueprint, language),
-    [currentRawBlueprint, language],
-  );
+  const currentBlueprint = useMemo(() => {
+    const bp = getLocalizedBlueprint(currentRawBlueprint, language);
+    const mult = getSnapMultiplier(progress.ageProfile);
+    if (mult === 1) return bp;
+    return {
+      ...bp,
+      parts: bp.parts.map((p) => ({ ...p, snapRadius: p.snapRadius * mult })),
+    };
+  }, [currentRawBlueprint, language, progress.ageProfile]);
 
   const progressionSummary = useMemo(
     () =>
@@ -538,6 +546,14 @@ export default function App() {
     soundEngine.setMuted(progress.muted);
     saveMultiProfileStore(profileStore);
   }, [profileStore, progress]);
+
+  // Speak blueprint name on mission start in guided mode
+  useEffect(() => {
+    const p = latestProgressRef.current;
+    if (!p.voiceAutoRead || p.muted) return;
+    const name = currentBlueprint.name;
+    speechEngine.speak(`mission-start-${currentBlueprint.id}`, name, language);
+  }, [currentBlueprint.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const handleUnload = () => {
@@ -1031,6 +1047,17 @@ export default function App() {
       t,
       todayDailyBundle.blueprint,
     ],
+  );
+
+  const handleSelectAgeProfile = useCallback(
+    (profile: AgeProfile) => {
+      setProgress((p) => ({
+        ...p,
+        ageProfile: profile,
+        noSilhouetteMode: profile === '11-12' ? true : profile === '5-7' ? false : p.noSilhouetteMode,
+      }));
+    },
+    [setProgress],
   );
 
   // Axe 3: Master No-Silhouette Mode, 3-Question Patent Quiz & Diagnostic/Repair Mode Handlers
@@ -1939,7 +1966,11 @@ export default function App() {
 
   const effectiveHintPartId =
     hintPartId ??
-    (tourOpen && (tourStep === 0 || tourStep === 1) ? firstReadyPart?.id ?? null : null);
+    (tourOpen && (tourStep === 0 || tourStep === 1)
+      ? firstReadyPart?.id ?? null
+      : progress.ageProfile === '5-7'
+        ? firstReadyPart?.id ?? null
+        : null);
 
   const twoStarMaxMistakes = Math.max(2, Math.floor(currentBlueprint.parts.length / 4));
   const currentStars = currentBlueprint.isDailyBonus
@@ -2023,6 +2054,10 @@ export default function App() {
 
   if (showOnboarding) {
     return <OnboardingModal onComplete={handleOnboardingComplete} />;
+  }
+
+  if (progress.ageProfile === undefined) {
+    return <AgeProfileSelector language={language} onConfirm={handleSelectAgeProfile} />;
   }
 
   if (showLanding) {
@@ -2246,6 +2281,7 @@ export default function App() {
           }
           setProgress((p) => ({ ...p, muted: !p.muted }));
         }}
+        onReplayInstruction={() => speechEngine.replay()}
         voiceAutoRead={progress.voiceAutoRead}
         onToggleVoiceAutoRead={() => handleToggleVoiceAutoRead()}
         timerModeEnabled={progress.timerModeEnabled}
@@ -2546,6 +2582,8 @@ export default function App() {
           localStorage.clear();
           window.location.reload();
         }}
+        ageProfile={progress.ageProfile}
+        onChangeAgeProfile={handleSelectAgeProfile}
       />
 
       {/* Lot E: Teacher Dashboard (school tier) */}
