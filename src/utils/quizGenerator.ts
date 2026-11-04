@@ -74,6 +74,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'Il s’appuie sur l’eau d’un canal grâce à deux flotteurs de catamaran et une voile.',
       'Il laboure la terre agricole grâce à un tambour rotatif et des pneus de tracteur.',
     ],
+    [VehicleCategory.AEROSPACE]: [
+      'Il roule sur asphalte grâce à des pneus slicks larges et un aileron de déportance.',
+      'Il flotte sur les vagues grâce à une quille et des voiles capturant le vent.',
+    ],
   },
   en: {
     [VehicleCategory.CAR]: [
@@ -96,6 +100,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'It glides across harbor water on twin catamaran pontoons and a tall wind sail.',
       'It harvests grain fields using a wide agricultural header and tractor tires.',
     ],
+    [VehicleCategory.AEROSPACE]: [
+      'It grips the asphalt using slick wide tires and a downforce aerodynamic wing.',
+      'It floats on water using a keel and sails that capture the wind.',
+    ],
   },
   ar: {
     [VehicleCategory.CAR]: [
@@ -117,6 +125,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
     [VehicleCategory.SPACE]: [
       'ينزلق فوق مياه الميناء على عوامتين مزدوجتين وشراع هوائي مرتفع.',
       'يحصد الحقول الزراعية بواسطة أسطوانة دوّارة وإطارات جرار عريضة.',
+    ],
+    [VehicleCategory.AEROSPACE]: [
+      'يتمسك بالإسفلت عبر إطارات سباق عريضة وجناح ديناميكي للضغط نحو الأسفل.',
+      'يطفو على الماء بشكل عارضة توازن وأشرعة تلتقط قوة الريح.',
     ],
   },
 };

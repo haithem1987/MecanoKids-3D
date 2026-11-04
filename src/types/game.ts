@@ -12,6 +12,7 @@ export enum VehicleCategory {
   PLANE = 'avion',
   CONSTRUCTION = 'chantier',
   SPACE = 'espace',
+  AEROSPACE = 'aerospatiale',
 }
 
 export enum DifficultyTier {
