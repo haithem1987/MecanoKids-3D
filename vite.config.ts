@@ -23,7 +23,24 @@ export default defineConfig(() => {
         theme_color: '#0284c7',
         background_color: '#F4F6F9',
         display: 'standalone',
+        display_override: ['standalone', 'minimal-ui'],
         orientation: 'landscape',
+        screenshots: [
+          {
+            src: '/assets/screenshot-workshop.png',
+            sizes: '1280x800',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Atelier mécanique 3D',
+          },
+          {
+            src: '/assets/screenshot-workshop-mobile.png',
+            sizes: '750x1334',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Atelier mécanique 3D',
+          },
+        ],
         start_url: '/',
         scope: '/',
         icons: [

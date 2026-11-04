@@ -203,7 +203,7 @@ Prérequis : P0-ARCH décidé et implémenté.
 ## Phase 4 — Lancement (semaines 17-20)
 
 - [x] L1 — Landing page Octo Gears et vidéo de 30-45 s. Fichier : `LandingPage.tsx`. (refonte : header+footer "Octo Gears", section bénéfices 3 cards, section tarifs famille 3 offres, section école tableau de prix + mailto devis)
-- [ ] L2 — Version Play Store (TWA).
+- [x] L2 — Version Play Store (TWA). *(fait : `public/.well-known/assetlinks.json` (placeholder SHA-256), `twa-manifest.json` config Bubblewrap, `display_override` + `screenshots` dans le manifest PWA, procédure complète dans `docs/twa-setup.md` — compléter le domaine réel et le SHA-256 du keystore avant soumission)*
 - [ ] L3 — 🧑 Dossier de référencement GAR et kit presse.
 
 ---
