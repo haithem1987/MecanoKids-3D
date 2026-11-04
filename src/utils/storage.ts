@@ -119,6 +119,7 @@ export function createDefaultProgress(
     tbiMode: false,
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
+    diagnosticTutorialSeen: false,
     partsTrayPosition: 'bottom',
     partsTrayAutoHide: true,
     lastSavedAt: Date.now(),
@@ -443,11 +444,13 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     tbiMode: Boolean(obj.tbiMode),
     voiceAutoRead: Boolean(obj.voiceAutoRead),
     tutorialSeen: Boolean(obj.tutorialSeen),
+    diagnosticTutorialSeen: Boolean(obj.diagnosticTutorialSeen),
     partsTrayPosition:
       obj.partsTrayPosition === 'left' || obj.partsTrayPosition === 'right'
         ? obj.partsTrayPosition
         : 'bottom',
     partsTrayAutoHide: obj.partsTrayAutoHide !== false,
+    classCode: typeof obj.classCode === 'string' && /^[A-Z0-9]{4,20}$/.test(obj.classCode) ? obj.classCode : undefined,
     ageProfile:
       typeof obj.ageProfile === 'string' && VALID_AGE_PROFILES.has(obj.ageProfile as AgeProfile)
         ? (obj.ageProfile as AgeProfile)

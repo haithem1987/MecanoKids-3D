@@ -300,8 +300,10 @@ export interface PlayerProgress {
   tbiMode: boolean;
   voiceAutoRead: boolean;
   tutorialSeen: boolean;
+  diagnosticTutorialSeen: boolean;
   partsTrayPosition: 'bottom' | 'left' | 'right';
   partsTrayAutoHide: boolean;
+  classCode?: string;
   lastSavedAt: number;
 }
 

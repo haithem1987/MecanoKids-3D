@@ -76,6 +76,7 @@ import { ParentSpaceModal } from './components/ParentSpaceModal';
 import { TeacherDashboard } from './components/TeacherDashboard';
 import { GentleSessionCurtain } from './components/GentleSessionCurtain';
 import { GuidedTourOverlay } from './components/GuidedTourOverlay';
+import { DiagnosticTutorialOverlay } from './components/DiagnosticTutorialOverlay';
 import { LandingPage } from './components/LandingPage';
 import { AgeProfileSelector } from './components/AgeProfileSelector';
 import { OnboardingModal } from './components/OnboardingModal';
@@ -206,6 +207,7 @@ export default function App() {
   const [lastTimedResult, setLastTimedResult] = useState<TimedCompletionResult | null>(null);
   const [tourOpen, setTourOpen] = useState<boolean>(() => !activeProfile.progress.tutorialSeen);
   const [tourStep, setTourStep] = useState<number>(0);
+  const [diagTutorialOpen, setDiagTutorialOpen] = useState<boolean>(false);
 
   // Live Stopwatch state (tracks active assembly delta on top of persisted elapsedMs)
   const [timerArmed, setTimerArmed] = useState<boolean>(false);
@@ -1143,8 +1145,12 @@ export default function App() {
       seed: diagnosticSeedCounterRef.current,
     });
 
+    if (!progress.diagnosticTutorialSeen) {
+      setDiagTutorialOpen(true);
+    }
+
     flashStatus(t.diagnosticStartedToast(currentBlueprint.name, plan.targetInterventionsCount));
-  }, [currentBlueprint, flashStatus, flushActiveStopwatchSegment, t]);
+  }, [currentBlueprint, flashStatus, flushActiveStopwatchSegment, progress.diagnosticTutorialSeen, t]);
 
   const handleQuitDiagnostic = useCallback(() => {
     setDiagnosticSession(null);
@@ -1901,6 +1907,14 @@ export default function App() {
     });
   }, [setProgress]);
 
+  const handleFinishDiagTutorial = useCallback(() => {
+    setDiagTutorialOpen(false);
+    setProgress((p) => {
+      if (p.diagnosticTutorialSeen) return p;
+      return { ...p, diagnosticTutorialSeen: true };
+    });
+  }, [setProgress]);
+
   const handleActivateLicense = useCallback(
     (key: string) => {
       setProgress((p) => ({
@@ -2634,6 +2648,13 @@ export default function App() {
         profiles={profileStore.profiles}
         activeProfileId={activeProfile.id}
         onActivateLicense={handleActivateLicense}
+      />
+
+      {/* Diagnostic mode first-use tutorial */}
+      <DiagnosticTutorialOverlay
+        isOpen={diagTutorialOpen}
+        t={t}
+        onFinish={handleFinishDiagTutorial}
       />
 
       {/* Automatic Interactive Guided Tour */}

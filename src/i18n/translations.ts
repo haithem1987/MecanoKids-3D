@@ -841,6 +841,11 @@ export interface UIStrings {
   diagnosticExtractedToast: (partName: string) => string;
   diagnosticClickFaultyHint: (partName: string) => string;
   diagnosticCompletedToast: (vehicleName: string) => string;
+  diagnosticTutorialTitle: string;
+  diagnosticTutorialStep1: string;
+  diagnosticTutorialStep2: string;
+  diagnosticTutorialStep3: string;
+  diagnosticTutorialReadyBtn: string;
   // Daily Engagement Streak & Rewards
   streakTopBarTitle: (days: number, activeToday: boolean) => string;
   streakExtendedToast: (days: number) => string;
@@ -881,6 +886,8 @@ export interface UIStrings {
   parentTabDiplomas: string;
   parentTabProfile: string;
   parentTabClassroom: string;
+  parentTabFiches: string;
+  fichePrintBtn: string;
   classroomSilentLabel: string;
   classroomSilentDesc: string;
   tbiModeLabel: string;
@@ -970,6 +977,17 @@ export interface UIStrings {
   teacherLicenseInvalidMsg: string;
   teacherLicenseActivatedToast: string;
   teacherSchoolLabel: string;
+  teacherClassCodeTitle: string;
+  teacherClassCodeDesc: string;
+  teacherClassCodeCopied: string;
+  teacherClassCodeGenerate: string;
+  teacherMissionsTitle: string;
+  teacherMissionsDesc: string;
+  teacherProgressGridTitle: string;
+  teacherProgressNotStarted: string;
+  teacherProgressInProgress: string;
+  teacherProgressDone: string;
+  teacherProgressError: string;
 
 }
 
@@ -1380,6 +1398,11 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
       `Démonte d’abord la pièce orange mal fixée « ${partName} » en cliquant dessus sur le modèle 3D !`,
     diagnosticCompletedToast: (vehicleName) =>
       `Diagnostic réussi ! ${vehicleName} est réparé à 100 % et prêt à repartir !`,
+    diagnosticTutorialTitle: 'Comment réparer ?',
+    diagnosticTutorialStep1: 'Écoute le bruit — ton véhicule a des pièces abîmées ou manquantes.',
+    diagnosticTutorialStep2: 'Trouve la pièce — les pièces à problème sont mises en évidence en orange.',
+    diagnosticTutorialStep3: "Échange-la — clique dessus pour la démonter, puis remonte-la depuis l’établi.",
+    diagnosticTutorialReadyBtn: "C’est parti !",
     streakTopBarTitle: (days, activeToday) =>
       activeToday
         ? `Série quotidienne active : ${days} jour(s) d’affilée`
@@ -1434,6 +1457,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabDiplomas: 'Diplômes Imprimables',
     parentTabProfile: "Profil d'Age",
     parentTabClassroom: 'Classe',
+    parentTabFiches: 'Fiches Péda',
+    fichePrintBtn: 'Imprimer cette fiche',
     classroomSilentLabel: 'Mode classe silencieux',
     classroomSilentDesc: 'Coupe tous les sons instantanément (TBI, présentation)',
     tbiModeLabel: 'Mode TBI',
@@ -1518,6 +1543,17 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     teacherLicenseInvalidMsg: 'Format de clé invalide. Vérifiez la clé fournie.',
     teacherLicenseActivatedToast: 'Licence école activée avec succès.',
     teacherSchoolLabel: 'École',
+    teacherClassCodeTitle: 'Code classe',
+    teacherClassCodeDesc: 'Partagez ce code avec vos élèves pour les rattacher à cette classe.',
+    teacherClassCodeCopied: 'Copié !',
+    teacherClassCodeGenerate: 'Nouveau code',
+    teacherMissionsTitle: 'Missions assignées',
+    teacherMissionsDesc: 'Choisissez 1 à 3 missions à faire en classe.',
+    teacherProgressGridTitle: 'Grille de progression',
+    teacherProgressNotStarted: 'Non commencé',
+    teacherProgressInProgress: 'En cours',
+    teacherProgressDone: 'Terminé',
+    teacherProgressError: 'Difficultés',
 
     licenseModalTitle: 'Activer une clé de licence',
     licenseModalSubtitle: 'Entre ta clé pour débloquer le Pass Famille ou le plan École.',
@@ -1936,6 +1972,11 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
       `First click the orange misaligned part "${partName}" on the 3D model to remove it!`,
     diagnosticCompletedToast: (vehicleName) =>
       `Diagnostic complete! ${vehicleName} is 100% repaired and ready for action!`,
+    diagnosticTutorialTitle: 'How to repair?',
+    diagnosticTutorialStep1: 'Listen for the noise — your vehicle has broken or missing parts.',
+    diagnosticTutorialStep2: 'Find the part — faulty parts are highlighted in orange.',
+    diagnosticTutorialStep3: 'Swap it out — click it to remove it, then snap a new one from the tray.',
+    diagnosticTutorialReadyBtn: "Let's go!",
     streakTopBarTitle: (days, activeToday) =>
       activeToday
         ? `Active daily streak: ${days} day(s) in a row`
@@ -1990,6 +2031,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabDiplomas: 'Printable Diplomas',
     parentTabProfile: 'Age Profile',
     parentTabClassroom: 'Classroom',
+    parentTabFiches: 'Peda Sheets',
+    fichePrintBtn: 'Print this sheet',
     classroomSilentLabel: 'Silent classroom mode',
     classroomSilentDesc: 'Mutes all sounds instantly (IWB, presentations)',
     tbiModeLabel: 'IWB mode',
@@ -2074,6 +2117,17 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     teacherLicenseInvalidMsg: 'Invalid key format. Please check the provided key.',
     teacherLicenseActivatedToast: 'School license activated successfully.',
     teacherSchoolLabel: 'School',
+    teacherClassCodeTitle: 'Class code',
+    teacherClassCodeDesc: 'Share this code with your students to link them to this class.',
+    teacherClassCodeCopied: 'Copied!',
+    teacherClassCodeGenerate: 'New code',
+    teacherMissionsTitle: 'Assigned missions',
+    teacherMissionsDesc: 'Choose 1 to 3 missions for the class.',
+    teacherProgressGridTitle: 'Progress grid',
+    teacherProgressNotStarted: 'Not started',
+    teacherProgressInProgress: 'In progress',
+    teacherProgressDone: 'Done',
+    teacherProgressError: 'Struggling',
 
     licenseModalTitle: 'Activate a license key',
     licenseModalSubtitle: 'Enter your key to unlock the Family Pass or School plan.',
@@ -2491,6 +2545,11 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
       `انقر أولاً على القطعة البرتقالية المفكوكة «${partName}» فوق المجسّم 3D لفكّها!`,
     diagnosticCompletedToast: (vehicleName) =>
       `نجح التشخيص والإصلاح! عادت «${vehicleName}» للعمل بنسبة 100%!`,
+    diagnosticTutorialTitle: 'كيف تُصلح؟',
+    diagnosticTutorialStep1: 'استمع للصوت — مركبتك تحتوي على قطع تالفة أو ناقصة.',
+    diagnosticTutorialStep2: 'ابحث عن القطعة — القطع المعطوبة مُظلَّلة باللون البرتقالي.',
+    diagnosticTutorialStep3: 'استبدلها — انقر عليها لفكّها ثم ركّب قطعة جديدة من الطاولة.',
+    diagnosticTutorialReadyBtn: 'هيّا بنا!',
     streakTopBarTitle: (days, activeToday) =>
       activeToday
         ? `السلسلة اليومية نشطة: ${days} أيام متتالية`
@@ -2545,6 +2604,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabDiplomas: 'الشهادات والطباعة',
     parentTabProfile: 'الفئة العمرية',
     parentTabClassroom: 'الفصل',
+    parentTabFiches: 'بطاقات بيداغوجية',
+    fichePrintBtn: 'طباعة هذه البطاقة',
     classroomSilentLabel: 'وضع الصمت',
     classroomSilentDesc: 'يكتم جميع الأصوات فوراً (السبورة التفاعلية)',
     tbiModeLabel: 'وضع السبورة',
@@ -2629,6 +2690,17 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     teacherLicenseInvalidMsg: 'تنسيق المفتاح غير صالح. تحقق من المفتاح المقدم.',
     teacherLicenseActivatedToast: 'تم تفعيل ترخيص المدرسة بنجاح.',
     teacherSchoolLabel: 'المدرسة',
+    teacherClassCodeTitle: 'رمز الفصل',
+    teacherClassCodeDesc: 'شارك هذا الرمز مع طلابك لربطهم بهذا الفصل.',
+    teacherClassCodeCopied: 'تم النسخ!',
+    teacherClassCodeGenerate: 'رمز جديد',
+    teacherMissionsTitle: 'المهام المُسندة',
+    teacherMissionsDesc: 'اختر من 1 إلى 3 مهام للفصل.',
+    teacherProgressGridTitle: 'شبكة التقدم',
+    teacherProgressNotStarted: 'لم يبدأ',
+    teacherProgressInProgress: 'جارٍ',
+    teacherProgressDone: 'مكتمل',
+    teacherProgressError: 'يواجه صعوبات',
 
     licenseModalTitle: 'تفعيل مفتاح الترخيص',
     licenseModalSubtitle: 'أدخل مفتاحك لفتح الباقة العائلية أو خطة المدرسة.',

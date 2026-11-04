@@ -161,10 +161,11 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 - [ ] C1 — Explications et défis de transfert (diagnostic) pour les 15 missions. 🧑 Relecture par un enseignant de cycle 2-3.
 - [ ] C2 — Mode enseignant : code de classe sans compte élève, attribution de missions, progression par compétence. Fichier : `TeacherDashboard.tsx`.
-- [ ] C3 — 12 fiches pédagogiques imprimables pour le cycle 2-3.
+- [x] C3 — 12 fiches pédagogiques imprimables pour le cycle 2-3.
 - [x] C4 — Mode TBI (grandes cibles) et mode classe silencieux, avec volumes séparés pour la musique, les effets et la voix.
   - **Fait** : 4 champs dans `PlayerProgress` (`volumeSfx`, `volumeVoice`, `classroomSilent`, `tbiMode`) ; `soundEngine.setVolumeSfx()` via `sfxVolume * peakGain` ; `speechEngine.setVoiceVolume()` sur `utterance.volume` ; onglet "Classe" dans `ParentSpaceModal` (toggles + sliders) ; `data-tbi` sur root + CSS min 64px.
-- [ ] C5 — Mini-tutoriel du mode diagnostic (« écoute le bruit, trouve la pièce qui ne va pas »). Fichier : `utils/diagnosticMode.ts`.
+- [x] C5 — Mini-tutoriel du mode diagnostic (« écoute le bruit, trouve la pièce qui ne va pas »). Fichier : `utils/diagnosticMode.ts`.
+  - **Fait** : overlay 3 étapes (`DiagnosticTutorialOverlay.tsx`) affiché à la première entrée en mode réparation ; `diagnosticTutorialSeen: boolean` dans `PlayerProgress` (types + storage) ; strings i18n FR/EN/AR ; déclenché dans `handleStartDiagnostic`.
 
 **Critère de sortie de phase** : 5 classes pilotes actives ; NPS enseignant ≥ 40.
 
