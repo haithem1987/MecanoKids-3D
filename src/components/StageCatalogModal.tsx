@@ -181,12 +181,12 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/55 p-4 sm:p-6"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/55 p-2 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="catalog-title"
     >
-      <div className="w-full max-w-5xl max-h-[92vh] bg-white border border-slate-200 rounded-xl shadow-lg flex flex-col overflow-hidden">
+      <div className="w-full max-w-5xl h-full sm:h-auto max-h-[92svh] bg-white border border-slate-200 rounded-xl shadow-lg flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-slate-200">
           <div>
@@ -214,7 +214,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors whitespace-nowrap min-h-[40px] cursor-pointer"
             >
               <Trophy className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>{t.openProgressionBtn(unlockedBadgesCount, totalBadgesCount)}</span>
+              <span className="hidden sm:inline">{t.openProgressionBtn(unlockedBadgesCount, totalBadgesCount)}</span>
             </button>
 
             <button
