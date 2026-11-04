@@ -2221,6 +2221,7 @@ export default function App() {
           onPartSnapped={handlePartSnapped}
           onPartDropRejected={handlePartDropRejected}
           onDragEndSignal={() => setActiveDragPartId(null)}
+          workshopTheme={progress.workshopTheme}
           onStartCanvasDrag={(partId) => {
             soundEngine.playPickup(progress.preferredStyle);
             if (!activeDiagnostic) {
@@ -2495,6 +2496,10 @@ export default function App() {
         }}
         captureSnapshot={triggerSnapshotCapture}
         onPostcardDownloaded={() => flashStatus(t.postcardDownloadedToast)}
+        workshopTheme={progress.workshopTheme}
+        onSelectGroundPreset={(preset) => {
+          setProgress((p) => ({ ...p, workshopTheme: { groundPreset: preset } }));
+        }}
       />
 
       {/* Axe 2: Personal 3D Garage Showcase & Rare Vault Modal */}

@@ -249,6 +249,20 @@ export type LiveryPresetId =
 
 export type WorkbenchEnvironmentMode = 'auto_thematic' | 'studio';
 
+export type WorkshopGroundPreset =
+  | 'asphalt'
+  | 'grass'
+  | 'sand'
+  | 'snow'
+  | 'circuit'
+  | 'light_wood'
+  | 'moon'
+  | 'water';
+
+export interface WorkshopThemeConfig {
+  groundPreset: WorkshopGroundPreset;
+}
+
 export interface EngineeringPatentRecord {
   score: number;
   total: number;
@@ -303,6 +317,7 @@ export interface PlayerProgress {
   diagnosticTutorialSeen: boolean;
   partsTrayPosition: 'bottom' | 'left' | 'right';
   partsTrayAutoHide: boolean;
+  workshopTheme?: WorkshopThemeConfig;
   classCode?: string;
   licenseKey?: string;
   licenseType?: 'classe' | 'ecole' | 'reseau';

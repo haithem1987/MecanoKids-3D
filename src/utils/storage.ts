@@ -27,6 +27,8 @@ import {
   VehicleCategory,
   VisualStyleMode,
   WorkbenchEnvironmentMode,
+  WorkshopGroundPreset,
+  WorkshopThemeConfig,
 } from '../types/game';
 import { VALID_LIVERY_IDS } from '../data/liveries';
 import type { Tier as LicenseTier } from './entitlements';
@@ -462,7 +464,23 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
         ? (obj.ageProfile as AgeProfile)
         : undefined,
     lastSavedAt: typeof obj.lastSavedAt === 'number' ? obj.lastSavedAt : Date.now(),
+    workshopTheme: sanitizeWorkshopTheme(obj.workshopTheme),
   };
+}
+
+const VALID_GROUND_PRESETS = new Set<WorkshopGroundPreset>([
+  'asphalt', 'grass', 'sand', 'snow', 'circuit', 'light_wood', 'moon', 'water',
+]);
+
+function sanitizeWorkshopTheme(raw: unknown): WorkshopThemeConfig | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const obj = raw as Record<string, unknown>;
+  const groundPreset =
+    typeof obj.groundPreset === 'string' && VALID_GROUND_PRESETS.has(obj.groundPreset as WorkshopGroundPreset)
+      ? (obj.groundPreset as WorkshopGroundPreset)
+      : undefined;
+  if (!groundPreset) return undefined;
+  return { groundPreset };
 }
 
 export function loadPlayerProgress(): PlayerProgress {

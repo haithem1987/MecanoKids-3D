@@ -3,10 +3,25 @@ import { Camera, Check, Download, Lock, Paintbrush, RefreshCw, X } from 'lucide-
 import { soundEngine } from '../audio/soundEngine';
 import { LIVERY_PRESETS, LiveryPresetSpec } from '../data/liveries';
 import { UI_TRANSLATIONS } from '../i18n/translations';
-import { LanguageCode, LiveryPresetId, VehicleBlueprint } from '../types/game';
+import { LanguageCode, LicenseState, LiveryPresetId, VehicleBlueprint, WorkshopGroundPreset, WorkshopThemeConfig } from '../types/game';
 import { composePostcardDataUrl, downloadDataUrlAsPng } from '../utils/postcard';
 import { canUseLivery } from '../utils/entitlements';
-import { LicenseState } from '../types/game';
+
+const GROUND_PRESETS: {
+  preset: WorkshopGroundPreset;
+  emoji: string;
+  labelKey: 'groundAsphalt' | 'groundGrass' | 'groundSand' | 'groundSnow' | 'groundCircuit' | 'groundLightWood' | 'groundMoon' | 'groundWater';
+  colors: string;
+}[] = [
+  { preset: 'asphalt',    emoji: '🛣️',  labelKey: 'groundAsphalt',   colors: 'linear-gradient(135deg, #3a3a3a 50%, #555 50%)' },
+  { preset: 'grass',      emoji: '🌿',  labelKey: 'groundGrass',     colors: 'linear-gradient(135deg, #4a7c3f 50%, #3d6834 50%)' },
+  { preset: 'sand',       emoji: '🏖️',  labelKey: 'groundSand',      colors: 'linear-gradient(135deg, #e2c97e 50%, #d4b96a 50%)' },
+  { preset: 'snow',       emoji: '❄️',  labelKey: 'groundSnow',      colors: 'linear-gradient(135deg, #eef4fb 50%, #dde8f5 50%)' },
+  { preset: 'circuit',    emoji: '⚡',  labelKey: 'groundCircuit',   colors: 'linear-gradient(135deg, #1a1a2e 50%, #001a2e 50%)' },
+  { preset: 'light_wood', emoji: '🪵',  labelKey: 'groundLightWood', colors: 'linear-gradient(135deg, #d4aa70 50%, #b8926a 50%)' },
+  { preset: 'moon',       emoji: '🌕',  labelKey: 'groundMoon',      colors: 'linear-gradient(135deg, #2d2d35 50%, #3a3a44 50%)' },
+  { preset: 'water',      emoji: '🌊',  labelKey: 'groundWater',     colors: 'linear-gradient(135deg, #1e6b8e 50%, #0d4d6b 50%)' },
+];
 
 interface StudioCustomizeModalProps {
   isOpen: boolean;
@@ -25,6 +40,8 @@ interface StudioCustomizeModalProps {
   onOpenUpgrade?: () => void;
   captureSnapshot: () => string | null;
   onPostcardDownloaded: () => void;
+  workshopTheme?: WorkshopThemeConfig;
+  onSelectGroundPreset: (preset: WorkshopGroundPreset) => void;
 }
 
 export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
@@ -44,6 +61,8 @@ export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
   onOpenUpgrade,
   captureSnapshot,
   onPostcardDownloaded,
+  workshopTheme,
+  onSelectGroundPreset,
 }) => {
   const [postcardUrl, setPostcardUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -271,6 +290,41 @@ export const StudioCustomizeModal: React.FC<StudioCustomizeModalProps> = ({
                   <span>{t.capturePostcardBtn}</span>
                 </div>
               )}
+            </div>
+          </section>
+
+          {/* Section 3: Mon Atelier — Workshop Ground Customization */}
+          <section className="pt-4 border-t border-slate-200 space-y-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">{t.workshopThemeSectionTitle}</h3>
+              <p className="text-xs text-slate-600 mt-0.5">{t.workshopThemeSectionDesc}</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {GROUND_PRESETS.map(({ preset, emoji, labelKey, colors }) => {
+                const isSelected = (workshopTheme?.groundPreset ?? 'asphalt') === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => onSelectGroundPreset(preset)}
+                    className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-colors cursor-pointer min-h-[72px] ${
+                      isSelected
+                        ? 'bg-sky-50 border-sky-500 text-slate-900'
+                        : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
+                    }`}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-lg border border-black/10 shrink-0"
+                      style={{ background: colors }}
+                      aria-hidden="true"
+                    />
+                    <span className="text-[11px] font-semibold leading-tight text-center">
+                      {emoji} {t[labelKey]}
+                    </span>
+                    {isSelected && <Check className="w-3 h-3 text-sky-600 shrink-0" />}
+                  </button>
+                );
+              })}
             </div>
           </section>
         </div>

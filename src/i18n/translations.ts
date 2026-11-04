@@ -797,6 +797,16 @@ export interface UIStrings {
   retakePostcardBtn: string;
   downloadPostcardBtn: string;
   postcardDownloadedToast: string;
+  workshopThemeSectionTitle: string;
+  workshopThemeSectionDesc: string;
+  groundAsphalt: string;
+  groundGrass: string;
+  groundSand: string;
+  groundSnow: string;
+  groundCircuit: string;
+  groundLightWood: string;
+  groundMoon: string;
+  groundWater: string;
   garageNavBtn: string;
   garageModalTitle: string;
   garageModalSubtitle: string;
@@ -1351,6 +1361,16 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     retakePostcardBtn: 'Actualiser la prise de vue',
     downloadPostcardBtn: 'Télécharger en PNG',
     postcardDownloadedToast: 'Carte postale 3D téléchargée en PNG !',
+    workshopThemeSectionTitle: 'Mon Atelier — Sol & Ambiance',
+    workshopThemeSectionDesc: 'Personnalise le sol de ton atelier. Le changement est mémorisé dans ton profil.',
+    groundAsphalt: 'Asphalte',
+    groundGrass: 'Herbe',
+    groundSand: 'Sable',
+    groundSnow: 'Neige',
+    groundCircuit: 'Circuit',
+    groundLightWood: 'Bois clair',
+    groundMoon: 'Lune',
+    groundWater: 'Eau',
     garageNavBtn: 'Ma Vitrine',
     garageModalTitle: 'Garage Personnel — Ma Vitrine 3D',
     garageModalSubtitle:
@@ -1935,6 +1955,16 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     retakePostcardBtn: 'Refresh 3D Snapshot',
     downloadPostcardBtn: 'Download PNG',
     postcardDownloadedToast: '3D Souvenir Postcard downloaded as PNG!',
+    workshopThemeSectionTitle: 'My Workshop — Floor & Ambiance',
+    workshopThemeSectionDesc: 'Customize your workshop floor. Your choice is saved to your profile.',
+    groundAsphalt: 'Asphalt',
+    groundGrass: 'Grass',
+    groundSand: 'Sand',
+    groundSnow: 'Snow',
+    groundCircuit: 'Circuit',
+    groundLightWood: 'Light Wood',
+    groundMoon: 'Moon',
+    groundWater: 'Water',
     garageNavBtn: 'My Garage',
     garageModalTitle: 'Personal 3D Garage & Showcase',
     garageModalSubtitle:
@@ -2518,6 +2548,16 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     retakePostcardBtn: 'تحديث لقطة الكاميرا',
     downloadPostcardBtn: 'تحميل صورة PNG',
     postcardDownloadedToast: 'تم تحميل البطاقة التذكارية بصيغة PNG!',
+    workshopThemeSectionTitle: 'ورشتي — الأرضية والأجواء',
+    workshopThemeSectionDesc: 'خصّص أرضية ورشتك. يُحفظ اختيارك في ملفك الشخصي.',
+    groundAsphalt: 'إسفلت',
+    groundGrass: 'عشب',
+    groundSand: 'رمال',
+    groundSnow: 'ثلج',
+    groundCircuit: 'حلبة',
+    groundLightWood: 'خشب فاتح',
+    groundMoon: 'قمر',
+    groundWater: 'ماء',
     garageNavBtn: 'معرضي 3D',
     garageModalTitle: 'المعرض الشخصي — خزانتي ثلاثية الأبعاد',
     garageModalSubtitle:

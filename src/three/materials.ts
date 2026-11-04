@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { PartSpec, VehicleCategory, VisualStyleMode } from '../types/game';
+import { PartSpec, VehicleCategory, VisualStyleMode, WorkshopGroundPreset } from '../types/game';
 
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
@@ -143,6 +143,164 @@ export function createTurntableTexture(
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = maxAnisotropy;
+  textureCache.set(key, tex);
+  return tex;
+}
+
+export function createGroundTexture(
+  preset: WorkshopGroundPreset,
+  maxAnisotropy: number,
+): THREE.CanvasTexture {
+  const key = `ground_${preset}`;
+  const cached = textureCache.get(key);
+  if (cached) return cached;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+
+  if (preset === 'asphalt') {
+    ctx.fillStyle = '#3a3a3a';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 512; i += 8) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + 4, 512); ctx.stroke();
+    }
+    // dashed center line
+    ctx.setLineDash([40, 20]);
+    ctx.strokeStyle = '#f0c040';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(256, 0); ctx.lineTo(256, 512); ctx.stroke();
+    ctx.setLineDash([]);
+  } else if (preset === 'grass') {
+    ctx.fillStyle = '#4a7c3f';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.strokeStyle = '#3d6834';
+    ctx.lineWidth = 2;
+    for (let y = 0; y < 512; y += 16) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.bezierCurveTo(128, y - 4, 384, y + 4, 512, y); ctx.stroke();
+    }
+    ctx.strokeStyle = '#5c9e50';
+    ctx.lineWidth = 1;
+    for (let x = 8; x < 512; x += 24) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + 4, 512); ctx.stroke();
+    }
+  } else if (preset === 'sand') {
+    ctx.fillStyle = '#e2c97e';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#d4b96a';
+    for (let i = 0; i < 300; i++) {
+      const x = Math.sin(i * 137.5) * 256 + 256;
+      const y = Math.cos(i * 97.3) * 256 + 256;
+      ctx.beginPath(); ctx.arc(x, y, 2 + (i % 3), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(200, 165, 80, 0.4)';
+    ctx.lineWidth = 2;
+    for (let y = 0; y < 512; y += 48) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.bezierCurveTo(170, y + 12, 340, y - 12, 512, y); ctx.stroke();
+    }
+  } else if (preset === 'snow') {
+    ctx.fillStyle = '#eef4fb';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#dde8f5';
+    for (let i = 0; i < 200; i++) {
+      const x = (i * 73) % 512;
+      const y = (i * 97) % 512;
+      const r = 3 + (i % 5);
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(180,210,240,0.5)';
+    ctx.lineWidth = 1;
+    for (let y = 0; y < 512; y += 32) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
+    }
+  } else if (preset === 'circuit') {
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#00e5ff';
+    ctx.shadowBlur = 6;
+    const grid = 64;
+    for (let x = 0; x <= 512; x += grid) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 512); ctx.stroke();
+    }
+    for (let y = 0; y <= 512; y += grid) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#00e5ff';
+    for (let x = 0; x <= 512; x += grid) {
+      for (let y = 0; y <= 512; y += grid) {
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  } else if (preset === 'light_wood') {
+    ctx.fillStyle = '#d4aa70';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.strokeStyle = '#b8926a';
+    ctx.lineWidth = 2;
+    for (let y = 0; y < 512; y += 20) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(90, 55, 20, 0.2)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 20; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * 26, 0);
+      ctx.bezierCurveTo(i * 26 + 10, 170, i * 26 - 8, 340, i * 26 + 4, 512);
+      ctx.stroke();
+    }
+  } else if (preset === 'moon') {
+    ctx.fillStyle = '#2d2d35';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#3a3a44';
+    for (let i = 0; i < 40; i++) {
+      const x = (i * 103) % 512;
+      const y = (i * 157) % 512;
+      const r = 6 + (i % 12);
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(200, 200, 220, 0.12)';
+    ctx.lineWidth = 1;
+    for (let y = 0; y < 512; y += 32) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(220, 220, 240, 0.6)';
+    for (let i = 0; i < 80; i++) {
+      const x = (i * 71 + 13) % 512;
+      const y = (i * 113 + 37) % 512;
+      ctx.beginPath(); ctx.arc(x, y, 1, 0, Math.PI * 2); ctx.fill();
+    }
+  } else { // water
+    ctx.fillStyle = '#1e6b8e';
+    ctx.fillRect(0, 0, 512, 512);
+    for (let y = 0; y < 512; y += 24) {
+      const grad = ctx.createLinearGradient(0, y, 0, y + 24);
+      grad.addColorStop(0, 'rgba(30, 120, 170, 0.6)');
+      grad.addColorStop(0.5, 'rgba(10, 80, 130, 0.4)');
+      grad.addColorStop(1, 'rgba(30, 120, 170, 0.6)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, y, 512, 24);
+    }
+    ctx.strokeStyle = 'rgba(150, 220, 255, 0.4)';
+    ctx.lineWidth = 2;
+    for (let y = 12; y < 512; y += 24) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.bezierCurveTo(128, y - 8, 384, y + 8, 512, y);
+      ctx.stroke();
+    }
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = maxAnisotropy;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(3, 3);
   textureCache.set(key, tex);
   return tex;
 }

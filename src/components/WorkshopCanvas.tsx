@@ -19,6 +19,7 @@ import {
   createDiagnosticFaultMaterial,
   createGuideGhostMaterial,
   createRadialShadowTexture,
+  createGroundTexture,
   createThematicTurntableTexture,
   createTurntableTexture,
   createXRayCutawayMaterial,
@@ -84,6 +85,7 @@ interface WorkshopCanvasProps {
   onPartDropRejected: (reason: string) => void;
   onDragEndSignal: () => void;
   onStartCanvasDrag: (partId: string) => void;
+  workshopTheme?: import('../types/game').WorkshopThemeConfig;
 }
 
 interface SparkParticle {
@@ -131,6 +133,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
   onPartDropRejected,
   onDragEndSignal,
   onStartCanvasDrag,
+  workshopTheme,
 }) => {
   const canvasMountRef = useRef<HTMLDivElement | null>(null);
   const [webglLost, setWebglLost] = useState(false);
@@ -211,6 +214,9 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     controls: OrbitControls;
     turntableGroup: THREE.Group;
     turntableTopMesh: THREE.Mesh;
+    baseRimMesh: THREE.Mesh;
+    hemiLight: THREE.HemisphereLight;
+    studioFloorMesh: THREE.Mesh;
     thematicContainer: THREE.Group;
     thematicArtifacts: ThematicSceneArtifacts | null;
     assembledGroup: THREE.Group;
@@ -458,6 +464,9 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       controls,
       turntableGroup,
       turntableTopMesh,
+      baseRimMesh: baseRim,
+      hemiLight,
+      studioFloorMesh: studioFloor,
       thematicContainer,
       thematicArtifacts: null,
       assembledGroup,
@@ -849,6 +858,42 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     eng.thematicArtifacts = artifacts;
     eng.wakeRender();
   }, [blueprint.category, environmentMode, visualStyle]);
+
+  // 2c. Apply workshop ground theme when workshopTheme changes
+  useEffect(() => {
+    const eng = engineRef.current;
+    if (!eng || !workshopTheme) return;
+
+    const { groundPreset } = workshopTheme;
+    const floorMat = eng.studioFloorMesh.material as THREE.MeshStandardMaterial;
+    const groundTex = createGroundTexture(groundPreset, eng.maxAnisotropy);
+    floorMat.map = groundTex;
+    floorMat.needsUpdate = true;
+
+    // Adjust rim and scene bg to match ground preset
+    const rimMat = eng.baseRimMesh.material as THREE.MeshStandardMaterial;
+    if (groundPreset === 'circuit') {
+      rimMat.color.setHex(0x001a2e);
+      eng.hemiLight.color.setHex(0x001a2e);
+    } else if (groundPreset === 'moon') {
+      rimMat.color.setHex(0x1a1a22);
+      eng.hemiLight.color.setHex(0x9090c0);
+    } else if (groundPreset === 'grass') {
+      rimMat.color.setHex(0x2d5a27);
+      eng.hemiLight.color.setHex(0xe0f2e0);
+    } else if (groundPreset === 'water') {
+      rimMat.color.setHex(0x0d4d6b);
+      eng.hemiLight.color.setHex(0xd0eeff);
+    } else if (groundPreset === 'snow') {
+      rimMat.color.setHex(0x8899aa);
+      eng.hemiLight.color.setHex(0xeef4fb);
+    } else {
+      rimMat.color.setHex(0x334155);
+      eng.hemiLight.color.setHex(0xe0f2fe);
+    }
+    rimMat.needsUpdate = true;
+    eng.wakeRender();
+  }, [workshopTheme]);
 
   // 3. Rebuild Placed, Diagnostic Faulty & Silhouette Meshes when Blueprint, Style, Livery, X-Ray, No-Silhouette, Placed/Faulty Parts, or Hint change
   useEffect(() => {
