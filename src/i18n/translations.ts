@@ -552,6 +552,7 @@ export interface UIStrings {
   filterPlanes: string;
   filterConstruction: string;
   filterSpace: string;
+  filterAerospace: string;
   allTiersLabel: string;
   tierPillLabel: (tier: number) => string;
   searchPlaceholder: string;
@@ -1083,6 +1084,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterPlanes: 'Air & Drones',
     filterConstruction: 'Chantier & Agri',
     filterSpace: 'Espace & Robots',
+    filterAerospace: 'Aérospatiale',
     allTiersLabel: 'Tous les paliers',
     tierPillLabel: (tier) => `Palier ${tier}`,
     searchPlaceholder: 'Rechercher un véhicule, train, fusée, pelleteuse...',
@@ -1677,6 +1679,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterPlanes: 'Air & Drones',
     filterConstruction: 'Construction & Farm',
     filterSpace: 'Space & Robotics',
+    filterAerospace: 'Aerospace',
     allTiersLabel: 'All Tiers',
     tierPillLabel: (tier) => `Tier ${tier}`,
     searchPlaceholder: 'Search a car, train, rocket, excavator, submarine...',
@@ -2271,6 +2274,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterPlanes: 'الطيران والدرون',
     filterConstruction: 'البناء والزراعة',
     filterSpace: 'الفضاء والروبوتات',
+    filterAerospace: 'الفضاء الجوي',
     allTiersLabel: 'كل المستويات',
     tierPillLabel: (tier) => `المستوى ${tier}`,
     searchPlaceholder: 'ابحث عن سيارة، قطار، صاروخ، حفارة، غواصة...',

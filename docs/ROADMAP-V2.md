@@ -348,9 +348,9 @@ Le `StageCatalogModal` affiche tous les véhicules. Avec 4 univers de plus (~20 
 - Mémoriser la catégorie sélectionnée dans le profil (localStorage)
 
 **Critères d'acceptation**
-- [ ] 4 nouvelles `VehicleCategory` : `ELECTRONICS`, `AEROSPACE`, `CHEMISTRY`, `PHYSICS`
-- [ ] Chips de filtre traduits FR/EN/AR
-- [ ] Sélection persistée par profil
+- [x] `VehicleCategory.AEROSPACE` ajoutée (`aerospatiale`) — les 3 autres univers attendent A1/A3/A4
+- [x] Chip de filtre Aérospatiale traduit FR/EN/AR dans `StageCatalogModal`
+- [ ] Sélection persistée par profil (différé)
 
 ---
 

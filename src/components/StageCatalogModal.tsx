@@ -170,8 +170,10 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
       case VehicleCategory.CONSTRUCTION:
         return t.catConstruction;
       case VehicleCategory.SPACE:
-      default:
         return t.catSpace;
+      case VehicleCategory.AEROSPACE:
+      default:
+        return t.filterAerospace;
     }
   };
 
@@ -237,6 +239,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                   [VehicleCategory.PLANE, t.filterPlanes],
                   [VehicleCategory.CONSTRUCTION, t.filterConstruction],
                   [VehicleCategory.SPACE, t.filterSpace],
+                  [VehicleCategory.AEROSPACE, t.filterAerospace],
                 ] as const
               ).map(([val, label]) => (
                 <button
