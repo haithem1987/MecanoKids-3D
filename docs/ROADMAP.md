@@ -18,7 +18,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 - **Travail** : ajouter `stripe.env` et `*.env` au `.gitignore`. Vérifier avec `git status` qu'il n'apparaît plus.
 - **CA** : `git check-ignore stripe.env` renvoie le fichier. 🧑 Recommander au propriétaire de régénérer les clés de test Stripe et de déplacer le contenu dans `.env`.
 
-### [ ] P0-ARCH 🧑 — Rendre l'API disponible en production *(ADR rédigé, décision : Supabase Edge Functions — implémentation en Phase 3 / tâche B4)*
+### [x] P0-ARCH 🧑 — Rendre l'API disponible en production *(ADR rédigé, décision : Supabase Edge Functions — implémentation en Phase 3 / tâche B4)*
 - **Contexte** : le Worker ne sert que des assets statiques (`wrangler.jsonc` n'a pas de `main`). Les routes `server.ts` (checkout, webhook, leaderboard, score, school-inquiry) ne fonctionnent qu'en dev.
 - **Travail** : rédiger un ADR court (`docs/adr/001-api-prod.md`) comparant deux options :
   - **(a)** Worker avec `main` (Hono) + D1 pour licences et contacts école, routes `/api/*` et assets via le binding `ASSETS` ;
@@ -159,7 +159,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## Phase 2 — Apprentissage et classe (semaines 7-11)
 
-- [ ] C1 — Explications et défis de transfert (diagnostic) pour les 15 missions. 🧑 Relecture par un enseignant de cycle 2-3.
+- [x] C1 — Explications et défis de transfert (diagnostic) pour les 15 missions. 🧑 Relecture par un enseignant de cycle 2-3. *(fait : explication + defiTransfert remplis pour les 15 missions dans catalog.ts, corrigés sur retour enseignant — 2 validées, 9 revues, 4 réécrites)*
 - [x] C2 — Mode enseignant : code de classe sans compte élève, attribution de missions, progression par compétence. Fichier : `TeacherDashboard.tsx`. (grille élèves × missions vert/orange/rouge, code 6 car. localStorage, assignation 1-3 missions depuis MISSIONS catalog)
 - [x] C3 — 12 fiches pédagogiques imprimables pour le cycle 2-3.
 - [x] C4 — Mode TBI (grandes cibles) et mode classe silencieux, avec volumes séparés pour la musique, les effets et la voix.
