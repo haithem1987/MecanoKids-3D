@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
   Check,
@@ -77,6 +77,12 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   const placedSet = new Set(placedPartIds);
   const faultySet = new Set(faultyPartIds);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const getMissingDepName = (part: PartSpec): string | null => {
     for (const depId of part.dependsOn) {
@@ -103,7 +109,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const isVertical = position === 'left' || position === 'right';
+  const isVertical = (position === 'left' || position === 'right') && !isMobile;
 
   const stylePicker = (
     <div className="flex items-center gap-0.5 shrink-0">
@@ -126,6 +132,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   const positionPicker = (
     <div className="flex items-center gap-1 shrink-0">
       {(['bottom', 'left', 'right'] as TrayPosition[]).map((pos) => {
+        if (isMobile && pos !== 'bottom') return null;
         const Icon = pos === 'bottom' ? PanelBottom : pos === 'left' ? PanelLeft : PanelRight;
         return (
           <button
@@ -208,7 +215,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         }}
         title={`${part.name} — ${part.roleHint}`}
         className={`group shrink-0 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[80px] min-w-[80px] ${
-          isVertical ? 'w-full' : 'w-36'
+          isVertical ? 'w-full' : isMobile ? 'w-24' : 'w-36'
         } ${
           isPlaced
             ? 'bg-slate-50 border-slate-200 opacity-65 cursor-default'
@@ -238,7 +245,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
           ) : (
             <span
               className="shrink-0"
-              style={{ width: 40, height: 40 }}
+              style={{ width: isMobile ? 28 : 40, height: isMobile ? 28 : 40 }}
               dangerouslySetInnerHTML={{ __html: getPartShapeSvg(part.roleHint, paintedSpec.primaryColor) }}
               aria-hidden="true"
             />
