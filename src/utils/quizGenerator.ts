@@ -86,6 +86,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'Il se déplace sur quatre roues grâce à un moteur thermique et un différentiel.',
       'Il navigue sur l\'eau avec une hélice immergée et un gouvernail pour changer de cap.',
     ],
+    [VehicleCategory.PHYSICS]: [
+      'Il se déplace sur quatre roues grâce à un moteur thermique et un différentiel.',
+      'Il capte le courant électrique par des panneaux solaires et des circuits imprimés.',
+    ],
   },
   en: {
     [VehicleCategory.CAR]: [
@@ -120,6 +124,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'It rolls on four wheels powered by an internal combustion engine and a differential.',
       'It sails on water with a submerged propeller and a rudder to change direction.',
     ],
+    [VehicleCategory.PHYSICS]: [
+      'It rolls on four wheels powered by an internal combustion engine and a differential.',
+      'It captures electricity through solar panels and printed circuits.',
+    ],
   },
   ar: {
     [VehicleCategory.CAR]: [
@@ -153,6 +161,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
     [VehicleCategory.CHEMISTRY]: [
       'ينطلق على أربعة عجلات بمحرك احتراق داخلي وناقل حركة تفاضلي.',
       'يبحر على الماء بمروحة غاطسة ودفة للتوجيه.',
+    ],
+    [VehicleCategory.PHYSICS]: [
+      'ينطلق على أربعة عجلات بمحرك احتراق داخلي وناقل حركة تفاضلي.',
+      'يلتقط الكهرباء عبر الألواح الشمسية والدوائر المطبوعة.',
     ],
   },
 };

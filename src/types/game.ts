@@ -16,6 +16,7 @@ export enum VehicleCategory {
   AEROSPACE = 'aerospatiale',
   ELECTRONICS = 'electronique',
   CHEMISTRY = 'chimie',
+  PHYSICS = 'physique',
 }
 
 export enum DifficultyTier {
@@ -107,6 +108,15 @@ export enum PartShapeKind {
   BOND_DOUBLE = 'bond_double',
   LAB_FLASK = 'lab_flask',
   LAB_STAND = 'lab_stand',
+  // Physics universe
+  PENDULUM_ROD = 'pendulum_rod',
+  PENDULUM_BOB = 'pendulum_bob',
+  FULCRUM = 'fulcrum',
+  LEVER_ARM = 'lever_arm',
+  RAMP_SURFACE = 'ramp_surface',
+  MAGNET_BAR = 'magnet_bar',
+  COMPASS_NEEDLE = 'compass_needle',
+  OPTICAL_PRISM = 'optical_prism',
 }
 
 export enum PartAnimationKind {

@@ -71,6 +71,7 @@ export interface ThematicSceneArtifacts {
     waterRings: THREE.Mesh[];
     thrusterFlames: THREE.Mesh[];
     beaconLights: THREE.Mesh[];
+    pendulumPivots: THREE.Object3D[];
   };
 }
 
@@ -84,6 +85,7 @@ export function buildThematicEnvironment(
   const waterRings: THREE.Mesh[] = [];
   const thrusterFlames: THREE.Mesh[] = [];
   const beaconLights: THREE.Mesh[] = [];
+  const pendulumPivots: THREE.Object3D[] = [];
 
   const darkMat = new THREE.MeshStandardMaterial({
     color: '#1e293b',
@@ -297,6 +299,43 @@ export function buildThematicEnvironment(
         roadStripes.push(dash);
       }
     }
+  } else if (category === VehicleCategory.PHYSICS) {
+    if (includePerimeterProps) {
+      // Ruler tick marks around the turntable rim
+      const rulerMat = new THREE.MeshStandardMaterial({ color: '#d97706', roughness: 0.5 });
+      for (let i = 0; i < 8; i++) {
+        const ang = (i / 8) * Math.PI * 2;
+        const tick = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.04), rulerMat);
+        tick.position.set(Math.cos(ang) * 2.28, 0.07, Math.sin(ang) * 2.28);
+        propsGroup.add(tick);
+      }
+    }
+
+    // Test-Drive FX: two swinging pendulums with amber rods and blue bobs
+    for (let i = 0; i < 2; i++) {
+      const pivotGroup = new THREE.Group();
+      pivotGroup.position.set(i === 0 ? -0.72 : 0.72, 0.9, 0);
+      pivotGroup.userData.phase = i * Math.PI; // opposite phases
+
+      const rodMat = new THREE.MeshStandardMaterial({ color: '#d97706', roughness: 0.35, metalness: 0.55 });
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.72, 8), rodMat);
+      rod.position.y = -0.36;
+      pivotGroup.add(rod);
+
+      const bobMat = new THREE.MeshStandardMaterial({
+        color: '#60a5fa',
+        emissive: '#3b82f6',
+        emissiveIntensity: 0.35,
+        roughness: 0.25,
+        metalness: 0.4,
+      });
+      const bob = new THREE.Mesh(new THREE.SphereGeometry(0.11, 14, 14), bobMat);
+      bob.position.y = -0.76;
+      pivotGroup.add(bob);
+
+      testDriveFxGroup.add(pivotGroup);
+      pendulumPivots.push(pivotGroup);
+    }
   } else {
     // SPACE: Orbital launchpad umbilical/lightning towers + luminous plasma exhaust plumes
     if (includePerimeterProps) {
@@ -377,6 +416,7 @@ export function buildThematicEnvironment(
       waterRings,
       thrusterFlames,
       beaconLights,
+      pendulumPivots,
     },
   };
 }

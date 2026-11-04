@@ -199,10 +199,12 @@ accentColor:    #60a5fa  (bleu onde)
 ```
 
 **Critères d'acceptation**
-- [ ] 5 seeds dans `src/data/fleetPhysique.ts`
-- [ ] Animation physique déclenchée au succès (oscillation pendule, rotation levier)
-- [ ] Discovery trilingue avec la loi physique associée
-- [ ] `npm run lint` et `npm test` passent
+- [x] 5 seeds dans `src/data/fleetPhysique.ts`
+- [x] Animation physique déclenchée au succès (oscillation pendule, rotation levier)
+- [x] Discovery trilingue avec la loi physique associée
+- [x] `npm run lint` et `npm test` passent
+
+> Fait : `VehicleCategory.PHYSICS`, 8 `PartShapeKind`, `fleetPhysique.ts` (5 seeds trilingues), pendulumPivots animés dans `thematicEnvironment.ts` + render loop, `filterPhysics` en FR/EN/AR.
 
 ---
 

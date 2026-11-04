@@ -650,6 +650,11 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
               const flicker = 0.86 + Math.sin(elapsed * 32.0 + i * 2.1) * 0.18;
               flame.scale.set(1, flicker, 1);
             }
+            for (let i = 0; i < fx.pendulumPivots.length; i++) {
+              const pivot = fx.pendulumPivots[i];
+              const phase = (pivot.userData.phase as number) ?? 0;
+              pivot.rotation.z = Math.sin(elapsed * 2.2 + phase) * 0.55;
+            }
           }
         } else if (isCompleted && !eng.draggedMesh) {
           // Gentle showcase rotation when completed (idle)
