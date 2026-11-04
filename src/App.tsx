@@ -160,6 +160,15 @@ export default function App() {
   const [explodedFactor, setExplodedFactor] = useState<number>(0);
   const [cameraPresetNonce, setCameraPresetNonce] = useState<number>(0);
   const [dockCollapsed, setDockCollapsed] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const effectiveTrayPosition = isMobile && progress.partsTrayPosition !== 'bottom'
+    ? 'bottom' as const
+    : progress.partsTrayPosition;
 
   const {
     trayVisible: partsTrayVisible,
@@ -2233,7 +2242,7 @@ export default function App() {
       </main>
 
       {/* Side PartsTray (left / right positions) */}
-      {progress.partsTrayPosition !== 'bottom' && (
+      {effectiveTrayPosition !== 'bottom' && (
         <PartsTray
           language={language}
           blueprint={currentBlueprint}
@@ -2244,7 +2253,7 @@ export default function App() {
           activeDragPartId={activeDragPartId}
           hintPartId={effectiveHintPartId}
           visible={partsTrayVisible}
-          position={progress.partsTrayPosition}
+          position={effectiveTrayPosition}
           onStartPartDrag={handleStartPartDrag}
           onClickPartCard={handleClickPartCard}
           onToggleVisible={partsTrayOnManualToggle}
@@ -2360,7 +2369,7 @@ export default function App() {
         onOpenTour={handleOpenTour}
         statusMessage={statusMessage}
         partsTrayVisible={partsTrayVisible}
-        partsTrayPosition={progress.partsTrayPosition}
+        partsTrayPosition={effectiveTrayPosition}
         onTogglePartsTray={partsTrayOnManualToggle}
         onChangePartsTrayPosition={handleChangePartsTrayPosition}
       />
