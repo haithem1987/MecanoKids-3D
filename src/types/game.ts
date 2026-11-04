@@ -15,6 +15,7 @@ export enum VehicleCategory {
   SPACE = 'espace',
   AEROSPACE = 'aerospatiale',
   ELECTRONICS = 'electronique',
+  CHEMISTRY = 'chimie',
 }
 
 export enum DifficultyTier {
@@ -97,6 +98,15 @@ export enum PartShapeKind {
   WIRE_JUMPER = 'wire_jumper',
   MICRO_MOTOR = 'micro_motor',
   SOLAR_PANEL = 'solar_panel',
+  // Chemistry universe
+  ATOM_HYDROGEN = 'atom_hydrogen',
+  ATOM_OXYGEN = 'atom_oxygen',
+  ATOM_CARBON = 'atom_carbon',
+  ATOM_CHLORINE = 'atom_chlorine',
+  BOND_SINGLE = 'bond_single',
+  BOND_DOUBLE = 'bond_double',
+  LAB_FLASK = 'lab_flask',
+  LAB_STAND = 'lab_stand',
 }
 
 export enum PartAnimationKind {

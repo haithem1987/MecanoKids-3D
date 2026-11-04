@@ -243,6 +243,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                   [VehicleCategory.SPACE, t.filterSpace],
                   [VehicleCategory.AEROSPACE, t.filterAerospace],
                   [VehicleCategory.ELECTRONICS, t.filterElectronics],
+                  [VehicleCategory.CHEMISTRY, t.filterChemistry],
                 ] as const
               ).map(([val, label]) => (
                 <button

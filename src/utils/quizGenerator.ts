@@ -82,6 +82,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'Il se propulse en brûlant du kérosène dans une chambre de combustion à haute pression.',
       'Il flotte sur l\'eau grâce à une coque étanche et déplace des tonnes de fret maritime.',
     ],
+    [VehicleCategory.CHEMISTRY]: [
+      'Il se déplace sur quatre roues grâce à un moteur thermique et un différentiel.',
+      'Il navigue sur l\'eau avec une hélice immergée et un gouvernail pour changer de cap.',
+    ],
   },
   en: {
     [VehicleCategory.CAR]: [
@@ -112,6 +116,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
       'It propels itself by burning kerosene in a high-pressure combustion chamber.',
       'It floats on water using a watertight hull and carries tons of maritime cargo.',
     ],
+    [VehicleCategory.CHEMISTRY]: [
+      'It rolls on four wheels powered by an internal combustion engine and a differential.',
+      'It sails on water with a submerged propeller and a rudder to change direction.',
+    ],
   },
   ar: {
     [VehicleCategory.CAR]: [
@@ -141,6 +149,10 @@ const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [stri
     [VehicleCategory.ELECTRONICS]: [
       'يندفع بحرق الكيروسين في غرفة احتراق عالية الضغط.',
       'يطفو على الماء بهيكل محكم الإغلاق وينقل أطناناً من البضائع البحرية.',
+    ],
+    [VehicleCategory.CHEMISTRY]: [
+      'ينطلق على أربعة عجلات بمحرك احتراق داخلي وناقل حركة تفاضلي.',
+      'يبحر على الماء بمروحة غاطسة ودفة للتوجيه.',
     ],
   },
 };

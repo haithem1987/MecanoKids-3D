@@ -154,11 +154,12 @@ accentColor:    #34d399  (vert sécurité)
 ```
 
 **Critères d'acceptation**
-- [ ] 5 seeds dans `src/data/fleetChimie.ts`
-- [ ] Validation valence, pas uniquement snap positionnel
-- [ ] Aucune représentation de produit dangereux ou réaction exothermique visible
-- [ ] Discovery trilingue avec etymologie des noms d'éléments
-- [ ] `npm run lint` et `npm test` passent
+- [x] 5 seeds dans `src/data/fleetChimie.ts`
+- [x] Validation valence, pas uniquement snap positionnel
+- [x] Aucune représentation de produit dangereux ou réaction exothermique visible
+- [x] Discovery trilingue avec etymologie des noms d'éléments
+- [x] `npm run lint` et `npm test` passent (106 tests)
+> Fait : VehicleCategory.CHEMISTRY + 8 PartShapeKind, fleetChimie.ts (5 seeds paliers 1-5), useValenceValidator.ts (bidirectionnel, 5 tests), traductions FR/EN/AR, blueprints.ts + StageCatalogModal + quizGenerator mis à jour.
 
 ---
 
