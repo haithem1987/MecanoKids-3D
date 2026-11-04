@@ -253,7 +253,7 @@ export function downloadDiplomaPng(
   const datePart = new Date().toISOString().slice(0, 10);
   const link = document.createElement('a');
   link.href = dataUrl;
-  link.download = `diplome-mecanokids-${safeName}-${diplomaId}-${datePart}.png`;
+  link.download = `diplome-octo-gears-${safeName}-${diplomaId}-${datePart}.png`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

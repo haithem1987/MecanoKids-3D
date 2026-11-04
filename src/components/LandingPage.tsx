@@ -4,6 +4,7 @@ import { LanguageCode, VehicleCategory, VisualStyleMode } from '../types/game';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import { VEHICLE_BLUEPRINTS } from '../data/blueprints';
 import { buildPartMeshGroup } from '../three/partGeometries';
+import { OctoMascot } from './OctoMascot';
 
 interface Props {
   language: LanguageCode;
@@ -166,6 +167,9 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
             </span>
           </div>
 
+          <div className="flex justify-center md:justify-start mb-4">
+            <OctoMascot width={120} />
+          </div>
           <h1 className="text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white leading-tight mb-4">
             {t.landingHeroTitle}
           </h1>
@@ -332,7 +336,8 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
         </div>
       </section>
 
-      <footer className="border-t border-slate-100 px-6 py-6 text-center text-sm text-slate-400">
+      <footer className="border-t border-slate-100 px-6 py-6 text-center text-sm text-slate-400 flex flex-col items-center gap-2">
+        <OctoMascot width={48} />
         🐙 Octo Gears — {language === 'ar' ? 'لعبة تعليمية' : language === 'en' ? 'Educational game' : 'Jeu éducatif'} · © 2026 ·{' '}
         <a href="/privacy.html" className="underline hover:text-sky-600">
           {language === 'ar' ? 'سياسة الخصوصية' : language === 'en' ? 'Privacy policy' : 'Politique de confidentialité'}

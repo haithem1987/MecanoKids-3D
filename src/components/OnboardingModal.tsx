@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { LanguageCode, ProfileAvatarColor, ProfileAvatarIcon } from '../types/game';
+import { OctoMascot } from './OctoMascot';
 
 const ICONS: Record<ProfileAvatarIcon, string> = {
   wrench: '🔧',
@@ -167,6 +168,9 @@ export function OnboardingModal({ onComplete }: Props) {
         {/* Step 3 — Ready */}
         {step === 2 && (
           <>
+            <div className="flex justify-center mb-2">
+              <OctoMascot width={100} />
+            </div>
             <div className="relative flex justify-center mb-6 overflow-visible h-28 items-center">
               {Array.from({ length: 12 }, (_, i) => (
                 <div

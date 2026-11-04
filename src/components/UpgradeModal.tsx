@@ -153,7 +153,7 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
             className="flex-1 min-w-[160px] flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors cursor-pointer shadow-sm disabled:opacity-60"
           />
           <a
-            href="mailto:contact@mecanokids.fr"
+            href="mailto:contact@octogears.com"
             className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-colors"
           >
             <GraduationCap className="w-4 h-4 shrink-0" />

@@ -16,8 +16,8 @@ export default defineConfig(() => {
       includeAssets: ['icon.svg', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png', 'pwa-maskable-512x512.png'],
       manifest: {
         id: '/',
-        name: 'MécanoKids 3D',
-        short_name: 'MécanoKids',
+        name: 'Octo Gears',
+        short_name: 'Octo Gears',
         description:
           "Jeu éducatif trilingue (Français / Anglais / Arabe) d'assemblage mécanique 3D hors-ligne pour enfants.",
         theme_color: '#0284c7',

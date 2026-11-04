@@ -61,8 +61,8 @@ export async function composePostcardDataUrl(
     meta.language === 'ar'
       ? 'ميكانو كيدز 3D — بطاقة تذكارية من الورشة'
       : meta.language === 'en'
-        ? 'MécanoKids 3D — Official Workshop Souvenir'
-        : 'MécanoKids 3D — Carte Postale Souvenir d’Atelier';
+        ? 'Octo Gears — Official Workshop Souvenir'
+        : 'Octo Gears — Carte Postale Souvenir d’Atelier';
   ctx.fillText(brandLabel, isRtl ? width - padX : padX, 66);
 
   const dateStr = new Date().toLocaleDateString(
@@ -189,7 +189,7 @@ export function downloadDataUrlAsPng(dataUrl: string, vehicleName: string): void
   const datePart = new Date().toISOString().slice(0, 10);
   const link = document.createElement('a');
   link.href = dataUrl;
-  link.download = `mecanokids-3d-${safeSlug}-${datePart}.png`;
+  link.download = `octo-gears-${safeSlug}-${datePart}.png`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

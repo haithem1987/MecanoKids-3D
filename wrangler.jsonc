@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mecanokids-3d",
+  "name": "octo-gears",
   "compatibility_date": "2026-11-01",
   "observability": {
     "enabled": true

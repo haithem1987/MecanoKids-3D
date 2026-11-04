@@ -86,7 +86,7 @@ async function startServer() {
   const stripe = getStripeClient();
 
   app.get('/api/health', (_req: Request, res: Response) => {
-    res.json({ ok: true, app: 'MécanoKids 3D' });
+    res.json({ ok: true, app: 'Octo Gears' });
   });
 
   // ── Stripe checkout ───────────────────────────────────────────────────────
@@ -110,7 +110,7 @@ async function startServer() {
       automatic_tax: { enabled: false }, // activer après enregistrement TVA Stripe
       success_url: `${base}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/?checkout=cancel`,
-      integration_identifier: `mecanokids-${plan}-jkxrtqwp`,
+      integration_identifier: `octo-gears-${plan}-jkxrtqwp`,
     });
     res.json({ url: session.url });
   });
@@ -262,7 +262,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`MécanoKids 3D lancé sur http://localhost:${PORT}`);
+    console.log(`Octo Gears lancé sur http://localhost:${PORT}`);
   });
 }
 

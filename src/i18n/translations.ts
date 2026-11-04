@@ -1,4 +1,4 @@
-﻿import { localizeBlueprintToEnglish } from '../data/englishBlueprints';
+import { localizeBlueprintToEnglish } from '../data/englishBlueprints';
 import { DiscoveryFacts, LanguageCode, VehicleBlueprint } from '../types/game';
 
 interface ArabicBlueprintTranslation {
@@ -1003,7 +1003,7 @@ export interface UIStrings {
 
 export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
   fr: {
-    appName: 'MécanoKids 3D',
+    appName: 'Octo Gears',
     navAriaLabel: 'Navigation principale et styles 3D',
     stagesBtn: 'Stages & Sauvegarde',
     styleWood: 'Bois & Métal',
@@ -1310,8 +1310,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     voiceUnsupportedLabel: 'Synthèse vocale non prise en charge sur ce navigateur.',
     pwaSectionTitle: 'Application Hors-Ligne (PWA)',
     pwaSectionDesc:
-      'Installe MécanoKids 3D sur ton écran d’accueil ou ton bureau Windows pour jouer en plein écran sans connexion Internet.',
-    pwaInstallBtn: 'Installer MécanoKids 3D sur cet appareil',
+      'Installe Octo Gears sur ton écran d’accueil ou ton bureau Windows pour jouer en plein écran sans connexion Internet.',
+    pwaInstallBtn: 'Installer Octo Gears sur cet appareil',
     pwaInstallShortBtn: 'Installer',
     pwaInstalledLabel: 'Application installée · Prête hors-ligne',
     pwaOnlineReadyLabel: 'Cache hors-ligne actif · Jouable sans réseau',
@@ -1517,7 +1517,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentDiplomaDownloadedToast: 'Diplôme officiel haute définition téléchargé !',
     parentBackupBtn: 'Sauvegarder ce profil (.json)',
     parentDiagnosticFooter: (profileCount, isOfflineReady) =>
-      `MécanoKids 3D v1.1 · Lot A · ${profileCount} profil(s) local(aux) · ${isOfflineReady ? 'Prêt hors-ligne' : 'Mode hors-ligne actif'} · 0 % Publicité / 0 % Tracking enfant`,
+      `Octo Gears v1.1 · Lot A · ${profileCount} profil(s) local(aux) · ${isOfflineReady ? 'Prêt hors-ligne' : 'Mode hors-ligne actif'} · 0 % Publicité / 0 % Tracking enfant`,
     sessionCurtainTitle: 'L’atelier ferme ses portes pour aujourd’hui !',
     sessionCurtainSubtitle: (profileName, completedCount) =>
       `Bravo ${profileName} ! Tes outils sont bien rangés et tes ${completedCount} véhicule(s) construit(s) sont sauvegardés pour demain.`,
@@ -1587,7 +1587,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
   },
 
   en: {
-    appName: 'MécanoKids 3D',
+    appName: 'Octo Gears',
     navAriaLabel: 'Main navigation and 3D visual styles',
     stagesBtn: 'Stages & Save',
     styleWood: 'Wood & Metal',
@@ -1894,8 +1894,8 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     voiceUnsupportedLabel: 'Speech synthesis is not supported in this browser.',
     pwaSectionTitle: 'Offline Installable App (PWA)',
     pwaSectionDesc:
-      'Install MécanoKids 3D on your home screen or Windows desktop to play fullscreen anywhere without an internet connection.',
-    pwaInstallBtn: 'Install MécanoKids 3D on this device',
+      'Install Octo Gears on your home screen or Windows desktop to play fullscreen anywhere without an internet connection.',
+    pwaInstallBtn: 'Install Octo Gears on this device',
     pwaInstallShortBtn: 'Install',
     pwaInstalledLabel: 'App installed · Offline ready',
     pwaOnlineReadyLabel: 'Offline cache ready · Playable without internet',
@@ -2101,7 +2101,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentDiplomaDownloadedToast: 'High-resolution official diploma downloaded!',
     parentBackupBtn: 'Backup profile (.json)',
     parentDiagnosticFooter: (profileCount, isOfflineReady) =>
-      `MécanoKids 3D v1.1 · Lot A · ${profileCount} local profile(s) · ${isOfflineReady ? 'Offline Ready' : 'Offline Mode Active'} · 0% Ads / 0% Child Tracking`,
+      `Octo Gears v1.1 · Lot A · ${profileCount} local profile(s) · ${isOfflineReady ? 'Offline Ready' : 'Offline Mode Active'} · 0% Ads / 0% Child Tracking`,
     sessionCurtainTitle: 'The workshop is closing for today!',
     sessionCurtainSubtitle: (profileName, completedCount) =>
       `Great work ${profileName}! Your tools are neatly stored and your ${completedCount} completed machine(s) are safely saved for tomorrow.`,
