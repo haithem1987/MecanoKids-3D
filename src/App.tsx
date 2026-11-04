@@ -213,6 +213,7 @@ export default function App() {
   const segmentStartRef = useRef<number | null>(null);
   const undoStackRef = useRef<string[][]>([]);
   const [canUndo, setCanUndo] = useState(false);
+  const lastInteractionRef = useRef<number>(Date.now());
 
 
   // Keep todayDateKey fresh across midnight rollovers
@@ -352,6 +353,21 @@ export default function App() {
       cleanNoSilhouetteRunRef.current = false;
     }
   }, [currentBlueprint.id, progress.noSilhouetteMode, standardPlacedPartIds.length]);
+
+  // Auto-hint after 20s of inactivity
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (isCompleted || activeDiagnostic || hintPartId) return;
+      if (Date.now() - lastInteractionRef.current >= 20_000) {
+        const nextPart = currentBlueprint.parts.find((p) => !standardPlacedPartIds.includes(p.id));
+        if (nextPart) {
+          setHintPartId(nextPart.id);
+          track('hint_requested', { blueprintId: currentBlueprint.id, trigger: 'inactivity' });
+        }
+      }
+    }, 5_000);
+    return () => window.clearInterval(id);
+  }, [activeDiagnostic, currentBlueprint.id, currentBlueprint.parts, hintPartId, isCompleted, standardPlacedPartIds]);
 
   const currentIndex = useMemo(
     () => VEHICLE_BLUEPRINTS.findIndex((b) => b.id === currentBlueprint.id),
@@ -1165,6 +1181,7 @@ export default function App() {
   const handleSelectBlueprint = useCallback(
     (blueprintId: string) => {
       track('mission_started', { blueprintId });
+      lastInteractionRef.current = Date.now();
       flushActiveStopwatchSegment(currentBlueprint.id);
       speechEngine.stop();
       undoStackRef.current = [];
@@ -1424,6 +1441,7 @@ export default function App() {
       if (alreadyPlaced) return;
 
       track('part_snapped', { partId, blueprintId: currentBlueprint.id });
+      lastInteractionRef.current = Date.now();
       undoStackRef.current = [...undoStackRef.current, [...standardPlacedPartIds]];
       setCanUndo(true);
       const updatedPlaced = [...standardPlacedPartIds, partId];
@@ -1708,17 +1726,28 @@ export default function App() {
 
   const handlePartDropRejected = useCallback(
     (reason: string) => {
+      lastInteractionRef.current = Date.now();
       if (!activeDiagnostic) {
         setTimerArmed(true);
         setProgress((p) => {
           const cur = p.inProgressStages[currentBlueprint.id];
+          const newMistakes = (cur?.mistakesCount ?? 0) + 1;
+          if (newMistakes >= 3 && !hintPartId) {
+            const nextPart = currentBlueprint.parts.find(
+              (p) => !standardPlacedPartIds.includes(p.id),
+            );
+            if (nextPart) {
+              setHintPartId(nextPart.id);
+              track('hint_requested', { blueprintId: currentBlueprint.id, trigger: 'failures' });
+            }
+          }
           return {
             ...p,
             inProgressStages: {
               ...p.inProgressStages,
               [currentBlueprint.id]: {
                 placedPartIds: cur?.placedPartIds ?? [],
-                mistakesCount: (cur?.mistakesCount ?? 0) + 1,
+                mistakesCount: newMistakes,
                 elapsedMs: cur?.elapsedMs ?? 0,
                 updatedAt: Date.now(),
               },
@@ -1729,11 +1758,12 @@ export default function App() {
       flashStatus(reason);
       partsTrayOnPartRejected();
     },
-    [activeDiagnostic, currentBlueprint.id, flashStatus, partsTrayOnPartRejected, setProgress],
+    [activeDiagnostic, currentBlueprint.id, currentBlueprint.parts, flashStatus, hintPartId, partsTrayOnPartRejected, setHintPartId, setProgress, standardPlacedPartIds],
   );
 
   const handleStartPartDrag = useCallback(
     (partId: string) => {
+      lastInteractionRef.current = Date.now();
       soundEngine.playPickup(progress.preferredStyle);
       if (!activeDiagnostic) {
         setTimerArmed(true);

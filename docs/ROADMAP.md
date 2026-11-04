@@ -132,8 +132,9 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 - **CA** : le profil persiste et se change derrière la porte parents.
 - **Fait** : `AgeProfile` type + `AgeProfileSelector` modal au premier lancement ; `getSnapMultiplier` (×1.5/×1/×0.8) appliqué au blueprint via memo dans `App.tsx` ; auto-hint pour 5-7 ; onglet Profil dans `ParentSpaceModal` ; persistance via `storage.ts` ; i18n FR/EN/AR.
 
-### [ ] M4 — Aide progressive
+### [x] M4 — Aide progressive
 - **CA** : un indice apparaît automatiquement après 3 échecs ou 20 s d'inactivité sur une étape ; l'événement `hint_requested` est envoyé.
+- **Fait** : `lastInteractionRef` réinitialisé dans `handleSelectBlueprint`, `handlePartSnapped`, `handleStartPartDrag`, `handlePartDropRejected`. Auto-hint dans `handlePartDropRejected` après `mistakesCount >= 3`. `useEffect` intervalle 5 s vérifiant 20 s d'inactivité. `track('hint_requested', { trigger })` pour les deux déclencheurs.
 
 ### [x] M5 — Qualité 3D adaptative
 - **Travail** :
