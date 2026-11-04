@@ -2574,6 +2574,10 @@ export default function App() {
           setUpgradeModalOpen(false);
           setLicenseActivationOpen(true);
         }}
+        onPromoUnlock={() => {
+          setProgress((p) => ({ ...p, purchasedFull: true }));
+          setUpgradeModalOpen(false);
+        }}
       />
 
       {/* License key activation */}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, GraduationCap, Key, Lock, Sparkles, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, GraduationCap, Key, Lock, Sparkles, Tag, X } from 'lucide-react';
 import { CheckoutButton } from './CheckoutButton';
 import type { LanguageCode } from '../types/game';
 
@@ -9,6 +9,7 @@ interface UpgradeModalProps {
   reason?: 'stages' | 'profiles' | 'liveries';
   onUpgradeClick: () => void;
   onHaveKey?: () => void;
+  onPromoUnlock?: () => void;
   language?: LanguageCode;
 }
 
@@ -56,9 +57,22 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   reason,
   onUpgradeClick: _onUpgradeClick,
   onHaveKey,
+  onPromoUnlock,
   language = 'fr',
 }) => {
   const price = FAMILY_PRICE[language];
+  const [promoCode, setPromoCode] = useState('');
+  const [promoError, setPromoError] = useState(false);
+
+  const handlePromo = () => {
+    if (promoCode.trim().toUpperCase() === 'OCTOTEST2026') {
+      onPromoUnlock?.();
+    } else {
+      setPromoError(true);
+      setTimeout(() => setPromoError(false), 2000);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -169,6 +183,30 @@ export const UpgradeModal: React.FC<UpgradeModalProps> = ({
               J&apos;ai déjà une clé
             </button>
           )}
+          <div className="w-full flex items-center gap-2">
+            <div className="relative flex-1">
+              <Tag className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handlePromo()}
+                placeholder="Code promo"
+                className={`w-full ps-9 pe-3 py-2.5 text-sm border rounded-xl outline-none transition-colors ${
+                  promoError
+                    ? 'border-red-400 bg-red-50 text-red-700'
+                    : 'border-slate-200 bg-white text-slate-900 focus:border-sky-400'
+                }`}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handlePromo}
+              className="px-4 py-2.5 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer whitespace-nowrap"
+            >
+              Appliquer
+            </button>
+          </div>
         </div>
       </div>
     </div>
