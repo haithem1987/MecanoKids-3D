@@ -205,6 +205,8 @@ accentColor:    #60a5fa  (bleu onde)
 - [x] `npm run lint` et `npm test` passent
 
 > Fait : `VehicleCategory.PHYSICS`, 8 `PartShapeKind`, `fleetPhysique.ts` (5 seeds trilingues), pendulumPivots animés dans `thematicEnvironment.ts` + render loop, `filterPhysics` en FR/EN/AR.
+>
+> Fix visuel (commit 5311d4f) : 3 archétypes STEM (`elec_circuit`, `chem_molecule`, `phys_apparatus`) remplacent les archétypes véhicules. 24 géométries three.js dédiées implémentées dans `partGeometries.ts` — breadboard, pile, LED, atomes, liaisons, pendule, fulcrum, prisme, etc. Les univers Électronique, Chimie et Physique ressemblent désormais à ce qu'ils représentent.
 
 ---
 
