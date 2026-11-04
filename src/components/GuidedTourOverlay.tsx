@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -78,13 +78,14 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
     toY: number;
   } | null>(null);
 
+  const wasOpenRef = useRef(false);
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !wasOpenRef.current) {
       setStepIndex(0);
       onStepChange(0);
-    } else {
-      stop();
     }
+    if (!isOpen) stop();
+    wasOpenRef.current = isOpen;
   }, [isOpen, onStepChange, stop]);
 
   const measureTargets = useCallback(() => {
