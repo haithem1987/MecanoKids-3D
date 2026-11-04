@@ -88,14 +88,14 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <>
-      <header className="relative z-20 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 bg-white border-b border-slate-200">
+      <header className="relative z-20 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 bg-gradient-to-b from-sky-50 to-white border-b-2 border-sky-100">
         {/* Zone 1: Brand Wordmark */}
         <button
           type="button"
           onClick={onOpenCatalog}
           className="font-display text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 cursor-pointer"
         >
-          {t.appName}
+          🐙 {t.appName}
         </button>
 
         {/* Zone 2: Navigation & 3D Visual Style Switcher */}
@@ -416,7 +416,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-semibold text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
           >
             <Lightbulb className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t.hintBtn}</span>
+            <span className="hidden 2xl:inline">{t.hintBtn}</span>
           </button>
         </div>
       </header>

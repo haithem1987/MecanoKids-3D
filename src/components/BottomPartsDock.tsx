@@ -166,7 +166,7 @@ export const BottomPartsDock: React.FC<BottomPartsDockProps> = ({
       <button
         type="button"
         onClick={onToggleCollapse}
-        className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-b-0 border-slate-200 rounded-t-lg text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer min-h-[36px]"
+        className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-sky-500 to-indigo-600 text-white rounded-t-xl text-xs font-bold shadow-md transition-opacity hover:opacity-90 cursor-pointer min-h-[40px]"
         title={t.shortcutH}
       >
         {collapsed ? (
