@@ -18,6 +18,7 @@ class SpeechNarrator {
   private activeId: string | null = null;
   private speaking = false;
   private voicesLoaded = false;
+  public lastSpoken: { id: string; text: string; lang: LanguageCode } | null = null;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -112,6 +113,7 @@ class SpeechNarrator {
       utterance.rate = lang === 'ar' ? 0.94 : 0.96;
       utterance.pitch = 1.02;
 
+      this.lastSpoken = { id, text: cleanText, lang };
       this.activeId = id;
       this.speaking = true;
       this.emit();
@@ -145,6 +147,12 @@ class SpeechNarrator {
       this.stop();
     } else {
       this.speak(id, text, lang);
+    }
+  }
+
+  public replay(): void {
+    if (this.lastSpoken) {
+      this.speak(this.lastSpoken.id, this.lastSpoken.text, this.lastSpoken.lang);
     }
   }
 
@@ -187,6 +195,10 @@ export function useSpeech() {
     speechEngine.stop();
   }, []);
 
+  const replay = useCallback(() => {
+    speechEngine.replay();
+  }, []);
+
   return {
     isSupported: snapshot.isSupported,
     isSpeaking: snapshot.isSpeaking,
@@ -194,5 +206,6 @@ export function useSpeech() {
     speak,
     toggle,
     stop,
+    replay,
   };
 }

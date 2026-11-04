@@ -121,9 +121,10 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 - **Boucle de chaque mission** : situation → question → expérience → résultat visible → explication dite à voix haute → défi de transfert (diagnostic).
 - **CA** : 15 missions sur 15 véhicules existants ; un test vérifie que chaque mission est valide et traduite dans les 3 langues.
 
-### [ ] M2 — Consignes vocales FR/EN/AR
+### [x] M2 — Consignes vocales FR/EN/AR
 - **Fichiers** : `utils/speech.ts`.
 - **CA** : chaque consigne peut être réécoutée ; mode guidé jouable sans savoir lire.
+- **Fait** : `lastSpoken` + `replay()` sur `SpeechNarrator` ; bouton rejouer (≥48 px, `aria-label`) dans `WorkshopToolbar` passé via `BottomPartsDock` ; auto-lecture à l'ouverture de mission (mode guidé) via `useEffect` sur `currentBlueprint.id` dans `App.tsx` ; tests unitaires (`speech.test.ts`, 6 cas, env Node + stubs manuels).
 
 ### [x] M3 — Profils d'âge
 - **Profils** : 5-7, 8-10 et 11-12 ans, choisis au démarrage avec 3 visuels.

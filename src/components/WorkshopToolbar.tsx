@@ -12,6 +12,7 @@ import {
   Volume2,
   VolumeX,
   Wrench,
+  RefreshCw,
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import {
@@ -40,6 +41,7 @@ interface WorkshopToolbarProps {
   onOpenTour: () => void;
   muted: boolean;
   onToggleMute: () => void;
+  onReplayInstruction: () => void;
   onUndo: () => void;
   canUndo: boolean;
   onResetStage: () => void;
@@ -69,6 +71,7 @@ export const WorkshopToolbar: React.FC<WorkshopToolbarProps> = ({
   onOpenTour,
   muted,
   onToggleMute,
+  onReplayInstruction,
   onUndo,
   canUndo,
   onResetStage,
@@ -290,6 +293,18 @@ export const WorkshopToolbar: React.FC<WorkshopToolbarProps> = ({
             <Volume2 className="w-3.5 h-3.5 shrink-0" />
           )}
         </button>
+
+        {speechEngine.isSupported() && (
+          <button
+            type="button"
+            onClick={onReplayInstruction}
+            aria-label={t.replayInstructionAria}
+            title={t.replayInstructionAria}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[48px] cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+          </button>
+        )}
 
         <button
           type="button"
