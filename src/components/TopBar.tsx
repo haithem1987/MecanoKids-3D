@@ -75,6 +75,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   const navMenuRef = useRef<HTMLDivElement>(null);
   const [langMenuOpen, setLangMenuOpen] = useState<boolean>(false);
   const langMenuRef = useRef<HTMLDivElement>(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   const hasTeacherTools = resolveEntitlements(activeProfile.progress.licenseState).teacherTools;
 
   useEffect(() => {
@@ -87,6 +89,17 @@ export const TopBar: React.FC<TopBarProps> = ({
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [langMenuOpen]);
+
+  useEffect(() => {
+    if (!profileMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [profileMenuOpen]);
 
   useEffect(() => {
     if (!navMenuOpen) return;
@@ -172,100 +185,109 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Zone 3: Active Profile + PWA Install + Daily + Stopwatch + Language + Hint */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Active Local Profile Switcher */}
-          <button
-            type="button"
-            onClick={onOpenProfiles}
-            title={t.profilesModalTitle}
-            className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-          >
-            <span
-              className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${
-                PROFILE_COLOR_STYLES[activeProfile.avatarColor].bg
+          {/* Profile dropdown — profile + parent space + garage regroupés */}
+          <div ref={profileMenuRef} className="relative">
+            <button
+              type="button"
+              data-testid="topbar-parents-btn"
+              onClick={() => setProfileMenuOpen((o) => !o)}
+              title={activeProfile.name}
+              aria-expanded={profileMenuOpen}
+              className={`inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ${
+                remainingSessionMinutes !== null && remainingSessionMinutes <= 5
+                  ? 'bg-amber-50 border-amber-300 text-amber-950 hover:bg-amber-100'
+                  : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100'
               }`}
             >
-              {renderProfileAvatarIcon(activeProfile.avatarIcon, 'w-3.5 h-3.5')}
-            </span>
-            <span className="hidden lg:inline max-w-[96px] truncate">
-              {activeProfile.name}
-            </span>
-          </button>
-
-          {/* Lot A: Parent & Teacher Space (Protected by Parental Gate) */}
-          <button
-            type="button"
-            data-testid="topbar-parents-btn"
-            onClick={onOpenParentSpace}
-            title={t.parentsTopBarTitle}
-            aria-label={t.parentsTopBarTitle}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 ${
-              remainingSessionMinutes !== null && remainingSessionMinutes <= 5
-                ? 'bg-amber-50 border-amber-300 text-amber-950 hover:bg-amber-100'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-sky-700 shrink-0" />
-            <span className="hidden 2xl:inline">{t.parentsNavBtn}</span>
-            {remainingSessionMinutes !== null && (
-              <span className="font-mono tabular-nums text-[11px] font-bold text-sky-700">
-                {remainingSessionMinutes}m
+              <span className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${PROFILE_COLOR_STYLES[activeProfile.avatarColor].bg}`}>
+                {renderProfileAvatarIcon(activeProfile.avatarIcon, 'w-3.5 h-3.5')}
               </span>
+              <span className="hidden lg:inline max-w-[80px] truncate">{activeProfile.name}</span>
+              {remainingSessionMinutes !== null && (
+                <span className="font-mono tabular-nums text-[11px] font-bold text-sky-700">{remainingSessionMinutes}m</span>
+              )}
+              {garageCount > 0 && remainingSessionMinutes === null && (
+                <span className="font-mono tabular-nums text-[11px] font-bold text-sky-700 hidden lg:inline">{garageCount}</span>
+              )}
+            </button>
+
+            {profileMenuOpen && (
+              <div className="absolute end-0 top-full mt-1 z-50 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 min-w-[200px]">
+                {/* Profile switcher */}
+                <button
+                  type="button"
+                  onClick={() => { onOpenProfiles(); setProfileMenuOpen(false); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${PROFILE_COLOR_STYLES[activeProfile.avatarColor].bg}`}>
+                    {renderProfileAvatarIcon(activeProfile.avatarIcon, 'w-4 h-4')}
+                  </span>
+                  <div className="text-start">
+                    <div className="font-semibold text-slate-900 truncate max-w-[120px]">{activeProfile.name}</div>
+                    <div className="text-xs text-slate-500">{t.profilesModalTitle}</div>
+                  </div>
+                </button>
+
+                <div className="border-t border-slate-100 my-1" />
+
+                {/* Espace parents */}
+                <button
+                  type="button"
+                  onClick={() => { onOpenParentSpace(); setProfileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors cursor-pointer ${
+                    remainingSessionMinutes !== null && remainingSessionMinutes <= 5
+                      ? 'text-amber-800 hover:bg-amber-50'
+                      : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4 shrink-0 text-sky-600" />
+                  <span className="flex-1 text-start">{t.parentsNavBtn}</span>
+                  {remainingSessionMinutes !== null && (
+                    <span className="font-mono font-bold text-xs text-sky-700">{remainingSessionMinutes}m</span>
+                  )}
+                </button>
+
+                {/* Teacher (école) */}
+                {hasTeacherTools && onOpenTeacherDashboard && (
+                  <button
+                    type="button"
+                    onClick={() => { onOpenTeacherDashboard!(); setProfileMenuOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-emerald-800 hover:bg-emerald-50 transition-colors cursor-pointer"
+                  >
+                    <GraduationCap className="w-4 h-4 shrink-0 text-emerald-600" />
+                    <span className="text-start">{t.teacherNavBtn}</span>
+                  </button>
+                )}
+
+                <div className="border-t border-slate-100 my-1" />
+
+                {/* Garage */}
+                <button
+                  type="button"
+                  onClick={() => { onOpenGarage(); setProfileMenuOpen(false); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <Warehouse className="w-4 h-4 shrink-0 text-sky-600" />
+                  <span className="flex-1 text-start">{t.garageNavBtn}</span>
+                  {garageCount > 0 && (
+                    <span className="font-mono font-bold text-xs text-sky-700">{garageCount}</span>
+                  )}
+                </button>
+
+                {/* PWA Install */}
+                {!isInstalled && (isInstallable || isIOS) && (
+                  <button
+                    type="button"
+                    onClick={() => { isIOS ? setIosGuideOpen(true) : void install(); setProfileMenuOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-sky-800 hover:bg-sky-50 transition-colors cursor-pointer"
+                  >
+                    {isIOS ? <Share className="w-4 h-4 shrink-0 text-sky-600" /> : <Download className="w-4 h-4 shrink-0 text-sky-600" />}
+                    <span className="text-start">{t.pwaInstallShortBtn}</span>
+                  </button>
+                )}
+              </div>
             )}
-          </button>
-
-          {/* Lot E: Teacher Dashboard (school tier only) */}
-          {hasTeacherTools && onOpenTeacherDashboard && (
-            <button
-              type="button"
-              onClick={onOpenTeacherDashboard}
-              title={t.teacherNavBtn}
-              aria-label={t.teacherNavBtn}
-              className="inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-            >
-              <GraduationCap className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-              <span className="hidden 2xl:inline">{t.teacherNavBtn}</span>
-            </button>
-          )}
-
-          {/* In-App PWA Install Prompt (Hidden once installed in standalone mode) */}
-          {!isInstalled && isInstallable && (
-            <button
-              type="button"
-              onClick={() => void install()}
-              title={t.pwaInstallBtn}
-              className="inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-            >
-              <Download className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-              <span className="hidden 2xl:inline">{t.pwaInstallShortBtn}</span>
-            </button>
-          )}
-
-          {!isInstalled && !isInstallable && isIOS && (
-            <button
-              type="button"
-              onClick={() => setIosGuideOpen(true)}
-              title={t.pwaIosGuideTitle}
-              className="inline-flex items-center gap-1.5 px-2.5 py-2 text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer"
-            >
-              <Share className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-              <span className="hidden 2xl:inline">{t.pwaInstallShortBtn}</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={onOpenGarage}
-            title={t.garageModalTitle}
-            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-          >
-            <Warehouse className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-            <span className="hidden lg:inline">{t.garageNavBtn}</span>
-            {garageCount > 0 && (
-              <span className="font-mono tabular-nums text-[11px] font-bold text-sky-700">
-                {garageCount}
-              </span>
-            )}
-          </button>
+          </div>
 
           {/* Daily Engagement Streak Fire Indicator */}
           <button
@@ -423,10 +445,9 @@ export const TopBar: React.FC<TopBarProps> = ({
             type="button"
             data-tour="mascot-cta"
             onClick={onOpenMechanicGuide}
-            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-semibold text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors whitespace-nowrap shrink-0 min-h-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+            className="inline-flex items-center justify-center p-2.5 text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors shrink-0 min-h-[40px] min-w-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
           >
-            <Lightbulb className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden 2xl:inline">{t.hintBtn}</span>
+            <Lightbulb className="w-4 h-4 shrink-0" />
           </button>
         </div>
       </header>
