@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { FichesPedaPanel } from './FichesPedaPanel';
 import {
   Award,
   Clock,
@@ -38,7 +39,7 @@ import {
 } from '../utils/stemAnalytics';
 import { PROFILE_COLOR_STYLES, renderProfileAvatarIcon } from './ProfilesModal';
 
-type ParentTabId = 'stem' | 'timer' | 'diplomas' | 'profile' | 'classroom';
+type ParentTabId = 'stem' | 'timer' | 'diplomas' | 'profile' | 'classroom' | 'fiches';
 
 interface ParentSpaceModalProps {
   isOpen: boolean;
@@ -328,6 +329,18 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
             >
               <Monitor className="w-3.5 h-3.5 shrink-0" />
               <span>{t.parentTabClassroom}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('fiches')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                activeTab === 'fiches'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Printer className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.parentTabFiches}</span>
             </button>
           </div>
         </div>
@@ -731,6 +744,10 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
                 </div>
               </div>
             </div>
+          )}
+
+          {activeTab === 'fiches' && (
+            <FichesPedaPanel language={language} fichePrintBtn={t.fichePrintBtn} />
           )}
         </div>
 

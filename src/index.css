@@ -114,3 +114,14 @@ html[dir="rtl"] .font-display {
     animation: none;
   }
 }
+
+@media print {
+  body > * { display: none !important; }
+  .peda-print-area {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
