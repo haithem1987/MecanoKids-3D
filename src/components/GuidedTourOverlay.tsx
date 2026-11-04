@@ -296,7 +296,7 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
 
       {/* Guided Tour Coach Card — anchored to start edge so center 3D & end CTA stay visible */}
       <div
-        className={`pointer-events-auto absolute top-20 w-[92vw] max-w-sm bg-white border border-slate-200 rounded-xl shadow-lg p-5 ${
+        className={`pointer-events-auto absolute top-20 w-[92vw] max-w-sm max-h-[55vh] overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg p-5 ${
           isRtl ? 'right-4 sm:right-6' : 'left-4 sm:left-6'
         }`}
       >

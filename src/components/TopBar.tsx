@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Calendar,
   CheckCircle2,
@@ -7,6 +7,7 @@ import {
   Globe,
   GraduationCap,
   Lightbulb,
+  Menu,
   Share,
   ShieldCheck,
   Timer,
@@ -70,7 +71,20 @@ export const TopBar: React.FC<TopBarProps> = ({
   const t = UI_TRANSLATIONS[language];
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [iosGuideOpen, setIosGuideOpen] = useState<boolean>(false);
+  const [navMenuOpen, setNavMenuOpen] = useState<boolean>(false);
+  const navMenuRef = useRef<HTMLDivElement>(null);
   const hasTeacherTools = resolveEntitlements(activeProfile.progress.licenseState).teacherTools;
+
+  useEffect(() => {
+    if (!navMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (navMenuRef.current && !navMenuRef.current.contains(e.target as Node)) {
+        setNavMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [navMenuOpen]);
 
   return (
     <>
@@ -344,6 +358,55 @@ export const TopBar: React.FC<TopBarProps> = ({
             >
               العربية
             </button>
+          </div>
+
+          {/* Hamburger nav menu — visible below xl where Zone 2 nav is hidden */}
+          <div ref={navMenuRef} className="relative xl:hidden">
+            <button
+              type="button"
+              onClick={() => setNavMenuOpen((o) => !o)}
+              aria-label="Menu navigation"
+              aria-expanded={navMenuOpen}
+              className="inline-flex items-center justify-center w-10 h-10 text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+            >
+              <Menu className="w-4 h-4 shrink-0" />
+            </button>
+            {navMenuOpen && (
+              <div className="absolute end-0 top-full mt-1 z-50 min-w-[180px] bg-white border border-slate-200 rounded-xl shadow-lg py-1">
+                <button
+                  type="button"
+                  onClick={() => { onOpenCatalog(); setNavMenuOpen(false); }}
+                  className="w-full text-start px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  {t.stagesBtn}
+                </button>
+                {([
+                  [VisualStyleMode.WOOD, t.styleWood],
+                  [VisualStyleMode.BLOCKS, t.styleBlocks],
+                  [VisualStyleMode.REALISTIC, t.styleRealistic],
+                ] as [VisualStyleMode, string][]).map(([style, label]) => (
+                  <button
+                    key={style}
+                    type="button"
+                    onClick={() => { onSelectStyle(style); setNavMenuOpen(false); }}
+                    className={`w-full text-start px-4 py-2.5 text-sm transition-colors cursor-pointer ${
+                      visualStyle === style
+                        ? 'font-semibold text-sky-700 bg-sky-50'
+                        : 'font-medium text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => { onOpenDiscovery(); setNavMenuOpen(false); }}
+                  className="w-full text-start px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  {t.discoveryBtn}
+                </button>
+              </div>
+            )}
           </div>
 
           <button

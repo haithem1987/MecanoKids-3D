@@ -2575,7 +2575,7 @@ export default function App() {
           setLicenseActivationOpen(true);
         }}
         onPromoUnlock={() => {
-          setProgress((p) => ({ ...p, purchasedFull: true }));
+          setProgress((p) => ({ ...p, purchasedFull: true, licenseState: { tier: 'family' } }));
           setUpgradeModalOpen(false);
         }}
       />

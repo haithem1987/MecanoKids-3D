@@ -120,7 +120,7 @@ export function createDefaultProgress(
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
     diagnosticTutorialSeen: false,
-    partsTrayPosition: 'bottom',
+    partsTrayPosition: 'right',
     partsTrayAutoHide: true,
     licenseActive: false,
     lastSavedAt: Date.now(),
@@ -449,7 +449,7 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     partsTrayPosition:
       obj.partsTrayPosition === 'left' || obj.partsTrayPosition === 'right'
         ? obj.partsTrayPosition
-        : 'bottom',
+        : 'right',
     partsTrayAutoHide: obj.partsTrayAutoHide !== false,
     classCode: typeof obj.classCode === 'string' && /^[A-Z0-9]{4,20}$/.test(obj.classCode) ? obj.classCode : undefined,
     licenseKey: typeof obj.licenseKey === 'string' ? obj.licenseKey : undefined,
