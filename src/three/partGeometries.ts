@@ -1847,6 +1847,348 @@ export function buildPartMeshGroup(
       break;
     }
 
+    // ── Electronics ─────────────────────────────────────────────────────────
+    case PartShapeKind.BREADBOARD: {
+      const board = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.015), mats.primary);
+      board.castShadow = true;
+      root.add(board);
+      // Hole-grid dots
+      const holeMat = new THREE.MeshStandardMaterial({ color: '#374151', roughness: 0.6 });
+      const holeGeo = new THREE.CylinderGeometry(0.015, 0.015, sy * 1.1, 6);
+      const cols = Math.round(sx / 0.14);
+      const rows = Math.round(sz / 0.14);
+      for (let c = 0; c < cols; c++) {
+        for (let r = 0; r < rows; r++) {
+          const dot = new THREE.Mesh(holeGeo, holeMat);
+          dot.position.set(
+            (c - (cols - 1) / 2) * 0.14,
+            sy * 0.52,
+            (r - (rows - 1) / 2) * 0.14,
+          );
+          root.add(dot);
+        }
+      }
+      break;
+    }
+
+    case PartShapeKind.BATTERY_CELL: {
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.42, sx * 0.42, sy * 0.9, 16), mats.primary);
+      body.castShadow = true;
+      root.add(body);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.22, sx * 0.22, sy * 0.08, 12), mats.secondary);
+      cap.position.y = sy * 0.49;
+      root.add(cap);
+      const minus = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.38, sx * 0.38, sy * 0.04, 12),
+        new THREE.MeshStandardMaterial({ color: '#6b7280', roughness: 0.4, metalness: 0.8 }));
+      minus.position.y = -sy * 0.47;
+      root.add(minus);
+      break;
+    }
+
+    case PartShapeKind.LED_COMPONENT: {
+      const ledColor = mats.primary instanceof THREE.MeshStandardMaterial
+        ? (mats.primary as THREE.MeshStandardMaterial).color.getHexString()
+        : '22d3ee';
+      const domeMat = new THREE.MeshStandardMaterial({
+        color: `#${ledColor}`,
+        emissive: `#${ledColor}`,
+        emissiveIntensity: 0.65,
+        transparent: true,
+        opacity: 0.82,
+        roughness: 0.1,
+        metalness: 0.0,
+      });
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 14, 14, 0, Math.PI * 2, 0, Math.PI / 2), domeMat);
+      dome.castShadow = true;
+      root.add(dome);
+      const baseLED = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.42, sx * 0.44, sy * 0.3, 12), mats.secondary);
+      baseLED.position.y = -sy * 0.2;
+      root.add(baseLED);
+      break;
+    }
+
+    case PartShapeKind.RESISTOR: {
+      const bodyR = new THREE.Mesh(new THREE.CylinderGeometry(sy * 0.4, sy * 0.4, sz * 0.7, 12), mats.primary);
+      bodyR.rotation.x = Math.PI / 2;
+      bodyR.castShadow = true;
+      root.add(bodyR);
+      const bandColors = ['#f97316', '#1d4ed8', '#7c3aed'];
+      bandColors.forEach((c, i) => {
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(sy * 0.42, sy * 0.42, sz * 0.07, 10),
+          new THREE.MeshStandardMaterial({ color: c, roughness: 0.3 }));
+        band.rotation.x = Math.PI / 2;
+        band.position.z = (i - 1) * sz * 0.17;
+        root.add(band);
+      });
+      break;
+    }
+
+    case PartShapeKind.WIRE_JUMPER: {
+      const curve = new THREE.QuadraticBezierCurve3(
+        new THREE.Vector3(-sz * 0.5, 0, 0),
+        new THREE.Vector3(0, sy * 3, 0),
+        new THREE.Vector3(sz * 0.5, 0, 0),
+      );
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, sx * 0.5, 8, false), mats.primary);
+      tube.castShadow = true;
+      root.add(tube);
+      break;
+    }
+
+    case PartShapeKind.CAPACITOR: {
+      const bodyC = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.42, sx * 0.42, sy * 0.86, 14), mats.primary);
+      bodyC.castShadow = true;
+      root.add(bodyC);
+      const topC = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.44, sx * 0.44, sy * 0.08, 14),
+        new THREE.MeshStandardMaterial({ color: '#94a3b8', roughness: 0.3, metalness: 0.7 }));
+      topC.position.y = sy * 0.47;
+      root.add(topC);
+      break;
+    }
+
+    case PartShapeKind.MICRO_MOTOR: {
+      const motorBody = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.025), mats.primary);
+      motorBody.castShadow = true;
+      root.add(motorBody);
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, sy * 0.6, 10), mats.secondary);
+      shaft.position.set(0, sy * 0.6, 0);
+      root.add(shaft);
+      break;
+    }
+
+    case PartShapeKind.SOLAR_PANEL: {
+      const panel = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.012), mats.primary);
+      panel.castShadow = true;
+      root.add(panel);
+      const cellMat = new THREE.MeshStandardMaterial({ color: '#1e40af', roughness: 0.15, metalness: 0.3 });
+      const cols2 = 3, rows2 = 2;
+      const cw = sx * 0.26, ch = sz * 0.36;
+      for (let c = 0; c < cols2; c++) {
+        for (let r = 0; r < rows2; r++) {
+          const cell = new THREE.Mesh(new THREE.PlaneGeometry(cw, ch), cellMat);
+          cell.position.set((c - 1) * (cw + 0.02), sy * 0.55, (r - 0.5) * (ch + 0.02));
+          cell.rotation.x = -Math.PI / 2;
+          root.add(cell);
+        }
+      }
+      break;
+    }
+
+    // ── Chemistry ───────────────────────────────────────────────────────────
+    case PartShapeKind.ATOM_HYDROGEN: {
+      const atomH = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 16, 16), mats.primary);
+      atomH.castShadow = true;
+      root.add(atomH);
+      break;
+    }
+
+    case PartShapeKind.ATOM_OXYGEN: {
+      const atomO = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 18, 18), mats.primary);
+      atomO.castShadow = true;
+      root.add(atomO);
+      // Electron orbit ring
+      const orbitGeo = new THREE.TorusGeometry(sx * 0.62, 0.015, 8, 32);
+      const orbitMat = new THREE.MeshStandardMaterial({ color: '#60a5fa', transparent: true, opacity: 0.55 });
+      const orbit = new THREE.Mesh(orbitGeo, orbitMat);
+      orbit.rotation.x = Math.PI / 2;
+      root.add(orbit);
+      break;
+    }
+
+    case PartShapeKind.ATOM_CARBON: {
+      const atomC = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 18, 18), mats.primary);
+      atomC.castShadow = true;
+      root.add(atomC);
+      const orbitGeo2 = new THREE.TorusGeometry(sx * 0.62, 0.015, 8, 32);
+      const orbitMat2 = new THREE.MeshStandardMaterial({ color: '#94a3b8', transparent: true, opacity: 0.5 });
+      const orbit2 = new THREE.Mesh(orbitGeo2, orbitMat2);
+      orbit2.rotation.x = Math.PI / 2;
+      root.add(orbit2);
+      break;
+    }
+
+    case PartShapeKind.ATOM_CHLORINE: {
+      const atomCl = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 18, 18), mats.primary);
+      atomCl.castShadow = true;
+      root.add(atomCl);
+      break;
+    }
+
+    case PartShapeKind.BOND_SINGLE: {
+      const bondGeo = new THREE.CylinderGeometry(sx * 0.5, sx * 0.5, sz, 10);
+      bondGeo.rotateX(Math.PI / 2);
+      const bond = new THREE.Mesh(bondGeo, mats.primary);
+      bond.castShadow = true;
+      root.add(bond);
+      break;
+    }
+
+    case PartShapeKind.BOND_DOUBLE: {
+      const bd1Geo = new THREE.CylinderGeometry(sx * 0.35, sx * 0.35, sz, 10);
+      bd1Geo.rotateX(Math.PI / 2);
+      const bd1 = new THREE.Mesh(bd1Geo, mats.primary);
+      bd1.position.x = -sx * 0.5;
+      bd1.castShadow = true;
+      root.add(bd1);
+      const bd2 = new THREE.Mesh(bd1Geo.clone(), mats.secondary ?? mats.primary);
+      bd2.position.x = sx * 0.5;
+      root.add(bd2);
+      break;
+    }
+
+    case PartShapeKind.LAB_FLASK: {
+      // Erlenmeyer: wide cone base + narrow neck
+      const baseFlask = new THREE.Mesh(new THREE.ConeGeometry(sx * 0.5, sy * 0.68, 20), mats.primary);
+      baseFlask.position.y = -sy * 0.1;
+      baseFlask.castShadow = true;
+      root.add(baseFlask);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(sx * 0.1, sx * 0.14, sy * 0.36, 12), mats.primary);
+      neck.position.y = sy * 0.34;
+      root.add(neck);
+      break;
+    }
+
+    case PartShapeKind.LAB_STAND: {
+      // Tripod ring stand
+      const baseRing = new THREE.Mesh(new THREE.TorusGeometry(sx * 0.42, 0.038, 8, 28), mats.primary);
+      baseRing.rotation.x = Math.PI / 2;
+      baseRing.position.y = -sy * 0.4;
+      baseRing.castShadow = true;
+      root.add(baseRing);
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.038, sy * 0.9, 10), mats.secondary ?? mats.primary);
+      pole.position.x = sx * 0.42;
+      root.add(pole);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(sx * 0.36, 0.028, 8, 28), mats.secondary ?? mats.primary);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.set(sx * 0.42, sy * 0.1, 0);
+      root.add(ring);
+      break;
+    }
+
+    // ── Physics ─────────────────────────────────────────────────────────────
+    case PartShapeKind.PENDULUM_ROD: {
+      const rodGeo = new THREE.CylinderGeometry(sx * 0.5, sx * 0.5, sy, 10);
+      const rodMesh = new THREE.Mesh(rodGeo, mats.primary);
+      rodMesh.castShadow = true;
+      root.add(rodMesh);
+      // Pivot cap at top
+      const pivot = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.75, 10, 10), mats.secondary ?? mats.primary);
+      pivot.position.y = sy * 0.5;
+      root.add(pivot);
+      break;
+    }
+
+    case PartShapeKind.PENDULUM_BOB: {
+      const bobMesh = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 18, 18), mats.primary);
+      bobMesh.castShadow = true;
+      root.add(bobMesh);
+      break;
+    }
+
+    case PartShapeKind.FULCRUM: {
+      // Triangular wedge (prism shape) as support/fulcrum
+      const shape = new THREE.Shape();
+      shape.moveTo(-sx * 0.5, -sy * 0.5);
+      shape.lineTo(sx * 0.5, -sy * 0.5);
+      shape.lineTo(0, sy * 0.5);
+      shape.closePath();
+      const extrudeGeo = new THREE.ExtrudeGeometry(shape, {
+        depth: sz, bevelEnabled: true, bevelSize: 0.02, bevelThickness: 0.02, bevelSegments: 2,
+      });
+      extrudeGeo.center();
+      const wedge = new THREE.Mesh(extrudeGeo, mats.primary);
+      wedge.castShadow = true;
+      root.add(wedge);
+      break;
+    }
+
+    case PartShapeKind.LEVER_ARM: {
+      const lever = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.025), mats.primary);
+      lever.castShadow = true;
+      root.add(lever);
+      // Center pivot marker
+      const pivotMark = new THREE.Mesh(new THREE.CylinderGeometry(sy * 0.8, sy * 0.8, sz * 1.1, 10), mats.secondary ?? mats.primary);
+      pivotMark.rotation.x = Math.PI / 2;
+      root.add(pivotMark);
+      break;
+    }
+
+    case PartShapeKind.RAMP_SURFACE: {
+      // Wedge: flat on bottom, angled on top
+      const rampShape = new THREE.Shape();
+      rampShape.moveTo(-sx * 0.5, 0);
+      rampShape.lineTo(sx * 0.5, 0);
+      rampShape.lineTo(sx * 0.5, sy);
+      rampShape.lineTo(-sx * 0.5, 0);
+      rampShape.closePath();
+      const rampGeo = new THREE.ExtrudeGeometry(rampShape, {
+        depth: sz, bevelEnabled: false,
+      });
+      rampGeo.center();
+      const ramp = new THREE.Mesh(rampGeo, mats.primary);
+      ramp.castShadow = true;
+      root.add(ramp);
+      break;
+    }
+
+    case PartShapeKind.MAGNET_BAR: {
+      // Two-tone bar magnet: top half = accent (N), bottom = primary (S)
+      const halfH = sy * 0.5;
+      const northMat = new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.35, metalness: 0.5 });
+      const southMat = new THREE.MeshStandardMaterial({ color: '#3b82f6', roughness: 0.35, metalness: 0.5 });
+      const northHalf = new THREE.Mesh(makeBeveledBox(sx, halfH, sz, 0.02), northMat);
+      northHalf.position.y = halfH * 0.5;
+      northHalf.castShadow = true;
+      root.add(northHalf);
+      const southHalf = new THREE.Mesh(makeBeveledBox(sx, halfH, sz, 0.02), southMat);
+      southHalf.position.y = -halfH * 0.5;
+      southHalf.castShadow = true;
+      root.add(southHalf);
+      break;
+    }
+
+    case PartShapeKind.COMPASS_NEEDLE: {
+      // Diamond/rhombus needle: two cones tip-to-tip, two colors (N=red, S=white)
+      const needleRed = new THREE.Mesh(new THREE.ConeGeometry(sx * 0.5, sz * 0.5, 8),
+        new THREE.MeshStandardMaterial({ color: '#ef4444', roughness: 0.25, metalness: 0.5 }));
+      needleRed.rotation.x = Math.PI / 2;
+      needleRed.position.z = sz * 0.25;
+      needleRed.castShadow = true;
+      root.add(needleRed);
+      const needleWhite = new THREE.Mesh(new THREE.ConeGeometry(sx * 0.5, sz * 0.5, 8),
+        new THREE.MeshStandardMaterial({ color: '#f1f5f9', roughness: 0.25, metalness: 0.3 }));
+      needleWhite.rotation.x = -Math.PI / 2;
+      needleWhite.position.z = -sz * 0.25;
+      root.add(needleWhite);
+      break;
+    }
+
+    case PartShapeKind.OPTICAL_PRISM: {
+      // Equilateral triangular prism
+      const prismShape = new THREE.Shape();
+      const h = sx * 0.866;
+      prismShape.moveTo(-sx * 0.5, -h / 3);
+      prismShape.lineTo(sx * 0.5, -h / 3);
+      prismShape.lineTo(0, h * 2 / 3);
+      prismShape.closePath();
+      const prismGeo = new THREE.ExtrudeGeometry(prismShape, {
+        depth: sz, bevelEnabled: true, bevelSize: 0.015, bevelThickness: 0.015, bevelSegments: 2,
+      });
+      prismGeo.center();
+      const prismMat = new THREE.MeshStandardMaterial({
+        color: '#a5f3fc',
+        transparent: true,
+        opacity: 0.75,
+        roughness: 0.05,
+        metalness: 0.1,
+        side: THREE.DoubleSide,
+      });
+      const prism = new THREE.Mesh(prismGeo, prismMat);
+      prism.castShadow = true;
+      root.add(prism);
+      break;
+    }
+
     default: {
       const box = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.04), mats.primary);
       box.castShadow = true;

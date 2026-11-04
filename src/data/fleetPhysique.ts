@@ -7,7 +7,7 @@ export const FLEET_PHYSIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'phys-pendulum',
-    archetype: 'orbital_satellite',
+    archetype: 'phys_apparatus',
     category: VehicleCategory.PHYSICS,
     tier: DifficultyTier.DISCOVERY,
     primaryColor: '#f59e0b',
@@ -42,7 +42,7 @@ export const FLEET_PHYSIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'phys-lever-class1',
-    archetype: 'orbital_satellite',
+    archetype: 'phys_apparatus',
     category: VehicleCategory.PHYSICS,
     tier: DifficultyTier.WORKSHOP,
     primaryColor: '#f59e0b',
@@ -77,7 +77,7 @@ export const FLEET_PHYSIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'phys-inclined-plane',
-    archetype: 'city_coupe',
+    archetype: 'phys_apparatus',
     category: VehicleCategory.PHYSICS,
     tier: DifficultyTier.ENGINEER,
     primaryColor: '#f59e0b',
@@ -112,7 +112,7 @@ export const FLEET_PHYSIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'phys-magnet-compass',
-    archetype: 'city_coupe',
+    archetype: 'phys_apparatus',
     category: VehicleCategory.PHYSICS,
     tier: DifficultyTier.EXPERT,
     primaryColor: '#f59e0b',
@@ -147,7 +147,7 @@ export const FLEET_PHYSIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'phys-prism-light',
-    archetype: 'city_coupe',
+    archetype: 'phys_apparatus',
     category: VehicleCategory.PHYSICS,
     tier: DifficultyTier.MASTER,
     primaryColor: '#f59e0b',

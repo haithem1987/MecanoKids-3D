@@ -7,7 +7,7 @@ export const FLEET_ELECTRONIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'elec-led-circuit',
-    archetype: 'orbital_satellite',
+    archetype: 'elec_circuit',
     category: VehicleCategory.ELECTRONICS,
     tier: DifficultyTier.DISCOVERY,
     primaryColor: '#22c55e',
@@ -42,7 +42,7 @@ export const FLEET_ELECTRONIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'elec-motor-fan',
-    archetype: 'rotor_drone',
+    archetype: 'elec_circuit',
     category: VehicleCategory.ELECTRONICS,
     tier: DifficultyTier.WORKSHOP,
     primaryColor: '#0ea5e9',
@@ -77,7 +77,7 @@ export const FLEET_ELECTRONIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'elec-alarm-buzzer',
-    archetype: 'city_coupe',
+    archetype: 'elec_circuit',
     category: VehicleCategory.ELECTRONICS,
     tier: DifficultyTier.ENGINEER,
     primaryColor: '#ef4444',
@@ -112,7 +112,7 @@ export const FLEET_ELECTRONIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'elec-solar-toy',
-    archetype: 'orbital_satellite',
+    archetype: 'elec_circuit',
     category: VehicleCategory.ELECTRONICS,
     tier: DifficultyTier.EXPERT,
     primaryColor: '#fbbf24',
@@ -147,7 +147,7 @@ export const FLEET_ELECTRONIQUE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'elec-radio-receiver',
-    archetype: 'orbital_satellite',
+    archetype: 'elec_circuit',
     category: VehicleCategory.ELECTRONICS,
     tier: DifficultyTier.MASTER,
     primaryColor: '#94a3b8',

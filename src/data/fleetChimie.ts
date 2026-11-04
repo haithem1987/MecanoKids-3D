@@ -7,7 +7,7 @@ export const FLEET_CHIMIE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'chem-water-molecule',
-    archetype: 'orbital_satellite',
+    archetype: 'chem_molecule',
     category: VehicleCategory.CHEMISTRY,
     tier: DifficultyTier.DISCOVERY,
     primaryColor: '#a855f7',
@@ -42,7 +42,7 @@ export const FLEET_CHIMIE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'chem-co2-molecule',
-    archetype: 'orbital_satellite',
+    archetype: 'chem_molecule',
     category: VehicleCategory.CHEMISTRY,
     tier: DifficultyTier.WORKSHOP,
     primaryColor: '#a855f7',
@@ -77,7 +77,7 @@ export const FLEET_CHIMIE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'chem-salt-crystal',
-    archetype: 'city_coupe',
+    archetype: 'chem_molecule',
     category: VehicleCategory.CHEMISTRY,
     tier: DifficultyTier.ENGINEER,
     primaryColor: '#c084fc',
@@ -112,7 +112,7 @@ export const FLEET_CHIMIE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'chem-beaker-setup',
-    archetype: 'city_coupe',
+    archetype: 'chem_molecule',
     category: VehicleCategory.CHEMISTRY,
     tier: DifficultyTier.EXPERT,
     primaryColor: '#7c3aed',
@@ -147,7 +147,7 @@ export const FLEET_CHIMIE_SEEDS: BlueprintSeed[] = [
   // =========================================================================
   {
     id: 'chem-balance-scale',
-    archetype: 'city_coupe',
+    archetype: 'chem_molecule',
     category: VehicleCategory.CHEMISTRY,
     tier: DifficultyTier.MASTER,
     primaryColor: '#6d28d9',
