@@ -304,6 +304,11 @@ export interface PlayerProgress {
   partsTrayPosition: 'bottom' | 'left' | 'right';
   partsTrayAutoHide: boolean;
   classCode?: string;
+  licenseKey?: string;
+  licenseType?: 'classe' | 'ecole' | 'reseau';
+  licenseExpiry?: string;
+  licenseSeats?: number;
+  licenseActive: boolean;
   lastSavedAt: number;
 }
 

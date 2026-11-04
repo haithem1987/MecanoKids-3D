@@ -82,7 +82,7 @@ import { AgeProfileSelector } from './components/AgeProfileSelector';
 import { OnboardingModal } from './components/OnboardingModal';
 import { UpgradeModal } from './components/UpgradeModal';
 import { LicenseActivationModal } from './components/LicenseActivationModal';
-import { canPlayStage } from './utils/entitlements';
+import { canPlayStage, freeTrialExhausted, isUnlocked } from './utils/entitlements';
 
 interface ActiveDiagnosticSession {
   blueprintId: string;
@@ -1188,6 +1188,13 @@ export default function App() {
 
   const handleSelectBlueprint = useCallback(
     (blueprintId: string) => {
+      const completedCount = Object.keys(progress.completedStages).length;
+      if (freeTrialExhausted(completedCount) && !isUnlocked(progress.licenseState)) {
+        track('paywall_shown', { missionsCompleted: completedCount });
+        setUpgradeReason('stages');
+        setUpgradeModalOpen(true);
+        return;
+      }
       track('mission_started', { blueprintId });
       lastInteractionRef.current = Date.now();
       flushActiveStopwatchSegment(currentBlueprint.id);
@@ -1215,7 +1222,7 @@ export default function App() {
       setCameraPresetNonce((n) => n + 1);
       setStatusMessage(null);
     },
-    [currentBlueprint.id, flushActiveStopwatchSegment, setProgress],
+    [currentBlueprint.id, flushActiveStopwatchSegment, setProgress, progress.completedStages, progress.licenseState],
   );
 
   const handleStartTimedStage = useCallback(
@@ -2558,6 +2565,7 @@ export default function App() {
         isOpen={upgradeModalOpen}
         onClose={() => setUpgradeModalOpen(false)}
         reason={upgradeReason}
+        language={language}
         onUpgradeClick={() => {
           flashStatus('Bientôt disponible');
           setUpgradeModalOpen(false);
@@ -2573,8 +2581,8 @@ export default function App() {
         isOpen={licenseActivationOpen}
         onClose={() => setLicenseActivationOpen(false)}
         language={language}
-        onActivate={(licenseState) => {
-          setProgress((prev) => ({ ...prev, licenseState }));
+        onActivate={(licenseState, extra) => {
+          setProgress((prev) => ({ ...prev, licenseState, ...extra }));
         }}
       />
 

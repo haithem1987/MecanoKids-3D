@@ -184,7 +184,7 @@ Prérequis : P0-ARCH décidé et implémenté.
   | Cartes cadeaux | 12,99 € ou 34,99 € | | |
 
   Pas d'abonnement avant le 2e atelier.
-- [ ] B3 — Licences école :
+- [x] B3 — Licences école *(fait : HMAC-SHA256 offline dans LicenseActivationModal, 5 champs dans PlayerProgress/storage, 7 strings i18n FR/EN/AR, bouton contact mailto:)* :
 
   | Licence | Public France (HT/an) | Privé et international (HT/an) |
   |---|---|---|
@@ -202,7 +202,7 @@ Prérequis : P0-ARCH décidé et implémenté.
 
 ## Phase 4 — Lancement (semaines 17-20)
 
-- [ ] L1 — Landing page Octo Gears et vidéo de 30-45 s. Fichier : `LandingPage.tsx`.
+- [x] L1 — Landing page Octo Gears et vidéo de 30-45 s. Fichier : `LandingPage.tsx`. (refonte : header+footer "Octo Gears", section bénéfices 3 cards, section tarifs famille 3 offres, section école tableau de prix + mailto devis)
 - [ ] L2 — Version Play Store (TWA).
 - [ ] L3 — 🧑 Dossier de référencement GAR et kit presse.
 

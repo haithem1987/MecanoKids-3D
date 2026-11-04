@@ -124,21 +124,6 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
   const [activeIdx, setActiveIdx] = useState(0);
   const activeBp = blueprintForCategory(UNIVERSES[activeIdx].category);
 
-  const [form, setForm] = useState({ firstName: '', school: '', email: '', message: '' });
-  const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
-  const [formError, setFormError] = useState('');
-
-  async function handleSchoolSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setFormStatus('sending');
-    setFormError('');
-    try {
-      const res = await fetch('/api/school-inquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
-      const data = await res.json();
-      if (data.ok) { setFormStatus('done'); } else { setFormStatus('error'); setFormError(data.error ?? 'Erreur'); }
-    } catch { setFormStatus('error'); setFormError('Erreur réseau'); }
-  }
-
   return (
     <div
       dir={isRtl ? 'rtl' : 'ltr'}
@@ -147,7 +132,7 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
     >
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-6 lg:px-10 py-4 border-b border-slate-100 bg-white/90 backdrop-blur-sm sticky top-0 z-20">
-        <span className="text-xl lg:text-2xl font-bold text-sky-600">MécanoKids 3D</span>
+        <span className="text-xl lg:text-2xl font-bold text-sky-600">🐙 Octo Gears</span>
         <select
           value={language}
           onChange={(e) => onSelectLanguage(e.target.value as LanguageCode)}
@@ -246,78 +231,109 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
         </div>
       </section>
 
+      {/* ── Benefits ── */}
+      <section className="px-6 lg:px-16 py-10 lg:py-14 bg-white">
+        <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto text-center">
+          {([
+            { emoji: '🎮', fr: 'Apprendre en jouant', en: 'Learn by playing', ar: 'التعلم بالمرح', dfr: 'Assembler de vraies machines 3D', den: 'Assemble real 3D machines', dar: 'تجميع آلات حقيقية ثلاثية الأبعاد' },
+            { emoji: '🌍', fr: '3 langues FR·EN·AR', en: '3 languages FR·EN·AR', ar: '3 لغات FR·EN·AR', dfr: 'Consignes vocales dans toutes les langues', den: 'Voice instructions in all languages', dar: 'تعليمات صوتية بجميع اللغات' },
+            { emoji: '✈️', fr: 'Fonctionne hors-ligne', en: 'Works offline', ar: 'يعمل بلا إنترنت', dfr: 'Installable sur tablette, iPad, Chromebook', den: 'Install on tablet, iPad, Chromebook', dar: 'قابل للتثبيت على أي جهاز' },
+          ] as const).map((b) => (
+            <div key={b.fr} className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+              <div className="text-4xl mb-3">{b.emoji}</div>
+              <div className="font-bold text-slate-800 mb-1">{b[language]}</div>
+              <div className="text-sm text-slate-500">{b[`d${language}` as 'dfr' | 'den' | 'dar']}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── Pricing ── */}
-      <section className="bg-slate-50 px-6 lg:px-16 py-12 lg:py-16">
+      <section id="tarifs" className="bg-slate-50 px-6 lg:px-16 py-12 lg:py-16">
         <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-8 text-center">{t.landingPricingTitle}</h2>
-        <div className="grid sm:grid-cols-2 gap-6 max-w-2xl lg:max-w-3xl mx-auto">
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 shadow-sm">
-            <div className="text-lg font-bold text-slate-800">
-              {language === 'ar' ? 'ورشة الاستكشاف' : language === 'en' ? 'Discovery Workshop' : 'Atelier Découverte'}
+        <div className="grid sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
+          {([
+            {
+              label: { fr: 'Atelier complet', en: 'Full workshop', ar: 'الورشة الكاملة' },
+              price: { fr: '7,99 €', en: '7.99 €', ar: '7٫99 €' },
+              note: { fr: 'puis 9,99 €', en: 'then 9.99 €', ar: 'ثم 9٫99 €' },
+              featured: true,
+            },
+            {
+              label: { fr: 'Carte cadeau — 1 atelier', en: 'Gift card — 1 workshop', ar: 'بطاقة هدية — ورشة' },
+              price: { fr: '12,99 €', en: '12.99 €', ar: '12٫99 €' },
+              note: null,
+              featured: false,
+            },
+            {
+              label: { fr: 'Carte cadeau — Famille', en: 'Gift card — Family', ar: 'بطاقة هدية — عائلة' },
+              price: { fr: '34,99 €', en: '34.99 €', ar: '34٫99 €' },
+              note: { fr: '3 ateliers', en: '3 workshops', ar: '3 ورشات' },
+              featured: false,
+            },
+          ] as const).map((offer) => (
+            <div key={offer.label.fr} className={`bg-white rounded-2xl border p-6 shadow-sm flex flex-col ${offer.featured ? 'border-sky-400 ring-2 ring-sky-200' : 'border-slate-200'}`}>
+              <div className="font-bold text-slate-800 text-sm mb-2">{offer.label[language]}</div>
+              <div className={`text-3xl font-black my-2 ${offer.featured ? 'text-sky-600' : 'text-slate-700'}`}>{offer.price[language]}</div>
+              {offer.note && <div className="text-xs text-slate-400 mb-4">{offer.note[language]}</div>}
+              <div className="flex-1" />
+              {/* shortcut: placeholder, wire to CheckoutButton when B4 (Stripe prod) is done */}
+              <button disabled className="w-full mt-4 bg-slate-100 text-slate-400 rounded-xl py-2 font-semibold cursor-not-allowed text-sm">
+                {t.landingBuyBtn} — {language === 'ar' ? 'قريباً' : language === 'en' ? 'coming soon' : 'bientôt'}
+              </button>
             </div>
-            <div className="text-4xl font-black text-sky-600 my-3">
-              {language === 'ar' ? 'مجاني' : language === 'en' ? 'FREE' : 'GRATUIT'}
-            </div>
-            <ul className="text-sm text-slate-600 space-y-2 mb-6">
-              <li>✓ {language === 'ar' ? '20 مركبة' : language === 'en' ? '20 vehicles' : '20 véhicules'}</li>
-              <li>✓ {language === 'ar' ? 'ملف طفل واحد' : language === 'en' ? '1 child profile' : '1 profil enfant'}</li>
-              <li>✓ {language === 'ar' ? 'وضع التشخيص' : language === 'en' ? 'Diagnostic mode' : 'Mode Diagnostic'}</li>
-            </ul>
-            <button onClick={onStart} className="w-full bg-sky-600 text-white rounded-xl py-3 font-semibold hover:bg-sky-700 transition-colors">
-              {t.landingHeroCTA}
-            </button>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 shadow-sm opacity-70">
-            <div className="text-lg font-bold text-slate-800">
-              {language === 'ar' ? 'تصريح العائلة' : language === 'en' ? 'Family Pass' : 'Pass Famille'}
-            </div>
-            <div className="text-4xl font-black text-slate-400 my-3">12,99 €</div>
-            <ul className="text-sm text-slate-500 space-y-2 mb-6">
-              <li>✓ {language === 'ar' ? '100 مركبة' : language === 'en' ? '100 vehicles' : '100 véhicules'}</li>
-              <li>✓ {language === 'ar' ? '5 ملفات' : language === 'en' ? '5 profiles' : '5 profils'}</li>
-              <li>✓ {language === 'ar' ? 'كل التشطيبات' : language === 'en' ? 'All finishes' : 'Toutes finitions'}</li>
-            </ul>
-            <button disabled className="w-full bg-slate-200 text-slate-500 rounded-xl py-3 font-semibold cursor-not-allowed">
-              {language === 'ar' ? 'قريباً' : language === 'en' ? 'Coming soon' : 'Bientôt disponible'}
-            </button>
-          </div>
+          ))}
         </div>
         <p className="text-center text-sm text-slate-500 mt-6">
           <a href="#ecole" className="underline hover:text-sky-600">
-            {language === 'ar' ? 'تراخيص المدارس على طلب ←' : language === 'en' ? 'School licenses on request →' : 'Licences École sur devis →'}
+            {language === 'ar' ? 'تراخيص المدارس ←' : language === 'en' ? 'School licenses →' : 'Licences École →'}
           </a>
         </p>
       </section>
 
-      {/* ── School inquiry ── */}
-      <section id="ecole" className="px-6 py-12 lg:py-16 max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">{t.landingSchoolTitle}</h2>
-        {formStatus === 'done' ? (
-          <p className="text-center text-sky-700 font-semibold text-lg">{t.landingSchoolThanks}</p>
-        ) : (
-          <form onSubmit={handleSchoolSubmit} className="space-y-4">
-            <input required maxLength={50} placeholder={language === 'ar' ? 'الاسم' : language === 'en' ? 'First name' : 'Prénom'}
-              value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400" />
-            <input required maxLength={100} placeholder={language === 'ar' ? 'المدرسة' : language === 'en' ? 'School' : 'Établissement'}
-              value={form.school} onChange={(e) => setForm({ ...form, school: e.target.value })}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400" />
-            <input required type="email" placeholder={language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
-              value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400" />
-            <textarea maxLength={500} rows={3} placeholder={language === 'ar' ? 'رسالة (اختياري)' : language === 'en' ? 'Message (optional)' : 'Message (optionnel)'}
-              value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400" />
-            {formStatus === 'error' && <p className="text-red-600 text-sm">{formError}</p>}
-            <button type="submit" disabled={formStatus === 'sending'}
-              className="w-full bg-sky-600 text-white rounded-lg py-2 font-semibold hover:bg-sky-700 transition-colors disabled:opacity-60">
-              {formStatus === 'sending' ? '…' : t.landingSchoolSubmit}
-            </button>
-          </form>
-        )}
+      {/* ── School pricing ── */}
+      <section id="ecole" className="px-6 py-12 lg:py-16 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">{t.landingSchoolPricingTitle}</h2>
+        <table className="w-full text-sm border-collapse mb-6">
+          <thead>
+            <tr className="bg-sky-50 text-slate-700">
+              <th className="border border-slate-200 px-4 py-2 text-start font-semibold">
+                {language === 'ar' ? 'الترخيص' : language === 'en' ? 'License' : 'Licence'}
+              </th>
+              <th className="border border-slate-200 px-4 py-2 text-start font-semibold">
+                {language === 'ar' ? 'عام (سنوي)' : language === 'en' ? 'Public (yearly)' : 'Public (HT/an)'}
+              </th>
+              <th className="border border-slate-200 px-4 py-2 text-start font-semibold">
+                {language === 'ar' ? 'خاص / دولي' : language === 'en' ? 'Private / Intl' : 'Privé / Intl'}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {([
+              { l: { fr: 'Classe', en: 'Classroom', ar: 'الفصل' }, pub: '49 €', priv: '149 €' },
+              { l: { fr: 'École / Établissement', en: 'School', ar: 'المدرسة' }, pub: '149 €', priv: '499 €' },
+              { l: { fr: 'Réseau / Collectivité', en: 'Network', ar: 'الشبكة' }, pub: language === 'ar' ? '1 € / تلميذ' : language === 'en' ? '1 € / student' : '1 € / élève', priv: language === 'ar' ? '3 $ / تلميذ' : language === 'en' ? '3 $ / student' : '3 $ / élève' },
+            ] as const).map((row) => (
+              <tr key={row.l.fr} className="even:bg-slate-50">
+                <td className="border border-slate-200 px-4 py-2 font-medium">{row.l[language]}</td>
+                <td className="border border-slate-200 px-4 py-2">{row.pub}</td>
+                <td className="border border-slate-200 px-4 py-2">{row.priv}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="text-center">
+          <a
+            href="mailto:ecoles@octogears.com"
+            className="inline-block bg-sky-600 hover:bg-sky-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors"
+          >
+            {t.landingSchoolContact}
+          </a>
+        </div>
       </section>
 
       <footer className="border-t border-slate-100 px-6 py-6 text-center text-sm text-slate-400">
-        MécanoKids 3D — {language === 'ar' ? 'لعبة تعليمية' : language === 'en' ? 'Educational game' : 'Jeu éducatif'} · © 2026 ·{' '}
+        🐙 Octo Gears — {language === 'ar' ? 'لعبة تعليمية' : language === 'en' ? 'Educational game' : 'Jeu éducatif'} · © 2026 ·{' '}
         <a href="/privacy.html" className="underline hover:text-sky-600">
           {language === 'ar' ? 'سياسة الخصوصية' : language === 'en' ? 'Privacy policy' : 'Politique de confidentialité'}
         </a>

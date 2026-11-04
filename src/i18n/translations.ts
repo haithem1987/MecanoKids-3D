@@ -948,6 +948,9 @@ export interface UIStrings {
   landingSchoolTitle: string;
   landingSchoolSubmit: string;
   landingSchoolThanks: string;
+  landingBuyBtn: string;
+  landingSchoolContact: string;
+  landingSchoolPricingTitle: string;
 
   // License activation modal
   licenseModalTitle: string;
@@ -958,6 +961,13 @@ export interface UIStrings {
   licenseSuccessMsg: string;
   licenseInvalidMsg: string;
   licenseHaveKeyBtn: string;
+  licenseTypeLabel: string;
+  licenseExpiryLabel: string;
+  licenseSeatsLabel: string;
+  licenseContactBtn: string;
+  licenseTypeClasse: string;
+  licenseTypeEcole: string;
+  licenseTypeReseau: string;
 
   // Lot E — Teacher Dashboard (school tier)
   teacherNavBtn: string;
@@ -1525,6 +1535,9 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     landingSchoolTitle: 'Votre école est intéressée ?',
     landingSchoolSubmit: 'Envoyer une demande',
     landingSchoolThanks: 'Merci, nous vous contacterons !',
+    landingBuyBtn: 'Acheter',
+    landingSchoolContact: 'Demander un devis',
+    landingSchoolPricingTitle: 'Tarifs école',
 
     teacherNavBtn: 'Enseignant 🎓',
     teacherDashboardTitle: 'Espace Enseignant',
@@ -1563,6 +1576,13 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     licenseSuccessMsg: '✓ Licence activée !',
     licenseInvalidMsg: 'Clé invalide ou expirée.',
     licenseHaveKeyBtn: "J'ai déjà une clé",
+    licenseTypeLabel: 'Type de licence',
+    licenseExpiryLabel: 'Expire le',
+    licenseSeatsLabel: 'Postes autorisés',
+    licenseContactBtn: 'Contacter pour une licence école',
+    licenseTypeClasse: 'Classe',
+    licenseTypeEcole: 'École',
+    licenseTypeReseau: 'Réseau',
 
   },
 
@@ -2099,6 +2119,9 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     landingSchoolTitle: 'Is your school interested?',
     landingSchoolSubmit: 'Send a request',
     landingSchoolThanks: 'Thank you, we will contact you!',
+    landingBuyBtn: 'Buy',
+    landingSchoolContact: 'Request a quote',
+    landingSchoolPricingTitle: 'School pricing',
 
     teacherNavBtn: 'Teacher 🎓',
     teacherDashboardTitle: 'Teacher Dashboard',
@@ -2137,6 +2160,13 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     licenseSuccessMsg: '✓ License activated!',
     licenseInvalidMsg: 'Invalid or expired key.',
     licenseHaveKeyBtn: 'I already have a key',
+    licenseTypeLabel: 'License type',
+    licenseExpiryLabel: 'Expires on',
+    licenseSeatsLabel: 'Allowed seats',
+    licenseContactBtn: 'Contact us for a school license',
+    licenseTypeClasse: 'Classroom',
+    licenseTypeEcole: 'School',
+    licenseTypeReseau: 'Network',
 
   },
 
@@ -2672,6 +2702,9 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     landingSchoolTitle: 'هل مدرستك مهتمة؟',
     landingSchoolSubmit: 'إرسال طلب',
     landingSchoolThanks: 'شكراً، سنتواصل معك قريباً!',
+    landingBuyBtn: 'شراء',
+    landingSchoolContact: 'طلب عرض سعر',
+    landingSchoolPricingTitle: 'أسعار المدارس',
 
     teacherNavBtn: 'معلم 🎓',
     teacherDashboardTitle: 'فضاء المعلم',
@@ -2710,6 +2743,13 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     licenseSuccessMsg: '✓ تم تفعيل الترخيص!',
     licenseInvalidMsg: 'المفتاح غير صالح أو منتهي الصلاحية.',
     licenseHaveKeyBtn: 'لديّ مفتاح بالفعل',
+    licenseTypeLabel: 'نوع الترخيص',
+    licenseExpiryLabel: 'تنتهي في',
+    licenseSeatsLabel: 'المقاعد المسموح بها',
+    licenseContactBtn: 'تواصل للحصول على ترخيص مدرسي',
+    licenseTypeClasse: 'فصل دراسي',
+    licenseTypeEcole: 'مدرسة',
+    licenseTypeReseau: 'شبكة',
 
   },
 };

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Key, X } from 'lucide-react';
-import { getBackendAdapter } from '../backend';
+import { Key, Mail, X } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
 import type { LicenseState } from '../utils/entitlements';
 import type { LanguageCode } from '../types/game';
@@ -9,10 +8,56 @@ interface LicenseActivationModalProps {
   isOpen: boolean;
   onClose: () => void;
   language: LanguageCode;
-  onActivate: (licenseState: LicenseState) => void;
+  onActivate: (
+    licenseState: LicenseState,
+    extra: {
+      licenseKey: string;
+      licenseType: 'classe' | 'ecole' | 'reseau';
+      licenseExpiry?: string;
+      licenseSeats?: number;
+      licenseActive: boolean;
+    },
+  ) => void;
 }
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
+
+interface LicensePayload {
+  type: 'classe' | 'ecole' | 'reseau';
+  expiry?: string;
+  seats?: number;
+}
+
+// shortcut: dev key only, replace with env var in prod
+const VERIFY_KEY = 'octo-gears-dev-2026';
+
+async function verifyHmacToken(token: string): Promise<LicensePayload | null> {
+  // expected format: base64url(json).hmac_hex
+  const dot = token.lastIndexOf('.');
+  if (dot < 1) return null;
+  const payloadB64 = token.slice(0, dot);
+  const sigHex = token.slice(dot + 1);
+  try {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw', enc.encode(VERIFY_KEY), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify'],
+    );
+    const sigBytes = new Uint8Array(sigHex.match(/.{2}/g)!.map((h) => parseInt(h, 16)));
+    const payloadBytes = enc.encode(payloadB64);
+    const valid = await crypto.subtle.verify('HMAC', keyMaterial, sigBytes, payloadBytes);
+    if (!valid) return null;
+    const json = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
+    const data = JSON.parse(json) as Record<string, unknown>;
+    if (!['classe', 'ecole', 'reseau'].includes(data.type as string)) return null;
+    return {
+      type: data.type as 'classe' | 'ecole' | 'reseau',
+      expiry: typeof data.expiry === 'string' ? data.expiry : undefined,
+      seats: typeof data.seats === 'number' ? data.seats : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
 
 export const LicenseActivationModal: React.FC<LicenseActivationModalProps> = ({
   isOpen,
@@ -23,18 +68,52 @@ export const LicenseActivationModal: React.FC<LicenseActivationModalProps> = ({
   const t = UI_TRANSLATIONS[language];
   const [key, setKey] = useState('');
   const [status, setStatus] = useState<Status>('idle');
+  const [payload, setPayload] = useState<LicensePayload | null>(null);
   const isRTL = language === 'ar';
 
   if (!isOpen) return null;
 
   const handleActivate = async () => {
-    if (!key.trim()) return;
+    const trimmed = key.trim();
+    if (!trimmed) return;
     setStatus('loading');
+
+    // Try offline HMAC token first
+    const offlinePayload = await verifyHmacToken(trimmed);
+    if (offlinePayload) {
+      const isActive = !offlinePayload.expiry || new Date(offlinePayload.expiry) > new Date();
+      setPayload(offlinePayload);
+      setStatus('success');
+      onActivate(
+        { tier: 'school' },
+        {
+          licenseKey: trimmed,
+          licenseType: offlinePayload.type,
+          licenseExpiry: offlinePayload.expiry,
+          licenseSeats: offlinePayload.seats,
+          licenseActive: isActive,
+        },
+      );
+      return;
+    }
+
+    // Fallback: backend test keys (dev only)
     try {
-      const result = await getBackendAdapter().validateLicenseKey(key.trim());
+      const { getBackendAdapter } = await import('../backend');
+      const result = await getBackendAdapter().validateLicenseKey(trimmed);
       if (result.valid) {
-        onActivate({ tier: result.tier, expiresAt: result.expiresAt });
+        const p: LicensePayload = { type: result.tier === 'family' ? 'ecole' : 'ecole' };
+        setPayload(p);
         setStatus('success');
+        onActivate(
+          { tier: result.tier, expiresAt: result.expiresAt },
+          {
+            licenseKey: trimmed,
+            licenseType: 'ecole',
+            licenseExpiry: result.expiresAt,
+            licenseActive: !result.expiresAt || new Date(result.expiresAt) > new Date(),
+          },
+        );
       } else {
         setStatus('error');
       }
@@ -43,9 +122,13 @@ export const LicenseActivationModal: React.FC<LicenseActivationModalProps> = ({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') void handleActivate();
-  };
+  const licenseTypeLabel = payload
+    ? payload.type === 'classe'
+      ? t.licenseTypeClasse
+      : payload.type === 'reseau'
+        ? t.licenseTypeReseau
+        : t.licenseTypeEcole
+    : '';
 
   return (
     <div
@@ -81,11 +164,8 @@ export const LicenseActivationModal: React.FC<LicenseActivationModalProps> = ({
           <input
             type="text"
             value={key}
-            onChange={(e) => {
-              setKey(e.target.value);
-              setStatus('idle');
-            }}
-            onKeyDown={handleKeyDown}
+            onChange={(e) => { setKey(e.target.value); setStatus('idle'); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') void handleActivate(); }}
             placeholder={t.licenseInputPlaceholder}
             disabled={status === 'loading' || status === 'success'}
             className="w-full px-4 py-3 text-sm font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
@@ -95,9 +175,26 @@ export const LicenseActivationModal: React.FC<LicenseActivationModalProps> = ({
           {status === 'error' && (
             <p className="text-sm font-medium text-red-600">{t.licenseInvalidMsg}</p>
           )}
-          {status === 'success' && (
-            <p className="text-sm font-medium text-emerald-600">{t.licenseSuccessMsg}</p>
+          {status === 'success' && payload && (
+            <div className="text-sm space-y-1 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
+              <p className="font-medium text-emerald-700">{t.licenseSuccessMsg}</p>
+              <p className="text-slate-600">{t.licenseTypeLabel} : <span className="font-semibold">{licenseTypeLabel}</span></p>
+              {payload.expiry && (
+                <p className="text-slate-600">{t.licenseExpiryLabel} : <span className="font-semibold">{new Date(payload.expiry).toLocaleDateString(language === 'ar' ? 'ar-SA' : language)}</span></p>
+              )}
+              {payload.seats != null && (
+                <p className="text-slate-600">{t.licenseSeatsLabel} : <span className="font-semibold">{payload.seats}</span></p>
+              )}
+            </div>
           )}
+
+          <a
+            href="mailto:ecoles@octogears.com"
+            className="flex items-center gap-2 text-sm text-sky-600 hover:underline"
+          >
+            <Mail className="w-4 h-4 shrink-0" />
+            {t.licenseContactBtn}
+          </a>
         </div>
 
         {/* Footer */}

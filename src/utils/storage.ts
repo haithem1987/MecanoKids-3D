@@ -122,6 +122,7 @@ export function createDefaultProgress(
     diagnosticTutorialSeen: false,
     partsTrayPosition: 'bottom',
     partsTrayAutoHide: true,
+    licenseActive: false,
     lastSavedAt: Date.now(),
   };
 }
@@ -451,6 +452,11 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
         : 'bottom',
     partsTrayAutoHide: obj.partsTrayAutoHide !== false,
     classCode: typeof obj.classCode === 'string' && /^[A-Z0-9]{4,20}$/.test(obj.classCode) ? obj.classCode : undefined,
+    licenseKey: typeof obj.licenseKey === 'string' ? obj.licenseKey : undefined,
+    licenseType: ['classe', 'ecole', 'reseau'].includes(obj.licenseType as string) ? (obj.licenseType as 'classe' | 'ecole' | 'reseau') : undefined,
+    licenseExpiry: typeof obj.licenseExpiry === 'string' ? obj.licenseExpiry : undefined,
+    licenseSeats: typeof obj.licenseSeats === 'number' ? obj.licenseSeats : undefined,
+    licenseActive: Boolean(obj.licenseActive),
     ageProfile:
       typeof obj.ageProfile === 'string' && VALID_AGE_PROFILES.has(obj.ageProfile as AgeProfile)
         ? (obj.ageProfile as AgeProfile)
