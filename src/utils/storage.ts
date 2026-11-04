@@ -113,6 +113,10 @@ export function createDefaultProgress(
     cameraPreset: CameraPreset.ISO,
     freeWorkshopUnlocked: false,
     muted: false,
+    volumeSfx: 1,
+    volumeVoice: 1,
+    classroomSilent: false,
+    tbiMode: false,
     voiceAutoRead: false,
     tutorialSeen: keepTutorialSeen,
     partsTrayPosition: 'bottom',
@@ -433,6 +437,10 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
     freeWorkshopUnlocked:
       Boolean(obj.freeWorkshopUnlocked) || Boolean(dailyStreak.unlockedMilestones.streak_14),
     muted: Boolean(obj.muted),
+    volumeSfx: typeof obj.volumeSfx === 'number' ? Math.min(1, Math.max(0, obj.volumeSfx)) : 1,
+    volumeVoice: typeof obj.volumeVoice === 'number' ? Math.min(1, Math.max(0, obj.volumeVoice)) : 1,
+    classroomSilent: Boolean(obj.classroomSilent),
+    tbiMode: Boolean(obj.tbiMode),
     voiceAutoRead: Boolean(obj.voiceAutoRead),
     tutorialSeen: Boolean(obj.tutorialSeen),
     partsTrayPosition:

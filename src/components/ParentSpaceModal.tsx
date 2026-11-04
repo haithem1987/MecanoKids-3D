@@ -4,11 +4,13 @@ import {
   Clock,
   Download,
   GraduationCap,
+  Monitor,
   Printer,
   RotateCcw,
   ShieldCheck,
   Trash2,
   User,
+  Volume2,
   X,
 } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
@@ -36,7 +38,7 @@ import {
 } from '../utils/stemAnalytics';
 import { PROFILE_COLOR_STYLES, renderProfileAvatarIcon } from './ProfilesModal';
 
-type ParentTabId = 'stem' | 'timer' | 'diplomas' | 'profile';
+type ParentTabId = 'stem' | 'timer' | 'diplomas' | 'profile' | 'classroom';
 
 interface ParentSpaceModalProps {
   isOpen: boolean;
@@ -59,6 +61,11 @@ interface ParentSpaceModalProps {
   onDeleteAllData?: () => void;
   ageProfile?: AgeProfile;
   onChangeAgeProfile?: (profile: AgeProfile) => void;
+  volumeSfx?: number;
+  volumeVoice?: number;
+  classroomSilent?: boolean;
+  tbiMode?: boolean;
+  onChangeClassroomSettings?: (patch: { volumeSfx?: number; volumeVoice?: number; classroomSilent?: boolean; tbiMode?: boolean }) => void;
 }
 
 export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
@@ -82,6 +89,11 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
   onDeleteAllData,
   ageProfile,
   onChangeAgeProfile,
+  volumeSfx = 1,
+  volumeVoice = 1,
+  classroomSilent = false,
+  tbiMode = false,
+  onChangeClassroomSettings,
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const t = UI_TRANSLATIONS[language];
@@ -304,6 +316,18 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
             >
               <User className="w-3.5 h-3.5 shrink-0" />
               <span>{t.parentTabProfile}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('classroom')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+                activeTab === 'classroom'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Monitor className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.parentTabClassroom}</span>
             </button>
           </div>
         </div>
@@ -633,6 +657,78 @@ export const ParentSpaceModal: React.FC<ParentSpaceModalProps> = ({
                     </button>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'classroom' && (
+            <div className="space-y-5">
+              {/* Mode classe silencieux */}
+              <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-slate-200 bg-white">
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">{t.classroomSilentLabel}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{t.classroomSilentDesc}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={classroomSilent}
+                  onClick={() => onChangeClassroomSettings?.({ classroomSilent: !classroomSilent })}
+                  className={`shrink-0 relative w-11 h-6 rounded-full transition-colors cursor-pointer ${classroomSilent ? 'bg-sky-500' : 'bg-slate-300'}`}
+                >
+                  <span className={`absolute top-0.5 start-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${classroomSilent ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Mode TBI */}
+              <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-slate-200 bg-white">
+                <div>
+                  <p className="font-semibold text-sm text-slate-900">{t.tbiModeLabel}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{t.tbiModeDesc}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={tbiMode}
+                  onClick={() => onChangeClassroomSettings?.({ tbiMode: !tbiMode })}
+                  className={`shrink-0 relative w-11 h-6 rounded-full transition-colors cursor-pointer ${tbiMode ? 'bg-sky-500' : 'bg-slate-300'}`}
+                >
+                  <span className={`absolute top-0.5 start-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${tbiMode ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Volumes */}
+              <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-4">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-slate-900 mb-2">
+                    <Volume2 className="w-4 h-4" />
+                    {t.volumeSfxLabel} — {Math.round(volumeSfx * 100)} %
+                  </label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={volumeSfx}
+                    onChange={(e) => onChangeClassroomSettings?.({ volumeSfx: Number(e.target.value) })}
+                    className="w-full accent-sky-500"
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-slate-900 mb-2">
+                    <Volume2 className="w-4 h-4" />
+                    {t.volumeVoiceLabel} — {Math.round(volumeVoice * 100)} %
+                  </label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={volumeVoice}
+                    onChange={(e) => onChangeClassroomSettings?.({ volumeVoice: Number(e.target.value) })}
+                    className="w-full accent-sky-500"
+                  />
+                </div>
               </div>
             </div>
           )}

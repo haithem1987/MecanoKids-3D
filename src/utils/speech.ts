@@ -18,7 +18,12 @@ class SpeechNarrator {
   private activeId: string | null = null;
   private speaking = false;
   private voicesLoaded = false;
+  private voiceVolume = 1;
   public lastSpoken: { id: string; text: string; lang: LanguageCode } | null = null;
+
+  public setVoiceVolume(v: number): void {
+    this.voiceVolume = Math.min(1, Math.max(0, v));
+  }
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -112,6 +117,7 @@ class SpeechNarrator {
       // Slightly gentler pace for children aged 6–10
       utterance.rate = lang === 'ar' ? 0.94 : 0.96;
       utterance.pitch = 1.02;
+      utterance.volume = this.voiceVolume;
 
       this.lastSpoken = { id, text: cleanText, lang };
       this.activeId = id;

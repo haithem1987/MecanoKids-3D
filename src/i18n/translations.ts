@@ -880,6 +880,13 @@ export interface UIStrings {
   parentTabTimer: string;
   parentTabDiplomas: string;
   parentTabProfile: string;
+  parentTabClassroom: string;
+  classroomSilentLabel: string;
+  classroomSilentDesc: string;
+  tbiModeLabel: string;
+  tbiModeDesc: string;
+  volumeSfxLabel: string;
+  volumeVoiceLabel: string;
   ageProfileSelectorTitle: string;
   ageProfileSelectorSubtitle: string;
   ageProfile57Label: string;
@@ -1426,6 +1433,13 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabTimer: 'Minuteur Bienveillant',
     parentTabDiplomas: 'Diplômes Imprimables',
     parentTabProfile: "Profil d'Age",
+    parentTabClassroom: 'Classe',
+    classroomSilentLabel: 'Mode classe silencieux',
+    classroomSilentDesc: 'Coupe tous les sons instantanément (TBI, présentation)',
+    tbiModeLabel: 'Mode TBI',
+    tbiModeDesc: 'Agrandit les boutons pour les tableaux blancs interactifs',
+    volumeSfxLabel: 'Volume effets',
+    volumeVoiceLabel: 'Volume voix',
     ageProfileSelectorTitle: "Quel est l'age de l'enfant ?",
     ageProfileSelectorSubtitle: "On adapte l'aide, la tolerance et l'affichage a son niveau.",
     ageProfile57Label: '5 - 7 ans',
@@ -1975,6 +1989,13 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabTimer: 'Gentle Timer',
     parentTabDiplomas: 'Printable Diplomas',
     parentTabProfile: 'Age Profile',
+    parentTabClassroom: 'Classroom',
+    classroomSilentLabel: 'Silent classroom mode',
+    classroomSilentDesc: 'Mutes all sounds instantly (IWB, presentations)',
+    tbiModeLabel: 'IWB mode',
+    tbiModeDesc: 'Enlarges buttons for interactive whiteboards',
+    volumeSfxLabel: 'Effects volume',
+    volumeVoiceLabel: 'Voice volume',
     ageProfileSelectorTitle: 'How old is the child?',
     ageProfileSelectorSubtitle: 'We adapt the help, snap tolerance and display to their level.',
     ageProfile57Label: '5 - 7 years',
@@ -2523,6 +2544,13 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     parentTabTimer: 'المؤقّت اللطيف',
     parentTabDiplomas: 'الشهادات والطباعة',
     parentTabProfile: 'الفئة العمرية',
+    parentTabClassroom: 'الفصل',
+    classroomSilentLabel: 'وضع الصمت',
+    classroomSilentDesc: 'يكتم جميع الأصوات فوراً (السبورة التفاعلية)',
+    tbiModeLabel: 'وضع السبورة',
+    tbiModeDesc: 'يكبّر الأزرار للسبورات التفاعلية',
+    volumeSfxLabel: 'مستوى المؤثرات',
+    volumeVoiceLabel: 'مستوى الصوت',
     ageProfileSelectorTitle: 'كم عمر الطفل?',
     ageProfileSelectorSubtitle: 'نضبط المساعدة والحساسية والعرض حسب مستواه.',
     ageProfile57Label: '5 - 7 سنوات',

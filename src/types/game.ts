@@ -294,6 +294,10 @@ export interface PlayerProgress {
   freeWorkshopUnlocked: boolean;
   ageProfile?: AgeProfile;
   muted: boolean;
+  volumeSfx: number;
+  volumeVoice: number;
+  classroomSilent: boolean;
+  tbiMode: boolean;
   voiceAutoRead: boolean;
   tutorialSeen: boolean;
   partsTrayPosition: 'bottom' | 'left' | 'right';

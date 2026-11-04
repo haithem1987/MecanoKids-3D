@@ -559,7 +559,9 @@ export default function App() {
   useEffect(() => {
     latestStoreRef.current = profileStore;
     latestProgressRef.current = progress;
-    soundEngine.setMuted(progress.muted);
+    soundEngine.setMuted(progress.muted || progress.classroomSilent);
+    soundEngine.setVolumeSfx(progress.volumeSfx ?? 1);
+    speechEngine.setVoiceVolume(progress.classroomSilent ? 0 : (progress.volumeVoice ?? 1));
     saveMultiProfileStore(profileStore);
   }, [profileStore, progress]);
 
@@ -2106,6 +2108,7 @@ export default function App() {
   return (
     <div
       dir={language === 'ar' ? 'rtl' : 'ltr'}
+      data-tbi={progress.tbiMode ? 'true' : undefined}
       className="flex flex-col w-full h-full bg-[#F4F6F9] text-slate-900 overflow-hidden"
     >
       {/* Service Worker update banner */}
@@ -2614,6 +2617,13 @@ export default function App() {
         }}
         ageProfile={progress.ageProfile}
         onChangeAgeProfile={handleSelectAgeProfile}
+        volumeSfx={progress.volumeSfx}
+        volumeVoice={progress.volumeVoice}
+        classroomSilent={progress.classroomSilent}
+        tbiMode={progress.tbiMode}
+        onChangeClassroomSettings={(patch) =>
+          setProgress((p) => ({ ...p, ...patch }))
+        }
       />
 
       {/* Lot E: Teacher Dashboard (school tier) */}

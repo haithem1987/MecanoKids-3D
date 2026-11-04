@@ -3,9 +3,14 @@ import { VehicleCategory, VisualStyleMode } from '../types/game';
 class WorkshopSoundEngine {
   private ctx: AudioContext | null = null;
   private muted = false;
+  private sfxVolume = 1;
 
   public setMuted(muted: boolean): void {
     this.muted = muted;
+  }
+
+  public setVolumeSfx(v: number): void {
+    this.sfxVolume = Math.min(1, Math.max(0, v));
   }
 
   private ensureContext(): AudioContext | null {
@@ -202,8 +207,9 @@ class WorkshopSoundEngine {
     osc.frequency.setValueAtTime(startFreq, startTime);
     osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
 
+    const scaledGain = peakGain * this.sfxVolume;
     gain.gain.setValueAtTime(0.001, startTime);
-    gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.01);
+    gain.gain.linearRampToValueAtTime(scaledGain, startTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
     osc.connect(gain);

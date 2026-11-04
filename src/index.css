@@ -57,6 +57,13 @@ html[dir="rtl"] .font-display {
   font-variant-numeric: tabular-nums;
 }
 
+/* TBI mode: bigger touch targets for interactive whiteboards */
+[data-tbi="true"] button,
+[data-tbi="true"] [role="button"] {
+  min-height: 64px;
+  min-width: 64px;
+}
+
 @keyframes tourDragPiece {
   0%,
   12% {
