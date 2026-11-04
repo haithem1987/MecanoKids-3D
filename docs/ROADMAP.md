@@ -193,7 +193,7 @@ Prérequis : P0-ARCH décidé et implémenté.
   | Réseau / collectivité | 1 € par élève, plancher 990 € | 3 $ par élève |
 
   Clés d'activation, jeton signé vérifiable hors-ligne pendant 30 jours, bons de commande. Fichier : `LicenseActivationModal.tsx`.
-- [ ] B4 — Webhook Stripe en production, avec vérification de signature et idempotence.
+- [x] B4 — Webhook Stripe en production, avec vérification de signature et idempotence. *(fait : `stripe.webhooks.constructEvent` pour la vérification de signature ; table `stripe_webhook_events` (migration 002) + `markWebhookProcessed` dans les deux adapters pour l'idempotence ; tests unitaires dans `src/backend/webhook.test.ts`)*
 - [x] P1-BRAND — Renommer en **Octo Gears** : manifest PWA, `<title>`, textes i18n, `package.json`, nom du Worker, landing. *(fait : renommage exhaustif commit `6e633ce` + OctoMascot.tsx pieuvre animée dans LandingPage + OnboardingModal ; clés localStorage inchangées pour compatibilité sauvegardes)*
 
 **Critère de sortie de phase** : premier achat famille et première licence école encaissés.

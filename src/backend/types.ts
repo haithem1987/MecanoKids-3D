@@ -21,4 +21,9 @@ export interface BackendAdapter {
   postSchoolInquiry(data: SchoolInquiry): Promise<void>;
   syncProgress?(userId: string, progress: unknown): Promise<void>;
   storeLicenseKey?(data: { keyHash: string; tier: 'family' | 'school'; expiresAt: string | null }): Promise<void>;
+  /**
+   * Records a Stripe event ID and returns true if it's the first time we see it.
+   * Returns false if the event was already processed (duplicate/retry → skip).
+   */
+  markWebhookProcessed?(eventId: string): Promise<boolean>;
 }

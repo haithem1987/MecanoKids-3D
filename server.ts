@@ -152,6 +152,14 @@ async function startServer() {
       res.sendStatus(400); return;
     }
 
+    // Idempotence: skip events already processed (Stripe retries on non-200)
+    const isFirst = await adapter.markWebhookProcessed?.(event.id) ?? true;
+    if (!isFirst) {
+      console.log(`[webhook] duplicate event ${event.id} — skipped`);
+      res.sendStatus(200);
+      return;
+    }
+
     if (
       event.type === 'checkout.session.completed' ||
       event.type === 'checkout.session.async_payment_succeeded'
@@ -171,7 +179,6 @@ async function startServer() {
       const periodEnd = (sub as unknown as { current_period_end?: number } | null)?.current_period_end;
       const expiresAt = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
       try {
-        const adapter = getBackendAdapter();
         await adapter.storeLicenseKey?.({ keyHash, tier, expiresAt });
       } catch (err) {
         console.error('Failed to store license key:', err);

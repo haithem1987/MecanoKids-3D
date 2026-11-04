@@ -52,4 +52,16 @@ export class LocalAdapter implements BackendAdapter {
   async postSchoolInquiry(data: SchoolInquiry): Promise<void> {
     console.log('[LocalAdapter] school inquiry (offline):', data);
   }
+
+  async storeLicenseKey(data: { keyHash: string; tier: 'family' | 'school'; expiresAt: string | null }): Promise<void> {
+    console.log('[LocalAdapter] storeLicenseKey (offline):', data);
+  }
+
+  private _processedEvents = new Set<string>();
+
+  async markWebhookProcessed(eventId: string): Promise<boolean> {
+    if (this._processedEvents.has(eventId)) return false;
+    this._processedEvents.add(eventId);
+    return true;
+  }
 }

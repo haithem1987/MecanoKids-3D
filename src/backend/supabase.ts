@@ -73,6 +73,18 @@ export class SupabaseAdapter implements BackendAdapter {
     });
   }
 
+  async markWebhookProcessed(eventId: string): Promise<boolean> {
+    const { error } = await this.client
+      .from('stripe_webhook_events')
+      .insert({ stripe_event_id: eventId });
+    // If conflict (duplicate event) Supabase returns a unique-violation error code.
+    if (error) {
+      if (error.code === '23505') return false; // already processed
+      throw error;
+    }
+    return true;
+  }
+
   async postSchoolInquiry(data: SchoolInquiry): Promise<void> {
     await this.client.from('school_inquiries').insert({
       first_name: data.firstName,
