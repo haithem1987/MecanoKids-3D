@@ -2016,7 +2016,6 @@ export function buildPartMeshGroup(
 
     case PartShapeKind.BOND_SINGLE: {
       const bondGeo = new THREE.CylinderGeometry(sx * 0.5, sx * 0.5, sz, 10);
-      bondGeo.rotateX(Math.PI / 2);
       const bond = new THREE.Mesh(bondGeo, mats.primary);
       bond.castShadow = true;
       root.add(bond);
