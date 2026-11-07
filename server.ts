@@ -252,10 +252,12 @@ async function startServer() {
 
   const isProduction =
     process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
+  const localAdmin = !isProduction && process.argv.includes('--local-admin');
 
   if (!isProduction) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
+      define: { 'import.meta.env.OCTO_LOCAL_ADMIN': JSON.stringify(localAdmin) },
       server: { middlewareMode: true },
       appType: 'spa',
     });
@@ -268,8 +270,11 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Octo Gears lancé sur http://localhost:${PORT}`);
+  const host = localAdmin ? '127.0.0.1' : '0.0.0.0';
+  app.listen(PORT, host, () => {
+    console.log(localAdmin
+      ? `Octo Gears (admin local) : http://127.0.0.1:${PORT}/?admin=1`
+      : `Octo Gears lancé sur http://localhost:${PORT}`);
   });
 }
 

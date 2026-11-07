@@ -19,3 +19,6 @@ brag-output/
 .wrangler
 .dev.vars*
 !.dev.vars.example
+
+# Captures temporaires générées par les parcours navigateur
+/qa/*.png

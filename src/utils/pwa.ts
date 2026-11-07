@@ -1,41 +1,92 @@
-import { useEffect, useState } from 'react';
-import { registerSW } from 'virtual:pwa-register';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 let swRegistered = false;
-let _updateSW: ((reloadPage?: boolean) => Promise<void>) | null = null;
-const _updateListeners: Array<() => void> = [];
-let _needsRefresh = false;
+let registration: ServiceWorkerRegistration | undefined;
+let reloadRequired = false;
+let saveBeforeReload: (() => boolean) | undefined;
+let lastActivationRequest = 0;
+const updateListeners = new Set<() => void>();
+
+function notifyUpdate() {
+  updateListeners.forEach(listener => listener());
+}
+
+function needsRefresh() {
+  return reloadRequired || Boolean(registration?.waiting && navigator.serviceWorker.controller);
+}
+
+function subscribeToUpdates(listener: () => void) {
+  updateListeners.add(listener);
+  return () => { updateListeners.delete(listener); };
+}
+
+function applyUpdate(save: () => boolean) {
+  if (reloadRequired) {
+    if (save()) window.location.reload();
+    return;
+  }
+  const worker = registration?.waiting;
+  if (!worker || Date.now() - lastActivationRequest < 5000 || !save()) return;
+  saveBeforeReload = save;
+  lastActivationRequest = Date.now();
+  worker.postMessage({ type: 'SKIP_WAITING' });
+}
 
 export function initServiceWorker(): void {
-  if (swRegistered || typeof window === 'undefined') return;
+  if (swRegistered || !import.meta.env.PROD || typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
   swRegistered = true;
-  try {
-    _updateSW = registerSW({
-      immediate: true,
-      onNeedRefresh() {
-        _needsRefresh = true;
-        _updateListeners.forEach((fn) => fn());
-      },
+  const workers = navigator.serviceWorker;
+  let currentController = workers.controller;
+  workers.addEventListener('controllerchange', () => {
+    const nextController = workers.controller;
+    const changedVersion = currentController && nextController && nextController !== currentController;
+    currentController = nextController;
+    if (changedVersion) reloadRequired = true;
+    const save = saveBeforeReload;
+    saveBeforeReload = undefined;
+    if (changedVersion && save?.()) {
+      window.location.reload();
+      return;
+    }
+    notifyUpdate();
+  });
+
+  void workers.register(`${import.meta.env.BASE_URL}sw.js`, { updateViaCache: 'none' }).then(registered => {
+    registration = registered;
+    const watchInstall = () => registered.installing?.addEventListener('statechange', notifyUpdate);
+    registered.addEventListener('updatefound', watchInstall);
+    watchInstall();
+    notifyUpdate();
+
+    let checking = false;
+    let lastCheck = 0;
+    const check = () => {
+      if (checking || registered.installing || registered.waiting || document.hidden || !navigator.onLine) return;
+      if (Date.now() - lastCheck < 5000) return;
+      checking = true;
+      lastCheck = Date.now();
+      void registered.update().catch(() => {
+        // A temporary network failure leaves the installed version available.
+      }).finally(() => {
+        checking = false;
+        notifyUpdate();
+      });
+    };
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    window.addEventListener('online', () => {
+      lastCheck = 0;
+      check();
     });
-  } catch {
-    // Ignore SW registration restrictions in sandboxed environments
-  }
+    window.setInterval(check, 120_000);
+    check();
+  }).catch(() => {
+    // Service workers are optional in browsers that block registration.
+  });
 }
 
 export function useServiceWorkerUpdate() {
-  const [needsRefresh, setNeedsRefresh] = useState(_needsRefresh);
-
-  useEffect(() => {
-    const notify = () => setNeedsRefresh(true);
-    _updateListeners.push(notify);
-    return () => {
-      const idx = _updateListeners.indexOf(notify);
-      if (idx !== -1) _updateListeners.splice(idx, 1);
-    };
-  }, []);
-
-  const applyUpdate = () => _updateSW?.(true);
-  return { needsRefresh, applyUpdate };
+  return { needsRefresh: useSyncExternalStore(subscribeToUpdates, needsRefresh, () => false), applyUpdate };
 }
 
 interface BeforeInstallPromptEvent extends Event {

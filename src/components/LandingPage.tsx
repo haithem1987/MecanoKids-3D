@@ -1,7 +1,9 @@
+import { releaseWebGLRenderer } from '../three/rendererLifecycle';
+import { CATEGORIES, CATEGORY_META, getCategoryLabel } from '../data/categories';
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { LanguageCode, VehicleCategory, VisualStyleMode } from '../types/game';
-import { UI_TRANSLATIONS } from '../i18n/translations';
+import { UI_TRANSLATIONS, getLocalizedBlueprint } from '../i18n/translations';
 import { VEHICLE_BLUEPRINTS } from '../data/blueprints';
 import { buildPartMeshGroup } from '../three/partGeometries';
 import { OctoMascot } from './OctoMascot';
@@ -12,13 +14,10 @@ interface Props {
   onSelectLanguage: (lang: LanguageCode) => void;
 }
 
-const UNIVERSES = [
-  { emoji: '🚗', fr: 'Route & Ville',    en: 'Road & City',    ar: 'الطريق والمدينة', category: VehicleCategory.CAR,          gradient: 'from-sky-500 to-blue-600'      },
-  { emoji: '⛵', fr: 'Mer & Navigation', en: 'Sea & Sailing',  ar: 'البحر والملاحة',  category: VehicleCategory.BOAT,         gradient: 'from-teal-500 to-cyan-600'     },
-  { emoji: '✈️', fr: 'Air & Espace',     en: 'Air & Space',    ar: 'الجو والفضاء',    category: VehicleCategory.PLANE,        gradient: 'from-indigo-500 to-violet-600' },
-  { emoji: '🏗️', fr: 'Chantier',         en: 'Construction',   ar: 'البناء',          category: VehicleCategory.CONSTRUCTION, gradient: 'from-amber-500 to-orange-600'  },
-  { emoji: '🚀', fr: 'Rail & Mines',     en: 'Rail & Mines',   ar: 'القطار والمناجم', category: VehicleCategory.SPACE,        gradient: 'from-rose-500 to-red-600'      },
-] as const;
+const UNIVERSES = CATEGORIES.map((category) => ({
+  ...CATEGORY_META[category], category,
+  fr: getCategoryLabel(category, 'fr'), en: getCategoryLabel(category, 'en'), ar: getCategoryLabel(category, 'ar'),
+}));
 
 
 function blueprintForCategory(cat: VehicleCategory) {
@@ -108,7 +107,7 @@ function Hero3DCanvas({ blueprintId }: { blueprintId: string }) {
     return () => {
       cancelAnimationFrame(raf);
       obs.disconnect();
-      renderer.dispose();
+      releaseWebGLRenderer(renderer);
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
   }, [blueprintId]);
@@ -123,7 +122,7 @@ export function LandingPage({ language, onStart, onSelectLanguage }: Props) {
   const t = UI_TRANSLATIONS[language];
   const isRtl = language === 'ar';
   const [activeIdx, setActiveIdx] = useState(0);
-  const activeBp = blueprintForCategory(UNIVERSES[activeIdx].category);
+  const activeBp = getLocalizedBlueprint(blueprintForCategory(UNIVERSES[activeIdx].category), language);
 
   return (
     <div

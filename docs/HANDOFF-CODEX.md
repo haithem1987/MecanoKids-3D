@@ -1,5 +1,14 @@
 # Handoff — Octo Gears (MécanoKids 3D) → CODEX
 
+## Priorité actuelle — palettes persistantes (7 novembre)
+
+Le retour utilisateur a invalidé le dock rétractable et la grille réservée. `WorkshopHud.tsx` gère maintenant une palette de pièces toujours visible, les vues caméra opposées et un menu de réglages secondaire. Ne pas réintroduire de bouton Ouvrir/Réduire, de raccourci H ni d’auto-rétraction. Le canvas reste à sa taille ; `floatingFraming.ts` et `cameraFraming.ts` cadrent la cible dans la zone libre.
+
+Validation : 223 poses sur quatre formats, glisser-déposer, FR/EN/AR, neuf défis et treize laboratoires dans les trois langues, lecture vocale manuelle locale sans voix navigateur. Rapport actuel : `docs/qa/2026-11-07-palettes-flottantes.md`.
+
+Le catalogue comprend dix ajouts dans `heritageBlueprints.ts` (151 ateliers au total) : portique 45, château 61, yourte 41, treillis 56, temple 49, moulin 59, donjon guidé 24, tour solaire 59, dôme 58, aqueduc 58. Moulin, tour solaire et aqueduc ont des commandes après montage sur le même plateau, via `WorkshopMissionPortal`. Le pont levant existant utilise également ce panneau. L’enrichissement reste subordonné à la fluidité du jeu demandée dans le dernier retour.
+
+
 ## Résumé des travaux récents
 
 ### 1. Univers STEM — géométries 3D (commit `5311d4f`)
@@ -27,7 +36,7 @@ Les trois univers STEM (Électronique, Chimie, Physique) utilisaient les mêmes 
 - **Dev server** : `npm run dev` → http://localhost:7300
 - **Lint** : `npm run lint` (tsc --noEmit) — passe
 - **Tests** : `npm test` (Vitest)
-- **Deploy** : `npm run deploy` → https://octo-gears.khalifa-haithem.workers.dev
+- **Déploiement public** : `npm run deploy` publie sur Cloudflare Pages, projet `octoglos`, à https://octoglos.pages.dev/.
 
 ### Points d'attention architecture
 - `src/App.tsx` fait ~2 500 lignes — ne pas y ajouter de logique, extraire dans `src/hooks/` ou `src/utils/`
@@ -43,13 +52,12 @@ CODEX a besoin d'accès au compte Cloudflare pour `npm run deploy` (via Wrangler
 
 | Ce dont tu as besoin | Où le trouver | Pour quoi |
 |---|---|---|
-| `CLOUDFLARE_API_TOKEN` | dash.cloudflare.com → My Profile → API Tokens → Create Token (template *Edit Cloudflare Workers*) | `wrangler deploy` |
-| `CLOUDFLARE_ACCOUNT_ID` | dash.cloudflare.com → Workers & Pages → ton account ID en haut à droite | `wrangler deploy` |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens, permission Cloudflare Pages Write | `npm run deploy` |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare → Workers & Pages → identifiant du compte | `npm run deploy` |
 
 Méthode : soit exporter les variables dans le shell avant de lancer `npm run deploy`, soit créer un fichier `.wrangler/config` local (jamais committer).
 
-Le Worker s'appelle **`octo-gears`**, déploie sur :
-> https://octo-gears.khalifa-haithem.workers.dev
+Le projet Pages **`octoglos`** sert l’application publique sur https://octoglos.pages.dev/.
 
 ---
 

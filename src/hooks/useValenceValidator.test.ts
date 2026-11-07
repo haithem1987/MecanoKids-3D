@@ -63,12 +63,11 @@ describe('validateValence', () => {
     expect(result.unsatisfiedAtoms).toContain('o');
   });
 
-  it('ignores valence of unplaced atoms', () => {
+  it('does not accept an empty assembly', () => {
     const bp = makeBp(VehicleCategory.CHEMISTRY, [
       { id: 'o', shape: PartShapeKind.ATOM_OXYGEN, dependsOn: [] },
     ]);
-    // O not placed → no valence check
-    expect(validateValence(bp, new Set()).isComplete).toBe(true);
+    expect(validateValence(bp, new Set()).isComplete).toBe(false);
   });
 
   it('hydrogen satisfied by one bond', () => {

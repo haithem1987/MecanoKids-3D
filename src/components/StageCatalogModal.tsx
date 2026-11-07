@@ -15,7 +15,8 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { UI_TRANSLATIONS } from '../i18n/translations';
+import { CATALOG_BROWSE_TEXT, LOCAL_ADMIN_LABEL, MASTER_BUILD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
+import { CATEGORIES, CATEGORY_META, getCategoryLabel } from '../data/categories';
 import {
   DifficultyTier,
   LanguageCode,
@@ -26,6 +27,7 @@ import {
 } from '../types/game';
 import { formatStopwatchMs } from '../utils/speedrun';
 import { canPlayStage } from '../utils/entitlements';
+import { localAdminActive } from '../utils/localAdmin';
 
 interface StageCatalogModalProps {
   isOpen: boolean;
@@ -61,6 +63,8 @@ const TIER_UNLOCK_THRESHOLDS: Record<DifficultyTier, number> = {
   [DifficultyTier.MASTER]: 45,
 };
 
+const normalizeSearch = (value: string) => value.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').trim();
+
 export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   isOpen,
   onClose,
@@ -86,37 +90,54 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   onResetAllProgress,
   onOpenUpgrade,
 }) => {
-  const [categoryFilter, setCategoryFilter] = useState<'all' | VehicleCategory>('all');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'master-expansion' | VehicleCategory | null>(null);
   const [tierFilter, setTierFilter] = useState<'all' | DifficultyTier>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [confirmingReset, setConfirmingReset] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const normalizedQuery = normalizeSearch(searchQuery);
 
   const filteredBlueprints = useMemo(() => {
     return blueprints.filter((bp) => {
-      if (categoryFilter !== 'all' && bp.category !== categoryFilter) return false;
+      if (categoryFilter === 'master-expansion') {
+        if (!bp.masterExpansion || bp.tier !== DifficultyTier.MASTER) return false;
+      } else if (categoryFilter && categoryFilter !== 'all' && bp.category !== categoryFilter) return false;
       if (tierFilter !== 'all' && bp.tier !== tierFilter) return false;
       if (normalizedQuery) {
         const matchStage = String(bp.stageNumber) === normalizedQuery;
-        const matchName = bp.name.toLowerCase().includes(normalizedQuery);
-        const matchSub = bp.subtitle.toLowerCase().includes(normalizedQuery);
+        const matchName = normalizeSearch(bp.name).includes(normalizedQuery);
+        const matchSub = normalizeSearch(bp.subtitle).includes(normalizedQuery);
         if (!matchStage && !matchName && !matchSub) return false;
       }
       return true;
-    });
+    }).sort((a,b) => a.tier-b.tier || a.stageNumber-b.stageNumber);
   }, [blueprints, categoryFilter, normalizedQuery, tierFilter]);
 
   if (!isOpen) return null;
 
   const t = UI_TRANSLATIONS[language];
+  const locale = language === 'fr' ? 0 : language === 'en' ? 1 : 2;
+  const browse = CATALOG_BROWSE_TEXT;
+  const showStages = categoryFilter !== null || normalizedQuery !== '' || tierFilter !== 'all';
+  const chooseWorld = (category: 'all' | 'master-expansion' | VehicleCategory) => {
+    setCategoryFilter(category);
+    scrollRef.current?.scrollTo({ top: 0 });
+  };
+  const returnToWorlds = () => {
+    setCategoryFilter(null);
+    setTierFilter('all');
+    setSearchQuery('');
+    scrollRef.current?.scrollTo({ top: 0 });
+  };
   const completedRecords = Object.values(progress.completedStages).filter((r) => r.completed);
   const completedCount = completedRecords.length;
   const totalStars = completedRecords.reduce((sum, r) => sum + (r.stars || 0), 0);
   const maxStars = blueprints.length * 3;
 
   const isStageUnlocked = (bp: VehicleBlueprint): boolean => {
+    if (bp.masterExpansion && progress.ageProfile === '11-12') return true;
     if (progress.freeWorkshopUnlocked) return true;
     if (bp.id === currentBlueprintId) return true;
     if (progress.completedStages[bp.id]?.completed) return true;
@@ -159,25 +180,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
     },
   ];
 
-  const categoryLabel = (cat: VehicleCategory): string => {
-    switch (cat) {
-      case VehicleCategory.CAR:
-        return t.catCar;
-      case VehicleCategory.BOAT:
-        return t.catBoat;
-      case VehicleCategory.PLANE:
-        return t.catPlane;
-      case VehicleCategory.CONSTRUCTION:
-        return t.catConstruction;
-      case VehicleCategory.SPACE:
-        return t.catSpace;
-      case VehicleCategory.AEROSPACE:
-        return t.filterAerospace;
-      case VehicleCategory.ELECTRONICS:
-      default:
-        return t.filterElectronics;
-    }
-  };
+  const categoryLabel = (cat: VehicleCategory) => getCategoryLabel(cat, language);
 
   return (
     <div
@@ -193,176 +196,94 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
             <h2 id="catalog-title" className="font-display text-2xl font-bold text-slate-900">
               {t.catalogTitle}
             </h2>
-            <p className="mt-1 text-sm text-slate-600">{t.catalogSubtitle}</p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onOpenLeaderboard();
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-sky-900 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition-colors whitespace-nowrap min-h-[40px] cursor-pointer"
-            >
-              <Timer className="w-4 h-4 text-sky-600 shrink-0" />
-              <span className="hidden sm:inline">{t.leaderboardNavBtn}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenProgression}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors whitespace-nowrap min-h-[40px] cursor-pointer"
-            >
-              <Trophy className="w-4 h-4 text-amber-600 shrink-0" />
-              <span className="hidden sm:inline">{t.openProgressionBtn(unlockedBadgesCount, totalBadgesCount)}</span>
-            </button>
-
+          <div className="shrink-0">
             <button
               type="button"
               onClick={onClose}
               aria-label={t.closeCatalogAria}
-              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              className="flex min-h-16 min-w-16 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-sky-700"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Filter, Search & Visual Mode Toolbar */}
-        <div className="px-6 py-3.5 bg-slate-50 border-b border-slate-200 space-y-2.5">
-          {/* Row 1: 5 Mechanical Families + 3 Visual Modes + Free Unlock */}
-          <div className="flex flex-wrap items-center justify-between gap-2.5">
-            <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-200/75 rounded-lg">
-              {(
-                [
-                  ['all', t.filterAll],
-                  [VehicleCategory.CAR, t.filterCars],
-                  [VehicleCategory.BOAT, t.filterBoats],
-                  [VehicleCategory.PLANE, t.filterPlanes],
-                  [VehicleCategory.CONSTRUCTION, t.filterConstruction],
-                  [VehicleCategory.SPACE, t.filterSpace],
-                  [VehicleCategory.AEROSPACE, t.filterAerospace],
-                  [VehicleCategory.ELECTRONICS, t.filterElectronics],
-                  [VehicleCategory.CHEMISTRY, t.filterChemistry],
-                  [VehicleCategory.PHYSICS, t.filterPhysics],
-                ] as const
-              ).map(([val, label]) => (
-                <button
-                  key={val}
-                  type="button"
-                  onClick={() => setCategoryFilter(val)}
-                  className={`px-2.5 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                    categoryFilter === val
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+        <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+          <div className="space-y-4 border-b border-slate-200 bg-slate-50 px-4 py-4 sm:px-6">
+            <div className="relative max-w-xl">
+              <Search aria-hidden="true" className="pointer-events-none absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+              <input type="search" aria-label={browse.search[locale]} placeholder={browse.search[locale]}
+                value={searchQuery} onChange={event => setSearchQuery(event.target.value)}
+                className="min-h-16 w-full rounded-xl border border-slate-300 bg-white pe-4 ps-12 text-base focus-visible:outline-2 focus-visible:outline-sky-700" />
             </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1 p-1 bg-slate-200/75 rounded-lg">
-                {(
-                  [
-                    [VisualStyleMode.WOOD, t.styleWoodShort],
-                    [VisualStyleMode.BLOCKS, t.styleBlocksShort],
-                    [VisualStyleMode.REALISTIC, t.styleRealisticShort],
-                    [VisualStyleMode.COMICS, t.styleComicsShort],
-                  ] as const
-                ).map(([mode, label]) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => onSelectStyle(mode)}
-                    className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                      visualStyle === mode
-                        ? 'bg-white text-sky-700 font-semibold shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {label}
+            {!showStages ? (
+              <section aria-labelledby="catalog-worlds">
+                <h3 id="catalog-worlds" className="mb-3 text-xl font-bold text-slate-900">{browse.choose[locale]}</h3>
+                {(progress.ageProfile === '11-12' || localAdminActive) && blueprints.some(bp => bp.masterExpansion && bp.tier === DifficultyTier.MASTER) && (
+                  <button type="button" data-catalog-master onClick={() => chooseWorld('master-expansion')}
+                    className="mb-3 flex min-h-16 w-full items-center gap-3 rounded-xl border border-indigo-300 bg-indigo-50 px-4 text-start font-bold text-indigo-950 hover:bg-indigo-100 focus-visible:outline-2 focus-visible:outline-indigo-700">
+                    <Trophy aria-hidden="true" className="h-6 w-6 shrink-0" />
+                    {MASTER_BUILD_TEXT.advanced[locale]}
                   </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={onToggleFreeWorkshop}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap cursor-pointer ${
-                  progress.freeWorkshopUnlocked
-                    ? 'bg-sky-50 border-sky-300 text-sky-800'
-                    : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
-                }`}
-                title={t.unlockAllTitle}
-              >
-                <Unlock className="w-3.5 h-3.5 shrink-0" />
-                <span>{progress.freeWorkshopUnlocked ? t.freeAccessActive : t.unlockAllBtn}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Row 2: 5 Difficulty Tiers Quick Filter + Search Input */}
-          <div className="flex flex-wrap items-center justify-between gap-2.5">
-            <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-200/75 rounded-lg">
-              <button
-                type="button"
-                onClick={() => setTierFilter('all')}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                  tierFilter === 'all'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {t.allTiersLabel}
-              </button>
-              {(
-                [
-                  DifficultyTier.DISCOVERY,
-                  DifficultyTier.WORKSHOP,
-                  DifficultyTier.ENGINEER,
-                  DifficultyTier.EXPERT,
-                  DifficultyTier.MASTER,
-                ] as const
-              ).map((tierNum) => (
-                <button
-                  key={tierNum}
-                  type="button"
-                  onClick={() => setTierFilter(tierNum)}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
-                    tierFilter === tierNum
-                      ? 'bg-white text-sky-800 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {t.tierPillLabel(tierNum)}
+                )}
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                  {CATEGORIES.filter(category => blueprints.some(bp => bp.category === category)).map(category => (
+                    <button key={category} type="button" data-catalog-world={category} onClick={() => chooseWorld(category)}
+                      className="flex min-h-24 flex-col items-start justify-center gap-2 rounded-xl border border-slate-200 bg-white p-3 text-start text-base font-bold text-slate-900 shadow-sm hover:border-sky-500 hover:bg-sky-50 focus-visible:outline-2 focus-visible:outline-sky-700">
+                      <span aria-hidden="true" className="text-3xl">{CATEGORY_META[category].emoji}</span>
+                      <span>{categoryLabel(category)}</span>
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={() => chooseWorld('all')} className="mt-3 min-h-16 rounded-xl border border-slate-200 bg-white px-4 font-semibold text-sky-900">
+                  {t.filterAll}
                 </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-3 flex-1 min-w-[220px] max-w-md">
-              <div className="relative flex-1">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute top-1/2 -translate-y-1/2 start-3 pointer-events-none" />
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t.searchPlaceholder}
-                  className="w-full ps-8 pe-3 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500"
-                />
+              </section>
+            ) : (
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={returnToWorlds} className="min-h-16 rounded-xl border border-slate-300 bg-white px-4 font-semibold text-sky-900">
+                  {browse.worlds[locale]}
+                </button>
+                <h3 className="text-xl font-bold text-slate-900">
+                  {categoryFilter === 'master-expansion' ? MASTER_BUILD_TEXT.advanced[locale]
+                    : categoryFilter && categoryFilter !== 'all' ? categoryLabel(categoryFilter) : t.filterAll}
+                </h3>
               </div>
-              <span className="text-xs text-slate-500 whitespace-nowrap hidden sm:inline">
-                {t.showingCountLabel(filteredBlueprints.length, blueprints.length)}
-              </span>
-            </div>
+            )}
+            <details className="rounded-xl border border-slate-200 bg-white px-3">
+              <summary className="flex min-h-16 cursor-pointer items-center font-semibold text-slate-700">{browse.tools[locale]}</summary>
+              <div className="flex flex-wrap items-center gap-2 pb-3">
+                <select aria-label={t.allTiersLabel} value={tierFilter} onChange={event => setTierFilter(event.target.value === 'all' ? 'all' : Number(event.target.value) as DifficultyTier)}
+                  className="min-h-12 rounded-lg border border-slate-300 bg-white px-3">
+                  <option value="all">{t.allTiersLabel}</option>
+                  {tiers.map(({ tier, title }) => <option key={tier} value={tier}>{title}</option>)}
+                </select>
+                {([
+                  [VisualStyleMode.WOOD, t.styleWoodShort], [VisualStyleMode.BLOCKS, t.styleBlocksShort],
+                  [VisualStyleMode.REALISTIC, t.styleRealisticShort], [VisualStyleMode.COMICS, t.styleComicsShort],
+                ] as const).map(([mode, label]) => (
+                  <button key={mode} type="button" aria-pressed={visualStyle === mode} onClick={() => onSelectStyle(mode)}
+                    className="min-h-12 rounded-lg border border-slate-300 px-3 text-sm font-semibold aria-pressed:bg-sky-100">{label}</button>
+                ))}
+                <button type="button" onClick={onToggleFreeWorkshop} title={t.unlockAllTitle} className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-slate-300 px-3 text-sm font-semibold">
+                  <Unlock className="h-4 w-4" />{progress.freeWorkshopUnlocked ? t.freeAccessActive : t.unlockAllBtn}
+                </button>
+                <button type="button" onClick={() => { onClose(); onOpenLeaderboard(); }} className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-slate-300 px-3 text-sm font-semibold">
+                  <Timer className="h-4 w-4" />{t.leaderboardNavBtn}
+                </button>
+                <button type="button" onClick={onOpenProgression} className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-slate-300 px-3 text-sm font-semibold">
+                  <Trophy className="h-4 w-4" />{t.openProgressionBtn(unlockedBadgesCount, totalBadgesCount)}
+                </button>
+              </div>
+            </details>
           </div>
-        </div>
 
         {/* Scrollable 5-Tier Catalog List */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-8">
+        <div className="px-4 py-5 space-y-8 sm:px-6">
+          {localAdminActive && <p className="rounded-xl border border-sky-200 bg-sky-50 p-3 font-semibold text-sky-950">{LOCAL_ADMIN_LABEL[language]}</p>}
           {/* Daily Mechanical Challenge Spotlight Banner */}
-          <div className="p-4 bg-amber-50/55 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-4">
+          {!showStages && <div className="p-4 bg-amber-50/55 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
                 <Gem className="w-5 h-5" />
@@ -401,18 +322,14 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
             >
               {t.dailyCatalogBannerCta}
             </button>
-          </div>
+          </div>}
 
-          {filteredBlueprints.length === 0 ? (
+          {showStages && (filteredBlueprints.length === 0 ? (
             <div className="py-12 text-center space-y-3">
               <p className="text-sm font-medium text-slate-600">{t.noStagesMatch}</p>
               <button
                 type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setCategoryFilter('all');
-                  setTierFilter('all');
-                }}
+                onClick={returnToWorlds}
                 className="px-3.5 py-1.5 text-xs font-semibold text-sky-700 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors cursor-pointer"
               >
                 {t.clearSearchLabel}
@@ -424,7 +341,6 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
               if (items.length === 0) return null;
 
               const neededForTier = TIER_UNLOCK_THRESHOLDS[tier] ?? 0;
-
               return (
                 <div key={tier}>
                   <div className="mb-3">
@@ -432,11 +348,11 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                     <p className="text-xs text-slate-500">{subtitle}</p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {items.map((bp) => {
-                      const unlocked = isStageUnlocked(bp);
+                      const unlocked = localAdminActive || Boolean(bp.virtualLab) || isStageUnlocked(bp);
                       const paywalled =
-                        unlocked && !canPlayStage(progress.licenseState, bp.stageNumber);
+                        !localAdminActive && !bp.virtualLab && unlocked && !canPlayStage(progress.licenseState, bp.stageNumber, bp.masterExpansion);
                       const record = progress.completedStages[bp.id];
                       const inProg = progress.inProgressStages[bp.id];
                       const placedCount = inProg?.placedPartIds.length ?? 0;
@@ -446,6 +362,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                         <button
                           key={bp.id}
                           type="button"
+                          data-catalog-stage={bp.id}
                           disabled={!unlocked && !paywalled}
                           onClick={() => {
                             if (paywalled) {
@@ -468,7 +385,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                           <div>
                             <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
                               <span>
-                                {t.stageLabel(bp.stageNumber)}
+                                <span aria-hidden="true">{CATEGORY_META[bp.category].emoji} </span>{t.stageLabel(bp.stageNumber)}
                                 {' · '}
                                 {categoryLabel(bp.category)}
                               </span>
@@ -494,7 +411,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                               ) : null}
                             </div>
 
-                            <h4 className="mt-1.5 font-display text-base font-bold text-slate-900">
+                            <h4 className="mt-2 font-display text-lg font-bold text-slate-900">
                               {bp.name}
                             </h4>
                             <p className="mt-1 text-xs text-slate-600 line-clamp-2">
@@ -540,18 +457,13 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                 </div>
               );
             })
-          )}
+          ))}
         </div>
 
         {/* Dedicated LocalStorage Save Management Bar */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold text-slate-900">{t.savePanelTitle}</p>
-            <p className="text-xs text-slate-500">
-              {t.savePanelDesc(completedCount, blueprints.length, totalStars, maxStars)}
-            </p>
-          </div>
-
+        <details className="border-t border-slate-200 bg-slate-50 px-4 sm:px-6">
+          <summary className="flex min-h-16 cursor-pointer items-center font-semibold">{t.savePanelTitle}</summary>
+          <p className="mb-3 text-sm text-slate-600">{t.savePanelDesc(completedCount, blueprints.length, totalStars, maxStars)}</p>
           <div className="flex flex-wrap items-center gap-2">
             <input
               ref={fileInputRef}
@@ -625,6 +537,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
               </button>
             )}
           </div>
+        </details>
         </div>
       </div>
     </div>

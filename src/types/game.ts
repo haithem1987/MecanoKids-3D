@@ -17,6 +17,8 @@ export enum VehicleCategory {
   ELECTRONICS = 'electronique',
   CHEMISTRY = 'chimie',
   PHYSICS = 'physique',
+  NATURE = 'vivant-et-terre',
+  HISTORY = 'histoire',
 }
 
 export enum DifficultyTier {
@@ -99,15 +101,35 @@ export enum PartShapeKind {
   WIRE_JUMPER = 'wire_jumper',
   MICRO_MOTOR = 'micro_motor',
   SOLAR_PANEL = 'solar_panel',
+  FAN_BLADES = 'fan_blades',
+  LIGHT_SENSOR = 'light_sensor',
+  BUZZER = 'buzzer',
+  ANTENNA = 'antenna',
+  DEMODULATOR = 'demodulator',
+  SPEAKER = 'speaker',
   // Chemistry universe
   ATOM_HYDROGEN = 'atom_hydrogen',
   ATOM_OXYGEN = 'atom_oxygen',
   ATOM_CARBON = 'atom_carbon',
   ATOM_CHLORINE = 'atom_chlorine',
+  ATOM_SODIUM = 'atom_sodium',
   BOND_SINGLE = 'bond_single',
   BOND_DOUBLE = 'bond_double',
   LAB_FLASK = 'lab_flask',
   LAB_STAND = 'lab_stand',
+  LAB_BEAKER = 'lab_beaker',
+  APPARATUS_BASE = 'apparatus_base',
+  ARCH_STONE = 'arch_stone',
+  ARCH_SPANDREL = 'arch_spandrel',
+  LAB_CYLINDER = 'lab_cylinder',
+  LAB_CONE = 'lab_cone',
+  LAB_HANGING_BALL = 'lab_hanging_ball',
+  LAB_FLOWER = 'lab_flower',
+  LAB_HOUSE = 'lab_house',
+  SUPPORT_FRAME = 'support_frame',
+  BALANCE_PAN = 'balance_pan',
+  LIGHT_SOURCE = 'light_source',
+  LIGHT_BEAM = 'light_beam',
   // Physics universe
   PENDULUM_ROD = 'pendulum_rod',
   PENDULUM_BOB = 'pendulum_bob',
@@ -125,6 +147,7 @@ export enum PartAnimationKind {
   SPIN_Y = 'spin_y',
   SPIN_Z = 'spin_z',
   SWAY_Y = 'sway_y',
+  PENDULUM = 'pendulum',
 }
 
 export enum CameraPreset {
@@ -154,6 +177,15 @@ export interface PartSpec {
   dependsOn: string[];
   snapRadius: number;
   animation?: PartAnimationKind;
+  animationSpeed?: number;
+  motionPivot?: [number, number, number];
+  /** Physical/scientific connections are independent from assembly prerequisites. */
+  bond?: { atoms: [string, string]; order: 1 | 2 };
+  electrical?: [string, string];
+  structuralJoints?: [string, string];
+  archStone?: { innerRadius: number; outerRadius: number; startAngle: number; endAngle: number };
+  archSpandrel?: { radius: number; halfWidth: number; side: -1 | 1 };
+  temporarySupport?: true;
 }
 
 export interface DiscoveryFacts {
@@ -182,11 +214,23 @@ export interface VehicleBlueprint {
   discovery: DiscoveryFacts;
   discoveryEn?: DiscoveryFacts;
   discoveryAr?: DiscoveryFacts;
+  discoveryMode?: 'observation';
+  virtualLab?: import('../data/virtualLabs').VirtualLabId;
+  masterExpansion?: true;
+  /** A fixed building or structure has no vehicle test drive. */
+  staticStructure?: true;
+  interactiveTrial?: 'watermill' | 'beacon' | 'aqueduct';
   parts: PartSpec[];
   isDailyBonus?: boolean;
   dailyDateKey?: string;
   rarePartId?: string;
   rareCollectibleId?: string;
+  experiment?: {
+    kind: 'molecule' | 'ionic' | 'apparatus' | 'circuit';
+    requiredShapes: Partial<Record<PartShapeKind, number>>;
+    /** Closed component loop, independent from the order of assembly. */
+    circuit?: string[];
+  };
 }
 
 export interface StageCompletionRecord {

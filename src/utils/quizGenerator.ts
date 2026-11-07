@@ -1,3 +1,4 @@
+import { HERITAGE_QUIZ_TEXT, QUIZ_BUILD_PROMPTS } from '../i18n/translations';
 import { LanguageCode, VehicleBlueprint, VehicleCategory } from '../types/game';
 
 export interface QuizQuestion {
@@ -52,7 +53,7 @@ const GENERIC_PART_DISTRACTORS: Record<LanguageCode, string[]> = {
   ],
 };
 
-const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<VehicleCategory, [string, string]>> = {
+const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<Exclude<VehicleCategory, VehicleCategory.NATURE | VehicleCategory.HISTORY>, [string, string]>> = {
   fr: {
     [VehicleCategory.CAR]: [
       'Il utilise une quille lestée sous l’eau et la poussée d’Archimède pour flotter sur les vagues.',
@@ -211,12 +212,7 @@ export function generateMechanicalQuiz(
   );
   const q1CorrectIndex = q1Options.indexOf(rootPart.name);
 
-  const q1Prompt =
-    lang === 'ar'
-      ? `في مركبة «${blueprint.name}»، ما القطعة الأساسية الحاملة التي يجب تثبيتها أولاً لحمل بقية الأجزاء؟`
-      : lang === 'en'
-        ? `When building "${blueprint.name}", which foundational support part must be installed first?`
-        : `Pour assembler « ${blueprint.name} », quelle pièce porteuse de base faut-il installer en premier ?`;
+  const q1Prompt = QUIZ_BUILD_PROMPTS[lang].foundation(blueprint.name);
 
   const q1Explanation =
     lang === 'ar'
@@ -248,12 +244,7 @@ export function generateMechanicalQuiz(
   );
   const q2CorrectIndex = q2Options.indexOf(targetOrgan.name);
 
-  const q2Prompt =
-    lang === 'ar'
-      ? `أيّ قطعة في هذا النموذج تؤدي هذه الوظيفة الهندسية: «${targetOrgan.roleHint}»؟`
-      : lang === 'en'
-        ? `Which component on this machine performs this exact mechanical role: "${targetOrgan.roleHint}"?`
-        : `Quelle pièce assure précisément cette fonction mécanique : « ${targetOrgan.roleHint} » ?`;
+  const q2Prompt = QUIZ_BUILD_PROMPTS[lang].role(targetOrgan.roleHint);
 
   const q2Explanation =
     lang === 'ar'
@@ -264,11 +255,14 @@ export function generateMechanicalQuiz(
 
   // --- QUESTION 3: Real-World Physics & Discovery Principle ---
   const correctFact = truncateCleanly(blueprint.discovery.howItWorks, 165);
-  const [distA, distB] = REAL_WORLD_DISTRACTORS[lang][blueprint.category];
+  const locale = lang === 'fr' ? 0 : lang === 'en' ? 1 : 2;
+  const [distA, distB] = blueprint.category === VehicleCategory.HISTORY
+    ? HERITAGE_QUIZ_TEXT.distractors.map(row => row[locale])
+    : REAL_WORLD_DISTRACTORS[lang][blueprint.category === VehicleCategory.NATURE ? VehicleCategory.PHYSICS : blueprint.category];
   const q3Options = deterministicShuffle([correctFact, distA, distB], seed + 53);
   const q3CorrectIndex = q3Options.indexOf(correctFact);
 
-  const q3Prompt =
+  const q3Prompt = blueprint.category === VehicleCategory.HISTORY ? HERITAGE_QUIZ_TEXT.prompt[locale] :
     lang === 'ar'
       ? `كيف تعمل «${blueprint.name}» في العالم الحقيقي حسب بطاقة الاكتشاف؟`
       : lang === 'en'

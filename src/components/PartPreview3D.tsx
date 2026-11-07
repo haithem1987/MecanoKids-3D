@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { buildPartMeshGroup } from '../three/partGeometries';
 import { PartSpec, VisualStyleMode } from '../types/game';
+import { releaseWebGLRenderer } from '../three/rendererLifecycle';
 
 /** Returns true on low-end hardware where WebGL preview should be skipped. */
 export function isLowEndDevice(
@@ -39,7 +40,12 @@ export const PartPreview3D: React.FC<PartPreview3DProps> = ({ part, size = 200 }
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    } catch {
+      return; // A missing preview must never interrupt the main workshop.
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(size, size);
 
@@ -93,7 +99,7 @@ export const PartPreview3D: React.FC<PartPreview3DProps> = ({ part, size = 200 }
           else o.material.dispose();
         }
       });
-      s.renderer.dispose();
+      releaseWebGLRenderer(s.renderer);
       stateRef.current = null;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps

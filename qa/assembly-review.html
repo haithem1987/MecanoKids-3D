@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Octo Gears — QA</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #e2e8f0; color: #0f172a; font: 15px system-ui, sans-serif; }
+      header { position: sticky; top: 0; background: white; padding: 12px 20px; z-index: 1; border-block-end: 1px solid #cbd5e1; }
+      h1 { font-size: 20px; margin: 0 0 12px; }
+      nav { display: flex; flex-wrap: wrap; gap: 8px; }
+      button, select { min-height: 48px; border: 1px solid #94a3b8; background: white; border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+      button[aria-pressed="true"] { background: #0f172a; color: white; }
+      #gallery { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+      article { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #cbd5e1; }
+      article h2 { font-size: 16px; margin: 12px; }
+      article p { margin: 8px 12px; }
+      article img { width: 100%; display: block; }
+    </style>
+  </head>
+  <body>
+    <header><h1>Octo Gears — QA</h1><nav id="controls"></nav></header>
+    <main id="gallery"></main>
+    <script type="module" src="/src/qa/assemblyReview.ts"></script>
+  </body>
+</html>

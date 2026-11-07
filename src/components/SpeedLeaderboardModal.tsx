@@ -1,3 +1,4 @@
+import { getCategoryLabel } from '../data/categories';
 import React, { useMemo, useState } from 'react';
 import {
   Play,
@@ -93,21 +94,7 @@ export const SpeedLeaderboardModal: React.FC<SpeedLeaderboardModalProps> = ({
     return rec.vehicleNameFr ?? rec.blueprintId;
   };
 
-  const categoryLabel = (cat: VehicleCategory): string => {
-    switch (cat) {
-      case VehicleCategory.CAR:
-        return t.catCar;
-      case VehicleCategory.BOAT:
-        return t.catBoat;
-      case VehicleCategory.PLANE:
-        return t.catPlane;
-      case VehicleCategory.CONSTRUCTION:
-        return t.catConstruction;
-      case VehicleCategory.SPACE:
-      default:
-        return t.catSpace;
-    }
-  };
+  const categoryLabel = (cat: VehicleCategory) => getCategoryLabel(cat, language);
 
   return (
     <div

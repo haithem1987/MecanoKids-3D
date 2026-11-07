@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageCode } from '../types/game';
+import { getAudioContext } from '../audio/audioContext';
+import { playRecordedNarration } from '../audio/recordedNarration';
 
 interface SpeechSnapshot {
   isSupported: boolean;
@@ -17,33 +19,28 @@ class SpeechNarrator {
   private listeners = new Set<() => void>();
   private activeId: string | null = null;
   private speaking = false;
-  private voicesLoaded = false;
+  private utterance: SpeechSynthesisUtterance | undefined;
+  private playback: ReturnType<typeof playRecordedNarration> | undefined;
+  private request = 0;
+  private startTimeout: ReturnType<typeof setTimeout> | undefined;
   private voiceVolume = 1;
   public lastSpoken: { id: string; text: string; lang: LanguageCode } | null = null;
 
   public setVoiceVolume(v: number): void {
     this.voiceVolume = Math.min(1, Math.max(0, v));
+    if (!this.voiceVolume && this.speaking) this.stop();
   }
 
-  constructor() {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        window.speechSynthesis.getVoices();
-        window.speechSynthesis.addEventListener?.('voiceschanged', () => {
-          this.voicesLoaded = true;
-        });
-      } catch {
-        // Ignore restricted iframe speech synthesis errors
-      }
-    }
-  }
-
-  public isSupported(): boolean {
+  private hasNativeSpeech(): boolean {
     return (
       typeof window !== 'undefined' &&
       'speechSynthesis' in window &&
       typeof window.SpeechSynthesisUtterance !== 'undefined'
     );
+  }
+
+  public isSupported(): boolean {
+    return this.hasNativeSpeech() || (typeof window !== 'undefined' && ('AudioContext' in window || 'webkitAudioContext' in window));
   }
 
   public getSnapshot(): SpeechSnapshot {
@@ -68,10 +65,9 @@ class SpeechNarrator {
   }
 
   private pickBestVoice(lang: LanguageCode): SpeechSynthesisVoice | null {
-    if (!this.isSupported()) return null;
+    if (!this.hasNativeSpeech()) return null;
     const voices = window.speechSynthesis.getVoices();
     if (!voices || voices.length === 0) return null;
-    this.voicesLoaded = true;
 
     const candidates = LANG_BCP47_MAP[lang];
     for (const prefix of candidates) {
@@ -93,22 +89,50 @@ class SpeechNarrator {
   }
 
   public speak(id: string, rawText: string, lang: LanguageCode): void {
-    if (!this.isSupported()) return;
+    if (!this.isSupported() || !this.voiceVolume) return;
     const cleanText = rawText
       .replace(/[✓★·]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
     if (!cleanText) return;
 
-    try {
-      window.speechSynthesis.cancel();
+    this.stop();
+    const request = this.request;
+    const context = getAudioContext();
+    this.lastSpoken = { id, text: cleanText, lang };
+    this.activeId = id;
+    this.speaking = true;
+    this.emit();
 
-      const utterance = new window.SpeechSynthesisUtterance(cleanText);
-      utterance.lang = LANG_BCP47_MAP[lang][0];
-      if (!this.voicesLoaded) {
-        window.speechSynthesis.getVoices();
+    const finish = () => {
+      if (request !== this.request) return;
+      clearTimeout(this.startTimeout);
+      this.utterance = undefined;
+      this.playback = undefined;
+      this.activeId = null;
+      this.speaking = false;
+      this.emit();
+    };
+    const fallback = () => {
+      if (request !== this.request) return;
+      clearTimeout(this.startTimeout);
+      this.utterance = undefined;
+      if (!context) { finish(); return; }
+      try {
+        const playback = playRecordedNarration(context, cleanText, lang, this.voiceVolume);
+        this.playback = playback;
+        void playback.done.then(finish, finish);
+      } catch {
+        finish();
       }
+    };
+    try {
       const matchedVoice = this.pickBestVoice(lang);
+      if (!this.hasNativeSpeech() || (!matchedVoice && context)) { fallback(); return; }
+      const synth = window.speechSynthesis;
+      const utterance = new window.SpeechSynthesisUtterance(cleanText);
+      this.utterance = utterance;
+      utterance.lang = LANG_BCP47_MAP[lang][0];
       if (matchedVoice) {
         utterance.voice = matchedVoice;
         utterance.lang = matchedVoice.lang;
@@ -119,32 +143,21 @@ class SpeechNarrator {
       utterance.pitch = 1.02;
       utterance.volume = this.voiceVolume;
 
-      this.lastSpoken = { id, text: cleanText, lang };
-      this.activeId = id;
-      this.speaking = true;
-      this.emit();
-
-      utterance.onend = () => {
-        if (this.activeId === id) {
-          this.activeId = null;
-          this.speaking = false;
-          this.emit();
-        }
-      };
-
-      utterance.onerror = () => {
-        if (this.activeId === id) {
-          this.activeId = null;
-          this.speaking = false;
-          this.emit();
-        }
-      };
-
-      window.speechSynthesis.speak(utterance);
+      utterance.onstart = () => clearTimeout(this.startTimeout);
+      utterance.onend = finish;
+      utterance.onerror = fallback;
+      this.startTimeout = setTimeout(() => {
+        if (request !== this.request || this.utterance !== utterance) return;
+        utterance.onend = null;
+        utterance.onerror = null;
+        utterance.onstart = null;
+        synth.cancel();
+        fallback();
+      }, 1800);
+      if (synth.paused) synth.resume();
+      synth.speak(utterance);
     } catch {
-      this.activeId = null;
-      this.speaking = false;
-      this.emit();
+      fallback();
     }
   }
 
@@ -163,9 +176,18 @@ class SpeechNarrator {
   }
 
   public stop(): void {
-    if (!this.isSupported()) return;
+    this.request++;
+    clearTimeout(this.startTimeout);
+    if (this.utterance) {
+      this.utterance.onend = null;
+      this.utterance.onerror = null;
+      this.utterance.onstart = null;
+      this.utterance = undefined;
+    }
+    this.playback?.stop();
+    this.playback = undefined;
     try {
-      window.speechSynthesis.cancel();
+      if (this.hasNativeSpeech()) window.speechSynthesis.cancel();
     } catch {
       // Ignore
     }

@@ -1,0 +1,10 @@
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),{chromium}=require(process.argv[2]??'playwright');
+const browser=await chromium.launch({channel:'chrome',args:['--enable-unsafe-swiftshader']});
+try{for(const language of ['fr','en','ar']){
+ const p=await browser.newPage({viewport:{width:1000,height:800},reducedMotion:'reduce'});
+ await p.addInitScript(()=>{Object.defineProperty(speechSynthesis,'getVoices',{value:()=>[]});window.manualAudioStarts=0;const start=AudioBufferSourceNode.prototype.start;AudioBufferSourceNode.prototype.start=function(...args){if(this.context.state==='running'&&this.buffer?.getChannelData(0).some(v=>Math.abs(v)>.001))window.manualAudioStarts++;return start.apply(this,args);};});
+ await p.goto('http://127.0.0.1:7302/?admin=1');
+ const seed=await p.evaluate(async language=>{const s=await import('/src/utils/storage.ts'),{VEHICLE_BLUEPRINTS}=await import('/src/data/blueprints.ts'),{UI_TRANSLATIONS}=await import('/src/i18n/translations.ts');const progress=s.createDefaultProgress(language,true),profile=s.createNewPlayerProfile({name:'Audio QA',progressOverride:progress}),bp=VEHICLE_BLUEPRINTS[0];return{key:s.PROFILES_STORAGE_KEY,store:JSON.stringify({activeProfileId:profile.id,profiles:[profile]}),category:bp.category,id:bp.id,label:UI_TRANSLATIONS[language].replayInstructionAria};},language);
+ await p.addInitScript(({key,store})=>{if(!sessionStorage.getItem('manual-audio-seed')){localStorage.setItem(key,store);sessionStorage.setItem('manual-audio-seed','1');}},seed);await p.reload();await p.locator(`[data-catalog-world="${seed.category}"]`).click();await p.locator(`[data-catalog-stage="${seed.id}"]`).click();await p.locator('[data-floating-camera]').getByRole('button',{name:seed.label,exact:true}).click();await p.waitForFunction(()=>window.manualAudioStarts>0,{timeout:15000});console.log(`${language}: manual instruction plays local audio with automatic narration disabled and no browser voices`);await p.close();
+}}finally{await browser.close();}

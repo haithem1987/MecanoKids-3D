@@ -1,6 +1,375 @@
 import { localizeBlueprintToEnglish } from '../data/englishBlueprints';
 import { DiscoveryFacts, LanguageCode, VehicleBlueprint } from '../types/game';
 
+type WorkshopText = { name: [string, string, string]; hint: [string, string, string] };
+type LabText = readonly [string, string, string];
+export const MASTER_BUILD_TEXT = {
+  tier: ['Maître constructeur', 'Master builder', 'كبير البنّائين'],
+  advanced: ['Défis 11–12 ans', 'Challenges for ages 11–12', 'تحديات من 11 إلى 12 سنة'],
+  drawbridge: {
+    name: ['Pont levant du port', 'Harbor drawbridge', 'جسر الميناء المتحرك'],
+    subtitle: ['Assemble les appuis, les deux tabliers mobiles et les feux du port.', 'Build the piers, the two moving bridge leaves and the harbor signals.', 'ركّب الركائز وجزأي الجسر المتحركين وإشارات الميناء.'],
+    why: ['Chaque tablier pivote autour de son axe. Le contrepoids réduit l’effort nécessaire pour le lever.', 'Each bridge leaf pivots around its hinge. Its counterweight reduces the effort needed to raise it.', 'يدور كل جزء من الجسر حول محوره. يقلل الثقل الموازن القوة اللازمة لرفعه.'],
+    fact: ['On ferme la route avant de lever le pont pour laisser passer les bateaux.', 'Road traffic stops before the bridge rises to let boats through.', 'تتوقف حركة الطريق قبل رفع الجسر للسماح بمرور القوارب.'],
+  },
+  rover: {
+    name: ['Rover d’exploration à six roues', 'Six-wheel exploration rover', 'مركبة استكشاف بست عجلات'],
+    subtitle: ['Monte la suspension, l’alimentation et le bras d’échantillonnage.', 'Build the suspension, power system and sampling arm.', 'ركّب نظام التعليق والطاقة وذراع جمع العينات.'],
+    why: ['Le bras prélève des échantillons. La caméra aide à choisir où le placer.', 'The arm collects samples. The camera helps choose where to place it.', 'يجمع الذراع العينات وتساعد الكاميرا في اختيار موضعه.'],
+    fact: ['Les batteries stockent l’énergie produite par les panneaux solaires.', 'Batteries store energy produced by the solar panels.', 'تخزّن البطاريات الطاقة التي تنتجها الألواح الشمسية.'],
+  },
+  bridge: {
+    name: ['Pont des quatre appuis', 'Four-pier bridge', 'جسر الركائز الأربع'],
+    subtitle: ['Construis les appuis, pose les poutres et relie les trois travées.', 'Build the piers, set the girders and join the three spans.', 'ابنِ الركائز وضع العوارض وصِل البحور الثلاثة.'],
+    why: ['Les dalles reposent sur les poutres. Les poutres reportent le poids du pont vers les appuis.', 'Deck slabs rest on girders. The girders carry the bridge’s weight to the piers.', 'ترتكز البلاطات على العوارض، وتنقل العوارض وزن الجسر إلى الركائز.'],
+    fact: ['Une travée est la portion de pont entre deux appuis.', 'A span is the section of a bridge between two supports.', 'البحر هو جزء الجسر بين ركيزتين.'],
+  },
+  station: {
+    name: ['Station orbitale à quatre ailes', 'Four-wing orbital station', 'محطة مدارية بأربعة أجنحة'],
+    subtitle: ['Monte les modules, déploie les ailes solaires et équipe les ports d’amarrage.', 'Assemble the modules, deploy the solar wings and equip the docking ports.', 'ركّب الوحدات وانشر الأجنحة الشمسية وجهّز منافذ الالتحام.'],
+    why: ['Les ailes solaires alimentent la station. Les radiateurs évacuent la chaleur de ses équipements.', 'Solar wings power the station. Radiators carry away heat from its equipment.', 'تزود الأجنحة الشمسية المحطة بالطاقة، وتبدد المشعّات حرارة أجهزتها.'],
+    fact: ['Un port d’amarrage relie un vaisseau à la station pour permettre le passage de l’équipage.', 'A docking port connects a spacecraft to the station so the crew can move between them.', 'يربط منفذ الالتحام المركبة بالمحطة ليمر الطاقم بينهما.'],
+  },
+} as const;
+export const MASTER_BUILD_PART_TEXT = {
+  counterweight: { name: ['Contrepoids du pont', 'Bridge counterweight', 'ثقل موازن للجسر'], hint: ['Aide à équilibrer le tablier autour de son axe.', 'Helps balance the deck around its hinge.', 'يساعد في موازنة سطح الجسر حول محوره.'] },
+  barrier: { name: ['Barrière routière', 'Road barrier', 'حاجز الطريق'], hint: ['Ferme l’accès au tablier mobile.', 'Closes the road to the moving deck.', 'تغلق الطريق المؤدي إلى الجزء المتحرك.'] },
+  signal: { name: ['Feu du pont', 'Bridge signal', 'إشارة الجسر'], hint: ['Indique si le passage est ouvert.', 'Shows whether the crossing is open.', 'تُبيّن إن كان المعبر مفتوحاً.'] },
+  chassis: { name: ['Châssis du rover', 'Rover chassis', 'هيكل المركبة'], hint: ['Porte les trains roulants et les instruments.', 'Carries the running gear and instruments.', 'يحمل مجموعة العجلات والأجهزة.'] },
+  axle: { name: ['Essieu', 'Axle', 'محور العجلات'], hint: ['Relie les roues au châssis.', 'Connects the wheels to the chassis.', 'يربط العجلات بالهيكل.'] },
+  hub: { name: ['Moyeu', 'Hub', 'صرة العجلة'], hint: ['Centre la roue sur son axe.', 'Centers the wheel on its axle.', 'يثبّت العجلة في مركز محورها.'] },
+  wheel: { name: ['Roue', 'Wheel', 'عجلة'], hint: ['Prend appui sur le terrain.', 'Makes contact with the ground.', 'تلامس سطح الأرض.'] },
+  cradle: { name: ['Support de batterie', 'Battery cradle', 'حامل البطارية'], hint: ['Maintient le bloc de batteries sur le châssis.', 'Holds the battery pack on the chassis.', 'يثبّت حزمة البطاريات على الهيكل.'] },
+  pack: { name: ['Bloc de batteries', 'Battery pack', 'حزمة البطاريات'], hint: ['Stocke l’énergie électrique.', 'Stores electrical energy.', 'يخزّن الطاقة الكهربائية.'] },
+  latch: { name: ['Verrou de batterie', 'Battery latch', 'مزلاج البطارية'], hint: ['Empêche la batterie de glisser.', 'Keeps the battery from sliding.', 'يمنع البطارية من الانزلاق.'] },
+  camera: { name: ['Caméra', 'Camera', 'كاميرا'], hint: ['Observe le terrain devant le rover.', 'Scans the ground ahead of the rover.', 'تراقب الأرض أمام المركبة.'] },
+  light: { name: ['Phare', 'Headlight', 'مصباح أمامي'], hint: ['Éclaire la zone devant la caméra.', 'Lights the area in front of the camera.', 'يضيء المنطقة أمام الكاميرا.'] },
+  armMount: { name: ['Support de bras', 'Arm mount', 'حامل الذراع'], hint: ['Fixe le bras au châssis.', 'Attaches the arm to the chassis.', 'يثبّت الذراع بالهيكل.'] },
+  armLink: { name: ['Segment de bras', 'Arm link', 'جزء من الذراع'], hint: ['Éloigne l’outil du châssis.', 'Extends the tool away from the chassis.', 'يمد الأداة بعيداً عن الهيكل.'] },
+  hinge: { name: ['Axe du coude', 'Elbow pin', 'محور المرفق'], hint: ['Relie les deux segments du bras.', 'Connects the two arm links.', 'يربط جزأي الذراع.'] },
+  tool: { name: ['Godet de prélèvement', 'Sampling scoop', 'مغرفة العينات'], hint: ['Recueille les échantillons de sol.', 'Collects soil samples.', 'يجمع عينات التربة.'] },
+  footing: { name: ['Semelle', 'Footing', 'قاعدة الأساس'], hint: ['Répartit la charge de la pile sur le sol.', 'Spreads the pier load into the ground.', 'توزّع حمل الركيزة على الأرض.'] },
+  column: { name: ['Colonne', 'Column', 'عمود'], hint: ['Soutient le sommet de la pile.', 'Supports the top of the pier.', 'يدعم أعلى الركيزة.'] },
+  cap: { name: ['Tête de pile', 'Pier cap', 'رأس الركيزة'], hint: ['Relie les colonnes et reçoit les poutres.', 'Joins the columns and supports the girders.', 'يربط الأعمدة ويحمل العوارض.'] },
+  girder: { name: ['Poutre porteuse', 'Girder', 'عارضة حاملة'], hint: ['Franchit la distance entre deux appuis.', 'Crosses the gap between two supports.', 'تمتد بين ركيزتين.'] },
+  slab: { name: ['Dalle du tablier', 'Deck slab', 'بلاطة سطح الجسر'], hint: ['Repose sur deux poutres et forme la chaussée.', 'Rests on two girders and forms the roadway.', 'تستند إلى عارضتين وتشكّل سطح الطريق.'] },
+  rail: { name: ['Garde-corps', 'Guardrail', 'حاجز جانبي'], hint: ['Protège le bord du tablier.', 'Protects the edge of the deck.', 'يحمي حافة سطح الجسر.'] },
+  approach: { name: ['Rampe d’accès', 'Approach ramp', 'منحدر الوصول'], hint: ['Prolonge la chaussée à l’extrémité du pont.', 'Extends the roadway at the end of the bridge.', 'يمدّ الطريق عند طرف الجسر.'] },
+  core: { name: ['Nœud central', 'Central hub', 'الوحدة المركزية'], hint: ['Relie les modules et les ailes de la station.', 'Connects the station modules and wings.', 'تربط وحدات المحطة وأجنحتها.'] },
+  collar: { name: ['Bague de jonction', 'Connector ring', 'حلقة الوصل'], hint: ['Relie un module au nœud central.', 'Connects a module to the central hub.', 'تربط وحدة بالجزء المركزي.'] },
+  module: { name: ['Module pressurisé', 'Pressurized module', 'وحدة مضغوطة'], hint: ['Abrite l’équipage ou ses instruments.', 'Houses the crew or their instruments.', 'تؤوي الطاقم أو أجهزته.'] },
+  port: { name: ['Port d’amarrage', 'Docking port', 'منفذ الالتحام'], hint: ['Accueille une autre capsule.', 'Receives a visiting capsule.', 'يستقبل كبسولة زائرة.'] },
+  mount: { name: ['Fixation d’aile', 'Wing mount', 'قاعدة تثبيت الجناح'], hint: ['Ancre une aile solaire à la station.', 'Anchors a solar wing to the station.', 'تثبت جناحاً شمسياً بالمحطة.'] },
+  boom: { name: ['Longeron solaire', 'Solar boom', 'عارضة شمسية'], hint: ['Porte un panneau solaire à distance du module.', 'Carries a solar panel away from the module.', 'تحمل لوحاً شمسياً بعيداً عن الوحدة.'] },
+  panel: { name: ['Panneau solaire', 'Solar panel', 'لوح شمسي'], hint: ['Transforme la lumière du Soleil en électricité.', 'Turns sunlight into electricity.', 'يحوّل ضوء الشمس إلى كهرباء.'] },
+  radiator: { name: ['Radiateur', 'Radiator', 'مشعّ حراري'], hint: ['Rejette la chaleur des équipements.', 'Releases heat from the equipment.', 'يبدد حرارة الأجهزة.'] },
+  antenna: { name: ['Antenne', 'Antenna', 'هوائي'], hint: ['Permet de communiquer avec la Terre.', 'Lets the station communicate with Earth.', 'يتيح للمحطة التواصل مع الأرض.'] },
+  mast: { name: ['Mât radio', 'Radio mast', 'سارية الاتصال'], hint: ['Place l’antenne au-dessus du module.', 'Holds the antenna above the module.', 'تحمل الهوائي فوق الوحدة.'] },
+} as const satisfies Record<string, { name: LabText; hint: LabText }>;
+
+export const DRAWBRIDGE_TEXT = {
+  trial: ['Essai du pont', 'Bridge test', 'اختبار الجسر'],
+  raise: ['Lever le pont', 'Raise the bridge', 'ارفع الجسر'],
+  lower: ['Abaisser le pont', 'Lower the bridge', 'اخفض الجسر'],
+  sail: ['Faire passer le bateau', 'Send the boat through', 'مرّر القارب'],
+  closed: ['Route ouverte. Lève le pont pour dégager le chenal.', 'Road open. Raise the bridge to clear the channel.', 'الطريق مفتوح. ارفع الجسر لإخلاء الممر المائي.'],
+  opening: ['Les tabliers se lèvent.', 'The bridge leaves are rising.', 'يرتفع جزآ الجسر.'],
+  open: ['Chenal ouvert. Le bateau peut passer.', 'Channel open. The boat can pass.', 'الممر المائي مفتوح. يمكن للقارب العبور.'],
+  closing: ['Les tabliers s’abaissent.', 'The bridge leaves are lowering.', 'ينخفض جزآ الجسر.'],
+  crossing: ['Le bateau passe entre les appuis.', 'The boat is passing between the piers.', 'يعبر القارب بين الركائز.'],
+  passed: ['Bateau passé ! Tu peux rouvrir la route.', 'Boat through! You can reopen the road.', 'عبر القارب! يمكنك إعادة فتح الطريق.'],
+} as const satisfies Record<string, LabText>;
+export const CATALOG_BROWSE_TEXT = {
+  choose: ['Choisis ton univers', 'Choose your world', 'اختر عالمك'],
+  worlds: ['Tous les univers', 'All worlds', 'كل العوالم'],
+  tools: ['Filtres et options', 'Filters and options', 'عوامل التصفية والخيارات'],
+  search: ['Chercher un atelier', 'Find a workshop', 'ابحث عن ورشة'],
+  resetScience: ['Revoir le montage', 'View the build', 'عرض التركيب'],
+  scienceTouch: ['Touche les pièces sur l’établi pour faire ton essai.', 'Tap the parts on the workbench to run your test.', 'المس القطع على طاولة العمل لإجراء تجربتك.'],
+  scienceControls: ['Commandes accessibles', 'Accessible controls', 'أدوات تحكم ميسّرة'],
+} as const satisfies Record<string, LabText>;
+export const DIAGNOSTIC_NARRATION = {
+  extracted: ['La pièce est retirée. Replace-la sur son empreinte.', 'The part is removed. Put it back on its outline.', 'أُزيلت القطعة. أعدها إلى شكلها المحدد.'],
+  locate: ['Touche la pièce signalée dans la scène 3D pour la retirer.', 'Tap the highlighted part in the 3D scene to remove it.', 'المس القطعة المحددة في المشهد الثلاثي الأبعاد لإزالتها.'],
+} as const satisfies Record<string, LabText>;
+type VirtualLabText = {
+  age: string;
+  name: LabText;
+  goal: LabText;
+  controls: readonly (readonly [LabText, ...LabText[]])[];
+  outcomes: readonly LabText[];
+  why: LabText;
+};
+export const VIRTUAL_LAB_UI = {
+  title: ['Laboratoires virtuels', 'Virtual labs', 'مختبرات افتراضية'],
+  physics: ['Physique', 'Physics', 'الفيزياء'],
+  chemistry: ['Chimie', 'Chemistry', 'الكيمياء'],
+  electronics: ['Électronique et logique', 'Electronics and logic', 'الإلكترونيات والمنطق'],
+  nature: ['Vivant et Terre', 'Life and Earth', 'الأحياء والأرض'],
+  years: ['ans', 'years', 'سنوات'],
+  run: ['Lancer l’essai', 'Run the test', 'ابدأ التجربة'],
+  reset: ['Recommencer', 'Reset', 'ابدأ من جديد'],
+  goalReached: ['Mission réussie !', 'Mission complete!', 'نجحت المهمة!'],
+  nextStep: ['Essaie un autre geste à cette étape.', 'Try a different action at this step.', 'جرّب خطوة مختلفة في هذه المرحلة.'],
+  preview: ['Modèle 3D simplifié', 'Simplified 3D model', 'نموذج مبسّط ثلاثي الأبعاد'],
+  fallback: ['L’aperçu 3D est indisponible. Tu peux continuer l’expérience.', 'The 3D preview is unavailable. You can keep playing.', 'المعاينة ثلاثية الأبعاد غير متاحة. يمكنك متابعة التجربة.'],
+  assemble: ['Assemble le montage sur l’établi pour lancer l’expérience.', 'Build the setup on the workbench to start the experiment.', 'ركّب الجهاز على طاولة العمل لبدء التجربة.'],
+  mission: ['Mission scientifique', 'Science mission', 'مهمة علمية'],
+  place: ['Place cette pièce sur son empreinte.', 'Place this part on its outline.', 'ضع هذه القطعة على شكلها المحدد.'],
+} as const satisfies Record<string, LabText>;
+
+export const VIRTUAL_LAB_PARTS = {
+  base: ['Socle', 'Base', 'قاعدة'],
+  support: ['Support', 'Support', 'حامل'],
+  bob: ['Bille suspendue', 'Hanging ball', 'كرة معلّقة'],
+  target: ['Cible', 'Target', 'هدف'],
+  fan: ['Ventilateur', 'Fan', 'مروحة'],
+  duct: ['Conduit', 'Duct', 'مجرى'],
+  tube: ['Tube', 'Tube', 'أنبوب'],
+  body: ['Corps de fusée', 'Rocket body', 'جسم الصاروخ'],
+  nose: ['Nez de fusée', 'Nose cone', 'مقدمة الصاروخ'],
+  fin: ['Aileron', 'Fin', 'زعنفة'],
+  block: ['Bloc', 'Block', 'كتلة'],
+  weight: ['Poids', 'Weight', 'ثقل'],
+  beaker: ['Bécher', 'Beaker', 'كأس مخبرية'],
+  ice: ['Glaçon', 'Ice cube', 'مكعب ثلج'],
+  fruit: ['Fraise', 'Strawberry', 'فراولة'],
+  filter: ['Filtre', 'Filter', 'مرشح'],
+  pipette: ['Pipette', 'Pipette', 'ماصة'],
+  polymer: ['Polymère', 'Polymer', 'بوليمر'],
+  sample: ['Échantillon', 'Sample', 'عينة'],
+  battery: ['Pile', 'Battery', 'بطارية'],
+  led: ['LED', 'LED', 'مصباح LED'],
+  bridge: ['Pont', 'Bridge', 'جسر'],
+  track: ['Piste de graphite', 'Graphite track', 'مسار غرافيت'],
+  gate: ['Porte logique', 'Logic gate', 'بوابة منطقية'],
+  switch: ['Interrupteur', 'Switch', 'مفتاح'],
+  stem: ['Tige', 'Stem', 'ساق'],
+  flower: ['Fleur', 'Flower', 'زهرة'],
+  hill: ['Pente', 'Slope', 'منحدر'],
+  house: ['Maison', 'House', 'منزل'],
+  barrier: ['Digue', 'Barrier', 'حاجز'],
+} as const satisfies Record<string, LabText>;
+
+export const VIRTUAL_LAB_TEXT = {
+  newton: {
+    age: '8–12', name: ['Pendule de Newton', 'Newton’s cradle', 'بندول نيوتن'],
+    goal: ['Lâche une bille et fais toucher la cible par la bille à l’autre bout.', 'Release a ball and make the ball at the other end touch the target.', 'أطلق كرة لتلمس الكرة في الطرف الآخر الهدف.'],
+    controls: [[['Angle de lâcher', 'Release angle', 'زاوية الإطلاق'], ['Au repos', 'At rest', 'سكون'], ['Petit', 'Small', 'صغيرة'], ['Grand', 'Large', 'كبيرة']]],
+    outcomes: [['Les billes restent immobiles.', 'The balls stay still.', 'تبقى الكرات ساكنة.'], ['La dernière bille monte un peu.', 'The last ball swings up a little.', 'ترتفع الكرة الأخيرة قليلاً.'], ['La dernière bille atteint la cible.', 'The last ball reaches the target.', 'تصل الكرة الأخيرة إلى الهدف.']],
+    why: ['Lors du choc, le mouvement se transmet à travers les billes. Une partie de l’énergie se dissipe en son et en chaleur.', 'The collision transfers motion through the balls. Some energy is lost to sound and heat.', 'ينتقل أثر التصادم عبر الكرات. ويتبدد بعض الطاقة على شكل صوت وحرارة.'],
+  },
+  venturi: {
+    age: '7–10', name: ['Courant d’air et effet Venturi', 'Airflow and the Venturi effect', 'تدفق الهواء وتأثير فنتوري'],
+    goal: ['Fais monter la bille dans le conduit, puis compare un verre retourné avec et sans carte.', 'Lift the ball through the duct, then compare an upside-down glass with and without a card.', 'ارفع الكرة عبر المجرى، ثم قارن كأساً مقلوباً مع بطاقة وبدونها.'],
+    controls: [[['Ventilateur', 'Fan', 'المروحة'], ['Arrêt', 'Off', 'متوقفة'], ['Doux', 'Low', 'ضعيفة'], ['Fort', 'High', 'قوية']], [['Conduit', 'Duct', 'المجرى'], ['Large', 'Wide', 'واسع'], ['Resserré', 'Narrow', 'ضيق']], [['Expérience', 'Experiment', 'التجربة'], ['Tube Venturi', 'Venturi tube', 'أنبوب فنتوري'], ['Verre retourné', 'Upside-down glass', 'كأس مقلوب']], [['Ouverture du verre', 'Glass opening', 'فتحة الكأس'], ['Sans carte', 'Without card', 'بدون بطاقة'], ['Avec carte', 'With card', 'مع بطاقة']]],
+    outcomes: [['L’air ne circule pas.', 'No air is moving.', 'لا يتحرك الهواء.'], ['La bille ne monte pas jusqu’au conduit.', 'The ball does not reach the duct.', 'لا تصل الكرة إلى المجرى.'], ['La bille remonte dans le tube.', 'The ball rises through the tube.', 'ترتفع الكرة عبر الأنبوب.'], ['Sans carte, l’eau s’écoule.', 'Without a card, the water spills.', 'يسيل الماء دون بطاقة.'], ['La pression de l’air extérieur aide à maintenir la carte contre le verre.', 'Outside air pressure helps hold the card against the glass.', 'يساعد ضغط الهواء الخارجي على تثبيت البطاقة على الكأس.']],
+    why: ['Dans ce modèle, l’air accélère dans le rétrécissement et sa pression baisse. La différence de pression pousse la bille vers le haut.', 'In this model, air speeds up in the constriction and its pressure drops. The pressure difference pushes the ball up.', 'في هذا النموذج يتسارع الهواء عند التضيق وينخفض ضغطه. يدفع فرق الضغط الكرة إلى أعلى.'],
+  },
+  rocket: {
+    age: '9–12', name: ['Fusée à eau', 'Water rocket', 'صاروخ الماء'],
+    goal: ['Choisis l’eau et les ailerons pour atteindre une cible en altitude.', 'Choose water and fins to reach a target altitude.', 'اختر كمية الماء والزعانف لبلوغ الارتفاع المطلوب.'],
+    controls: [[['Eau', 'Water', 'الماء'], ['Aucune', 'None', 'بلا ماء'], ['Dose moyenne', 'Medium fill', 'كمية متوسطة'], ['Presque plein', 'Nearly full', 'شبه ممتلئ']], [['Ailerons', 'Fins', 'الزعانف'], ['Aucun', 'None', 'بلا زعانف'], ['Trois répartis', 'Three evenly spaced', 'ثلاث موزعة بالتساوي'], ['Deux du même côté', 'Two on one side', 'اثنتان على جهة واحدة']]],
+    outcomes: [['Le souffle seul ne suffit pas ici.', 'The burst of air falls short here.', 'دفعة الهواء وحدها لا تكفي هنا.'], ['La trajectoire dévie.', 'The rocket veers off course.', 'ينحرف الصاروخ عن مساره.'], ['Le vol est stable mais reste trop bas.', 'The flight is stable but falls short.', 'الطيران مستقر لكنه لا يبلغ الهدف.'], ['La fusée atteint la cible.', 'The rocket reaches the target.', 'يبلغ الصاروخ الهدف.']],
+    why: ['L’air comprimé expulse l’eau et propulse la fusée. Des ailerons bien répartis aident à stabiliser le vol.', 'Compressed air expels water and propels the rocket. Evenly spaced fins help stabilize the flight.', 'يطرد الهواء المضغوط الماء ويدفع الصاروخ. وتساعد الزعانف الموزعة بالتساوي على استقرار الطيران.'],
+  },
+  balance: {
+    age: '6–9', name: ['Tour et centre de gravité', 'Tower and center of gravity', 'البرج ومركز الثقل'],
+    goal: ['Répartis les blocs pour que la tour résiste à la secousse du simulateur.', 'Arrange the blocks so the tower survives the simulated shake.', 'رتب الكتل ليصمد البرج أمام الاهتزاز المحاكى.'],
+    controls: [[['Position du poids', 'Weight position', 'موضع الثقل'], ['En bas, au centre', 'Low and centered', 'أسفل وفي الوسط'], ['En haut, au centre', 'High and centered', 'أعلى وفي الوسط'], ['Sur le bord', 'On the edge', 'على الحافة']], [['Base', 'Base', 'القاعدة'], ['Large', 'Wide', 'عريضة'], ['Étroite', 'Narrow', 'ضيقة']]],
+    outcomes: [['La tour bascule vers le poids.', 'The tower tips toward the weight.', 'يميل البرج نحو الثقل.'], ['La tour oscille et tombe.', 'The tower wobbles and falls.', 'يهتز البرج ويسقط.'], ['La tour reste debout.', 'The tower stays upright.', 'يبقى البرج قائماً.']],
+    why: ['Par inertie, le haut de la tour tend à rester en place quand le sol se déplace. Une base large et un centre de gravité bas limitent le basculement.', 'Inertia makes the top tend to stay in place when the ground shifts. A wide base and a low center of gravity help prevent tipping.', 'بسبب القصور الذاتي يميل أعلى البرج إلى البقاء في مكانه عند تحرك الأرض. تقلل القاعدة العريضة ومركز الثقل المنخفض من الانقلاب.'],
+  },
+  phase: {
+    age: '5–8', name: ['Glace, eau et vapeur', 'Ice, water and vapor', 'الجليد والماء وبخار الماء'],
+    goal: ['Transforme la glace en eau liquide pour remplir le réservoir.', 'Turn ice into liquid water to fill the tank.', 'حوّل الجليد إلى ماء سائل لملء الخزان.'],
+    controls: [[['Température du modèle', 'Model temperature', 'حرارة النموذج'], ['−10 °C', '−10 °C', '−10 °C'], ['20 °C', '20 °C', '20 °C'], ['110 °C', '110 °C', '110 °C']]],
+    outcomes: [['La glace reste solide.', 'The ice stays solid.', 'يبقى الجليد صلباً.'], ['La glace fond : le réservoir reçoit de l’eau liquide.', 'The ice melts and liquid water fills the tank.', 'ينصهر الجليد ويملأ الماء السائل الخزان.'], ['Après chauffage, le modèle montre de la vapeur d’eau.', 'After heating, the model shows water vapor.', 'بعد التسخين يعرض النموذج بخار الماء.']],
+    why: ['À pression atmosphérique normale, l’eau pure fond à 0 °C et bout à 100 °C. Les points représentent la vapeur, qui est invisible.', 'At standard atmospheric pressure, pure water melts at 0 °C and boils at 100 °C. The dots represent invisible water vapor.', 'عند الضغط الجوي العادي ينصهر الماء النقي عند 0 درجة مئوية ويغلي عند 100. تمثل النقاط بخار الماء غير المرئي.'],
+  },
+  dna: {
+    age: '10–12', name: ['ADN de fraise', 'Strawberry DNA', 'الحمض النووي للفراولة'],
+    goal: ['Choisis les gestes du labo virtuel dans le bon ordre pour rendre l’ADN visible.', 'Choose the virtual lab actions in order to make DNA visible.', 'اختر خطوات المختبر الافتراضي بالترتيب لإظهار الحمض النووي.'],
+    controls: [[['Geste virtuel', 'Virtual action', 'الخطوة الافتراضية'], ['Écraser le fruit', 'Mash the fruit', 'اهرُس الثمرة'], ['Ajouter la solution d’extraction', 'Add extraction solution', 'أضف محلول الاستخلاص'], ['Filtrer', 'Filter', 'رشّح'], ['Ajouter l’alcool froid virtuel', 'Add virtual cold alcohol', 'أضف الكحول البارد الافتراضي']]],
+    outcomes: [['La fraise est entière.', 'The strawberry is whole.', 'الثمرة كاملة.'], ['Le fruit est réduit en pulpe.', 'The fruit is now pulp.', 'تحولت الثمرة إلى لب.'], ['La solution libère le contenu des cellules.', 'The solution releases the contents of the cells.', 'يحرر المحلول محتويات الخلايا.'], ['Le filtre retient les gros morceaux.', 'The filter catches large pieces.', 'يحتجز المرشح القطع الكبيرة.'], ['Des filaments blanchâtres apparaissent.', 'Whitish strands appear.', 'تظهر خيوط مائلة إلى البياض.']],
+    why: ['L’ADN libéré des cellules se regroupe en filaments visibles dans l’alcool froid.', 'DNA released from the cells clumps into visible strands in cold alcohol.', 'يتجمع الحمض النووي المحرر من الخلايا في خيوط مرئية في الكحول البارد.'],
+  },
+  slime: {
+    age: '6–10', name: ['Slime et polymères', 'Slime and polymers', 'السلايم والبوليمرات'],
+    goal: ['Règle la quantité de liaisons pour obtenir un matériau qui s’étire sans couler.', 'Adjust the number of links to make a material that stretches without flowing away.', 'اضبط عدد الروابط لتحصل على مادة تتمدد دون أن تسيل.'],
+    controls: [[['Liaisons entre les chaînes', 'Links between chains', 'الروابط بين السلاسل'], ['Peu', 'Few', 'قليلة'], ['Intermédiaires', 'Medium', 'متوسطة'], ['Beaucoup', 'Many', 'كثيرة']]],
+    outcomes: [['Le matériau s’étale.', 'The material spreads out.', 'تنتشر المادة.'], ['Le matériau s’étire et reste d’un seul morceau.', 'The material stretches and stays in one piece.', 'تتمدد المادة وتبقى قطعة واحدة.'], ['Le matériau résiste davantage à l’étirement.', 'The material resists stretching more.', 'تقاوم المادة التمدد أكثر.']],
+    why: ['Dans ce modèle, des liaisons relient les longues chaînes du polymère et modifient leur mobilité.', 'In this model, links connect long polymer chains and change how freely they move.', 'في هذا النموذج تصل الروابط بين سلاسل البوليمر الطويلة وتغيّر سهولة حركتها.'],
+  },
+  ph: {
+    age: '8–12', name: ['Enquête au chou rouge', 'Red cabbage investigation', 'تحقيق الملفوف الأحمر'],
+    goal: ['Teste les trois échantillons puis repère celui qui est basique et classe-le correctement.', 'Test the three samples, then identify and classify the basic one.', 'اختبر العينات الثلاث ثم حدد العينة القاعدية وصنّفها بشكل صحيح.'],
+    controls: [[['Échantillon', 'Sample', 'العينة'], ['A', 'A', 'A'], ['B', 'B', 'B'], ['C', 'C', 'C']], [['Classement', 'Classification', 'التصنيف'], ['Acide', 'Acidic', 'حمضية'], ['Neutre', 'Neutral', 'متعادلة'], ['Basique', 'Basic', 'قاعدية']]],
+    outcomes: [['L’indicateur devient rose : échantillon acide.', 'The indicator turns pink: acidic sample.', 'يتحول الكاشف إلى الوردي: عينة حمضية.'], ['L’indicateur reste violet : échantillon neutre.', 'The indicator stays purple: neutral sample.', 'يبقى الكاشف بنفسجياً: عينة متعادلة.'], ['L’indicateur devient vert dans ce modèle : échantillon basique.', 'The indicator turns green in this model: basic sample.', 'يتحول الكاشف إلى الأخضر في هذا النموذج: عينة قاعدية.'], ['Le vert révèle le caractère basique de C.', 'Green reveals that C is basic.', 'يكشف اللون الأخضر أن العينة C قاعدية.']],
+    why: ['Le pigment du chou rouge change de couleur selon l’acidité du liquide. L’indicateur donne un indice, pas une mesure précise du pH.', 'Red cabbage pigment changes color with the acidity of the liquid. It gives a clue rather than a precise pH reading.', 'تتغير صبغة الملفوف الأحمر بحسب حموضة السائل. يعطي الكاشف دليلاً تقريبياً على الأس الهيدروجيني.'],
+  },
+  conductivity: {
+    age: '5–8', name: ['Le pont conducteur', 'The conducting bridge', 'الجسر الموصل'],
+    goal: ['Choisis un matériau pour fermer le circuit et allumer la LED.', 'Choose a material to complete the circuit and light the LED.', 'اختر مادة لإغلاق الدائرة وإضاءة المصباح.'],
+    controls: [[['Matériau', 'Material', 'المادة'], ['Bois sec', 'Dry wood', 'خشب جاف'], ['Plastique', 'Plastic', 'بلاستيك'], ['Métal', 'Metal', 'معدن'], ['Caoutchouc', 'Rubber', 'مطاط']]],
+    outcomes: [['La LED reste éteinte.', 'The LED stays off.', 'يبقى المصباح مطفأً.'], ['La LED s’allume : le pont conduit.', 'The LED lights up: the bridge conducts.', 'يضيء المصباح: الجسر موصل.']],
+    why: ['Le métal laisse passer le courant dans ce circuit à pile. Le plastique, le bois sec et le caoutchouc sont ici isolants.', 'Metal lets current flow in this battery circuit. Plastic, dry wood and rubber act as insulators here.', 'يسمح المعدن بمرور التيار في هذه الدائرة. ويعمل البلاستيك والخشب الجاف والمطاط عوازل هنا.'],
+  },
+  resistance: {
+    age: '9–12', name: ['Graphite et résistance', 'Graphite and resistance', 'الغرافيت والمقاومة'],
+    goal: ['Ajuste la piste de graphite pour éclairer la console sans dépasser la limite du modèle.', 'Adjust the graphite track to light the console without exceeding the model’s limit.', 'اضبط مسار الغرافيت لإضاءة لوحة التحكم دون تجاوز حد النموذج.'],
+    controls: [[['Longueur de la piste', 'Track length', 'طول المسار'], ['Courte', 'Short', 'قصير'], ['Moyenne', 'Medium', 'متوسط'], ['Longue', 'Long', 'طويل']]],
+    outcomes: [['Le courant est trop élevé pour la console.', 'The current is too high for the console.', 'التيار أعلى من حد لوحة التحكم.'], ['La console s’allume à la bonne intensité.', 'The console lights at the right level.', 'تضيء لوحة التحكم بالشدة المناسبة.'], ['La lumière est faible.', 'The light is dim.', 'الإضاءة ضعيفة.']],
+    why: ['À largeur égale, une piste de graphite plus longue résiste davantage au courant.', 'At the same width, a longer graphite track offers more resistance to current.', 'عند ثبات العرض تزداد مقاومة مسار الغرافيت للتيار كلما زاد طوله.'],
+  },
+  logic: {
+    age: '11–12', name: ['Portes logiques', 'Logic gates', 'البوابات المنطقية'],
+    goal: ['Teste ET, OU et NON. Pour ouvrir le coffre, choisis la porte qui inverse le signal A et laisse A éteint.', 'Test AND, OR and NOT. To open the vault, choose the gate that inverts A and leave A off.', 'اختبر «و» و«أو» و«ليس». لفتح الخزانة اختر البوابة التي تعكس الإشارة A واتركها مطفأة.'],
+    controls: [[['Porte', 'Gate', 'البوابة'], ['ET', 'AND', 'و'], ['OU', 'OR', 'أو'], ['NON', 'NOT', 'ليس']], [['Signal A', 'Signal A', 'الإشارة A'], ['0', '0', '0'], ['1', '1', '1']], [['Signal B', 'Signal B', 'الإشارة B'], ['0', '0', '0'], ['1', '1', '1']]],
+    outcomes: [['La sortie vaut 0.', 'Output is 0.', 'الخرج يساوي 0.'], ['La sortie vaut 1 : essaie maintenant d’inverser A.', 'Output is 1: now try inverting A.', 'الخرج يساوي 1: جرّب الآن عكس A.'], ['La sortie vaut 1.', 'Output is 1.', 'الخرج يساوي 1.'], ['NON inverse A : sortie 1, coffre ouvert.', 'NOT inverts A: output 1, vault open.', 'تعكس «ليس» الإشارة A: الخرج 1 والخزانة مفتوحة.']],
+    why: ['ET demande deux 1 ; OU en demande au moins un. NON ignore B et inverse A.', 'AND needs two 1s; OR needs at least one. NOT ignores B and inverts A.', 'تحتاج «و» إلى قيمتين 1، وتحتاج «أو» إلى واحدة على الأقل. تتجاهل «ليس» الإشارة B وتعكس A.'],
+  },
+  capillary: {
+    age: '5–8', name: ['La fleur qui change de couleur', 'The color-changing flower', 'الزهرة التي يتغير لونها'],
+    goal: ['Relie la tige à l’eau colorée et laisse le temps à l’eau d’atteindre les pétales.', 'Connect the stem to colored water and give it time to reach the petals.', 'صِل الساق بالماء الملون واترك للماء وقتاً حتى يبلغ البتلات.'],
+    controls: [[['Tige', 'Stem', 'الساق'], ['Coupée au-dessus de l’eau', 'Disconnected from water', 'منفصلة عن الماء'], ['Reliée à l’eau', 'Connected to water', 'متصلة بالماء']], [['Temps', 'Time', 'الوقت'], ['Un instant', 'A moment', 'لحظة'], ['Plusieurs heures virtuelles', 'Several virtual hours', 'عدة ساعات افتراضية']]],
+    outcomes: [['L’eau ne rejoint pas la tige.', 'Water does not reach the stem.', 'لا يصل الماء إلى الساق.'], ['L’eau colorée commence à monter.', 'Colored water starts to rise.', 'يبدأ الماء الملون في الصعود.'], ['Les pétales prennent la couleur de l’eau.', 'The petals take on the water’s color.', 'تكتسب البتلات لون الماء.']],
+    why: ['L’eau circule dans de fins vaisseaux. La capillarité et la transpiration de la plante contribuent à sa montée.', 'Water travels through tiny vessels. Capillary action and plant transpiration help it rise.', 'يمر الماء عبر أوعية دقيقة، وتساعد الخاصية الشعرية ونتح النبات على صعوده.'],
+  },
+  erosion: {
+    age: '7–11', name: ['Pluie, érosion et village', 'Rain, erosion and the village', 'المطر والتعرية والقرية'],
+    goal: ['Fais tomber la pluie et protège le village du ruissellement chargé de sédiments.', 'Make it rain and protect the village from sediment-laden runoff.', 'أنزل المطر واحمِ القرية من الجريان المحمل بالرواسب.'],
+    controls: [[['Terrain', 'Terrain', 'التضاريس'], ['Pente nue', 'Bare slope', 'منحدر مكشوف'], ['Pente très raide', 'Very steep slope', 'منحدر شديد'], ['Pente avec végétation', 'Vegetated slope', 'منحدر مغطى بالنباتات']], [['Protection', 'Protection', 'الحماية'], ['Aucune digue', 'No barrier', 'بلا حاجز'], ['Digue de dérivation', 'Diversion barrier', 'حاجز لتحويل المجرى']]],
+    outcomes: [['La pluie entraîne de la terre jusqu’au village.', 'Rain carries soil to the village.', 'يحمل المطر التربة إلى القرية.'], ['Une partie du ruissellement atteint encore le village.', 'Some runoff still reaches the village.', 'لا يزال بعض الجريان يصل إلى القرية.'], ['Le village est protégé : l’eau contourne les maisons.', 'The village is protected: water flows around the houses.', 'القرية محمية: يمر الماء حول المنازل.']],
+    why: ['La pluie et le ruissellement font partie du cycle de l’eau. En s’écoulant, l’eau transporte du sol. La végétation en retient une partie et la digue dévie l’eau.', 'Rain and runoff are part of the water cycle. Flowing water carries soil. Plants hold some in place, and the barrier redirects the water.', 'المطر والجريان جزء من دورة الماء. يحمل الماء الجاري التربة. تثبت النباتات بعضها ويحوّل الحاجز مجرى الماء.'],
+  },
+} as const satisfies Record<import('../data/virtualLabs').VirtualLabId, VirtualLabText>;
+export const LOCAL_ADMIN_LABEL: Record<LanguageCode, string> = {
+  fr: 'Mode admin local · Tous les ateliers sont accessibles',
+  en: 'Local admin mode · All workshops are available',
+  ar: 'وضع الإدارة المحلي · جميع الورش متاحة',
+};
+export const SCIENCE_CHALLENGE_TEXT = {
+  title: ['Mini-laboratoire', 'Mini lab', 'مختبر صغير'],
+  predict: ['Avant de manipuler, veux-tu faire une prédiction ?', 'Want to make a prediction before you try?', 'هل تريد أن تتوقّع النتيجة قبل التجربة؟'],
+  catalogue: ['Défis scientifiques', 'Science challenges', 'تحديات علمية'],
+  listen: ['Écouter la consigne', 'Listen to the instructions', 'استمع إلى التعليمات'],
+  prediction: ['Ta prédiction', 'Your prediction', 'توقعك'],
+  observation: ['Ton observation', 'Your observation', 'ملاحظتك'],
+  restart: ['Recommencer le défi', 'Restart challenge', 'أعد التحدي'],
+  solved: ['Défi réussi !', 'Challenge complete!', 'أكملت التحدي!'],
+  switch: ['Interrupteur', 'Switch', 'مفتاح'],
+  closed: ['Fermé', 'Closed', 'مغلق'],
+  opened: ['Ouvert', 'Open', 'مفتوح'],
+  on: ['LED allumée', 'LED on', 'المصباح مضاء'],
+  off: ['LED éteinte', 'LED off', 'المصباح مطفأ'],
+  fixedDown: ['La charge fixe descend', 'Fixed load goes down', 'تنخفض الحمولة الثابتة'],
+  movingDown: ['La charge mobile descend', 'Moving load goes down', 'تنخفض الحمولة المتحركة'],
+  balanced: ['Le levier est équilibré', 'The lever is balanced', 'الرافعة متوازنة'],
+  fixed: ['Charge fixe', 'Fixed load', 'الحمولة الثابتة'],
+  moving: ['Charge mobile', 'Moving load', 'الحمولة المتحركة'],
+  distance: ['Distance au pivot', 'Distance from pivot', 'المسافة من المحور'],
+  complete: ['Molécule complète', 'Molecule complete', 'الجزيء مكتمل'],
+  incomplete: ['Molécule à compléter', 'Molecule needs a change', 'الجزيء يحتاج إلى تعديل'],
+  empty: ['Emplacement vide', 'Empty slot', 'مكان فارغ'],
+  hydrogen: ['Hydrogène', 'Hydrogen', 'هيدروجين'],
+  oxygen: ['Oxygène', 'Oxygen', 'أكسجين'],
+  close: ['Allume la LED', 'Light the LED', 'أضئ المصباح'],
+  open: ['Éteins la LED', 'Turn off the LED', 'أطفئ المصباح'],
+  series: ['Deux interrupteurs, une boucle', 'Two switches, one loop', 'مفتاحان وحلقة واحدة'],
+  equal: ['Équilibre deux charges égales', 'Balance two equal loads', 'وازن حمولتين متساويتين'],
+  heavy: ['Équilibre une charge plus lourde', 'Balance a heavier load', 'وازن حمولة أثقل'],
+  near: ['Rapproche la charge lourde', 'Move the heavy load closer', 'قرّب الحمولة الثقيلة'],
+  water: ['Complète la molécule d’eau', 'Complete the water molecule', 'أكمل جزيء الماء'],
+  repairWater: ['Répare la molécule d’eau', 'Repair the water molecule', 'أصلح جزيء الماء'],
+  carbon: ['Complète le CO₂', 'Complete the CO₂ molecule', 'أكمل جزيء CO₂'],
+  circuitGoalOn: ['Ferme la boucle pour allumer la LED.', 'Close the loop to light the LED.', 'أغلق الحلقة لإضاءة المصباح.'],
+  circuitGoalOff: ['Ouvre la boucle pour éteindre la LED.', 'Open the loop to turn off the LED.', 'افتح الحلقة لإطفاء المصباح.'],
+  leverGoal: ['Déplace la charge mobile jusqu’à ce que le levier soit horizontal.', 'Move the sliding load until the lever is level.', 'حرّك الحمولة المتحركة حتى تصبح الرافعة أفقية.'],
+  moleculeGoal: ['Choisis l’atome qui complète le modèle.', 'Choose the atom that completes the model.', 'اختر الذرة التي تكمل النموذج.'],
+  circuitWhy: ['Dans cette boucle, le courant circule seulement si tous les interrupteurs sont fermés.', 'In this loop, current flows only when every switch is closed.', 'في هذه الحلقة يمر التيار عندما تكون جميع المفاتيح مغلقة.'],
+  leverWhy: ['Le levier s’équilibre quand la charge multipliée par sa distance au pivot est la même des deux côtés.', 'The lever balances when load times distance from the pivot is equal on both sides.', 'تتوازن الرافعة عندما يتساوى حاصل ضرب الحمولة في بعدها عن المحور على الجانبين.'],
+  waterWhy: ['Dans H₂O, un oxygène est relié à deux hydrogènes.', 'In H₂O, one oxygen is bonded to two hydrogens.', 'في H₂O ترتبط ذرة أكسجين بذرتي هيدروجين.'],
+  carbonWhy: ['Dans CO₂, un carbone est relié à deux oxygènes par deux liaisons doubles.', 'In CO₂, one carbon is joined to two oxygens by two double bonds.', 'في CO₂ ترتبط ذرة كربون بذرتي أكسجين برابطتين مزدوجتين.'],
+} satisfies Record<string, [string, string, string]>;
+export const WEBGL_QA_TEXT = {
+  endurance: ['Tester 20 minutes', 'Test for 20 minutes', 'اختبار لمدة 20 دقيقة'],
+  stop: ['Arrêter le test', 'Stop test', 'إيقاف الاختبار'],
+  models: ['Modèles / styles', 'Models / styles', 'النماذج / الأنماط'],
+  lose: ['Interrompre le contexte 3D', 'Interrupt 3D context', 'إيقاف سياق العرض الثلاثي'],
+  previews: ['Tester 40 aperçus successifs', 'Test 40 consecutive previews', 'اختبار 40 معاينة متتالية'],
+  counts: ['Pertes / restaurations', 'Losses / restorations', 'انقطاعات / استعادة'],
+} satisfies Record<string, [string, string, string]>;
+/** FR / EN / AR teaching content shared by the dedicated experiment blueprints. */
+export const EXPERIMENT_PART_TEXT = {
+  base: { name: ['Socle', 'Base', 'القاعدة'], hint: ['Stabilise le montage.', 'Keeps the apparatus stable.', 'تثبت التجربة.'] },
+  frame: { name: ['Portique et pivot', 'Frame and pivot', 'الإطار والمحور'], hint: ['Porte le pendule au niveau du pivot.', 'Supports the pendulum at its pivot.', 'يحمل البندول عند محوره.'] },
+  rod: { name: ['Tige suspendue', 'Suspended rod', 'القضيب المعلق'], hint: ['Relie la masse au pivot.', 'Connects the bob to the pivot.', 'يربط الثقل بالمحور.'] },
+  bob: { name: ['Masse du pendule', 'Pendulum bob', 'ثقل البندول'], hint: ['Reste attachée à la tige pendant le mouvement.', 'Stays attached to the rod during motion.', 'يبقى متصلا بالقضيب أثناء الحركة.'] },
+  fulcrum: { name: ['Point d’appui', 'Fulcrum', 'نقطة الارتكاز'], hint: ['Le levier repose sur ce pivot.', 'The lever rests on this pivot.', 'ترتكز الرافعة على هذا المحور.'] },
+  lever: { name: ['Fléau', 'Balance beam', 'ذراع الميزان'], hint: ['Relie les deux côtés autour du point d’appui.', 'Connects both sides around the fulcrum.', 'يربط الجانبين حول نقطة الارتكاز.'] },
+  load: { name: ['Charge', 'Load', 'الحمولة'], hint: ['Pose la charge sur le bras.', 'Place the load on the arm.', 'ضع الحمولة على الذراع.'] },
+  counterweight: { name: ['Contrepoids', 'Counterweight', 'الثقل الموازن'], hint: ['Équilibre la charge de l’autre côté.', 'Balances the load on the other side.', 'يوازن الحمولة على الجانب الآخر.'] },
+  ramp: { name: ['Rampe inclinée', 'Inclined ramp', 'السطح المائل'], hint: ['Un chemin plus long permet de monter avec moins de force.', 'A longer path lets you lift with less force.', 'يسمح المسار الأطول بالرفع بقوة أقل.'] },
+  magnet: { name: ['Aimant', 'Magnet', 'المغناطيس'], hint: ['Possède un pôle nord et un pôle sud.', 'Has a north pole and a south pole.', 'له قطب شمالي وقطب جنوبي.'] },
+  compass: { name: ['Aiguille aimantée', 'Magnetic needle', 'الإبرة المغناطيسية'], hint: ['Tourne autour de son pivot pour suivre le champ magnétique.', 'Turns about its pivot to follow the magnetic field.', 'تدور حول محورها لتتبع المجال المغناطيسي.'] },
+  prism: { name: ['Prisme', 'Prism', 'المنشور'], hint: ['Sépare les couleurs de la lumière blanche.', 'Separates the colours in white light.', 'يفصل ألوان الضوء الأبيض.'] },
+  lamp: { name: ['Source de lumière', 'Light source', 'مصدر الضوء'], hint: ['Dirige la lumière vers le prisme.', 'Directs light towards the prism.', 'يوجه الضوء نحو المنشور.'] },
+  beam: { name: ['Rayon lumineux', 'Light ray', 'شعاع الضوء'], hint: ['Montre le trajet de la lumière.', 'Shows the path of light.', 'يبين مسار الضوء.'] },
+  board: { name: ['Platine', 'Circuit board', 'لوحة الدائرة'], hint: ['Porte les composants du circuit.', 'Supports the circuit components.', 'تحمل مكونات الدائرة.'] },
+  battery: { name: ['Pile', 'Battery', 'البطارية'], hint: ['Fournit l’énergie électrique au circuit.', 'Supplies electrical energy to the circuit.', 'تزود الدائرة بالطاقة الكهربائية.'] },
+  resistor: { name: ['Résistance', 'Resistor', 'المقاومة'], hint: ['Limite le courant dans le circuit.', 'Limits the current in the circuit.', 'تحد من التيار في الدائرة.'] },
+  led: { name: ['LED', 'Light-emitting diode', 'الصمام المضيء'], hint: ['Transforme une partie de l’énergie électrique en lumière.', 'Converts some electrical energy into light.', 'يحول جزءا من الطاقة الكهربائية إلى ضوء.'] },
+  wire: { name: ['Fil de connexion', 'Connecting wire', 'سلك التوصيل'], hint: ['Relie deux bornes pour fermer la boucle.', 'Connects two terminals to close the loop.', 'يربط طرفين لإغلاق الحلقة.'] },
+  motor: { name: ['Moteur', 'Motor', 'المحرك'], hint: ['Transforme l’énergie électrique en rotation.', 'Converts electrical energy into rotation.', 'يحول الطاقة الكهربائية إلى دوران.'] },
+  fan: { name: ['Hélice du ventilateur', 'Fan blades', 'ريش المروحة'], hint: ['Se fixe sur l’axe du moteur.', 'Attaches to the motor shaft.', 'تثبت على محور المحرك.'] },
+  sensor: { name: ['Capteur de lumière', 'Light sensor', 'مستشعر الضوء'], hint: ['Sa résistance change avec la lumière.', 'Its resistance changes with light.', 'تتغير مقاومته مع الضوء.'] },
+  buzzer: { name: ['Buzzer', 'Buzzer', 'الطنان'], hint: ['Transforme l’énergie électrique en son.', 'Converts electrical energy into sound.', 'يحول الطاقة الكهربائية إلى صوت.'] },
+  solar: { name: ['Panneau photovoltaïque', 'Photovoltaic panel', 'اللوح الكهروضوئي'], hint: ['Transforme la lumière en électricité.', 'Converts light into electricity.', 'يحول الضوء إلى كهرباء.'] },
+  capacitor: { name: ['Condensateur', 'Capacitor', 'المكثف'], hint: ['Stocke temporairement de l’énergie électrique.', 'Temporarily stores electrical energy.', 'يخزن الطاقة الكهربائية مؤقتا.'] },
+  antenna: { name: ['Antenne', 'Antenna', 'الهوائي'], hint: ['Reçoit les ondes radio.', 'Receives radio waves.', 'يستقبل موجات الراديو.'] },
+  detector: { name: ['Module de détection AM', 'AM detector module', 'وحدة كشف AM'], hint: ['Extrait le signal sonore du signal radio.', 'Extracts the audio signal from the radio signal.', 'تستخرج الإشارة الصوتية من إشارة الراديو.'] },
+  speaker: { name: ['Écouteur', 'Earpiece', 'سماعة الأذن'], hint: ['Permet d’entendre le signal sonore.', 'Lets you hear the audio signal.', 'تتيح سماع الإشارة الصوتية.'] },
+  oxygen: { name: ['Atome d’oxygène O', 'Oxygen atom O', 'ذرة الأكسجين O'], hint: ['Forme deux liaisons covalentes dans ce modèle.', 'Forms two covalent bonds in this model.', 'تشكل رابطتين تساهميتين في هذا النموذج.'] },
+  hydrogen: { name: ['Atome d’hydrogène H', 'Hydrogen atom H', 'ذرة الهيدروجين H'], hint: ['Forme une liaison covalente.', 'Forms one covalent bond.', 'تشكل رابطة تساهمية واحدة.'] },
+  carbon: { name: ['Atome de carbone C', 'Carbon atom C', 'ذرة الكربون C'], hint: ['Partage quatre paires d’électrons dans ce modèle.', 'Shares four electron pairs in this model.', 'تشارك بأربعة أزواج من الإلكترونات في هذا النموذج.'] },
+  single: { name: ['Liaison simple', 'Single bond', 'رابطة أحادية'], hint: ['Relie deux atomes par une paire d’électrons partagée.', 'Joins two atoms through one shared electron pair.', 'تربط ذرتين بزوج مشترك من الإلكترونات.'] },
+  double: { name: ['Liaison double', 'Double bond', 'رابطة مزدوجة'], hint: ['Relie deux atomes par deux paires d’électrons partagées.', 'Joins two atoms through two shared electron pairs.', 'تربط ذرتين بزوجين مشتركين من الإلكترونات.'] },
+  sodium: { name: ['Ion sodium Na⁺', 'Sodium ion Na⁺', 'أيون الصوديوم Na⁺'], hint: ['Alterner les ions positifs et négatifs forme le cristal.', 'Alternating positive and negative ions forms the crystal.', 'يشكل تعاقب الأيونات الموجبة والسالبة البلورة.'] },
+  chloride: { name: ['Ion chlorure Cl⁻', 'Chloride ion Cl⁻', 'أيون الكلوريد Cl⁻'], hint: ['Les ions voisins portent des charges opposées.', 'Neighbouring ions carry opposite charges.', 'تحمل الأيونات المتجاورة شحنات متعاكسة.'] },
+  stand: { name: ['Support de laboratoire', 'Laboratory stand', 'حامل المختبر'], hint: ['Maintient le récipient au-dessus du socle.', 'Holds the vessel above the base.', 'يحمل الوعاء فوق القاعدة.'] },
+  beaker: { name: ['Bécher gradué', 'Graduated beaker', 'الكأس المدرجة'], hint: ['Récipient ouvert pour observer une expérience.', 'An open vessel for observing an experiment.', 'وعاء مفتوح لمشاهدة التجربة.'] },
+  pan: { name: ['Plateau de balance', 'Weighing pan', 'كفة الميزان'], hint: ['Reçoit l’objet à peser ou les masses de référence.', 'Holds the object or the reference masses.', 'تحمل الجسم أو كتل القياس.'] },
+} satisfies Record<string, WorkshopText>;
+
+export const EXPERIMENT_MODEL_TEXT: Record<string, { name: [string, string, string]; explanation: [string, string, string] }> = {
+  'chem-water-molecule': { name: ['Molécule d’eau', 'Water molecule', 'جزيء الماء'], explanation: ['Relie un oxygène à deux hydrogènes. Les deux liaisons forment un angle de 104,5°.', 'Join one oxygen to two hydrogens. The two bonds form a 104.5° angle.', 'اربط أكسجينا بذرتي هيدروجين. تصنع الرابطتان زاوية 104.5 درجة.'] },
+  'chem-co2-molecule': { name: ['Molécule CO₂', 'CO₂ molecule', 'جزيء CO₂'], explanation: ['Le carbone central forme deux liaisons doubles avec deux oxygènes alignés.', 'The central carbon forms two double bonds with two oxygen atoms in a straight line.', 'تشكل ذرة الكربون المركزية رابطتين مزدوجتين مع ذرتي أكسجين على خط مستقيم.'] },
+  'chem-salt-crystal': { name: ['Cristal de sel NaCl', 'NaCl salt crystal', 'بلورة ملح NaCl'], explanation: ['Alterner sodium Na⁺ et chlorure Cl⁻ construit un fragment du réseau ionique du sel.', 'Alternate sodium Na⁺ and chloride Cl⁻ to build a fragment of the salt ionic lattice.', 'ناوب بين الصوديوم Na⁺ والكلوريد Cl⁻ لبناء جزء من الشبكة الأيونية للملح.'] },
+  'chem-beaker-setup': { name: ['Bécher sur pied', 'Beaker on a stand', 'كأس على حامل'], explanation: ['Pose le support puis le bécher. Le récipient reste maintenu au-dessus du socle.', 'Fit the stand and then the beaker. The vessel stays supported above the base.', 'ثبت الحامل ثم الكأس. يبقى الوعاء محمولا فوق القاعدة.'] },
+  'chem-balance-scale': { name: ['Balance de précision', 'Precision balance', 'ميزان دقيق'], explanation: ['Le fléau repose sur un pivot central. Les deux plateaux portent des charges égales à égale distance.', 'The beam rests on a central pivot. Both pans carry equal loads at equal distances.', 'ترتكز العارضة على محور مركزي. تحمل الكفتان كتلتين متساويتين على مسافتين متساويتين.'] },
+  'elec-led-circuit': { name: ['Circuit LED', 'LED circuit', 'دائرة LED'], explanation: ['Relie pile, résistance et LED en boucle. La résistance limite le courant.', 'Connect the battery, resistor and LED in a loop. The resistor limits the current.', 'صل البطارية والمقاومة والصمام في حلقة. تحد المقاومة من التيار.'] },
+  'elec-motor-fan': { name: ['Ventilateur à moteur', 'Motorised fan', 'مروحة بمحرك'], explanation: ['Ferme la boucle entre la pile et le moteur, puis fixe l’hélice sur son axe.', 'Close the loop between the battery and motor, then fit the fan onto its shaft.', 'أغلق الحلقة بين البطارية والمحرك ثم ثبت المروحة على محوره.'] },
+  'elec-alarm-buzzer': { name: ['Alarme à capteur de lumière', 'Light-controlled buzzer', 'طنان يتحكم فيه الضوء'], explanation: ['Relie pile, capteur de lumière et buzzer. La lumière modifie la résistance du capteur et le courant.', 'Connect the battery, light sensor and buzzer. Light changes the sensor resistance and current.', 'صل البطارية ومستشعر الضوء والطنان. يغير الضوء مقاومة المستشعر والتيار.'] },
+  'elec-solar-toy': { name: ['Jouet solaire', 'Solar toy', 'لعبة شمسية'], explanation: ['Le panneau fournit l’électricité. Le condensateur stocke de l’énergie et le moteur entraîne l’hélice.', 'The panel supplies electricity. The capacitor stores energy and the motor drives the fan.', 'يوفر اللوح الكهرباء. يخزن المكثف الطاقة ويحرك المحرك المروحة.'] },
+  'elec-radio-receiver': { name: ['Récepteur radio AM', 'AM radio receiver', 'مستقبل راديو AM'], explanation: ['L’antenne reçoit le signal. Le module AM contient l’accord et la détection, puis l’écouteur restitue le son. Modèle simplifié, sans réception réelle.', 'The antenna receives the signal. The AM module contains tuning and detection, and the earpiece reproduces sound. Simplified model, without real reception.', 'يستقبل الهوائي الإشارة. تحتوي وحدة AM على التوليف والكشف وتنقل السماعة الصوت. نموذج مبسط دون استقبال حقيقي.'] },
+  'phys-pendulum': { name: ['Pendule simple', 'Simple pendulum', 'بندول بسيط'], explanation: ['La tige et la masse restent reliées au pivot pendant l’oscillation.', 'The rod and bob remain attached to the pivot as they swing.', 'يبقى القضيب والثقل متصلين بالمحور أثناء التأرجح.'] },
+  'phys-lever-class1': { name: ['Levier du premier ordre', 'First-class lever', 'رافعة من النوع الأول'], explanation: ['Pose le pivot entre la charge et le contrepoids pour équilibrer le levier.', 'Place the pivot between the load and counterweight to balance the lever.', 'ضع المحور بين الحمولة والثقل الموازن لموازنة الرافعة.'] },
+  'phys-inclined-plane': { name: ['Plan incliné', 'Inclined plane', 'المستوى المائل'], explanation: ['La rampe permet de monter une charge avec moins de force en parcourant un chemin plus long.', 'The ramp lets you lift a load with less force over a longer distance.', 'يسمح السطح المائل برفع حمولة بقوة أقل عبر مسافة أطول.'] },
+  'phys-magnet-compass': { name: ['Boussole magnétique', 'Magnetic compass', 'بوصلة مغناطيسية'], explanation: ['L’aiguille tourne sur son pivot et s’aligne sur le champ de l’aimant proche.', 'The needle turns on its pivot and aligns with the field of the nearby magnet.', 'تدور الإبرة على محورها وتصطف مع مجال المغناطيس القريب.'] },
+  'phys-prism-light': { name: ['Prisme de lumière', 'Light prism', 'منشور الضوء'], explanation: ['Dirige le rayon blanc vers le prisme et observe les couleurs qui en sortent.', 'Direct the white ray into the prism and observe the emerging colours.', 'وجه الشعاع الأبيض نحو المنشور وشاهد الألوان الخارجة.'] },
+  'aero-sounding-rocket': { name: ['Fusée-sonde météorologique', 'Weather sounding rocket', 'صاروخ سبر جوي'], explanation: ['Une fusée-sonde emporte des instruments pour étudier la haute atmosphère.', 'A sounding rocket carries instruments to study the upper atmosphere.', 'يحمل صاروخ السبر أجهزة لدراسة الغلاف الجوي العلوي.'] },
+  'aero-leo-cubesat': { name: ['CubeSat scientifique LEO', 'Scientific LEO CubeSat', 'قمر كيوب سات علمي'], explanation: ['Un petit satellite porte des instruments, des panneaux solaires et une antenne.', 'A small satellite carries instruments, solar panels and an antenna.', 'يحمل قمر صغير أجهزة وألواحا شمسية وهوائيا.'] },
+  'aero-planetary-rover': { name: ['Rover planétaire autonome', 'Autonomous planetary rover', 'عربة كوكبية ذاتية'], explanation: ['Les roues déplacent le rover et les instruments observent le sol.', 'Wheels move the rover and instruments observe the ground.', 'تحرك العجلات العربة وتراقب الأجهزة التربة.'] },
+  'aero-iss-module': { name: ['Module de station orbitale', 'Orbital station module', 'وحدة محطة مدارية'], explanation: ['Les modules et équipements se relient pour former une station orbitale.', 'Modules and equipment connect to form an orbital station.', 'تتصل الوحدات والمعدات لتشكل محطة مدارية.'] },
+  'aero-heavy-launcher': { name: ['Lanceur lourd réutilisable', 'Reusable heavy launcher', 'قاذف ثقيل قابل لإعادة الاستخدام'], explanation: ['Les étages du lanceur portent la charge utile et se séparent pendant le vol.', 'The launcher stages carry the payload and separate during flight.', 'تحمل مراحل القاذف الحمولة وتنفصل أثناء الطيران.'] },
+};
+
+export const EXPERIMENT_FACT_TEXT = {
+  observation: ['Observe les pièces et leurs connexions dans les vues de face, de profil et de dessus.', 'Observe the parts and their connections from the front, side and top.', 'شاهد القطع واتصالاتها من الأمام والجانب والأعلى.'],
+  model: ['Ce modèle simplifié sert à comprendre le montage ; ce n’est pas un appareil de laboratoire réel.', 'This simplified model helps explain assembly; it is not real laboratory equipment.', 'يساعد هذا النموذج المبسط على فهم التركيب وهو ليس جهاز مختبر حقيقيا.'],
+} satisfies Record<string, [string, string, string]>;
+
 interface ArabicBlueprintTranslation {
   name: string;
   subtitle: string;
@@ -527,6 +896,7 @@ export interface UIStrings {
   recenterBtn: string;
   swUpdateAvailable: string;
   swUpdateBtn: string;
+  octoCongratulations: string;
   resetBtn: string;
   autoSavedBadge: string;
   // Status & Canvas messages
@@ -540,12 +910,18 @@ export interface UIStrings {
   dropRejectedMissingDep: (missingName: string, partName: string) => string;
   webglResetTitle: string;
   webglResetDesc: string;
+  webglRetryBtn: string;
+  trayPositionBottom: string;
+  trayPositionStart: string;
+  trayPositionEnd: string;
   progressSavedToast: string;
   progressImportedToast: string;
   progressImportErrorToast: string;
   progressResetToast: string;
   // Stage Catalog & LocalStorage Save Manager
   catalogTitle: string;
+  discoveryObservationTitle: string;
+  discoveryModelBadge: string;
   catalogSubtitle: string;
   closeCatalogAria: string;
   filterAll: string;
@@ -558,12 +934,19 @@ export interface UIStrings {
   filterElectronics: string;
   filterChemistry: string;
   filterPhysics: string;
+  filterNature: string;
+  filterHistory: string;
+  trayTools: string;
+  hudTools: string;
+  trayShowAll: string;
+  trayShowReady: string;
   allTiersLabel: string;
   tierPillLabel: (tier: number) => string;
   searchPlaceholder: string;
   clearSearchLabel: string;
   noStagesMatch: string;
   showingCountLabel: (shown: number, total: number) => string;
+  tierCatalogSummary: (first: number, last: number, min: number, max: number) => string;
   freeAccessActive: string;
   unlockAllBtn: string;
   unlockAllTitle: string;
@@ -1060,8 +1443,9 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     unmuteAria: 'Activer le son',
     undoBtn: 'Annuler',
     recenterBtn: 'Recentrer',
-    swUpdateAvailable: 'Nouvelle version disponible — rechargez pour l\'installer',
-    swUpdateBtn: 'Relancer',
+    swUpdateAvailable: 'Nouvelle version prête à installer.',
+    swUpdateBtn: 'Mettre à jour',
+    octoCongratulations: 'Bravo, montage terminé !',
     resetBtn: 'Recommencer',
     autoSavedBadge: 'Sauvegarde auto',
     stageResetMsg: (vehicleName) => `Établi remis à zéro pour ${vehicleName}.`,
@@ -1076,16 +1460,21 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     dropRejectedMissingDep: (missingName, partName) =>
       `Astuce mécanique : installe d'abord « ${missingName} » avant de fixer « ${partName} » !`,
     webglResetTitle: "Réinitialisation de l'atelier 3D",
-    webglResetDesc: "L'affichage 3D reprend automatiquement dans un instant.",
+    webglResetDesc: "L’affichage 3D s’est interrompu. Attends un instant ou recharge l’atelier pour reprendre ta construction.",
+    webglRetryBtn: 'Recharger l’atelier',
+    trayPositionBottom: 'Pièces en bas',
+    trayPositionStart: 'Pièces au début',
+    trayPositionEnd: 'Pièces à la fin',
     progressSavedToast: 'Progression enregistrée localement sur cet appareil.',
     progressImportedToast: 'Sauvegarde restaurée avec succès !',
     progressImportErrorToast: 'Fichier de sauvegarde invalide.',
     progressResetToast: 'Toute la progression a été réinitialisée.',
-    catalogTitle: 'Carnet des 100 Stages & Sauvegarde',
-    catalogSubtitle:
-      '100 objets mécaniques répartis en 5 paliers de difficulté · Sauvegarde automatique sur cet appareil.',
+    catalogTitle: "Catalogue des ateliers & sauvegarde",
+    discoveryObservationTitle: '2. Observe ton montage',
+    discoveryModelBadge: 'Comprendre et observer un modèle simplifié',
+    catalogSubtitle: "Des modèles répartis en cinq paliers de difficulté · Sauvegarde automatique sur cet appareil.",
     closeCatalogAria: 'Fermer le catalogue',
-    filterAll: 'Tous (100)',
+    filterAll: "Tous",
     filterCars: 'Route & Rail',
     filterBoats: 'Mer & Abysses',
     filterPlanes: 'Air & Drones',
@@ -1095,25 +1484,32 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterElectronics: 'Électronique',
     filterChemistry: 'Chimie',
     filterPhysics: 'Physique',
+    filterNature: 'Vivant et Terre',
+    filterHistory: 'Histoire',
+    trayTools: 'Réglages des pièces',
+    hudTools: 'Réglages de l’atelier',
+    trayShowAll: 'Toutes les pièces',
+    trayShowReady: 'Pièces disponibles',
     allTiersLabel: 'Tous les paliers',
     tierPillLabel: (tier) => `Palier ${tier}`,
     searchPlaceholder: 'Rechercher un véhicule, train, fusée, pelleteuse...',
     clearSearchLabel: 'Effacer',
     noStagesMatch: 'Aucun objet ne correspond à ta recherche.',
     showingCountLabel: (shown, total) => `${shown} sur ${total} objets affichés`,
+    tierCatalogSummary: (first, last, min, max) => `Stages ${first}–${last} · ${min}–${max} pièces`,
     freeAccessActive: 'Accès libre activé',
-    unlockAllBtn: 'Débloquer les 100',
-    unlockAllTitle: "Permet d'essayer immédiatement les 100 niveaux (accès parents / enseignants)",
-    tier1Title: '01. Palier Découverte — Premiers Assemblages (Stages 1 à 20)',
-    tier1Subtitle: '4 à 5 pièces larges · Aimantation généreuse (1,4 m) et toutes les silhouettes visibles',
-    tier2Title: '02. Palier Atelier — Mécanismes par Couches (Stages 21 à 40)',
-    tier2Subtitle: '7 à 8 pièces · Montage du moteur et de la coque avant la cabine (aimantation 1,15 m)',
-    tier3Title: '03. Palier Ingénieur — Grandes Constructions (Stages 41 à 60)',
-    tier3Subtitle: '9 à 11 pièces · Silhouettes progressives débloquées étape par étape (aimantation 0,95 m)',
-    tier4Title: '04. Palier Expert — Architectures Complexes (Stages 61 à 80)',
-    tier4Subtitle: '12 à 13 pièces · Haute précision d’assemblage (aimantation 0,78 m) et sous-ensembles techniques',
-    tier5Title: '05. Palier Maître Constructeur — Défis Ultimes (Stages 81 à 100)',
-    tier5Subtitle: '14 à 15 pièces · Précision chirurgicale (aimantation 0,65 m) sur les plus grandes machines du monde',
+    unlockAllBtn: "Tout débloquer",
+    unlockAllTitle: "Permet d’essayer tous les modèles (accès parents / enseignants)",
+    tier1Title: '01. Palier Découverte — Premiers Assemblages',
+    tier1Subtitle: "Silhouettes et aide au placement.",
+    tier2Title: '02. Palier Atelier — Mécanismes par Couches',
+    tier2Subtitle: "Montage guidé des connexions.",
+    tier3Title: '03. Palier Ingénieur — Grandes Constructions',
+    tier3Subtitle: "Assemblages progressifs et nouvelles notions.",
+    tier4Title: '04. Palier Expert — Architectures Complexes',
+    tier4Subtitle: "Assemblages à plusieurs étapes.",
+    tier5Title: '05. Palier Maître Constructeur — Défis Ultimes',
+    tier5Subtitle: "Défis complets à explorer.",
     catCar: 'Route & Rail',
     catBoat: 'Mer & Abysses',
     catPlane: 'Air & Aviation',
@@ -1660,8 +2056,9 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     unmuteAria: 'Unmute sound',
     undoBtn: 'Undo',
     recenterBtn: 'Recenter',
-    swUpdateAvailable: 'New version available — reload to install',
-    swUpdateBtn: 'Reload',
+    swUpdateAvailable: 'A new version is ready to install.',
+    swUpdateBtn: 'Update now',
+    octoCongratulations: 'Well done, build complete!',
     resetBtn: 'Restart',
     autoSavedBadge: 'Auto-saved',
     stageResetMsg: (vehicleName) => `Workbench reset for ${vehicleName}.`,
@@ -1676,16 +2073,21 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     dropRejectedMissingDep: (missingName, partName) =>
       `Mechanical tip: install "${missingName}" first before attaching "${partName}"!`,
     webglResetTitle: 'Resetting 3D Workshop',
-    webglResetDesc: 'The 3D viewport will resume automatically in a moment.',
+    webglResetDesc: 'The 3D view paused. Wait a moment or reload the workshop to continue building.',
+    webglRetryBtn: 'Reload workshop',
+    trayPositionBottom: 'Parts at bottom',
+    trayPositionStart: 'Parts at start',
+    trayPositionEnd: 'Parts at end',
     progressSavedToast: 'Progress saved locally on this device.',
     progressImportedToast: 'Backup file restored!',
     progressImportErrorToast: 'Invalid save backup file.',
     progressResetToast: 'All saved progress has been reset.',
-    catalogTitle: '100-Stage Workshop Catalog & Save',
-    catalogSubtitle:
-      '100 buildable 3D machines across 5 difficulty tiers · Automatic local save on this device.',
+    catalogTitle: "Workshop catalogue & save",
+    discoveryObservationTitle: '2. Observe your assembly',
+    discoveryModelBadge: 'Understand and observe a simplified model',
+    catalogSubtitle: "Models across five difficulty tiers · Automatic local save on this device.",
     closeCatalogAria: 'Close catalog',
-    filterAll: 'All (100)',
+    filterAll: "All",
     filterCars: 'Road & Rail',
     filterBoats: 'Sea & Deep Ocean',
     filterPlanes: 'Air & Drones',
@@ -1695,25 +2097,32 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterElectronics: 'Electronics',
     filterChemistry: 'Chemistry',
     filterPhysics: 'Physics',
+    filterNature: 'Life and Earth',
+    filterHistory: 'History',
+    trayTools: 'Part settings',
+    hudTools: 'Workshop settings',
+    trayShowAll: 'All parts',
+    trayShowReady: 'Available parts',
     allTiersLabel: 'All Tiers',
     tierPillLabel: (tier) => `Tier ${tier}`,
     searchPlaceholder: 'Search a car, train, rocket, excavator, submarine...',
     clearSearchLabel: 'Clear filters',
     noStagesMatch: 'No mechanical models match your search.',
     showingCountLabel: (shown, total) => `Showing ${shown} of ${total} models`,
+    tierCatalogSummary: (first, last, min, max) => `Stages ${first}–${last} · ${min}–${max} parts`,
     freeAccessActive: 'Free access active',
-    unlockAllBtn: 'Unlock all 100',
-    unlockAllTitle: 'Unlocks all 100 stages immediately (parent / teacher mode)',
-    tier1Title: '01. Discovery Tier — First Builds (Stages 1 to 20)',
-    tier1Subtitle: '4 to 5 large parts · Generous magnetic snap (1.4 m) with all silhouettes visible',
-    tier2Title: '02. Workshop Tier — Layered Mechanisms (Stages 21 to 40)',
-    tier2Subtitle: '7 to 8 parts · Install engine & hull structures before cabins (1.15 m snap)',
-    tier3Title: '03. Engineer Tier — Heavy Engineering (Stages 41 to 60)',
-    tier3Subtitle: '9 to 11 parts · Step-by-step progressive guide silhouettes (0.95 m snap)',
-    tier4Title: '04. Expert Tier — Complex Architectures (Stages 61 to 80)',
-    tier4Subtitle: '12 to 13 parts · High assembly precision (0.78 m snap) and multi-layer sub-assemblies',
-    tier5Title: '05. Master Builder Tier — Ultimate Machines (Stages 81 to 100)',
-    tier5Subtitle: '14 to 15 parts · Surgical precision (0.65 m snap) on iconic world-class machines',
+    unlockAllBtn: "Unlock all",
+    unlockAllTitle: "Try every model (parent / teacher access)",
+    tier1Title: '01. Discovery Tier — First Builds',
+    tier1Subtitle: "Guide silhouettes and placement help.",
+    tier2Title: '02. Workshop Tier — Layered Mechanisms',
+    tier2Subtitle: "Guided assembly of connections.",
+    tier3Title: '03. Engineer Tier — Heavy Engineering',
+    tier3Subtitle: "Progressive builds and new concepts.",
+    tier4Title: '04. Expert Tier — Complex Architectures',
+    tier4Subtitle: "Multi-step assemblies.",
+    tier5Title: '05. Master Builder Tier — Ultimate Machines',
+    tier5Subtitle: "Complete challenges to explore.",
     catCar: 'Road & Rail',
     catBoat: 'Sea & Ocean',
     catPlane: 'Air & Aviation',
@@ -2260,8 +2669,9 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     unmuteAria: 'تفعيل الصوت',
     undoBtn: 'تراجع',
     recenterBtn: 'توسيط',
-    swUpdateAvailable: 'إصدار جديد متاح — أعد التحميل للتثبيت',
-    swUpdateBtn: 'إعادة تحميل',
+    swUpdateAvailable: 'إصدار جديد جاهز للتثبيت.',
+    swUpdateBtn: 'تحديث الآن',
+    octoCongratulations: 'أحسنت، اكتمل التركيب!',
     resetBtn: 'إعادة المرحلة',
     autoSavedBadge: 'حفظ تلقائي',
     stageResetMsg: (vehicleName) => `تمت إعادة ضبط طاولة العمل لمركبة «${vehicleName}».`,
@@ -2276,16 +2686,21 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     dropRejectedMissingDep: (missingName, partName) =>
       `نصيحة ميكانيكية: ركّب أولاً «${missingName}» قبل تثبيت «${partName}»!`,
     webglResetTitle: 'إعادة تهيئة الورشة ثلاثية الأبعاد',
-    webglResetDesc: 'ستعود شاشة العرض ثلاثي الأبعاد تلقائياً خلال لحظة.',
+    webglResetDesc: 'توقف العرض ثلاثي الأبعاد. انتظر لحظة أو أعد تحميل الورشة لمتابعة البناء.',
+    webglRetryBtn: 'إعادة تحميل الورشة',
+    trayPositionBottom: 'القطع في الأسفل',
+    trayPositionStart: 'القطع في البداية',
+    trayPositionEnd: 'القطع في النهاية',
     progressSavedToast: 'تم حفظ تقدمك ومستواك الحالي محلياً على هذا الجهاز.',
     progressImportedToast: 'تمت استعادة ملف الحفظ بنجاح!',
     progressImportErrorToast: 'ملف الحفظ غير صالح.',
     progressResetToast: 'تم مسح التقدم وإعادة الضبط بالكامل.',
-    catalogTitle: 'دفتر الـ 100 مرحلة وحفظ التقدم',
-    catalogSubtitle:
-      '100 مجسّم ميكانيكي عبر 5 مستويات صعوبة متدرجة · حفظ تلقائي على هذا الجهاز.',
+    catalogTitle: "دليل الورش وحفظ التقدم",
+    discoveryObservationTitle: '2. شاهد تركيبك',
+    discoveryModelBadge: 'فهم نموذج مبسط ومشاهدته',
+    catalogSubtitle: "نماذج عبر خمسة مستويات صعوبة · حفظ تلقائي على هذا الجهاز.",
     closeCatalogAria: 'إغلاق القائمة',
-    filterAll: 'الكل (100)',
+    filterAll: "الكل",
     filterCars: 'البر والقطارات',
     filterBoats: 'البحار والأعماق',
     filterPlanes: 'الطيران والدرون',
@@ -2295,25 +2710,32 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterElectronics: 'إلكترونيات',
     filterChemistry: 'كيمياء',
     filterPhysics: 'فيزياء',
+    filterNature: 'الأحياء والأرض',
+    filterHistory: 'التاريخ',
+    trayTools: 'إعدادات القطع',
+    hudTools: 'إعدادات الورشة',
+    trayShowAll: 'كل القطع',
+    trayShowReady: 'القطع المتاحة',
     allTiersLabel: 'كل المستويات',
     tierPillLabel: (tier) => `المستوى ${tier}`,
     searchPlaceholder: 'ابحث عن سيارة، قطار، صاروخ، حفارة، غواصة...',
     clearSearchLabel: 'مسح',
     noStagesMatch: 'لا توجد مركبات مطابقة لبحثك.',
     showingCountLabel: (shown, total) => `عرض ${shown} من أصل ${total} مجسّم`,
+    tierCatalogSummary: (first, last, min, max) => `المراحل ${first}–${last} · ${min}–${max} قطع`,
     freeAccessActive: 'الوضع الحر مفعّل',
-    unlockAllBtn: 'فتح الـ 100 مرحلة',
-    unlockAllTitle: 'يتيح تجربة جميع المستويات الـ 100 فوراً (لأولياء الأمور والمعلمين)',
-    tier1Title: '01. مستوى الاستكشاف — التركيبات الأولى (المراحل 1 إلى 20)',
-    tier1Subtitle: '4 إلى 5 قطع كبيرة · جذب مغناطيسي واسع مع إظهار جميع الأطياف الإرشادية',
-    tier2Title: '02. مستوى الورشة — آليات متعددة الطبقات (المراحل 21 إلى 40)',
-    tier2Subtitle: '7 إلى 8 قطع · ترتيب منطقي للمحرك والهيكل قبل المقصورة',
-    tier3Title: '03. مستوى المهندس — الإنشاءات الكبرى (المراحل 41 إلى 60)',
-    tier3Subtitle: '9 إلى 11 قطعة · أطياف تدريجية تظهر خطوة بخطوة مع تزايد الدقة',
-    tier4Title: '04. مستوى الخبير — الأنظمة المعقدة (المراحل 61 إلى 80)',
-    tier4Subtitle: '12 إلى 13 قطعة · دقة هندسية عالية وتجميعات فرعية متقدمة',
-    tier5Title: '05. مستوى كبير البناة — التحديات القصوى (المراحل 81 إلى 100)',
-    tier5Subtitle: '14 إلى 15 قطعة · أعلى درجات التركيز والدقة لتجميع أعظم الآلات والمركبات',
+    unlockAllBtn: "فتح الكل",
+    unlockAllTitle: "تجربة جميع النماذج (للأهل والمعلمين)",
+    tier1Title: '01. مستوى الاستكشاف — التركيبات الأولى',
+    tier1Subtitle: "أطياف إرشادية ومساعدة في وضع القطع.",
+    tier2Title: '02. مستوى الورشة — آليات متعددة الطبقات',
+    tier2Subtitle: "تركيب موجه للاتصالات.",
+    tier3Title: '03. مستوى المهندس — الإنشاءات الكبرى',
+    tier3Subtitle: "تركيبات تدريجية ومفاهيم جديدة.",
+    tier4Title: '04. مستوى الخبير — الأنظمة المعقدة',
+    tier4Subtitle: "تركيبات متعددة الخطوات.",
+    tier5Title: '05. مستوى كبير البناة — التحديات القصوى',
+    tier5Subtitle: "تحديات كاملة للاستكشاف.",
     catCar: 'البر والقطارات',
     catBoat: 'البحار والأعماق',
     catPlane: 'الطيران والجو',
@@ -2817,3 +3239,174 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
 
   },
 };
+
+
+/** Catalogue extensions: the same parts, workshop and discovery path in every language. */
+export const HERITAGE_BUILD_TEXT = {
+  aqueduct: {
+    name: ['Aqueduc aux trois arches', 'Three-arch aqueduct', 'قناة مائية بثلاثة أقواس'],
+    goal: ['Monte les piles et les cintres, ferme les arches avec leurs clés, puis construis le canal.', 'Build the piers and centering, close the arches with their keystones, then build the channel.', 'ابن الركائز والقوالب وأغلق الأقواس بأحجار العقد ثم ابن القناة.'],
+    why: ['Les pierres d’une arche se transmettent des efforts de compression jusqu’aux appuis. Le cintre soutient les pierres pendant le montage.', 'Arch stones transmit compression forces to the supports. Centering supports the stones during construction.', 'تنقل أحجار القوس قوى الضغط إلى الركائز، ويدعم القالب الأحجار أثناء البناء.'],
+    fact: ['Les aqueducs pouvaient franchir des vallées sur des arches. Ce modèle simplifie le canal : il ne simule pas les mesures de pente ou de débit.', 'Aqueducts could cross valleys on arches. This model simplifies the channel: it does not simulate slope or flow measurements.', 'استطاعت القنوات المائية عبور الوديان فوق أقواس. يبسط هذا النموذج القناة ولا يحاكي قياسات الميل أو التدفق.'],
+  },
+  dome: {
+    name: ['Dôme à charpente triangulée', 'Triangulated frame dome', 'قبة بهيكل مثلث'],
+    goal: ['Ferme la couronne basse, assemble les triangles et relie les barres au sommet.', 'Close the lower ring, assemble the triangles and join the struts at the top.', 'أغلق الحلقة السفلى وركّب المثلثات واربط القضبان عند القمة.'],
+    why: ['Les barres forment des triangles entre les nœuds. Cette organisation limite les changements de forme du cadre.', 'Struts form triangles between the joints. This arrangement limits changes in the frame’s shape.', 'تكوّن القضبان مثلثات بين العقد، مما يحد من تغير شكل الإطار.'],
+    fact: ['Une charpente peut porter une couverture sans remplir tout son volume. Ce modèle laisse les triangles ouverts pour observer leur assemblage.', 'A frame can support a cover without filling its entire volume. This model leaves the triangles open so their connections can be seen.', 'يمكن لهيكل أن يحمل غطاء دون ملء حجمه كله. يترك هذا النموذج المثلثات مفتوحة لملاحظة توصيلاتها.'],
+  },
+  beacon: {
+    name: ['Tour solaire à double alimentation', 'Dual-source solar beacon', 'برج شمسي بمصدرَي طاقة'],
+    goal: ['Monte la tour et son circuit, puis compare l’alimentation solaire et la batterie.', 'Build the tower and its circuit, then compare solar and battery power.', 'ابن البرج ودائرته ثم قارن الطاقة الشمسية بطاقة البطارية.'],
+    why: ['Le sélecteur choisit une source d’énergie. Les panneaux ont besoin de lumière ; une batterie chargée peut alimenter la LED dans l’obscurité.', 'The selector chooses an energy source. Panels need light; a charged battery can power the LED in the dark.', 'يختار المفتاح مصدر الطاقة. تحتاج الألواح إلى الضوء، ويمكن لبطارية مشحونة تشغيل الصمام في الظلام.'],
+    fact: ['Une batterie stocke de l’énergie. Dans cet essai simplifié, sa charge se règle directement : le modèle ne simule pas le temps de recharge.', 'A battery stores energy. In this simplified trial, its charge is set directly: the model does not simulate charging time.', 'تخزن البطارية الطاقة. في هذه التجربة المبسطة تُضبط شحنتها مباشرة ولا يحاكي النموذج زمن الشحن.'],
+  },
+  keep: {
+    name: ['Mon premier donjon', 'My first castle keep', 'برجي الأول في القلعة'],
+    goal: ['Monte les murs, conserve l’ouverture de la porte et pose les merlons.', 'Build the walls, keep the doorway open and place the merlons.', 'ابن الجدران وأبق فتحة الباب مفتوحة ثم ضع الشرافات.'],
+    why: ['Les murs portent la plateforme supérieure. Le linteau couvre la porte sans fermer le passage.', 'Walls support the upper platform. The lintel spans the doorway without closing the passage.', 'تحمل الجدران المنصة العلوية، ويغطي العتب الباب دون إغلاق الممر.'],
+    fact: ['Un donjon est une tour importante dans certains châteaux. Ce modèle simplifié permet de reconnaître les murs, le linteau et les merlons.', 'A keep is an important tower in some castles. This simplified model introduces walls, a lintel and merlons.', 'البرج الرئيسي عنصر مهم في بعض القلاع. يعرّف هذا النموذج المبسط بالجدران والعتب والشرافات.'],
+  },
+  watermill: {
+    name: ['Roue à eau du moulin', 'Mill waterwheel', 'ناعورة الطاحونة'],
+    goal: ['Construis le bâtiment, les paliers et la roue à palettes, puis ouvre l’eau.', 'Build the mill house, bearings and paddle wheel, then open the water.', 'ابن مبنى الطاحونة والمحامل والعجلة ذات الريش، ثم افتح الماء.'],
+    why: ['L’eau pousse les palettes et fait tourner la roue et son arbre. Les paliers maintiennent l’arbre en place.', 'Water pushes the paddles and turns the wheel and its shaft. Bearings hold the shaft in place.', 'يدفع الماء الريش فتدور العجلة وعمودها، وتثبت المحامل العمود في مكانه.'],
+    fact: ['Des moulins utilisaient l’énergie de l’eau pour entraîner des machines. Ce modèle montre la roue ; il ne représente pas la transmission vers les meules.', 'Mills used water power to drive machinery. This model shows the wheel; it does not represent the transmission to the millstones.', 'استخدمت طواحين طاقة الماء لتشغيل الآلات. يُظهر هذا النموذج العجلة ولا يمثل نقل الحركة إلى أحجار الطحن.'],
+  },
+  temple: {
+    name: ['Temple antique à colonnes', 'Ancient columned temple', 'معبد قديم ذو أعمدة'],
+    goal: ['Superpose les tambours des colonnes, pose les chapiteaux et ferme le toit.', 'Stack the column drums, place the capitals and complete the roof.', 'رص أسطوانات الأعمدة وضع التيجان وأكمل السقف.'],
+    why: ['Les tambours superposés forment les colonnes. Les chapiteaux portent les poutres placées sous le toit.', 'Stacked drums form the columns. Capitals support the beams beneath the roof.', 'تكوّن الأسطوانات المتراكبة الأعمدة، وتحمل التيجان العوارض الواقعة تحت السقف.'],
+    fact: ['Les colonnes de certains temples grecs étaient assemblées en tambours de pierre. Ce modèle est une évocation simplifiée, pas la reproduction d’un monument précis.', 'Columns in some Greek temples were assembled from stone drums. This is a simplified interpretation, not a reproduction of a specific monument.', 'جُمعت أعمدة بعض المعابد اليونانية من أسطوانات حجرية. هذا نموذج مبسط وليس نسخة من معلم محدد.'],
+  },
+  truss: {
+    name: ['Viaduc à treillis', 'Truss viaduct', 'جسر شبكي'],
+    goal: ['Relie les piles, monte le tablier et construis les treillis triangulés.', 'Connect the piers, assemble the deck and build the triangular trusses.', 'اربط الركائز وركّب سطح الجسر وابن الجمالونات المثلثة.'],
+    why: ['Les montants et les diagonales forment des triangles qui limitent la déformation du tablier.', 'Uprights and diagonals form triangles that limit deformation of the deck.', 'تكوّن القوائم والدعامات القطرية مثلثات تحد من تشوه سطح الجسر.'],
+    fact: ['Dans un treillis, certaines barres sont tirées et d’autres comprimées quand une charge passe.', 'In a truss, some members are pulled and others compressed as a load crosses.', 'في الجمالون تتعرض بعض القضبان للشد وأخرى للضغط عند مرور حمولة.'],
+  },
+  castle: {
+    name: ['Château des quatre tours', 'Four-tower castle', 'قلعة الأبراج الأربعة'],
+    goal: ['Construis les fondations, les courtines, les tours et la porte.', 'Build the foundations, curtain walls, towers and gate.', 'ابن الأساسات والأسوار والأبراج والبوابة.'],
+    why: ['La courtine relie les tours. Le passage de la porte reste libre sous son linteau.', 'A curtain wall connects the towers. The gateway stays clear beneath its lintel.', 'يربط السور الأبراج، ويبقى ممر البوابة مفتوحاً تحت العتب.'],
+    fact: ['Ce modèle imaginaire reprend des éléments de châteaux médiévaux : enceinte, tours et porte fortifiée.', 'This imaginary model uses elements of medieval castles: enclosure, towers and a fortified gate.', 'يستعمل هذا النموذج الخيالي عناصر القلاع في العصور الوسطى: سوراً وأبراجاً وبوابة محصنة.'],
+  },
+  yurt: {
+    name: ['Yourte des steppes', 'Steppe yurt', 'خيمة السهوب الدائرية'],
+    goal: ['Assemble le plancher, les montants et la charpente d’une habitation démontable.', 'Assemble the floor, uprights and frame of a portable home.', 'ركّب الأرضية والقوائم وهيكل مسكن قابل للفك.'],
+    why: ['Les montants portent les perches inclinées du toit. Une couverture de feutre protège la charpente.', 'Uprights support the sloping roof poles. Felt covers protect the frame.', 'تحمل القوائم أعمدة السقف المائلة، ويحمي غطاء اللباد الهيكل.'],
+    fact: ['La yourte, appelée ger en Mongolie, associe une ossature de bois et une couverture de feutre. Ce modèle en simplifie le treillis.', 'The yurt, called ger in Mongolia, combines a wooden frame with felt covers. This model simplifies its lattice.', 'تجمع الخيمة الدائرية، المسماة غير في منغوليا، بين هيكل خشبي وغطاء لبادي. يبسط هذا النموذج شبكتها.'],
+  },
+  gantry: {
+    name: ['Portique de chantier', 'Construction gantry', 'رافعة بوابية للورشة'],
+    goal: ['Monte deux tours contreventées, leur traverse et le chariot de levage.', 'Build two braced towers, their crossbeam and lifting trolley.', 'ركّب برجين مدعمين والعارضة بينهما وعربة الرفع.'],
+    why: ['Les diagonales empêchent le cadre de se déformer. La traverse transmet la charge aux deux tours.', 'Diagonal braces stop the frame from deforming. The crossbeam carries the load to both towers.', 'تمنع الدعامات القطرية تشوه الإطار، وتنقل العارضة الحمل إلى البرجين.'],
+    fact: ['Un portique permet de déplacer une charge dans l’espace libre entre ses supports.', 'A gantry moves a load in the open space between its supports.', 'تتيح الرافعة البوابية تحريك حمولة في المساحة الحرة بين دعامتيها.'],
+  },
+} as const;
+export const HERITAGE_PART_TEXT = {
+  centering: { name: ['Cintre de construction', 'Construction centering', 'قالب بناء القوس'], hint: ['Soutient les pierres jusqu’à la fermeture de l’arche.', 'Support the stones until the arch is closed.', 'ادعم الأحجار حتى يكتمل القوس.'] },
+  voussoir: { name: ['Claveau', 'Voussoir', 'حجر قوسي'], hint: ['Prolonge l’arche depuis son appui vers le sommet.', 'Extend the arch from its support towards the top.', 'أكمل القوس من الركيزة نحو القمة.'] },
+  keystone: { name: ['Clé de voûte', 'Keystone', 'حجر العقد'], hint: ['Ferme l’arche entre les deux demi-arcs.', 'Close the arch between its two halves.', 'أغلق القوس بين نصفيه.'] },
+  spandrel: { name: ['Maçonnerie au-dessus de l’arche', 'Masonry above the arch', 'بناء فوق القوس'], hint: ['Complète l’espace entre le dos de l’arche et le canal.', 'Fill the space between the back of the arch and the channel.', 'أكمل الفراغ بين ظهر القوس والقناة.'] },
+  footJoint: { name: ['Nœud de base', 'Base joint', 'عقدة القاعدة'], hint: ['Ancre les barres de la couronne basse sur le socle.', 'Anchor the lower-ring struts to the foundation.', 'ثبّت قضبان الحلقة السفلى على القاعدة.'] },
+  middleJoint: { name: ['Nœud intermédiaire', 'Middle joint', 'عقدة وسطى'], hint: ['Réunit les deux diagonales qui montent depuis la base.', 'Join the two diagonals rising from the base.', 'اربط الدعامتين القطريتين الصاعدتين من القاعدة.'] },
+  apexJoint: { name: ['Nœud du sommet', 'Apex joint', 'عقدة القمة'], hint: ['Réunit les barres de la dernière couronne.', 'Join the struts of the final ring.', 'اربط قضبان الحلقة الأخيرة.'] },
+  strut: { name: ['Barre de charpente', 'Frame strut', 'قضيب الهيكل'], hint: ['Relie deux nœuds et ferme un côté du triangle.', 'Join two joints and close one side of the triangle.', 'اربط عقدتين وأكمل ضلعاً من المثلث.'] },
+  battery: { name: ['Bloc de batterie', 'Battery pack', 'حزمة بطارية'], hint: ['Stocke l’énergie utilisée quand le soleil manque.', 'Store energy for use when sunlight is unavailable.', 'خزّن الطاقة لاستخدامها عند غياب ضوء الشمس.'] },
+  solar: { name: ['Panneau photovoltaïque', 'Photovoltaic panel', 'لوح كهروضوئي'], hint: ['Transforme la lumière en énergie électrique.', 'Convert light into electrical energy.', 'حوّل الضوء إلى طاقة كهربائية.'] },
+  junction: { name: ['Boîtier collecteur', 'Collector box', 'صندوق تجميع'], hint: ['Regroupe les raccords des panneaux.', 'Bring the panel connections together.', 'اجمع توصيلات الألواح.'] },
+  selector: { name: ['Sélecteur de source', 'Source selector', 'مفتاح اختيار المصدر'], hint: ['Choisit les panneaux ou la batterie pour alimenter la lampe.', 'Choose panels or the battery to power the lamp.', 'اختر الألواح أو البطارية لتغذية المصباح.'] },
+  resistor: { name: ['Résistance de protection', 'Protective resistor', 'مقاومة حماية'], hint: ['Limite le courant dans la LED.', 'Limit current through the LED.', 'حدّ من التيار المار في الصمام الضوئي.'] },
+  lamp: { name: ['LED du phare', 'Beacon LED', 'صمام المنارة الضوئي'], hint: ['Émet de la lumière quand le circuit est alimenté.', 'Emit light when the circuit receives power.', 'أصدر الضوء عندما تتغذى الدائرة بالطاقة.'] },
+  wire: { name: ['Fil de connexion', 'Connection wire', 'سلك توصيل'], hint: ['Relie les deux bornes indiquées par son parcours.', 'Join the two terminals shown by its route.', 'اربط الطرفين اللذين يحددهما مسار السلك.'] },
+  infill: { name: ['Pan de mur', 'Wall panel', 'لوح جدار'], hint: ['Ferme une partie de la façade entre les montants.', 'Fill a section of the facade between the uprights.', 'أغلق جزءاً من الواجهة بين القوائم.'] },
+  bearing: { name: ['Palier de l’arbre', 'Shaft bearing', 'محمل العمود'], hint: ['Maintient l’arbre en place tout en permettant sa rotation.', 'Hold the shaft in place while allowing it to turn.', 'ثبّت العمود مع السماح له بالدوران.'] },
+  shaft: { name: ['Arbre de la roue', 'Wheel shaft', 'عمود العجلة'], hint: ['Transmet la rotation de la roue.', 'Transmit the rotation of the wheel.', 'انقل دوران العجلة.'] },
+  spoke: { name: ['Rayon de roue', 'Wheel spoke', 'شعاع العجلة'], hint: ['Relie le moyeu à la jante de la roue.', 'Connect the hub to the wheel rim.', 'اربط محور العجلة بإطارها.'] },
+  hub: { name: ['Moyeu de la roue à eau', 'Waterwheel hub', 'صرة الناعورة'], hint: ['Fixe les rayons sur l’arbre.', 'Attach the spokes to the shaft.', 'ثبّت الأشعة على العمود.'] },
+  rim: { name: ['Segment de jante', 'Rim segment', 'جزء من إطار العجلة'], hint: ['Relie deux rayons voisins.', 'Join two neighbouring spokes.', 'اربط شعاعين متجاورين.'] },
+  paddle: { name: ['Palette de roue', 'Wheel paddle', 'ريشة العجلة'], hint: ['Reçoit la poussée de l’eau.', 'Receive the push of the water.', 'استقبل دفع الماء.'] },
+  channel: { name: ['Élément du canal', 'Channel section', 'جزء من القناة'], hint: ['Guide l’eau sous la roue.', 'Guide water beneath the wheel.', 'وجّه الماء أسفل العجلة.'] },
+  drum: { name: ['Tambour de colonne', 'Column drum', 'أسطوانة عمود'], hint: ['Aligne le centre de ce tambour avec celui de la pièce du dessous.', 'Align the centre of this drum with the piece beneath it.', 'حاذ مركز هذه الأسطوانة مع مركز القطعة أسفلها.'] },
+  capital: { name: ['Chapiteau', 'Capital', 'تاج عمود'], hint: ['Élargit l’appui au sommet de la colonne.', 'Widen the support at the top of the column.', 'وسّع مساحة الارتكاز في أعلى العمود.'] },
+  roofPanel: { name: ['Pan de toiture', 'Roof slope', 'جزء مائل من السقف'], hint: ['Prend appui sur les poutres sous le toit.', 'Rest on the beams beneath the roof.', 'استند إلى العوارض أسفل السقف.'] },
+  base: { name: ['Fondation', 'Foundation', 'أساس'], hint: ['Pose une base stable pour la structure.', 'Provide a stable base for the structure.', 'ضع قاعدة ثابتة للهيكل.'] },
+  floor: { name: ['Dalle de plancher', 'Floor slab', 'بلاطة أرضية'], hint: ['Relie les appuis pour former le plancher.', 'Connect the supports to form the floor.', 'اربط الدعامات لتكوين الأرضية.'] },
+  wall: { name: ['Bloc de courtine', 'Curtain-wall block', 'كتلة سور'], hint: ['Prolonge le mur sans fermer le passage de la porte.', 'Extend the wall without closing the gateway.', 'أكمل السور دون إغلاق ممر البوابة.'] },
+  tower: { name: ['Étage de tour', 'Tower level', 'طابق برج'], hint: ['Empile cet étage sur le précédent.', 'Stack this level on the one below.', 'ضع هذا الطابق فوق الطابق السابق.'] },
+  battlement: { name: ['Merlon', 'Merlon', 'شرافة'], hint: ['Couronne le sommet du mur ou de la tour.', 'Crown the top of the wall or tower.', 'أكمل قمة السور أو البرج.'] },
+  lintel: { name: ['Linteau de porte', 'Gate lintel', 'عتب البوابة'], hint: ['Relie les jambages en laissant un passage dessous.', 'Join the jambs while leaving a passage beneath.', 'اربط جانبي الباب واترك ممراً أسفل العتب.'] },
+  post: { name: ['Montant porteur', 'Load-bearing upright', 'قائم حامل'], hint: ['Porte la charpente au-dessus du plancher.', 'Support the frame above the floor.', 'احمل الهيكل فوق الأرضية.'] },
+  beam: { name: ['Poutre de liaison', 'Connecting beam', 'عارضة ربط'], hint: ['Relie deux éléments porteurs.', 'Connect two supporting elements.', 'اربط عنصرين حاملين.'] },
+  brace: { name: ['Contreventement', 'Diagonal brace', 'دعامة قطرية'], hint: ['Forme un triangle pour rigidifier le cadre.', 'Form a triangle to stiffen the frame.', 'كوّن مثلثاً لتقوية الإطار.'] },
+  roof: { name: ['Couverture de feutre', 'Felt roof cover', 'غطاء سقف لبادي'], hint: ['Couvre les perches du toit.', 'Cover the roof poles.', 'غطّ أعمدة السقف.'] },
+  pole: { name: ['Perche de toit', 'Roof pole', 'عمود سقف'], hint: ['Relie un montant à la couronne centrale.', 'Join an upright to the central roof ring.', 'اربط القائم بحلقة السقف المركزية.'] },
+  cover: { name: ['Panneau de feutre', 'Felt wall panel', 'لوح جدار لبادي'], hint: ['Protège la paroi entre deux montants.', 'Protect the wall between two uprights.', 'احم الجدار بين قائمين.'] },
+  trolley: { name: ['Chariot de levage', 'Lifting trolley', 'عربة الرفع'], hint: ['Prend appui sur la traverse du portique.', 'Ride on the gantry crossbeam.', 'استند إلى عارضة الرافعة.'] },
+  winch: { name: ['Tambour du treuil', 'Winch drum', 'أسطوانة الونش'], hint: ['Porte le câble de levage.', 'Carry the lifting cable.', 'احمل كابل الرفع.'] },
+  cable: { name: ['Câble de levage', 'Lifting cable', 'كابل الرفع'], hint: ['Relie le treuil à la charge.', 'Connect the winch to the load.', 'اربط الونش بالحمولة.'] },
+  load: { name: ['Charge du portique', 'Gantry load', 'حمولة الرافعة'], hint: ['Se suspend au câble de levage.', 'Hang from the lifting cable.', 'تعلق بكابل الرفع.'] },
+} as const;
+
+export const HERITAGE_QUIZ_TEXT = {
+  prompt: ['Quel principe de construction décrit ce modèle historique ?', 'Which construction principle describes this historical model?', 'أي مبدأ بناء يصف هذا النموذج التاريخي؟'],
+  distractors: [
+    ['Le toit tient en l’air sans aucun appui.', 'The roof stays in the air without any support.', 'يبقى السقف في الهواء دون أي دعامة.'],
+    ['Les murs reposent sur le toit au lieu des fondations.', 'The walls rest on the roof instead of the foundations.', 'ترتكز الجدران على السقف بدلاً من الأساسات.'],
+  ],
+} as const;
+
+export const WATERMILL_TRIAL_TEXT = {
+  title: ['Alimente la roue à eau', 'Power the waterwheel', 'شغّل الناعورة بالماء'],
+  off: ['Vanne fermée : la roue reste immobile.', 'Gate closed: the wheel stays still.', 'البوابة مغلقة: العجلة ثابتة.'],
+  low: ['Petit débit : la roue tourne lentement.', 'Low flow: the wheel turns slowly.', 'تدفق قليل: تدور العجلة ببطء.'],
+  high: ['Grand débit : la roue tourne plus vite.', 'High flow: the wheel turns faster.', 'تدفق كبير: تدور العجلة أسرع.'],
+  stop: ['Fermer l’eau', 'Close the water', 'أغلق الماء'],
+  slow: ['Petit débit', 'Low flow', 'تدفق قليل'],
+  fast: ['Grand débit', 'High flow', 'تدفق كبير'],
+} as const;
+
+export const HERITAGE_JUNIOR_TEXT = {
+  tier: ['Premiers bâtisseurs', 'First builders', 'البنّاؤون المبتدئون'],
+  age: ['6–8 ans · montage guidé', 'Ages 6–8 · guided build', 'من 6 إلى 8 سنوات · تركيب موجّه'],
+} as const;
+
+export const BEACON_TRIAL_TEXT = {
+  title: ['Choisis l’énergie du phare', 'Choose the beacon’s energy', 'اختر طاقة المنارة'],
+  source: ['Source', 'Source', 'المصدر'], solar: ['Panneaux', 'Panels', 'الألواح'], battery: ['Batterie', 'Battery', 'البطارية'],
+  light: ['Lumière sur les panneaux', 'Light on the panels', 'الضوء على الألواح'], day: ['Jour', 'Day', 'نهار'], night: ['Nuit', 'Night', 'ليل'],
+  charge: ['Énergie dans la batterie', 'Energy in the battery', 'طاقة البطارية'], full: ['Chargée', 'Charged', 'مشحونة'], empty: ['Vide', 'Empty', 'فارغة'],
+  touch: ['Tu peux aussi toucher le sélecteur sur le plateau pour changer de source.', 'You can also tap the selector on the workbench to change source.', 'يمكنك أيضاً لمس مفتاح الاختيار على المنصة لتغيير المصدر.'],
+  solarOn: ['La lumière alimente les panneaux : la LED s’allume.', 'Light powers the panels: the LED lights up.', 'يغذي الضوء الألواح فيضيء الصمام.'],
+  solarOff: ['Sans lumière, les panneaux ne peuvent pas alimenter la LED.', 'Without light, the panels cannot power the LED.', 'لا تستطيع الألواح تشغيل الصمام دون ضوء.'],
+  batteryOn: ['La batterie chargée alimente la LED, même la nuit.', 'The charged battery powers the LED, even at night.', 'تشغّل البطارية المشحونة الصمام حتى في الليل.'],
+  batteryOff: ['La batterie est vide : choisis une source qui contient de l’énergie.', 'The battery is empty: choose a source that contains energy.', 'البطارية فارغة: اختر مصدراً يحتوي على طاقة.'],
+} as const;
+
+export const QUIZ_BUILD_PROMPTS = {
+  fr: {
+    foundation: (name: string) => `Pour assembler « ${name} », quelle pièce porteuse de base faut-il installer en premier ?`,
+    role: (role: string) => `Quelle pièce assure ce rôle dans le modèle : « ${role} » ?`,
+  },
+  en: {
+    foundation: (name: string) => `When building "${name}", which foundational support part must be installed first?`,
+    role: (role: string) => `Which component has this role in the model: "${role}"?`,
+  },
+  ar: {
+    foundation: (name: string) => `في نموذج «${name}»، ما القطعة الأساسية التي يجب تثبيتها أولاً لحمل بقية الأجزاء؟`,
+    role: (role: string) => `أي قطعة تؤدي هذا الدور في النموذج: «${role}»؟`,
+  },
+};
+
+export const AQUEDUCT_TRIAL_TEXT = {
+  touch: ['Tu peux aussi toucher un cintre en bois pour retirer les cintres.', 'You can also tap a wooden centering to remove the centering.', 'يمكنك أيضاً لمس قالب خشبي لإزالة القوالب.'],
+  title: ['Libère les trois arches', 'Release the three arches', 'حرّر الأقواس الثلاثة'],
+  supported: ['Les cintres portent encore les arches. Toutes les clés sont maintenant en place.', 'The centering still supports the arches. All keystones are now in place.', 'ما زالت القوالب تدعم الأقواس، وقد وُضعت جميع أحجار العقد.'],
+  released: ['Les arches fermées transmettent les charges aux piles. Les cintres peuvent être retirés.', 'The completed arches carry loads to the piers. The centering can be removed.', 'تنقل الأقواس المكتملة الأحمال إلى الركائز ويمكن إزالة القوالب.'],
+  flowing: ['L’eau suit le canal porté par les arches.', 'Water follows the channel carried by the arches.', 'يتبع الماء القناة التي تحملها الأقواس.'],
+  remove: ['Retirer les cintres', 'Remove the centering', 'أزل القوالب'],
+  restore: ['Remettre les cintres', 'Replace the centering', 'أعد القوالب'],
+  water: ['Faire passer l’eau', 'Let the water through', 'مرّر الماء'],
+  stop: ['Arrêter l’eau', 'Stop the water', 'أوقف الماء'],
+} as const;

@@ -13,9 +13,9 @@ const VALENCE: Partial<Record<PartShapeKind, number>> = {
 };
 
 /**
- * Validates that every placed atom in a chemistry blueprint has its declared
- * number of bonds satisfied by the placed bond parts connected to it via dependsOn.
- * Non-chemistry blueprints always pass.
+ * All pieces must be placed. Covalent experiments validate both endpoints and
+ * bond order, including over-bonded atoms. Legacy fixtures use dependencies.
+ * Ionic lattices and apparatus do not use covalent valence rules.
  */
 export function validateValence(
   blueprint: VehicleBlueprint,
@@ -25,7 +25,10 @@ export function validateValence(
     return { isComplete: true, unsatisfiedAtoms: [] };
   }
 
-  const unsatisfied: string[] = [];
+  const unsatisfied: string[] = blueprint.parts.filter((p) => !placedPartIds.has(p.id)).map((p) => p.id);
+  if (blueprint.experiment && blueprint.experiment.kind !== 'molecule') {
+    return { isComplete: unsatisfied.length === 0, unsatisfiedAtoms: unsatisfied };
+  }
   const bondShapes = new Set<PartShapeKind>([PartShapeKind.BOND_SINGLE, PartShapeKind.BOND_DOUBLE]);
   const bondParts = blueprint.parts.filter((p) => bondShapes.has(p.shape));
 
@@ -34,14 +37,24 @@ export function validateValence(
     const required = VALENCE[part.shape];
     if (required === undefined) continue;
     // Count placed bonds adjacent in either direction of the dependency graph
-    const satisfiedBonds = bondParts.filter(
+    const adjacentBonds = bondParts.filter(
       (bond) =>
         placedPartIds.has(bond.id) &&
-        (bond.dependsOn.includes(part.id) || part.dependsOn.includes(bond.id)),
-    ).length;
-    if (satisfiedBonds < required) unsatisfied.push(part.id);
+        (bond.bond ? bond.bond.atoms.includes(part.id) : bond.dependsOn.includes(part.id) || part.dependsOn.includes(bond.id)),
+    );
+    const satisfiedBonds = adjacentBonds.reduce((sum, bond) => sum + (bond.shape === PartShapeKind.BOND_DOUBLE ? 2 : 1), 0);
+    if (satisfiedBonds !== required) unsatisfied.push(part.id);
   }
 
+  for (const bond of bondParts) {
+    if (!bond.bond) {
+      if (blueprint.experiment?.kind === 'molecule') unsatisfied.push(bond.id);
+      continue;
+    }
+    const [a, b] = bond.bond.atoms;
+    if (a === b || ![a, b].every((id) => placedPartIds.has(id) && blueprint.parts.some((p) => p.id === id && VALENCE[p.shape] !== undefined))
+      || bond.bond.order !== (bond.shape === PartShapeKind.BOND_DOUBLE ? 2 : 1)) unsatisfied.push(bond.id);
+  }
   return { isComplete: unsatisfied.length === 0, unsatisfiedAtoms: [...new Set(unsatisfied)] };
 }
 

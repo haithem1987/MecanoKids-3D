@@ -114,7 +114,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <>
-      <header className="relative z-20 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 bg-gradient-to-b from-sky-50 to-white border-b-2 border-sky-100">
+      <header className="relative z-30 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 bg-gradient-to-b from-sky-50 to-white border-b-2 border-sky-100">
         {/* Zone 1: Brand Wordmark */}
         <button
           type="button"
@@ -128,7 +128,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         <nav
           data-tour="topbar-styles"
           aria-label={t.navAriaLabel}
-          className="hidden xl:flex items-center gap-5 text-sm font-medium text-slate-600"
+          className="hidden 2xl:flex items-center gap-5 text-sm font-medium text-slate-600"
         >
           <button
             type="button"
@@ -392,12 +392,12 @@ export const TopBar: React.FC<TopBarProps> = ({
             )}
           </div>
 
-          {/* Hamburger nav menu — visible below xl where Zone 2 nav is hidden */}
-          <div ref={navMenuRef} className="relative xl:hidden">
+          {/* Compact navigation leaves room for profile and language controls on tablets. */}
+          <div ref={navMenuRef} className="relative 2xl:hidden">
             <button
               type="button"
               onClick={() => setNavMenuOpen((o) => !o)}
-              aria-label="Menu navigation"
+              aria-label={t.navAriaLabel}
               aria-expanded={navMenuOpen}
               className="inline-flex items-center justify-center w-10 h-10 text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
             >
@@ -445,6 +445,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             type="button"
             data-tour="mascot-cta"
             onClick={onOpenMechanicGuide}
+            aria-label={t.hintBtn}
             className="inline-flex items-center justify-center p-2.5 text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors shrink-0 min-h-[40px] min-w-[40px] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
           >
             <Lightbulb className="w-4 h-4 shrink-0" />

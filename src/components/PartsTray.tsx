@@ -1,18 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  AlertTriangle,
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  Gem,
-  Lock,
-  PanelBottom,
-  PanelLeft,
-  PanelRight,
-  Wrench,
-} from 'lucide-react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { AlertTriangle, Check, Gem, Lock, Wrench } from 'lucide-react';
 import { applyLiveryToPartSpec } from '../data/liveries';
 import { getPartShapeSvg } from '../utils/partShape';
 import { UI_TRANSLATIONS } from '../i18n/translations';
@@ -21,16 +8,7 @@ import {
   LiveryPresetId,
   PartSpec,
   VehicleBlueprint,
-  VisualStyleMode,
 } from '../types/game';
-import { isLowEndDevice, PartPreview3D } from './PartPreview3D';
-
-const STYLE_OPTS = [
-  { mode: VisualStyleMode.WOOD,     emoji: '🪵', title: 'Bois / Wood / خشب' },
-  { mode: VisualStyleMode.BLOCKS,   emoji: '🧱', title: 'Blocs / Blocks / مكعبات' },
-  { mode: VisualStyleMode.REALISTIC, emoji: '✨', title: 'Réaliste / Realistic / واقعي' },
-  { mode: VisualStyleMode.COMICS,   emoji: '💥', title: 'Comics / Comics / كوميكس' },
-];
 
 export type TrayPosition = 'bottom' | 'left' | 'right';
 
@@ -43,16 +21,9 @@ interface PartsTrayProps {
   stagedPartId: string | null;
   activeDragPartId: string | null;
   hintPartId: string | null;
-  visible: boolean;
   position: TrayPosition;
   onStartPartDrag: (partId: string) => void;
   onClickPartCard: (partId: string) => void;
-  onToggleVisible: () => void;
-  onChangePosition: (pos: TrayPosition) => void;
-  visualStyle: VisualStyleMode;
-  onSelectStyle: (style: VisualStyleMode) => void;
-  /** Called when the pointer leaves the tray while a drag is active — collapses the tray without interrupting the gesture */
-  onPartDraggedOut?: () => void;
 }
 
 export const PartsTray: React.FC<PartsTrayProps> = ({
@@ -64,35 +35,16 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   stagedPartId,
   activeDragPartId,
   hintPartId,
-  visible,
   position,
   onStartPartDrag,
   onClickPartCard,
-  onToggleVisible,
-  onChangePosition,
-  visualStyle,
-  onSelectStyle,
-  onPartDraggedOut,
 }) => {
   const t = UI_TRANSLATIONS[language];
   const placedSet = new Set(placedPartIds);
   const faultySet = new Set(faultyPartIds);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [previewPart, setPreviewPart] = useState<PartSpec | null>(null);
-  const canPreview = !isLowEndDevice();
-  const previewRef = useRef<HTMLDivElement>(null);
-
-  // Close preview on outside click
-  useEffect(() => {
-    if (!previewPart) return;
-    const handleClick = (e: MouseEvent) => {
-      if (previewRef.current && !previewRef.current.contains(e.target as Node)) {
-        setPreviewPart(null);
-      }
-    };
-    document.addEventListener('pointerdown', handleClick);
-    return () => document.removeEventListener('pointerdown', handleClick);
-  }, [previewPart]);
+  const trayId = useId();
+  const [readyOnly, setReadyOnly] = useState(true);
 
   const getMissingDepName = (part: PartSpec): string | null => {
     for (const depId of part.dependsOn) {
@@ -103,91 +55,27 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
     return null;
   };
 
-  // Scroll to first available part when tray reopens
+  const firstAvailableId = blueprint.parts.find(
+    (part) => !placedSet.has(part.id) && !faultySet.has(part.id) && getMissingDepName(part) === null,
+  )?.id;
+
+  // Follow the next available piece without reacting to unrelated parent renders.
   useEffect(() => {
-    if (!visible || !scrollRef.current) return;
-    const firstAvailable = blueprint.parts.find(
-      (p) => !placedSet.has(p.id) && !faultySet.has(p.id) && getMissingDepName(p) === null,
-    );
-    if (!firstAvailable) return;
+    if (!scrollRef.current || !firstAvailableId) return;
     const el = scrollRef.current.querySelector<HTMLElement>(
-      `[data-part-id="${firstAvailable.id}"]`,
+      `[data-part-id="${firstAvailableId}"]`,
     );
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+      el.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
+  }, [position, blueprint.id, firstAvailableId]);
 
-  const isVertical = position === 'left' || position === 'right';
-
-  const stylePicker = (
-    <div className="flex items-center gap-0.5 shrink-0">
-      {STYLE_OPTS.map(({ mode, emoji, title }) => (
-        <button
-          key={mode}
-          type="button"
-          onClick={() => onSelectStyle(mode)}
-          title={title}
-          className={`flex items-center justify-center rounded-lg transition-colors cursor-pointer text-sm min-h-[32px] min-w-[32px] ${
-            visualStyle === mode ? 'bg-sky-100' : 'hover:bg-slate-100'
-          }`}
-        >
-          {emoji}
-        </button>
-      ))}
-    </div>
-  );
-
-  const positionPicker = (
-    <div className="flex items-center gap-1 shrink-0">
-      {(['bottom', 'left', 'right'] as TrayPosition[]).map((pos) => {
-        const Icon = pos === 'bottom' ? PanelBottom : pos === 'left' ? PanelLeft : PanelRight;
-        return (
-          <button
-            key={pos}
-            type="button"
-            onClick={() => onChangePosition(pos)}
-            title={pos}
-            className={`p-1 rounded transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center ${
-              position === pos
-                ? 'bg-sky-100 text-sky-700'
-                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            <Icon className="w-3.5 h-3.5 shrink-0" />
-          </button>
-        );
-      })}
-    </div>
-  );
-
-  const toggleButton = (
-    <button
-      type="button"
-      onClick={onToggleVisible}
-      className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer min-h-[32px]"
-      title={visible ? t.collapseWorkbench : t.openWorkbench(placedPartIds.length, blueprint.parts.length)}
-    >
-      {isVertical ? (
-        visible
-          ? position === 'left'
-            ? <ChevronLeft className="w-3.5 h-3.5 shrink-0" />
-            : <ChevronRight className="w-3.5 h-3.5 shrink-0" />
-          : position === 'left'
-            ? <ChevronRight className="w-3.5 h-3.5 shrink-0" />
-            : <ChevronLeft className="w-3.5 h-3.5 shrink-0" />
-      ) : visible ? (
-        <ChevronDown className="w-3.5 h-3.5 shrink-0" />
-      ) : (
-        <ChevronUp className="w-3.5 h-3.5 shrink-0" />
-      )}
-    </button>
-  );
+  const isVertical = true;
 
   const unplaced = blueprint.parts.filter((p) => !placedSet.has(p.id));
   const placed = blueprint.parts.filter((p) => placedSet.has(p.id));
-  const sorted = [...unplaced, ...placed];
+  const sorted = [...unplaced.filter(p => getMissingDepName(p) === null), ...unplaced.filter(p => getMissingDepName(p) !== null), ...placed];
 
   const partCards = sorted.map((part, sortedIdx) => {
     const originalIdx = blueprint.parts.indexOf(part);
@@ -212,6 +100,8 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         key={part.id}
         type="button"
         data-part-id={part.id}
+        hidden={readyOnly && isLocked}
+        style={{ display: readyOnly && isLocked ? 'none' : undefined }}
         disabled={isPlaced}
         onPointerDown={(e) => {
           if (isPlaced || isFaultyMounted) return;
@@ -221,12 +111,10 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         }}
         onClick={() => {
           if (!isPlaced) onClickPartCard(part.id);
-          if (canPreview && !isPlaced) setPreviewPart(part);
-        }}
-        onPointerEnter={() => {
-          if (canPreview && !isPlaced) setPreviewPart(part);
         }}
         title={`${part.name} — ${part.roleHint}`}
+        aria-label={`${String(originalIdx + 1).padStart(2, '0')} ${part.name}. ${part.roleHint.trim().replace(/[.!?؟]+$/, '')}. ${isPlaced ? t.partStatusPlaced : isFaultyMounted ? t.diagnosticBtn : isLocked ? t.partStatusLockedAfter(missingDep ?? '') : t.partStatusReady}`}
+        aria-pressed={!isPlaced && isSelected}
         className={`group shrink-0 text-start p-2.5 rounded-lg border transition-transform duration-150 flex flex-col justify-between min-h-[80px] min-w-[80px] ${
           isVertical ? 'w-full' : 'w-36'
         } ${
@@ -259,14 +147,14 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
             <span
               className="shrink-0"
               style={{ width: 40, height: 40 }}
-              dangerouslySetInnerHTML={{ __html: getPartShapeSvg(part.roleHint, paintedSpec.primaryColor) }}
+              dangerouslySetInnerHTML={{ __html: getPartShapeSvg(part.roleHint, paintedSpec.primaryColor, part) }}
               aria-hidden="true"
             />
           )}
         </div>
 
         <div className="mt-1">
-          <p className="text-xs font-semibold text-slate-900 truncate">{part.name}</p>
+          <p className="text-xs font-semibold text-slate-900 line-clamp-2 min-h-[2rem] break-words">{part.name}</p>
           <div className="mt-0.5 flex items-center gap-1 text-[11px]">
             {isPlaced ? (
               <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
@@ -295,97 +183,8 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
     );
   });
 
-  if (isVertical) {
-    const side = position === 'left' ? 'left-3' : 'right-3';
-    return (
-      <div
-        ref={previewRef}
-        className={`pointer-events-none fixed ${side} top-1/2 -translate-y-1/2 z-20 flex ${
-          position === 'left' ? 'flex-row' : 'flex-row-reverse'
-        } items-center gap-1`}
-      >
-        {/* Toggle tab: chevron + style picker + position picker */}
-        <div className="pointer-events-auto flex flex-col items-center bg-white border border-slate-200 rounded-lg shadow-sm py-1 gap-0.5">
-          {toggleButton}
-          <div className="w-6 h-px bg-slate-100 my-0.5" />
-          <div className="flex flex-col items-center gap-0.5 px-0.5">
-            {STYLE_OPTS.map(({ mode, emoji, title }) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => onSelectStyle(mode)}
-                title={title}
-                className={`flex items-center justify-center rounded-lg text-sm transition-colors cursor-pointer min-h-[32px] min-w-[32px] ${
-                  visualStyle === mode ? 'bg-sky-100' : 'hover:bg-slate-100'
-                }`}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
-          <div className="w-6 h-px bg-slate-100 my-0.5" />
-          {positionPicker}
-        </div>
-
-        {/* Cards panel */}
-        {visible && (
-          <div className="pointer-events-auto flex flex-col gap-2">
-            {canPreview && previewPart && (
-              <div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden" style={{ width: 160, height: 160 }}>
-                <PartPreview3D part={previewPart} size={160} />
-              </div>
-            )}
-            <div
-              ref={scrollRef}
-              className="flex flex-col gap-2 p-2 bg-white border border-slate-200 rounded-xl shadow-sm overflow-y-auto max-h-[70vh] select-none"
-              style={{ width: 160 }}
-              onPointerLeave={() => { if (activeDragPartId) onPartDraggedOut?.(); }}
-            >
-              {partCards}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Bottom position: horizontal strip rendered inline (inside BottomPartsDock)
-  return (
-    <div data-tour="parts-tray" className="flex flex-col gap-1.5" ref={previewRef}>
-      {/* Header row: toggle + style picker + position picker */}
-      <div className="flex items-center justify-between px-0.5">
-        <div className="flex items-center gap-1">
-          {toggleButton}
-          <span className="text-xs text-slate-500 font-medium">
-            {t.partsCounter(placedPartIds.length, blueprint.parts.length)}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          {stylePicker}
-          <div className="w-px h-5 bg-slate-200" />
-          {positionPicker}
-        </div>
-      </div>
-
-      {/* 3D preview panel */}
-      {canPreview && previewPart && (
-        <div className="flex justify-start ps-1">
-          <div className="rounded-xl border border-slate-200 bg-white shadow-md overflow-hidden" style={{ width: 200, height: 200 }}>
-            <PartPreview3D part={previewPart} size={200} />
-          </div>
-        </div>
-      )}
-
-      {/* Cards row */}
-      {visible && (
-        <div
-          ref={scrollRef}
-          className="flex items-stretch gap-2.5 overflow-x-auto pb-1 select-none"
-          onPointerLeave={() => { if (activeDragPartId) onPartDraggedOut?.(); }}
-        >
-          {partCards}
-        </div>
-      )}
-    </div>
-  );
+  return <aside data-parts-palette data-tour="parts-tray" className={`floating-parts pointer-events-auto absolute top-2 bottom-2 z-20 flex min-h-0 flex-col gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1 shadow-md ${position==='right'?'end-2':'start-2'}`}>
+    <button type="button" aria-label={readyOnly?t.trayShowAll:t.trayShowReady} aria-pressed={readyOnly} onClick={()=>setReadyOnly(value=>!value)} className="min-h-[64px] min-w-[64px] shrink-0 rounded-xl bg-sky-50 px-1 text-xs font-semibold text-sky-950">{readyOnly?t.trayShowAll:t.trayShowReady}<span className="block">{t.partsCounter(placedPartIds.length,blueprint.parts.length)}</span></button>
+    <div ref={scrollRef} id={trayId} className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain">{partCards}</div>
+  </aside>;
 };

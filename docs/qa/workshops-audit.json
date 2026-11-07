@@ -1,0 +1,6935 @@
+{
+  "summary": {
+    "models": 124,
+    "parts": 1064,
+    "uniqueIds": 124,
+    "structuralErrors": [],
+    "semanticFailures": [],
+    "categories": [
+      {
+        "category": "voiture",
+        "models": 21,
+        "parts": 196,
+        "gapCandidates": 9,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 98
+      },
+      {
+        "category": "bateau",
+        "models": 21,
+        "parts": 190,
+        "gapCandidates": 3,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 72
+      },
+      {
+        "category": "avion",
+        "models": 21,
+        "parts": 196,
+        "gapCandidates": 2,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 80
+      },
+      {
+        "category": "chantier",
+        "models": 21,
+        "parts": 183,
+        "gapCandidates": 8,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 90
+      },
+      {
+        "category": "espace",
+        "models": 20,
+        "parts": 164,
+        "gapCandidates": 0,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 90
+      },
+      {
+        "category": "aerospatiale",
+        "models": 5,
+        "parts": 41,
+        "gapCandidates": 0,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 61
+      },
+      {
+        "category": "electronique",
+        "models": 5,
+        "parts": 40,
+        "gapCandidates": 0,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 1,
+        "arabicMissingNames": 0,
+        "maxMeshes": 24
+      },
+      {
+        "category": "chimie",
+        "models": 5,
+        "parts": 28,
+        "gapCandidates": 0,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 20
+      },
+      {
+        "category": "physique",
+        "models": 5,
+        "parts": 26,
+        "gapCandidates": 1,
+        "englishNameUnchanged": 0,
+        "englishPartsUnchanged": 0,
+        "arabicMissingNames": 0,
+        "maxMeshes": 11
+      }
+    ]
+  },
+  "models": [
+    {
+      "id": "car-solar-city",
+      "name": "Citadine Solaire",
+      "category": "voiture",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 40,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-explorer-sail",
+      "name": "Voilier d'Exploration",
+      "category": "bateau",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 20,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "sail",
+          "shape": "boat_sail"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-aeroclub",
+      "name": "Monomoteur d'Aéroclub",
+      "category": "avion",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 33,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-mini-excavator",
+      "name": "Mini-Pelleteuse de Jardin",
+      "category": "chantier",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 39,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "tracks",
+          "shape": "caterpillar_track"
+        },
+        {
+          "id": "turret-deck",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "operator-cab",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "boom-arm",
+          "shape": "excavator_arm"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-weather-cubesat",
+      "name": "Satellite Météo Orbital",
+      "category": "espace",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 19,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "bus-core",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "solar-wings",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "main-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "ion-thruster",
+          "shape": "rocket_nozzle_cluster"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "aero-sounding-rocket",
+      "name": "Fusée-sonde météorologique",
+      "category": "aerospatiale",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 17,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "elec-led-circuit",
+      "name": "Circuit LED",
+      "category": "electronique",
+      "tier": 1,
+      "parts": 7,
+      "meshes": 14,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "board",
+          "shape": "breadboard"
+        },
+        {
+          "id": "battery",
+          "shape": "battery_cell"
+        },
+        {
+          "id": "resistor",
+          "shape": "resistor"
+        },
+        {
+          "id": "led",
+          "shape": "led_component"
+        },
+        {
+          "id": "wire-0",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-1",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-2",
+          "shape": "wire_jumper"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": false,
+      "fullValence": null
+    },
+    {
+      "id": "chem-water-molecule",
+      "name": "Molécule d’eau",
+      "category": "chimie",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 6,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "atom-central",
+          "shape": "atom_oxygen"
+        },
+        {
+          "id": "bond-left",
+          "shape": "bond_single"
+        },
+        {
+          "id": "atom-left",
+          "shape": "atom_hydrogen"
+        },
+        {
+          "id": "bond-right",
+          "shape": "bond_single"
+        },
+        {
+          "id": "atom-right",
+          "shape": "atom_hydrogen"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": {
+        "isComplete": true,
+        "unsatisfiedAtoms": []
+      }
+    },
+    {
+      "id": "phys-pendulum",
+      "name": "Pendule simple",
+      "category": "physique",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 7,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "frame",
+          "shape": "support_frame"
+        },
+        {
+          "id": "rod",
+          "shape": "pendulum_rod"
+        },
+        {
+          "id": "bob",
+          "shape": "pendulum_bob"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-taxi-metro",
+      "name": "Taxi Métropole Électrique",
+      "category": "voiture",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 40,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-lagoon-catamaran",
+      "name": "Catamaran du Lagon",
+      "category": "bateau",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 32,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "twin-pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "bridge-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "waterjets",
+          "shape": "boat_propulsion"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-bush-cub",
+      "name": "Avion de Brousse",
+      "category": "avion",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 33,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail-unit",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-farm-tractor-green",
+      "name": "Tracteur du Verger",
+      "category": "chantier",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 38,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "agri-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "giant-rear-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "tractor-cab",
+          "shape": "car_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-lunar-mini-rover",
+      "name": "Petit Rover Lunaire",
+      "category": "espace",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 37,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "warm-box",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "mast-cam",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-dune-buggy",
+      "name": "Buggy des Dunes",
+      "category": "voiture",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 38,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-harbor-pilot",
+      "name": "Vedette du Pilote Maritime",
+      "category": "bateau",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 26,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "propulsion",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "main-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "bridge",
+          "shape": "boat_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-island-floatplane",
+      "name": "Hydravion des Îles",
+      "category": "avion",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 28,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "lower-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-warehouse-forklift",
+      "name": "Chariot Élévateur d’Entrepôt",
+      "category": "chantier",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 43,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base-chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-load-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-steer-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "safety-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "lift-mast",
+          "shape": "forklift_mast"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-sounding-rocket",
+      "name": "Fusée-Sonde Scientifique",
+      "category": "espace",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 17,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-mini-van-post",
+      "name": "Fourgonnette du Facteur",
+      "category": "voiture",
+      "tier": 1,
+      "parts": 5,
+      "meshes": 51,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "cargo-body",
+          "shape": "fire_tank"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-coral-mini-sub",
+      "name": "Mini-Sous-Marin Corail",
+      "category": "bateau",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 21,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pressure-hull",
+          "shape": "sub_hull"
+        },
+        {
+          "id": "conning-sail",
+          "shape": "conning_tower"
+        },
+        {
+          "id": "stern-fins",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "silent-prop",
+          "shape": "plane_propeller"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-park-quadcopter",
+      "name": "Quadricoptère Photo",
+      "category": "avion",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 21,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "skids",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "core-cabin",
+          "shape": "heli_cabin"
+        },
+        {
+          "id": "rotor-mast",
+          "shape": "heli_rotor_mast"
+        },
+        {
+          "id": "main-rotor",
+          "shape": "heli_main_blades"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-road-compactor",
+      "name": "Rouleau Compresseur Routier",
+      "category": "chantier",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 33,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-roller-or-tracks",
+          "shape": "roller_drum"
+        },
+        {
+          "id": "rear-drive",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "high-cab",
+          "shape": "car_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-glider-orbiter",
+      "name": "Mini-Navette Orbitale",
+      "category": "espace",
+      "tier": 1,
+      "parts": 4,
+      "meshes": 17,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "orbiter-body",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "heat-shield-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "vertical-stabilizer",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-thrusters",
+          "shape": "rocket_nozzle_cluster"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-fire-truck",
+      "name": "Camion de Pompiers",
+      "category": "voiture",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 71,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "tank",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "ladder",
+          "shape": "fire_ladder"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-port-tug",
+      "name": "Remorqueur Portuaire",
+      "category": "bateau",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 36,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "propulsion",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "fenders",
+          "shape": "boat_fenders"
+        },
+        {
+          "id": "wheelhouse",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "chimney",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "radar",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-acro-biplane",
+      "name": "Biplan Acrobatique",
+      "category": "avion",
+      "tier": 2,
+      "parts": 8,
+      "meshes": 54,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "radial-engine",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "lower-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "struts",
+          "shape": "biplane_struts"
+        },
+        {
+          "id": "upper-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "crane-tower",
+      "name": "Grue à Tour de Chantier",
+      "category": "chantier",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 48,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "mast",
+          "shape": "forklift_mast"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "jib",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "counter-jib",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "ballast-block",
+          "shape": "engine_block"
+        },
+        {
+          "id": "hook",
+          "shape": "heli_winch"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-mars-explorer-rover",
+      "name": "Rover Géologue Martien",
+      "category": "espace",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 50,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "warm-box",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "mast-cam",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "mid-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "solar-deck",
+          "shape": "solar_panel_array"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "aero-leo-cubesat",
+      "name": "CubeSat scientifique LEO",
+      "category": "aerospatiale",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 26,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "bus-core",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "solar-wings",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "main-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "ion-thruster",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "optical-camera",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "sunshield",
+          "shape": "delta_wing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "elec-motor-fan",
+      "name": "Ventilateur à moteur",
+      "category": "electronique",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 14,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "board",
+          "shape": "breadboard"
+        },
+        {
+          "id": "battery",
+          "shape": "battery_cell"
+        },
+        {
+          "id": "motor",
+          "shape": "micro_motor"
+        },
+        {
+          "id": "fan",
+          "shape": "fan_blades"
+        },
+        {
+          "id": "wire-0",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-1",
+          "shape": "wire_jumper"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": false,
+      "fullValence": null
+    },
+    {
+      "id": "chem-co2-molecule",
+      "name": "Molécule CO₂",
+      "category": "chimie",
+      "tier": 2,
+      "parts": 5,
+      "meshes": 10,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "atom-central",
+          "shape": "atom_carbon"
+        },
+        {
+          "id": "bond-left",
+          "shape": "bond_double"
+        },
+        {
+          "id": "atom-left",
+          "shape": "atom_oxygen"
+        },
+        {
+          "id": "bond-right",
+          "shape": "bond_double"
+        },
+        {
+          "id": "atom-right",
+          "shape": "atom_oxygen"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": {
+        "isComplete": true,
+        "unsatisfiedAtoms": []
+      }
+    },
+    {
+      "id": "phys-lever-class1",
+      "name": "Levier du premier ordre",
+      "category": "physique",
+      "tier": 2,
+      "parts": 5,
+      "meshes": 6,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "pivot",
+          "shape": "fulcrum"
+        },
+        {
+          "id": "lever",
+          "shape": "lever_arm"
+        },
+        {
+          "id": "load",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "counterweight",
+          "shape": "apparatus_base"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "train-steam-loco",
+      "name": "Locomotive à Vapeur Pacifique",
+      "category": "voiture",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 45,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "cab",
+          "dependency": "boiler",
+          "distance": 0.138
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "boiler",
+          "shape": "train_boiler"
+        },
+        {
+          "id": "drive-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "chimney",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "tender",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "cow-catcher",
+          "shape": "bulldozer_blade"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-speedboat",
+      "name": "Vedette Hors-Bord",
+      "category": "bateau",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 31,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "propeller",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "windshield",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "nav-light",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-twin-coastal",
+      "name": "Bimoteur Côtier",
+      "category": "avion",
+      "tier": 2,
+      "parts": 8,
+      "meshes": 52,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "left-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "right-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "tail",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "left-prop",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "right-prop",
+          "shape": "plane_propeller"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-crawler-bulldozer",
+      "name": "Bulldozer à Lame Lourde",
+      "category": "chantier",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 42,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-roller-or-tracks",
+          "shape": "roller_drum"
+        },
+        {
+          "id": "rear-drive",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "high-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "push-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "engine-hood",
+          "shape": "engine_block"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-gps-constellation-sat",
+      "name": "Satellite de Navigation Galileo",
+      "category": "espace",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 26,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "bus-core",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "solar-wings",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "main-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "ion-thruster",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "optical-camera",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "sunshield",
+          "shape": "delta_wing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-alpine-ambulance",
+      "name": "Ambulance Secours Alpin",
+      "category": "voiture",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 68,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "cargo-body",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "diesel-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "mid-axle",
+          "shape": "wheel_axle"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-island-ferry",
+      "name": "Ferry Transbordeur",
+      "category": "bateau",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 36,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "propulsion",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "main-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "bridge",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "funnel",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "radar-tower",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "bow-fenders",
+          "shape": "boat_fenders"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-twin-commuter",
+      "name": "Avion Régional Turboprop",
+      "category": "avion",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 46,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail-unit",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "nose-engine",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "wing-struts",
+          "shape": "biplane_struts"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-concrete-mixer-rig",
+      "name": "Engin Malaxeur de Chantier",
+      "category": "chantier",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 51,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-header",
+          "dependency": "front-wheels",
+          "distance": 0.161
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "agri-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "giant-rear-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "tractor-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "hood-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-header",
+          "shape": "harvester_header"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-orbital-supply-launcher",
+      "name": "Lanceur Orbital à Deux Étages",
+      "category": "espace",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 26,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        },
+        {
+          "id": "second-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "side-boosters",
+          "shape": "f1_sidepods"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-metro-tramway",
+      "name": "Tramway Urbain Moderne",
+      "category": "voiture",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 55,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "rail-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "nose-body",
+          "shape": "train_boiler"
+        },
+        {
+          "id": "driver-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "center-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "traction-motor",
+          "shape": "engine_block"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-coast-guard",
+      "name": "Navire Garde-Côtes Rapide",
+      "category": "bateau",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 40,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "twin-pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "bridge-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "waterjets",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "radar-mast",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "solar-canopy",
+          "shape": "solar_panel_array"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-water-bomber",
+      "name": "Hydravion Bombardier d’Eau",
+      "category": "avion",
+      "tier": 2,
+      "parts": 8,
+      "meshes": 50,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "lower-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "radial-motor",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "interplane-struts",
+          "shape": "biplane_struts"
+        },
+        {
+          "id": "upper-wing",
+          "shape": "plane_wing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-telescopic-handler",
+      "name": "Chariot Télescopique de Chantier",
+      "category": "chantier",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 56,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base-chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-load-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-steer-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "safety-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "lift-mast",
+          "shape": "forklift_mast"
+        },
+        {
+          "id": "rear-counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "electric-motor",
+          "shape": "engine_block"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-cargo-resupply-ship",
+      "name": "Cargo Ravitailleur Spatial",
+      "category": "espace",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 30,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "orbiter-body",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "heat-shield-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "vertical-stabilizer",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-thrusters",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "canadarm",
+          "shape": "boat_crane"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-safari-offroad",
+      "name": "4x4 d’Exploration Nature",
+      "category": "voiture",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 51,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "roof-beacon",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-Classic-schooner",
+      "name": "Goélette Océanique",
+      "category": "bateau",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 29,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "main-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "main-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "rudder-prop",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "roof-cabin",
+          "shape": "boat_cabin"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-medical-drone",
+      "name": "Drone Cargo Médical",
+      "category": "avion",
+      "tier": 2,
+      "parts": 7,
+      "meshes": 31,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "skids",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "core-cabin",
+          "shape": "heli_cabin"
+        },
+        {
+          "id": "rotor-mast",
+          "shape": "heli_rotor_mast"
+        },
+        {
+          "id": "main-rotor",
+          "shape": "heli_main_blades"
+        },
+        {
+          "id": "tail-boom",
+          "shape": "heli_tail_boom"
+        },
+        {
+          "id": "tail-rotor",
+          "shape": "heli_tail_rotor"
+        },
+        {
+          "id": "turbine-pack",
+          "shape": "heli_turbine"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-urban-wheeled-excavator",
+      "name": "Pelleteuse Tourelle 360°",
+      "category": "chantier",
+      "tier": 2,
+      "parts": 6,
+      "meshes": 52,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "tracks",
+          "shape": "caterpillar_track"
+        },
+        {
+          "id": "turret-deck",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "operator-cab",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "boom-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "hydraulic-pump",
+          "shape": "engine_block"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-formula-racer",
+      "name": "Bolide Formule Course",
+      "category": "voiture",
+      "tier": 3,
+      "parts": 10,
+      "meshes": 64,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "floor",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "monocoque",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "v6-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "sidepods",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "front-wing",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "halo-airbox",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "rear-wing",
+          "shape": "f1_rear_wing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-ocean-research",
+      "name": "Navire Océanographique",
+      "category": "bateau",
+      "tier": 3,
+      "parts": 10,
+      "meshes": 49,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "rov-sub",
+          "dependency": "crane",
+          "distance": 0.06
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "azimuth",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "main-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "helipad",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "bridge",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "radar-arch",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "light-bar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "a-frame",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "crane",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "rov-sub",
+          "shape": "boat_rov"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-rescue-heli",
+      "name": "Hélicoptère de Secours",
+      "category": "avion",
+      "tier": 3,
+      "parts": 11,
+      "meshes": 55,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "floor-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "skids",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "cabin",
+          "shape": "heli_cabin"
+        },
+        {
+          "id": "tail-boom",
+          "shape": "heli_tail_boom"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "tail-rotor",
+          "shape": "heli_tail_rotor"
+        },
+        {
+          "id": "turbines",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "rotor-mast",
+          "shape": "heli_rotor_mast"
+        },
+        {
+          "id": "main-blades",
+          "shape": "heli_main_blades"
+        },
+        {
+          "id": "rescue-winch",
+          "shape": "heli_winch"
+        },
+        {
+          "id": "searchlight",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-combine-harvester",
+      "name": "Moissonneuse-Batteuse Géante",
+      "category": "chantier",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 57,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-header",
+          "dependency": "front-wheels",
+          "distance": 0.19
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "agri-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "giant-rear-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "tractor-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "hood-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-header",
+          "shape": "harvester_header"
+        },
+        {
+          "id": "drum-hopper",
+          "shape": "mixer_drum"
+        },
+        {
+          "id": "chimney-stack",
+          "shape": "boat_chimney"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-deep-space-telescope",
+      "name": "Télescope Spatial Orbital",
+      "category": "espace",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 33,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "bus-core",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "solar-wings",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "main-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "ion-thruster",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "optical-camera",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "sunshield",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "magnetometer-boom",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "star-trackers",
+          "shape": "f1_sidepods"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "aero-planetary-rover",
+      "name": "Rover planétaire autonome",
+      "category": "aerospatiale",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 58,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "warm-box",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "mast-cam",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "mid-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "solar-deck",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "robotic-drill-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "high-gain-dish",
+          "shape": "parabolic_dish"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "elec-alarm-buzzer",
+      "name": "Alarme à capteur de lumière",
+      "category": "electronique",
+      "tier": 3,
+      "parts": 7,
+      "meshes": 17,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "board",
+          "shape": "breadboard"
+        },
+        {
+          "id": "battery",
+          "shape": "battery_cell"
+        },
+        {
+          "id": "sensor",
+          "shape": "light_sensor"
+        },
+        {
+          "id": "buzzer",
+          "shape": "buzzer"
+        },
+        {
+          "id": "wire-0",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-1",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-2",
+          "shape": "wire_jumper"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [
+        "buzzer"
+      ],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": false,
+      "fullValence": null
+    },
+    {
+      "id": "chem-salt-crystal",
+      "name": "Cristal de sel NaCl",
+      "category": "chimie",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 20,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "ion-000",
+          "shape": "atom_sodium"
+        },
+        {
+          "id": "ion-001",
+          "shape": "atom_chlorine"
+        },
+        {
+          "id": "ion-010",
+          "shape": "atom_chlorine"
+        },
+        {
+          "id": "ion-011",
+          "shape": "atom_sodium"
+        },
+        {
+          "id": "ion-100",
+          "shape": "atom_chlorine"
+        },
+        {
+          "id": "ion-101",
+          "shape": "atom_sodium"
+        },
+        {
+          "id": "ion-110",
+          "shape": "atom_sodium"
+        },
+        {
+          "id": "ion-111",
+          "shape": "atom_chlorine"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": {
+        "isComplete": true,
+        "unsatisfiedAtoms": []
+      }
+    },
+    {
+      "id": "phys-inclined-plane",
+      "name": "Plan incliné",
+      "category": "physique",
+      "tier": 3,
+      "parts": 3,
+      "meshes": 3,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "ramp",
+          "shape": "ramp_surface"
+        },
+        {
+          "id": "load",
+          "shape": "apparatus_base"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-tgv-express",
+      "name": "Motrice Train Grande Vitesse",
+      "category": "voiture",
+      "tier": 3,
+      "parts": 10,
+      "meshes": 66,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "cowcatcher",
+          "dependency": "front-bogie",
+          "distance": 0.197
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "rail-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "nose-body",
+          "shape": "train_boiler"
+        },
+        {
+          "id": "driver-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "center-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "traction-motor",
+          "shape": "engine_block"
+        },
+        {
+          "id": "pantograph",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "cowcatcher",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "exhaust-vent",
+          "shape": "boat_chimney"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-polar-icebreaker",
+      "name": "Brise-Glace Polaire",
+      "category": "bateau",
+      "tier": 3,
+      "parts": 10,
+      "meshes": 54,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "propulsion",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "main-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "bridge",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "funnel",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "radar-tower",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "bow-fenders",
+          "shape": "boat_fenders"
+        },
+        {
+          "id": "cargo-hold",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "bow-helipad",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "deck-crane",
+          "shape": "boat_crane"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-passenger-airliner",
+      "name": "Avion de Ligne Courrier",
+      "category": "avion",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 53,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "delta-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "turbofans",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "nose-gear",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "canards",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "outer-turbines",
+          "shape": "jet_turbine_pair"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-demolition-long-reach",
+      "name": "Pelle Grand Bras de Chantier",
+      "category": "chantier",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 64,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "tracks",
+          "shape": "caterpillar_track"
+        },
+        {
+          "id": "turret-deck",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "operator-cab",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "boom-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "hydraulic-pump",
+          "shape": "engine_block"
+        },
+        {
+          "id": "stabilizer-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "exhaust-stack",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "cab-beacon",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-perseverance-lab-rover",
+      "name": " Grand Rover Astrobiologiste",
+      "category": "espace",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 58,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "warm-box",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "mast-cam",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "mid-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "solar-deck",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "robotic-drill-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "high-gain-dish",
+          "shape": "parabolic_dish"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-desert-rally-raid",
+      "name": "Prototype Rallye-Raid",
+      "category": "voiture",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 63,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-splitter",
+          "dependency": "engine",
+          "distance": 0.051
+        },
+        {
+          "part": "rear-spoiler",
+          "dependency": "cabin",
+          "distance": 0.282
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "roof-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "front-splitter",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "rear-spoiler",
+          "shape": "f1_rear_wing"
+        },
+        {
+          "id": "side-skirts",
+          "shape": "f1_sidepods"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-deep-nautilus",
+      "name": "Sous-Marin Océanographique",
+      "category": "bateau",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 47,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pressure-hull",
+          "shape": "sub_hull"
+        },
+        {
+          "id": "conning-sail",
+          "shape": "conning_tower"
+        },
+        {
+          "id": "stern-fins",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "silent-prop",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "ballast-keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "bow-dome",
+          "shape": "boat_rov"
+        },
+        {
+          "id": "side-thrusters",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "abyssal-lights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "deck-walkway",
+          "shape": "boat_deck"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-solar-glider",
+      "name": "Avion Solaire Tour du Monde",
+      "category": "avion",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 55,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail-unit",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "nose-engine",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "wing-struts",
+          "shape": "biplane_struts"
+        },
+        {
+          "id": "wing-turboprops",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "belly-cargo-pod",
+          "shape": "f1_nose"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-port-container-reach",
+      "name": "Élévateur Portuaire à Conteneurs",
+      "category": "chantier",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 72,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "telescopic-boom",
+          "dependency": "rear-counterweight",
+          "distance": 0.214
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base-chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-load-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-steer-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "safety-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "lift-mast",
+          "shape": "forklift_mast"
+        },
+        {
+          "id": "rear-counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "electric-motor",
+          "shape": "engine_block"
+        },
+        {
+          "id": "telescopic-boom",
+          "shape": "fire_ladder"
+        },
+        {
+          "id": "warning-beacon",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-heavy-booster-rocket",
+      "name": "Lanceur Lourd à Propulseurs Latéraux",
+      "category": "espace",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 37,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        },
+        {
+          "id": "second-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "side-boosters",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "interstage-ring",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "landing-legs",
+          "shape": "heli_skids"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-mobile-crane-truck",
+      "name": "Camion Dépanneuse Lourd",
+      "category": "voiture",
+      "tier": 3,
+      "parts": 10,
+      "meshes": 81,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "cargo-body",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "diesel-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "mid-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "roof-lightbar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "side-tanks",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "exhaust-stacks",
+          "shape": "boat_chimney"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-hydrofoil-racer",
+      "name": "Catamaran de Course à Foils",
+      "category": "bateau",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 48,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "twin-pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "bridge-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "waterjets",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "radar-mast",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "solar-canopy",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "wing-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "wing-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "stern-aframe",
+          "shape": "boat_aframe"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-forestry-drone",
+      "name": "Drone Semeur de Forêts",
+      "category": "avion",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 45,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "skids",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "core-cabin",
+          "shape": "heli_cabin"
+        },
+        {
+          "id": "rotor-mast",
+          "shape": "heli_rotor_mast"
+        },
+        {
+          "id": "main-rotor",
+          "shape": "heli_main_blades"
+        },
+        {
+          "id": "tail-boom",
+          "shape": "heli_tail_boom"
+        },
+        {
+          "id": "tail-rotor",
+          "shape": "heli_tail_rotor"
+        },
+        {
+          "id": "turbine-pack",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "quad-outriggers",
+          "shape": "drone_quad_arms"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-alpine-snow-groomer",
+      "name": "Dameuse de Pistes Haute Montagne",
+      "category": "chantier",
+      "tier": 3,
+      "parts": 9,
+      "meshes": 61,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-roller-or-tracks",
+          "shape": "roller_drum"
+        },
+        {
+          "id": "rear-drive",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "high-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "push-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "engine-hood",
+          "shape": "engine_block"
+        },
+        {
+          "id": "water-ballast",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "exhaust-pipe",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "beacon-bar",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-orbital-research-station",
+      "name": "Vaisseau Laboratoire Orbital",
+      "category": "espace",
+      "tier": 3,
+      "parts": 8,
+      "meshes": 43,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "orbiter-body",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "heat-shield-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "vertical-stabilizer",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-thrusters",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "canadarm",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "docking-module",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "orbital-pods",
+          "shape": "jet_turbine_pair"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-le-mans-proto",
+      "name": "Hypercar d’Endurance 24H",
+      "category": "voiture",
+      "tier": 4,
+      "parts": 12,
+      "meshes": 71,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "aero-floor",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "monocoque",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-slicks",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-slicks",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "hybrid-powerunit",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-wing",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "rear-wing",
+          "shape": "f1_rear_wing"
+        },
+        {
+          "id": "sidepods",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "halo-guard",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "shark-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "telemetry-cam",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-container-giant",
+      "name": "Porte-Conteneurs Transocéanique",
+      "category": "bateau",
+      "tier": 4,
+      "parts": 12,
+      "meshes": 59,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "propulsion",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "main-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "bridge",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "funnel",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "radar-tower",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "bow-fenders",
+          "shape": "boat_fenders"
+        },
+        {
+          "id": "cargo-hold",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "bow-helipad",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "deck-crane",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "keel-stabilizer",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "bridge-lights",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-supersonic-delta",
+      "name": "Jet Supersonique Aile Delta",
+      "category": "avion",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 62,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "delta-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "turbofans",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "nose-gear",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "canards",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "outer-turbines",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "afterburner",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "satcom-hump",
+          "shape": "heli_turbine"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-tunnel-miner-excavator",
+      "name": "Excavatrice Minière Géante",
+      "category": "chantier",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 75,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "tracks",
+          "shape": "caterpillar_track"
+        },
+        {
+          "id": "turret-deck",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "operator-cab",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "boom-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "hydraulic-pump",
+          "shape": "engine_block"
+        },
+        {
+          "id": "stabilizer-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "exhaust-stack",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "cab-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "rock-guard",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "gps-grade-mast",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-interplanetary-probe",
+      "name": "Sonde Interplanétaire Jupiter",
+      "category": "espace",
+      "tier": 4,
+      "parts": 10,
+      "meshes": 41,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "bus-core",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "solar-wings",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "main-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "ion-thruster",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "optical-camera",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "sunshield",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "magnetometer-boom",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "star-trackers",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "aux-solar-cross",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "relay-radar",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "aero-iss-module",
+      "name": "Module de station orbitale",
+      "category": "aerospatiale",
+      "tier": 4,
+      "parts": 10,
+      "meshes": 51,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "orbiter-body",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "heat-shield-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "vertical-stabilizer",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-thrusters",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "canadarm",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "docking-module",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "orbital-pods",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "station-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "ku-band-dish",
+          "shape": "parabolic_dish"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "elec-solar-toy",
+      "name": "Jouet solaire",
+      "category": "electronique",
+      "tier": 4,
+      "parts": 9,
+      "meshes": 22,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "board",
+          "shape": "breadboard"
+        },
+        {
+          "id": "solar",
+          "shape": "solar_panel"
+        },
+        {
+          "id": "motor",
+          "shape": "micro_motor"
+        },
+        {
+          "id": "fan",
+          "shape": "fan_blades"
+        },
+        {
+          "id": "capacitor",
+          "shape": "capacitor"
+        },
+        {
+          "id": "wire-0",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-1",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-2",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-3",
+          "shape": "wire_jumper"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": false,
+      "fullValence": null
+    },
+    {
+      "id": "chem-beaker-setup",
+      "name": "Bécher sur pied",
+      "category": "chimie",
+      "tier": 4,
+      "parts": 3,
+      "meshes": 10,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "stand",
+          "shape": "lab_stand"
+        },
+        {
+          "id": "beaker",
+          "shape": "lab_beaker"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": {
+        "isComplete": true,
+        "unsatisfiedAtoms": []
+      }
+    },
+    {
+      "id": "phys-magnet-compass",
+      "name": "Boussole magnétique",
+      "category": "physique",
+      "tier": 4,
+      "parts": 4,
+      "meshes": 7,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "magnet",
+          "shape": "magnet_bar"
+        },
+        {
+          "id": "pivot",
+          "shape": "pendulum_rod"
+        },
+        {
+          "id": "needle",
+          "shape": "compass_needle"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-heritage-steam-loco",
+      "name": "Locomotive Express Classique",
+      "category": "voiture",
+      "tier": 4,
+      "parts": 12,
+      "meshes": 73,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "cowcatcher",
+          "dependency": "front-bogie",
+          "distance": 0.171
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "rail-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "nose-body",
+          "shape": "train_boiler"
+        },
+        {
+          "id": "driver-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "center-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "traction-motor",
+          "shape": "engine_block"
+        },
+        {
+          "id": "pantograph",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "cowcatcher",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "exhaust-vent",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "side-fairings",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "roof-cooling",
+          "shape": "heli_turbine"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-rescue-submarine",
+      "name": "Sous-Marin de Secours DSRV",
+      "category": "bateau",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 55,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pressure-hull",
+          "shape": "sub_hull"
+        },
+        {
+          "id": "conning-sail",
+          "shape": "conning_tower"
+        },
+        {
+          "id": "stern-fins",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "silent-prop",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "ballast-keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "bow-dome",
+          "shape": "boat_rov"
+        },
+        {
+          "id": "side-thrusters",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "abyssal-lights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "deck-walkway",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "sample-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "comm-mast",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-heavy-cargo-lifter",
+      "name": "Avion Cargo Humanitaire",
+      "category": "avion",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 63,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail-unit",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "nose-engine",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "wing-struts",
+          "shape": "biplane_struts"
+        },
+        {
+          "id": "wing-turboprops",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "belly-cargo-pod",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "wing-solar-cells",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "dorsal-radar",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-bridge-girder-crane",
+      "name": "Engin Poseur de Viaducs",
+      "category": "chantier",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 80,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "telescopic-boom",
+          "dependency": "rear-counterweight",
+          "distance": 0.204
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base-chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-load-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-steer-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "safety-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "lift-mast",
+          "shape": "forklift_mast"
+        },
+        {
+          "id": "rear-counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "electric-motor",
+          "shape": "engine_block"
+        },
+        {
+          "id": "telescopic-boom",
+          "shape": "fire_ladder"
+        },
+        {
+          "id": "warning-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "outrigger-pods",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "hoist-winch",
+          "shape": "heli_winch"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-lunar-pressurized-cruiser",
+      "name": "Rover Lunaire Pressurisé",
+      "category": "espace",
+      "tier": 4,
+      "parts": 10,
+      "meshes": 69,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "warm-box",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "mast-cam",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "mid-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "solar-deck",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "robotic-drill-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "high-gain-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "rtg-battery",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "uhf-antenna",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-hydrogen-semi",
+      "name": "Camion Pile à Hydrogène",
+      "category": "voiture",
+      "tier": 4,
+      "parts": 12,
+      "meshes": 85,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "cargo-body",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "diesel-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "mid-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "roof-lightbar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "side-tanks",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "exhaust-stacks",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "aero-deflector",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "rear-crane",
+          "shape": "boat_crane"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-solar-expedition-cat",
+      "name": "Catamaran Solaire Planétaire",
+      "category": "bateau",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 60,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "twin-pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "bridge-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "waterjets",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "radar-mast",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "solar-canopy",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "wing-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "wing-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "stern-aframe",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "hydrofoil-beam",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "bow-bumpers",
+          "shape": "boat_fenders"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-tiltrotor-vtol",
+      "name": "Navette Aérienne eVTOL",
+      "category": "avion",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 53,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "skids",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "core-cabin",
+          "shape": "heli_cabin"
+        },
+        {
+          "id": "rotor-mast",
+          "shape": "heli_rotor_mast"
+        },
+        {
+          "id": "main-rotor",
+          "shape": "heli_main_blades"
+        },
+        {
+          "id": "tail-boom",
+          "shape": "heli_tail_boom"
+        },
+        {
+          "id": "tail-rotor",
+          "shape": "heli_tail_rotor"
+        },
+        {
+          "id": "turbine-pack",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "quad-outriggers",
+          "shape": "drone_quad_arms"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "side-winch",
+          "shape": "heli_winch"
+        },
+        {
+          "id": "chin-camera",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-precision-laser-dozer",
+      "name": "Niveleuse Guidée par Laser",
+      "category": "chantier",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 63,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-roller-or-tracks",
+          "shape": "roller_drum"
+        },
+        {
+          "id": "rear-drive",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "high-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "push-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "engine-hood",
+          "shape": "engine_block"
+        },
+        {
+          "id": "water-ballast",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "exhaust-pipe",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "beacon-bar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "rear-ripper",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "rops-cage",
+          "shape": "f1_halo"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-reusable-orbital-rocket",
+      "name": "Fusée Orbitale Réutilisable",
+      "category": "espace",
+      "tier": 4,
+      "parts": 10,
+      "meshes": 45,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        },
+        {
+          "id": "second-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "side-boosters",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "interstage-ring",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "landing-legs",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "escape-tower",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "service-solar",
+          "shape": "solar_panel_array"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-solar-cruiser-gt",
+      "name": "Berline Aérodynamique Éco-GT",
+      "category": "voiture",
+      "tier": 4,
+      "parts": 12,
+      "meshes": 75,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-splitter",
+          "dependency": "engine",
+          "distance": 0.052
+        },
+        {
+          "part": "rear-spoiler",
+          "dependency": "cabin",
+          "distance": 0.31
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "roof-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "front-splitter",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "rear-spoiler",
+          "shape": "f1_rear_wing"
+        },
+        {
+          "id": "side-skirts",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "rear-cargo-box",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "roof-sensor",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "roll-halo",
+          "shape": "f1_halo"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-clipper-three-mast",
+      "name": "Grand Clipper École",
+      "category": "bateau",
+      "tier": 4,
+      "parts": 11,
+      "meshes": 46,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "main-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "main-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "rudder-prop",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "roof-cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "fore-jib-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "jib-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "hydro-foils",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "wind-radar",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-polar-ski-biplane",
+      "name": "Avion d’Expédition Arctique",
+      "category": "avion",
+      "tier": 4,
+      "parts": 12,
+      "meshes": 71,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "search-radar",
+          "dependency": "upper-wing",
+          "distance": 0.067
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "lower-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "radial-motor",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "interplane-struts",
+          "shape": "biplane_struts"
+        },
+        {
+          "id": "upper-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "water-tank",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "upper-turbines",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "search-radar",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "rescue-winch",
+          "shape": "heli_winch"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-autonomous-agro-harvester",
+      "name": "Moissonneuse Robotisée GPS RTK",
+      "category": "chantier",
+      "tier": 4,
+      "parts": 10,
+      "meshes": 63,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-header",
+          "dependency": "front-wheels",
+          "distance": 0.219
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "agri-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "giant-rear-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "tractor-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "hood-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-header",
+          "shape": "harvester_header"
+        },
+        {
+          "id": "drum-hopper",
+          "shape": "mixer_drum"
+        },
+        {
+          "id": "chimney-stack",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "unloading-auger",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "roof-gps",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-winged-shuttle-expedition",
+      "name": "Grande Navette Spatiale à Soute",
+      "category": "espace",
+      "tier": 4,
+      "parts": 10,
+      "meshes": 51,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "orbiter-body",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "heat-shield-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "vertical-stabilizer",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-thrusters",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "canadarm",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "docking-module",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "orbital-pods",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "station-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "ku-band-dish",
+          "shape": "parabolic_dish"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-maglev-shinkansen",
+      "name": "Train à Lévitation Magnétique",
+      "category": "voiture",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 81,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "cowcatcher",
+          "dependency": "front-bogie",
+          "distance": 0.235
+        },
+        {
+          "part": "rear-coupler",
+          "dependency": "rear-bogie",
+          "distance": 0.271
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "rail-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "nose-body",
+          "shape": "train_boiler"
+        },
+        {
+          "id": "driver-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "center-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "traction-motor",
+          "shape": "engine_block"
+        },
+        {
+          "id": "pantograph",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "cowcatcher",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "exhaust-vent",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "side-fairings",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "roof-cooling",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "signal-beacon",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "rear-coupler",
+          "shape": "fire_tank"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-wind-cargo-wingsail",
+      "name": "Cargo Vélique Nouvelle Génération",
+      "category": "bateau",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 63,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "main-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "main-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "rudder-prop",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "roof-cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "fore-jib-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "jib-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "hydro-foils",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "wind-radar",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "stern-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "bow-fenders",
+          "shape": "boat_fenders"
+        },
+        {
+          "id": "night-searchlight",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-stratospheric-research-jet",
+      "name": "Avion Laboratoire Stratosphérique",
+      "category": "avion",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 75,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "delta-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "turbofans",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "nose-gear",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "canards",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "outer-turbines",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "afterburner",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "satcom-hump",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "anti-collision-beacons",
+          "shape": "light_bar"
+        },
+        {
+          "id": "ventral-fins",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "probe-antenna",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-subsea-trencher-crawler",
+      "name": "Excavatrice Sous-Marine Téléopérée",
+      "category": "chantier",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 90,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "aux-winch",
+          "dependency": "hydraulic-pump",
+          "distance": 0.07
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "tracks",
+          "shape": "caterpillar_track"
+        },
+        {
+          "id": "turret-deck",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "operator-cab",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "boom-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "hydraulic-pump",
+          "shape": "engine_block"
+        },
+        {
+          "id": "stabilizer-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "exhaust-stack",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "cab-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "rock-guard",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "gps-grade-mast",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "side-coolers",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "aux-winch",
+          "shape": "heli_winch"
+        },
+        {
+          "id": "cutter-head",
+          "shape": "harvester_header"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-james-webb-observatory",
+      "name": "Grand Observatoire Spatial Infrarouge",
+      "category": "espace",
+      "tier": 5,
+      "parts": 13,
+      "meshes": 59,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "bus-core",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "solar-wings",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "main-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "ion-thruster",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "optical-camera",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "sunshield",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "magnetometer-boom",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "star-trackers",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "aux-solar-cross",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "relay-radar",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "rtg-power",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "docking-ring",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "laser-comm",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "aero-heavy-launcher",
+      "name": "Lanceur lourd réutilisable",
+      "category": "aerospatiale",
+      "tier": 5,
+      "parts": 13,
+      "meshes": 61,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        },
+        {
+          "id": "second-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "side-boosters",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "interstage-ring",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "landing-legs",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "escape-tower",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "service-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "rcs-thrusters",
+          "shape": "light_bar"
+        },
+        {
+          "id": "telemetry-dish",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "booster-cones",
+          "shape": "jet_turbine_pair"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "elec-radio-receiver",
+      "name": "Récepteur radio AM",
+      "category": "electronique",
+      "tier": 5,
+      "parts": 11,
+      "meshes": 24,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "board",
+          "shape": "breadboard"
+        },
+        {
+          "id": "battery",
+          "shape": "battery_cell"
+        },
+        {
+          "id": "detector",
+          "shape": "demodulator"
+        },
+        {
+          "id": "speaker",
+          "shape": "speaker"
+        },
+        {
+          "id": "antenna",
+          "shape": "antenna"
+        },
+        {
+          "id": "capacitor",
+          "shape": "capacitor"
+        },
+        {
+          "id": "wire-0",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-1",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-2",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-3",
+          "shape": "wire_jumper"
+        },
+        {
+          "id": "wire-4",
+          "shape": "wire_jumper"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": false,
+      "fullValence": null
+    },
+    {
+      "id": "chem-balance-scale",
+      "name": "Balance de précision",
+      "category": "chimie",
+      "tier": 5,
+      "parts": 7,
+      "meshes": 10,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "pivot",
+          "shape": "fulcrum"
+        },
+        {
+          "id": "beam",
+          "shape": "lever_arm"
+        },
+        {
+          "id": "pan-left",
+          "shape": "balance_pan"
+        },
+        {
+          "id": "load",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "pan-right",
+          "shape": "balance_pan"
+        },
+        {
+          "id": "counterweight",
+          "shape": "apparatus_base"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": {
+        "isComplete": true,
+        "unsatisfiedAtoms": []
+      }
+    },
+    {
+      "id": "phys-prism-light",
+      "name": "Prisme de lumière",
+      "category": "physique",
+      "tier": 5,
+      "parts": 10,
+      "meshes": 11,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "spectrum-0",
+          "dependency": "incoming-ray",
+          "distance": 0.322
+        },
+        {
+          "part": "spectrum-1",
+          "dependency": "incoming-ray",
+          "distance": 0.323
+        },
+        {
+          "part": "spectrum-2",
+          "dependency": "incoming-ray",
+          "distance": 0.324
+        },
+        {
+          "part": "spectrum-3",
+          "dependency": "incoming-ray",
+          "distance": 0.324
+        },
+        {
+          "part": "spectrum-4",
+          "dependency": "incoming-ray",
+          "distance": 0.323
+        },
+        {
+          "part": "spectrum-5",
+          "dependency": "incoming-ray",
+          "distance": 0.322
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base",
+          "shape": "apparatus_base"
+        },
+        {
+          "id": "lamp",
+          "shape": "light_source"
+        },
+        {
+          "id": "prism",
+          "shape": "optical_prism"
+        },
+        {
+          "id": "incoming-ray",
+          "shape": "light_beam"
+        },
+        {
+          "id": "spectrum-0",
+          "shape": "light_beam"
+        },
+        {
+          "id": "spectrum-1",
+          "shape": "light_beam"
+        },
+        {
+          "id": "spectrum-2",
+          "shape": "light_beam"
+        },
+        {
+          "id": "spectrum-3",
+          "shape": "light_beam"
+        },
+        {
+          "id": "spectrum-4",
+          "shape": "light_beam"
+        },
+        {
+          "id": "spectrum-5",
+          "shape": "light_beam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-supersonic-land-record",
+      "name": "Flèche du Record Terrestre",
+      "category": "voiture",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 80,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "shark-fin",
+          "dependency": "halo-guard",
+          "distance": 0.147
+        },
+        {
+          "part": "rear-diffuser",
+          "dependency": "rear-slicks",
+          "distance": 0.054
+        },
+        {
+          "part": "rear-diffuser",
+          "dependency": "rear-wing",
+          "distance": 0.105
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "aero-floor",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "monocoque",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-slicks",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-slicks",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "hybrid-powerunit",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-wing",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "rear-wing",
+          "shape": "f1_rear_wing"
+        },
+        {
+          "id": "sidepods",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "halo-guard",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "shark-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "telemetry-cam",
+          "shape": "light_bar"
+        },
+        {
+          "id": "solar-deck",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "rear-diffuser",
+          "shape": "f1_front_wing"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-abyssal-hadal-sub",
+      "name": "Bathyscaphe des Grandes Fosses",
+      "category": "bateau",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 68,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "winch-sonar",
+          "dependency": "deck-walkway",
+          "distance": 0.08
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "pressure-hull",
+          "shape": "sub_hull"
+        },
+        {
+          "id": "conning-sail",
+          "shape": "conning_tower"
+        },
+        {
+          "id": "stern-fins",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "silent-prop",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "ballast-keel",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "bow-dome",
+          "shape": "boat_rov"
+        },
+        {
+          "id": "side-thrusters",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "abyssal-lights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "deck-walkway",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "sample-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "comm-mast",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "battery-pods",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "escape-hatch",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "winch-sonar",
+          "shape": "heli_winch"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-flying-wing-eco-jet",
+      "name": "Avion Futuriste Aile-Fuselage",
+      "category": "avion",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 76,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "delta-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "turbofans",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "nose-cone",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "nose-gear",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "canards",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "outer-turbines",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "afterburner",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "satcom-hump",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "anti-collision-beacons",
+          "shape": "light_bar"
+        },
+        {
+          "id": "ventral-fins",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "probe-antenna",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-mega-crawler-transporter",
+      "name": "Transporteur Géant à Chenilles Spatiales",
+      "category": "chantier",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 79,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-roller-or-tracks",
+          "shape": "roller_drum"
+        },
+        {
+          "id": "rear-drive",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "high-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "push-blade",
+          "shape": "bulldozer_blade"
+        },
+        {
+          "id": "engine-hood",
+          "shape": "engine_block"
+        },
+        {
+          "id": "water-ballast",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "exhaust-pipe",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "beacon-bar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "rear-ripper",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "rops-cage",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "laser-receiver",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "side-hydraulic-guards",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "compaction-radar",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-sample-return-mars-rover",
+      "name": "Rover Foreur de Retour d’Échantillons",
+      "category": "espace",
+      "tier": 5,
+      "parts": 13,
+      "meshes": 90,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "warm-box",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "mast-cam",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "mid-bogie",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "solar-deck",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "robotic-drill-arm",
+          "shape": "excavator_arm"
+        },
+        {
+          "id": "high-gain-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "rtg-battery",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "uhf-antenna",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "mini-copter-drone",
+          "shape": "drone_quad_arms"
+        },
+        {
+          "id": "sample-cache",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "uv-spectrometer",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-mobile-science-convoy",
+      "name": "Camion Laboratoire Sismique",
+      "category": "voiture",
+      "tier": 5,
+      "parts": 15,
+      "meshes": 98,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-bumper-guard",
+          "dependency": "front-axle",
+          "distance": 0.176
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "cargo-body",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "diesel-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "mid-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "roof-lightbar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "side-tanks",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "exhaust-stacks",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "aero-deflector",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "rear-crane",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "front-bumper-guard",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "roof-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "sat-tracker",
+          "shape": "boat_radar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-offshore-wind-vessel",
+      "name": "Navire Atelier Éolien en Mer",
+      "category": "bateau",
+      "tier": 5,
+      "parts": 15,
+      "meshes": 71,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "rescue-rov",
+          "dependency": "deck-crane",
+          "distance": 0.26
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "hull",
+          "shape": "boat_hull"
+        },
+        {
+          "id": "propulsion",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "main-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "bridge",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "funnel",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "radar-tower",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "bow-fenders",
+          "shape": "boat_fenders"
+        },
+        {
+          "id": "cargo-hold",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "bow-helipad",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "deck-crane",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "keel-stabilizer",
+          "shape": "boat_keel"
+        },
+        {
+          "id": "bridge-lights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "sat-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "stern-aframe",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "rescue-rov",
+          "shape": "boat_rov"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-heavy-skycrane-rotor",
+      "name": "Grue Volante Multi-Rotors",
+      "category": "avion",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 70,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "skids",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "core-cabin",
+          "shape": "heli_cabin"
+        },
+        {
+          "id": "rotor-mast",
+          "shape": "heli_rotor_mast"
+        },
+        {
+          "id": "main-rotor",
+          "shape": "heli_main_blades"
+        },
+        {
+          "id": "tail-boom",
+          "shape": "heli_tail_boom"
+        },
+        {
+          "id": "tail-rotor",
+          "shape": "heli_tail_rotor"
+        },
+        {
+          "id": "turbine-pack",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "quad-outriggers",
+          "shape": "drone_quad_arms"
+        },
+        {
+          "id": "tail-fin",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "side-winch",
+          "shape": "heli_winch"
+        },
+        {
+          "id": "chin-camera",
+          "shape": "rover_mast_cam"
+        },
+        {
+          "id": "stub-wings",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "night-bar",
+          "shape": "light_bar"
+        },
+        {
+          "id": "top-radar",
+          "shape": "parabolic_dish"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-modular-wind-tower-crane",
+      "name": "Grue Mobile d’Assemblage Géant",
+      "category": "chantier",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 90,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "telescopic-boom",
+          "dependency": "rear-counterweight",
+          "distance": 0.194
+        },
+        {
+          "part": "wind-sensor",
+          "dependency": "rear-counterweight",
+          "distance": 0.174
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "base-chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-load-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-steer-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "safety-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "lift-mast",
+          "shape": "forklift_mast"
+        },
+        {
+          "id": "rear-counterweight",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "electric-motor",
+          "shape": "engine_block"
+        },
+        {
+          "id": "telescopic-boom",
+          "shape": "fire_ladder"
+        },
+        {
+          "id": "warning-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "outrigger-pods",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "hoist-winch",
+          "shape": "heli_winch"
+        },
+        {
+          "id": "wind-sensor",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "overhead-cage",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "load-camera",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-artemis-moon-mega-rocket",
+      "name": "Méga-Fusée Lunaire Habitable",
+      "category": "espace",
+      "tier": 5,
+      "parts": 13,
+      "meshes": 61,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "main-engines",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "first-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "base-fins",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "fairing-cone",
+          "shape": "rocket_fairing"
+        },
+        {
+          "id": "second-stage",
+          "shape": "rocket_stage"
+        },
+        {
+          "id": "side-boosters",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "interstage-ring",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "landing-legs",
+          "shape": "heli_skids"
+        },
+        {
+          "id": "escape-tower",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "service-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "rcs-thrusters",
+          "shape": "light_bar"
+        },
+        {
+          "id": "telemetry-dish",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "booster-cones",
+          "shape": "jet_turbine_pair"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "car-autonomous-cyber-shuttle",
+      "name": "Véhicule Laboratoire Lidar",
+      "category": "voiture",
+      "tier": 5,
+      "parts": 15,
+      "meshes": 89,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-splitter",
+          "dependency": "engine",
+          "distance": 0.051
+        },
+        {
+          "part": "rear-spoiler",
+          "dependency": "cabin",
+          "distance": 0.299
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "chassis",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "rear-axle",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "cabin",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "roof-beacon",
+          "shape": "light_bar"
+        },
+        {
+          "id": "front-splitter",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "rear-spoiler",
+          "shape": "f1_rear_wing"
+        },
+        {
+          "id": "side-skirts",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "rear-cargo-box",
+          "shape": "fire_tank"
+        },
+        {
+          "id": "roof-sensor",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "roll-halo",
+          "shape": "f1_halo"
+        },
+        {
+          "id": "solar-roof",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "front-winch",
+          "shape": "heli_winch"
+        },
+        {
+          "id": "rear-fog-bar",
+          "shape": "light_bar"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "boat-wave-piercer-trimaran",
+      "name": "Navire Percée-de-Vagues Haute Vitesse",
+      "category": "bateau",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 72,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "twin-pontoons",
+          "shape": "catamaran_pontoons"
+        },
+        {
+          "id": "bridge-deck",
+          "shape": "boat_deck"
+        },
+        {
+          "id": "cabin",
+          "shape": "boat_cabin"
+        },
+        {
+          "id": "waterjets",
+          "shape": "boat_propulsion"
+        },
+        {
+          "id": "radar-mast",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "solar-canopy",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "wing-mast",
+          "shape": "boat_mast"
+        },
+        {
+          "id": "wing-sail",
+          "shape": "boat_sail"
+        },
+        {
+          "id": "stern-aframe",
+          "shape": "boat_aframe"
+        },
+        {
+          "id": "hydrofoil-beam",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "bow-bumpers",
+          "shape": "boat_fenders"
+        },
+        {
+          "id": "mini-rov",
+          "shape": "boat_rov"
+        },
+        {
+          "id": "search-lights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "deck-crane",
+          "shape": "boat_crane"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "plane-hybrid-transatlantic-prop",
+      "name": "Avion Laboratoire Hybride-Électrique",
+      "category": "avion",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 80,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "tail-gear",
+          "dependency": "tail-unit",
+          "distance": 0.093
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "fuselage",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "main-wing",
+          "shape": "plane_wing"
+        },
+        {
+          "id": "tail-unit",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "propeller",
+          "shape": "plane_propeller"
+        },
+        {
+          "id": "nose-engine",
+          "shape": "radial_engine"
+        },
+        {
+          "id": "wing-struts",
+          "shape": "biplane_struts"
+        },
+        {
+          "id": "wing-turboprops",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "belly-cargo-pod",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "wing-solar-cells",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "dorsal-radar",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "nose-lights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "tail-gear",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "wingtip-tanks",
+          "shape": "f1_sidepods"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "const-solar-autonomous-agri-titan",
+      "name": "Combiné Agro-Écologique Multi-Capteurs",
+      "category": "chantier",
+      "tier": 5,
+      "parts": 14,
+      "meshes": 80,
+      "errors": [],
+      "gaps": [
+        {
+          "part": "front-header",
+          "dependency": "front-wheels",
+          "distance": 0.248
+        },
+        {
+          "part": "front-weights",
+          "dependency": "hood-engine",
+          "distance": 0.153
+        }
+      ],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "agri-frame",
+          "shape": "car_chassis"
+        },
+        {
+          "id": "front-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "giant-rear-wheels",
+          "shape": "wheel_axle"
+        },
+        {
+          "id": "tractor-cab",
+          "shape": "car_cabin"
+        },
+        {
+          "id": "hood-engine",
+          "shape": "engine_block"
+        },
+        {
+          "id": "front-header",
+          "shape": "harvester_header"
+        },
+        {
+          "id": "drum-hopper",
+          "shape": "mixer_drum"
+        },
+        {
+          "id": "chimney-stack",
+          "shape": "boat_chimney"
+        },
+        {
+          "id": "unloading-auger",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "roof-gps",
+          "shape": "boat_radar"
+        },
+        {
+          "id": "work-floodlights",
+          "shape": "light_bar"
+        },
+        {
+          "id": "front-weights",
+          "shape": "f1_front_wing"
+        },
+        {
+          "id": "side-shields",
+          "shape": "f1_sidepods"
+        },
+        {
+          "id": "crop-sensor",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    },
+    {
+      "id": "space-international-modular-station",
+      "name": "Grande Station Spatiale Modulaire",
+      "category": "espace",
+      "tier": 5,
+      "parts": 13,
+      "meshes": 59,
+      "errors": [],
+      "gaps": [],
+      "assemblyComplete": true,
+      "components": [
+        {
+          "id": "orbiter-body",
+          "shape": "plane_fuselage"
+        },
+        {
+          "id": "heat-shield-wings",
+          "shape": "delta_wing"
+        },
+        {
+          "id": "vertical-stabilizer",
+          "shape": "plane_tail"
+        },
+        {
+          "id": "main-thrusters",
+          "shape": "rocket_nozzle_cluster"
+        },
+        {
+          "id": "landing-gear",
+          "shape": "plane_landing_gear"
+        },
+        {
+          "id": "canadarm",
+          "shape": "boat_crane"
+        },
+        {
+          "id": "docking-module",
+          "shape": "boat_heli_pad"
+        },
+        {
+          "id": "orbital-pods",
+          "shape": "jet_turbine_pair"
+        },
+        {
+          "id": "station-solar",
+          "shape": "solar_panel_array"
+        },
+        {
+          "id": "ku-band-dish",
+          "shape": "parabolic_dish"
+        },
+        {
+          "id": "nose-cap",
+          "shape": "f1_nose"
+        },
+        {
+          "id": "payload-lab",
+          "shape": "heli_turbine"
+        },
+        {
+          "id": "star-sensor",
+          "shape": "rover_mast_cam"
+        }
+      ],
+      "missingMinimumComponents": [],
+      "englishNameUnchanged": false,
+      "englishPartsUnchanged": [],
+      "arabicMissingNames": [],
+      "circuitEmptyAccepted": null,
+      "fullValence": null
+    }
+  ]
+}

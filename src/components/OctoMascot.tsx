@@ -1,3 +1,4 @@
+import { releaseWebGLRenderer } from '../three/rendererLifecycle';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
@@ -124,7 +125,7 @@ export function OctoMascot({ width = 180, className }: OctoMascotProps) {
     if (reduced) {
       renderer.render(scene, camera);
       return () => {
-        renderer.dispose();
+        releaseWebGLRenderer(renderer);
         el.removeChild(renderer.domElement);
       };
     }
@@ -191,7 +192,7 @@ export function OctoMascot({ width = 180, className }: OctoMascotProps) {
           obj.geometry.dispose();
         }
       });
-      renderer.dispose();
+      releaseWebGLRenderer(renderer);
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
   }, [width]);

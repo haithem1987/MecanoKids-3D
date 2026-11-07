@@ -47,7 +47,8 @@ export function resolveEntitlements(license: LicenseState): EntitlementSet {
   };
 }
 
-export function canPlayStage(license: LicenseState, stageIndex: number): boolean {
+export function canPlayStage(license: LicenseState, stageIndex: number, masterExpansion = false): boolean {
+  if (masterExpansion && stageIndex >= 1 && isUnlocked(license)) return true;
   return resolveEntitlements(license).canAccessStage(stageIndex);
 }
 

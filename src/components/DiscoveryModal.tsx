@@ -83,6 +83,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
   if (!isOpen) return null;
 
   const t = UI_TRANSLATIONS[language];
+  const recordTitle = blueprint.discoveryMode === 'observation' ? t.discoveryObservationTitle : t.realRecordTitle;
   const isRtl = language === 'ar';
   const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
 
@@ -90,7 +91,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
     blueprint.name,
     t.howItWorksTitle,
     blueprint.discovery.howItWorks,
-    t.realRecordTitle,
+    recordTitle,
     blueprint.discovery.realRecord,
     t.didYouKnowTitle,
     blueprint.discovery.didYouKnow,
@@ -157,7 +158,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 space-y-4 sm:px-6">
           {!isCompleted ? (
             <div className="p-5 bg-slate-50 border border-slate-200 rounded-xl">
               <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm mb-2">
@@ -322,7 +323,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-xs font-semibold text-sky-800">
                   <BookOpen className="w-4 h-4 shrink-0" />
-                  <span>{t.discoveryBadgeLocal}</span>
+                  <span>{blueprint.discoveryMode === 'observation' ? t.discoveryModelBadge : t.discoveryBadgeLocal}</span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -405,7 +406,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                   <div className="flex items-center gap-1.5">
                     <Award className="w-4 h-4 text-amber-600 shrink-0" />
                     <h3 className="text-sm font-bold text-slate-900">
-                      {t.realRecordTitle}
+                      {recordTitle}
                     </h3>
                   </div>
                   {speechSupported && (
@@ -414,7 +415,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
                       onClick={() =>
                         toggleSpeech(
                           recId,
-                          `${t.realRecordTitle}. ${blueprint.discovery.realRecord}`,
+                          `${recordTitle}. ${blueprint.discovery.realRecord}`,
                           language,
                         )
                       }
@@ -493,7 +494,7 @@ export const DiscoveryModal: React.FC<DiscoveryModalProps> = ({
               <span>{t.admire3DBtn}</span>
             </button>
 
-            {isCompleted && onStartTestDrive && (
+            {isCompleted && onStartTestDrive && !blueprint.virtualLab && (
               <button
                 type="button"
                 onClick={() => {

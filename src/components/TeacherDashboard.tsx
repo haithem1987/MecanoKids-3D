@@ -1,3 +1,4 @@
+import { CATEGORIES, CATEGORY_META, getCategoryLabel } from '../data/categories';
 import React, { useState } from 'react';
 import { Copy, Download, GraduationCap, Printer, X } from 'lucide-react';
 import { UI_TRANSLATIONS } from '../i18n/translations';
@@ -29,13 +30,7 @@ interface TeacherDashboardProps {
 // Build a blueprint-id → category lookup once
 const BP_CATEGORY = new Map(VEHICLE_BLUEPRINTS.map((bp) => [bp.id, bp.category]));
 
-const UNIVERSE_META: { category: VehicleCategory; label: string; color: string }[] = [
-  { category: VehicleCategory.CAR,          label: 'Route & Ville',      color: '#f59e0b' },
-  { category: VehicleCategory.BOAT,         label: 'Mer & Navigation',   color: '#0ea5e9' },
-  { category: VehicleCategory.PLANE,        label: 'Air & Espace',       color: '#8b5cf6' },
-  { category: VehicleCategory.CONSTRUCTION, label: 'Chantier & Agri',    color: '#f97316' },
-  { category: VehicleCategory.SPACE,        label: 'Espace & Robots',    color: '#10b981' },
-];
+const UNIVERSE_META = CATEGORIES.map((category) => ({ category, color: CATEGORY_META[category].color }));
 
 function getTotalStars(profile: PlayerProfile): number {
   return Object.values(profile.progress.completedStages)
@@ -326,7 +321,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                         fill="#94a3b8"
                         fontFamily="sans-serif"
                       >
-                        {u.label.split(' & ')[0]}
+                        {getCategoryLabel(u.category, language).split(' & ')[0]}
                       </text>
                     </g>
                   );

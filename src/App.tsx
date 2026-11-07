@@ -1,3 +1,4 @@
+import { getWorkshopInstruction } from './utils/workshopInstruction';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -6,6 +7,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { WifiOff } from 'lucide-react';
 import { track } from './utils/stemAnalytics';
+import { isAssemblyComplete } from './utils/assemblyValidation';
 import { evaluatePlayerProgression, syncUnlockedBadgesMap } from './data/badges';
 import { resolveEntitlements } from './utils/entitlements';
 import { VEHICLE_BLUEPRINTS } from './data/blueprints';
@@ -15,6 +17,7 @@ import {
   recordDailyChallengeCompletion,
 } from './data/dailyChallenges';
 import {
+  DIAGNOSTIC_NARRATION,
   getLocalizedBlueprint,
   getLocalizedBlueprints,
   UI_TRANSLATIONS,
@@ -33,7 +36,7 @@ import {
   SpeedrunRecord,
   VisualStyleMode,
 } from './types/game';
-import { getSnapMultiplier } from './utils/ageProfile';
+import { getMasterPartSnapMultiplier, getSnapMultiplier } from './utils/ageProfile';
 import {
   getEffectiveDailyStreak,
   recordDailyEngagement,
@@ -57,10 +60,14 @@ import { soundEngine } from './audio/soundEngine';
 import { useServiceWorkerUpdate } from './utils/pwa';
 import { TopBar } from './components/TopBar';
 import { WorkshopCanvas } from './components/WorkshopCanvas';
-import { BottomPartsDock } from './components/BottomPartsDock';
-import { PartsTray } from './components/PartsTray';
-import { usePartsTrayController } from './hooks/usePartsTrayController';
+import { WorkshopHud } from './components/WorkshopHud';
 import { StageCatalogModal } from './components/StageCatalogModal';
+import { VirtualLabMission } from './components/VirtualLabMission';
+import { OCTO_VICTORY_DURATION_MS, OctoSurprise } from './components/OctoSurprise';
+import { DRAWBRIDGE_ID } from './components/DrawbridgeTrial';
+import { ScienceChallengeMission } from './components/ScienceChallengeMission';
+import { applyScienceAction, getScienceChallenges, type ScienceTrial } from './data/scienceChallenges';
+import type { VirtualLabTrial } from './data/virtualLabs';
 import { DailyChallengeModal } from './components/DailyChallengeModal';
 import { SpeedLeaderboardModal } from './components/SpeedLeaderboardModal';
 import { ProgressionModal } from './components/ProgressionModal';
@@ -83,6 +90,7 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { UpgradeModal } from './components/UpgradeModal';
 import { LicenseActivationModal } from './components/LicenseActivationModal';
 import { canPlayStage, freeTrialExhausted, isUnlocked } from './utils/entitlements';
+import { localAdminActive } from './utils/localAdmin';
 
 interface ActiveDiagnosticSession {
   blueprintId: string;
@@ -98,10 +106,10 @@ export default function App() {
   const { needsRefresh, applyUpdate } = useServiceWorkerUpdate();
 
   const [showOnboarding, setShowOnboarding] = useState<boolean>(
-    () => !localStorage.getItem(ONBOARDING_DONE_KEY),
+    () => !localAdminActive && !localStorage.getItem(ONBOARDING_DONE_KEY),
   );
   const [showLanding, setShowLanding] = useState<boolean>(
-    () => !localStorage.getItem(LANDING_SEEN_KEY),
+    () => !localAdminActive && !localStorage.getItem(LANDING_SEEN_KEY),
   );
   const [profileStore, setProfileStore] = useState<MultiProfileStore>(loadMultiProfileStore);
   const [todayDateKey, setTodayDateKey] = useState<string>(() => getTodayDateKey());
@@ -159,28 +167,21 @@ export default function App() {
   const [hintPartId, setHintPartId] = useState<string | null>(null);
   const [explodedFactor, setExplodedFactor] = useState<number>(0);
   const [cameraPresetNonce, setCameraPresetNonce] = useState<number>(0);
-  const [dockCollapsed, setDockCollapsed] = useState<boolean>(false);
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-  const effectiveTrayPosition = isMobile && progress.partsTrayPosition !== 'bottom'
-    ? 'bottom' as const
-    : progress.partsTrayPosition;
+  const effectiveTrayPosition = progress.partsTrayPosition === 'right' ? 'right' as const : 'left' as const;
 
-  const {
-    trayVisible: partsTrayVisible,
-    onPartPicked: partsTrayOnPartPicked,
-    onPartSnapped: partsTrayOnPartSnapped,
-    onPartRejected: partsTrayOnPartRejected,
-    onManualToggle: partsTrayOnManualToggle,
-  } = usePartsTrayController(progress.partsTrayAutoHide);
+
 
   // Axe 1, 2 & 3 interactive states
   const [xRayMode, setXRayMode] = useState<boolean>(false);
   const [testDriveActive, setTestDriveActive] = useState<boolean>(false);
+  const [labTrial, setLabTrial] = useState<VirtualLabTrial>();
+  const [scienceTrial, setScienceTrial] = useState<ScienceTrial>();
+  const startScienceTrial = useCallback((trial: ScienceTrial | undefined) => {
+    setScienceTrial(trial);
+  }, []);
+  const handleScienceAction = useCallback((value: number) => {
+    setScienceTrial(previous => previous && applyScienceAction(previous, value));
+  }, []);
   const [studioOpen, setStudioOpen] = useState<boolean>(false);
   const [garageOpen, setGarageOpen] = useState<boolean>(false);
   const [quizOpen, setQuizOpen] = useState<boolean>(false);
@@ -198,7 +199,7 @@ export default function App() {
   const [upgradeReason, setUpgradeReason] = useState<'stages' | 'profiles' | 'liveries'>('stages');
   const [licenseActivationOpen, setLicenseActivationOpen] = useState<boolean>(false);
   const [profilesOpen, setProfilesOpen] = useState<boolean>(false);
-  const [catalogOpen, setCatalogOpen] = useState<boolean>(false);
+  const [catalogOpen, setCatalogOpen] = useState<boolean>(localAdminActive);
   const [streakModalOpen, setStreakModalOpen] = useState<boolean>(false);
   const [dailyModalOpen, setDailyModalOpen] = useState<boolean>(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState<boolean>(false);
@@ -214,7 +215,7 @@ export default function App() {
   const pendingAdultActionRef = useRef<(() => void) | null>(null);
   const [recentUnlockedBadgeIds, setRecentUnlockedBadgeIds] = useState<string[]>([]);
   const [lastTimedResult, setLastTimedResult] = useState<TimedCompletionResult | null>(null);
-  const [tourOpen, setTourOpen] = useState<boolean>(() => !activeProfile.progress.tutorialSeen);
+  const [tourOpen, setTourOpen] = useState<boolean>(() => !localAdminActive && !activeProfile.progress.tutorialSeen);
   const [tourStep, setTourStep] = useState<number>(0);
   const [diagTutorialOpen, setDiagTutorialOpen] = useState<boolean>(false);
 
@@ -275,7 +276,10 @@ export default function App() {
     if (mult === 1) return bp;
     return {
       ...bp,
-      parts: bp.parts.map((p) => ({ ...p, snapRadius: p.snapRadius * mult })),
+      parts: bp.parts.map(p => ({
+        ...p,
+        snapRadius: p.snapRadius * mult * (bp.masterExpansion ? getMasterPartSnapMultiplier(progress.ageProfile, p) : 1),
+      })),
     };
   }, [currentRawBlueprint, language, progress.ageProfile]);
 
@@ -327,8 +331,14 @@ export default function App() {
 
   const mistakesCount = currentStageState?.mistakesCount ?? 0;
   const baseElapsedMs = currentStageState?.elapsedMs ?? 0;
-  const isCompleted =
-    !activeDiagnostic && standardPlacedPartIds.length === currentBlueprint.parts.length;
+  const isCompleted = !activeDiagnostic && isAssemblyComplete(currentBlueprint, standardPlacedPartIds);
+  const activeLabTrial = isCompleted && labTrial?.id === currentBlueprint.virtualLab ? labTrial : undefined;
+  const scienceChallenges = getScienceChallenges(currentBlueprint.id);
+  const activeScienceTrial = isCompleted && scienceTrial?.blueprintId === currentBlueprint.id ? scienceTrial : undefined;
+  useEffect(() => {
+    setLabTrial(undefined);
+    setScienceTrial(undefined);
+  }, [currentBlueprint.id, isCompleted]);
 
   // Keep No-Silhouette clean-run tracker synchronized when starting fresh at 0 parts
   // Handle Stripe checkout return (?checkout=success&session_id=cs_xxx)
@@ -572,7 +582,7 @@ export default function App() {
     latestProgressRef.current = progress;
     soundEngine.setMuted(progress.muted || progress.classroomSilent);
     soundEngine.setVolumeSfx(progress.volumeSfx ?? 1);
-    speechEngine.setVoiceVolume(progress.classroomSilent ? 0 : (progress.volumeVoice ?? 1));
+    speechEngine.setVoiceVolume(progress.muted || progress.classroomSilent ? 0 : (progress.volumeVoice ?? 1));
     saveMultiProfileStore(profileStore);
   }, [profileStore, progress]);
 
@@ -584,69 +594,72 @@ export default function App() {
     speechEngine.speak(`mission-start-${currentBlueprint.id}`, name, language);
   }, [currentBlueprint.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    const handleUnload = () => {
-      const storeSnap = latestStoreRef.current;
-      const extraDelta =
-        segmentStartRef.current !== null
-          ? Math.max(0, Date.now() - segmentStartRef.current)
-          : 0;
-      if (extraDelta > 0) {
-        const nextProfiles = storeSnap.profiles.map((prof) => {
-          if (prof.id !== storeSnap.activeProfileId) return prof;
-          const bpId = prof.progress.currentBlueprintId;
-          const cur = prof.progress.inProgressStages[bpId];
-          return {
-            ...prof,
-            updatedAt: Date.now(),
-            progress: {
-              ...prof.progress,
-              inProgressStages: {
-                ...prof.progress.inProgressStages,
-                [bpId]: {
-                  placedPartIds: cur?.placedPartIds ?? [],
-                  mistakesCount: cur?.mistakesCount ?? 0,
-                  elapsedMs: (cur?.elapsedMs ?? 0) + extraDelta,
-                  updatedAt: Date.now(),
-                },
+  const persistCurrentSession = useCallback(() => {
+    const storeSnap = latestStoreRef.current;
+    const extraDelta =
+      segmentStartRef.current !== null
+        ? Math.max(0, Date.now() - segmentStartRef.current)
+        : 0;
+    if (extraDelta > 0) {
+      const nextProfiles = storeSnap.profiles.map((prof) => {
+        if (prof.id !== storeSnap.activeProfileId) return prof;
+        const bpId = prof.progress.currentBlueprintId;
+        const cur = prof.progress.inProgressStages[bpId];
+        return {
+          ...prof,
+          updatedAt: Date.now(),
+          progress: {
+            ...prof.progress,
+            inProgressStages: {
+              ...prof.progress.inProgressStages,
+              [bpId]: {
+                placedPartIds: cur?.placedPartIds ?? [],
+                mistakesCount: cur?.mistakesCount ?? 0,
+                elapsedMs: (cur?.elapsedMs ?? 0) + extraDelta,
+                updatedAt: Date.now(),
               },
             },
-          };
-        });
-        saveMultiProfileStore({
-          ...storeSnap,
-          profiles: nextProfiles,
-        });
-      } else {
-        saveMultiProfileStore(storeSnap);
-      }
-    };
-    window.addEventListener('beforeunload', handleUnload);
-    window.addEventListener('pagehide', handleUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleUnload);
-      window.removeEventListener('pagehide', handleUnload);
-    };
+          },
+        };
+      });
+      return saveMultiProfileStore({
+        ...storeSnap,
+        profiles: nextProfiles,
+      });
+    }
+    return saveMultiProfileStore(storeSnap);
   }, []);
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', persistCurrentSession);
+    window.addEventListener('pagehide', persistCurrentSession);
+    return () => {
+      window.removeEventListener('beforeunload', persistCurrentSession);
+      window.removeEventListener('pagehide', persistCurrentSession);
+    };
+  }, [persistCurrentSession]);
+
+  const canAutoUpdate = !anyOverlayOpen && !shouldRunStopwatch && !activeDragPartId && !stagedPartId
+    && !activeScienceTrial && !activeLabTrial && !activeDiagnostic;
+  useEffect(() => {
+    if (!needsRefresh || !canAutoUpdate) return;
+    const update = () => {
+      if (!document.hidden) applyUpdate(persistCurrentSession);
+    };
+    document.addEventListener('visibilitychange', update);
+    const retry = window.setInterval(update, 5000);
+    update();
+    return () => {
+      document.removeEventListener('visibilitychange', update);
+      window.clearInterval(retry);
+    };
+  }, [needsRefresh, canAutoUpdate, applyUpdate, persistCurrentSession]);
 
   // Sync HTML lang & RTL/LTR direction dynamically
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   }, [language]);
-
-  // Keyboard shortcut 'H' to toggle Zen 3D Dock collapse
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
-      if (e.key === 'h' || e.key === 'H') {
-        setDockCollapsed((prev) => !prev);
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
 
   const flashStatus = useCallback((msg: string) => {
     setStatusMessage(msg);
@@ -1144,7 +1157,6 @@ export default function App() {
     setStagedPartId(null);
     setActiveDragPartId(null);
     setHintPartId(null);
-    setDockCollapsed(false);
     setCameraPresetNonce((n) => n + 1);
 
     setDiagnosticSession({
@@ -1186,7 +1198,8 @@ export default function App() {
         const msg = t.diagnosticExtractedToast(spec.name);
         recordActiveWorkshopEngagement(msg);
         if (latestProgressRef.current.voiceAutoRead && !latestProgressRef.current.muted) {
-          speechEngine.speak(`diag-extract-${spec.id}`, msg, language);
+          const cue = DIAGNOSTIC_NARRATION.extracted[language === 'fr' ? 0 : language === 'en' ? 1 : 2];
+          speechEngine.speak(`diag-extract-${spec.id}`, `${spec.name}. ${cue}`, language);
         }
       } else {
         recordActiveWorkshopEngagement();
@@ -1198,7 +1211,8 @@ export default function App() {
   const handleSelectBlueprint = useCallback(
     (blueprintId: string) => {
       const completedCount = Object.keys(progress.completedStages).length;
-      if (freeTrialExhausted(completedCount) && !isUnlocked(progress.licenseState)) {
+      const target = VEHICLE_BLUEPRINTS.find(bp => bp.id === blueprintId);
+      if (!localAdminActive && !target?.virtualLab && freeTrialExhausted(completedCount) && !isUnlocked(progress.licenseState)) {
         track('paywall_shown', { missionsCompleted: completedCount });
         setUpgradeReason('stages');
         setUpgradeModalOpen(true);
@@ -1231,7 +1245,7 @@ export default function App() {
       setCameraPresetNonce((n) => n + 1);
       setStatusMessage(null);
     },
-    [currentBlueprint.id, flushActiveStopwatchSegment, setProgress, progress.completedStages, progress.licenseState],
+    [currentBlueprint.id, flushActiveStopwatchSegment, setProgress, progress.completedStages, progress.licenseState, scienceTrial],
   );
 
   const handleStartTimedStage = useCallback(
@@ -1261,7 +1275,6 @@ export default function App() {
           },
         },
       }));
-      setDockCollapsed(false);
       setStagedPartId(null);
       setActiveDragPartId(null);
       setHintPartId(null);
@@ -1310,7 +1323,6 @@ export default function App() {
             : p.inProgressStages,
         };
       });
-      setDockCollapsed(false);
       setStagedPartId(null);
       setActiveDragPartId(null);
       setHintPartId(null);
@@ -1469,7 +1481,7 @@ export default function App() {
       undoStackRef.current = [...undoStackRef.current, [...standardPlacedPartIds]];
       setCanUndo(true);
       const updatedPlaced = [...standardPlacedPartIds, partId];
-      const justCompleted = updatedPlaced.length === currentBlueprint.parts.length;
+      const justCompleted = isAssemblyComplete(currentBlueprint, updatedPlaced);
       if (justCompleted) track('mission_completed', { blueprintId: currentBlueprint.id });
 
       if (!justCompleted) {
@@ -1721,15 +1733,20 @@ export default function App() {
           flashStatus(t.streakExtendedToast(streakOutcome.nextStreak.currentStreak));
         }
 
-        window.setTimeout(() => {
-          setDiscoveryOpen(true);
-        }, 850);
+        if (currentBlueprint.id !== DRAWBRIDGE_ID && !currentBlueprint.interactiveTrial && !currentBlueprint.virtualLab && !getScienceChallenges(currentBlueprint.id)) {
+          window.setTimeout(() => {
+            const latest = latestProgressRef.current;
+            if (latest.currentBlueprintId === currentBlueprint.id &&
+              isAssemblyComplete(currentBlueprint, latest.inProgressStages[currentBlueprint.id]?.placedPartIds ?? [])) {
+              setDiscoveryOpen(true);
+            }
+          }, OCTO_VICTORY_DURATION_MS);
+        }
       }
 
       setStagedPartId(null);
       setActiveDragPartId(null);
       setHintPartId((prev) => (prev === partId ? null : prev));
-      partsTrayOnPartSnapped();
     },
     [
       activeDiagnostic,
@@ -1737,7 +1754,6 @@ export default function App() {
       currentRawBlueprint,
       flashStatus,
       language,
-      partsTrayOnPartSnapped,
       recordActiveWorkshopEngagement,
       setProgress,
       standardPlacedPartIds,
@@ -1780,9 +1796,8 @@ export default function App() {
         });
       }
       flashStatus(reason);
-      partsTrayOnPartRejected();
     },
-    [activeDiagnostic, currentBlueprint.id, currentBlueprint.parts, flashStatus, hintPartId, partsTrayOnPartRejected, setHintPartId, setProgress, standardPlacedPartIds],
+    [activeDiagnostic, currentBlueprint.id, currentBlueprint.parts, flashStatus, hintPartId, setHintPartId, setProgress, standardPlacedPartIds],
   );
 
   const handleStartPartDrag = useCallback(
@@ -1811,7 +1826,8 @@ export default function App() {
         const msg = t.diagnosticClickFaultyHint(spec.name);
         flashStatus(msg);
         if (latestProgressRef.current.voiceAutoRead && !latestProgressRef.current.muted) {
-          speechEngine.speak(`diag-hint-${spec.id}`, msg, language);
+          const cue = DIAGNOSTIC_NARRATION.locate[language === 'fr' ? 0 : language === 'en' ? 1 : 2];
+          speechEngine.speak(`diag-hint-${spec.id}`, `${spec.name}. ${cue}`, language);
         }
         return;
       }
@@ -1856,7 +1872,6 @@ export default function App() {
     (pos: 'bottom' | 'left' | 'right') => {
       setProgress((p) => ({ ...p, partsTrayPosition: pos }));
       // When moving the tray to a side panel, collapse the bottom dock to give more room to the canvas
-      setDockCollapsed(pos !== 'bottom');
     },
     [setProgress],
   );
@@ -1879,7 +1894,7 @@ export default function App() {
     }
     if (hasNextStage) {
       const nextBp = VEHICLE_BLUEPRINTS[currentIndex + 1];
-      if (!canPlayStage(progress.licenseState, nextBp.stageNumber)) {
+      if (!localAdminActive && !nextBp.virtualLab && !canPlayStage(progress.licenseState, nextBp.stageNumber, nextBp.masterExpansion)) {
         track('paywall_shown', { reason: 'stages' });
         setUpgradeReason('stages');
         setUpgradeModalOpen(true);
@@ -1897,7 +1912,6 @@ export default function App() {
   ]);
 
   const handleOpenTour = useCallback(() => {
-    setDockCollapsed(false);
     setProfilesOpen(false);
     setCatalogOpen(false);
     setStreakModalOpen(false);
@@ -2118,7 +2132,7 @@ export default function App() {
     return <OnboardingModal onComplete={handleOnboardingComplete} />;
   }
 
-  if (progress.ageProfile === undefined) {
+  if (!localAdminActive && progress.ageProfile === undefined) {
     return <AgeProfileSelector language={language} onConfirm={handleSelectAgeProfile} />;
   }
 
@@ -2145,7 +2159,7 @@ export default function App() {
       {needsRefresh && (
         <div className="fixed top-0 inset-x-0 z-50 flex items-center justify-between gap-3 px-4 py-2 bg-sky-700 text-white text-sm font-medium shadow-md">
           <span>{t.swUpdateAvailable}</span>
-          <button type="button" onClick={applyUpdate} className="shrink-0 px-3 py-1 rounded-md bg-white text-sky-700 font-semibold text-xs hover:bg-sky-50 transition-colors cursor-pointer">
+          <button type="button" disabled={Boolean(activeDragPartId)} onClick={() => applyUpdate(persistCurrentSession)} className="shrink-0 px-3 py-1 rounded-md bg-white text-sky-700 font-semibold text-xs hover:bg-sky-50 transition-colors cursor-pointer disabled:opacity-50">
             {t.swUpdateBtn}
           </button>
         </div>
@@ -2191,8 +2205,12 @@ export default function App() {
         }
       />
 
-      {/* Full-Viewport 100% Unobstructed 3D Center Stage */}
-      <main className="relative flex-1 w-full overflow-hidden">
+      {/* Reserved areas for the 3D scene, instructions and parts. */}
+      <main className="workbench-workspace relative flex min-h-0 flex-1 w-full overflow-hidden" data-tray-position={effectiveTrayPosition}>
+        <div className="workbench-scene relative min-h-0 min-w-0 flex-1">
+        <OctoSurprise key={`${activeProfile.id}-${currentBlueprint.id}`} placed={standardPlacedPartIds.length}
+          total={currentBlueprint.parts.length} stageNumber={currentBlueprint.stageNumber} blocked={anyOverlayOpen || Boolean(activeDiagnostic)}
+          completed={isCompleted} congratulations={t.octoCongratulations} />
         {/* Non-intrusive Offline Connectivity Indicator */}
         {!isOnline && (
           <div className="pointer-events-none absolute top-3 start-4 z-10 inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-amber-300 rounded-lg shadow-xs text-xs font-medium text-amber-950">
@@ -2209,6 +2227,7 @@ export default function App() {
         )}
 
         <WorkshopCanvas
+          trayPosition={effectiveTrayPosition}
           language={language}
           blueprint={currentBlueprint}
           placedPartIds={effectivePlacedPartIds}
@@ -2217,6 +2236,9 @@ export default function App() {
           environmentMode={progress.environmentMode}
           xRayMode={xRayMode}
           testDriveActive={testDriveActive}
+          labTrial={activeLabTrial}
+          scienceTrial={activeScienceTrial}
+          onScienceAction={handleScienceAction}
           noSilhouetteMode={progress.noSilhouetteMode}
           faultyPartIds={effectiveFaultyPartIds}
           onExtractFaultyPart={handleExtractFaultyPart}
@@ -2229,7 +2251,7 @@ export default function App() {
           hintPartId={effectiveHintPartId}
           onPartSnapped={handlePartSnapped}
           onPartDropRejected={handlePartDropRejected}
-          onDragEndSignal={() => setActiveDragPartId(null)}
+          onDragEndSignal={() => { setActiveDragPartId(null); }}
           workshopTheme={progress.workshopTheme}
           onStartCanvasDrag={(partId) => {
             soundEngine.playPickup(progress.preferredStyle);
@@ -2239,71 +2261,23 @@ export default function App() {
             setActiveDragPartId(partId);
           }}
         />
-      </main>
-
-      {/* Side PartsTray (left / right positions) */}
-      {effectiveTrayPosition !== 'bottom' && (
-        <PartsTray
-          language={language}
-          blueprint={currentBlueprint}
-          placedPartIds={effectivePlacedPartIds}
-          faultyPartIds={effectiveFaultyPartIds}
-          liveryPreset={currentLivery}
-          stagedPartId={stagedPartId}
-          activeDragPartId={activeDragPartId}
-          hintPartId={effectiveHintPartId}
-          visible={partsTrayVisible}
-          position={effectiveTrayPosition}
-          onStartPartDrag={handleStartPartDrag}
-          onClickPartCard={handleClickPartCard}
-          onToggleVisible={partsTrayOnManualToggle}
-          onChangePosition={handleChangePartsTrayPosition}
-          visualStyle={progress.preferredStyle}
-          onSelectStyle={handleSelectStyle}
-          onPartDraggedOut={partsTrayOnPartPicked}
-        />
-      )}
-
-      {/* "Pièce en main" floating pill when dock is collapsed and a part is active */}
-      {dockCollapsed && (activeDragPartId ?? stagedPartId) && (() => {
-        const activeId = activeDragPartId ?? stagedPartId;
-        const part = currentBlueprint.parts.find((p) => p.id === activeId);
-        if (!part) return null;
-        return (
-          <div className="fixed bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-300 rounded-full shadow text-xs font-medium text-slate-800 select-none">
-            <span>🔧 {part.name} — en main</span>
-            <span className="text-slate-300">·</span>
-            <button
-              type="button"
-              onClick={() => {
-                setStagedPartId(null);
-                setActiveDragPartId(null);
-              }}
-              className="text-slate-500 hover:text-slate-900 cursor-pointer"
-              aria-label="Annuler la sélection"
-            >
-              Annuler ✕
-            </button>
-          </div>
-        );
-      })()}
-
-      {/* Floating "Étape suivante" CTA — visible dès que l'assemblage est terminé, hors du dock */}
-      {isCompleted && (hasNextStage || currentBlueprint.isDailyBonus) && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-          <button
-            type="button"
-            onClick={handleGoNextStage}
-            className="flex items-center gap-3 px-8 py-4 text-base font-bold text-white bg-sky-600 hover:bg-sky-700 active:bg-sky-800 rounded-2xl shadow-lg transition-colors min-h-[64px] select-none"
-          >
-            <span>{currentBlueprint.isDailyBonus ? t.returnToStagesBtn : t.nextStageBtn}</span>
-            <span aria-hidden="true">→</span>
-          </button>
         </div>
-      )}
+        {!activeDiagnostic && (currentBlueprint.virtualLab || scienceChallenges || ((currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial) && isCompleted)) && (
+          <div className="workbench-mission min-h-0 overflow-y-auto p-2">
+            {(currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial) && <div id="workbench-trial-controls" />}
+            {currentBlueprint.virtualLab && (
+              <VirtualLabMission key={`${currentBlueprint.id}-${isCompleted}`} id={currentBlueprint.virtualLab}
+                language={language} assembled={isCompleted} trial={activeLabTrial} onTrial={setLabTrial} />
+            )}
+            {scienceChallenges && (
+              <ScienceChallengeMission blueprintId={currentBlueprint.id} challenges={scienceChallenges} trial={activeScienceTrial}
+                language={language} assembled={isCompleted} onTrial={startScienceTrial} onAction={handleScienceAction} />
+            )}
+          </div>
+        )}
 
-      {/* Collapsible Unified Bottom Parts & Controls Dock */}
-      <BottomPartsDock
+      {/* Persistent floating palettes and secondary settings. */}
+      <WorkshopHud
         language={language}
         blueprint={currentBlueprint}
         totalStages={VEHICLE_BLUEPRINTS.length}
@@ -2327,8 +2301,6 @@ export default function App() {
         stagedPartId={stagedPartId}
         activeDragPartId={activeDragPartId}
         hintPartId={effectiveHintPartId}
-        collapsed={dockCollapsed}
-        onToggleCollapse={() => setDockCollapsed((c) => !c)}
         explodedFactor={explodedFactor}
         onChangeExploded={(val) => {
           if (val > 0 && testDriveActive) {
@@ -2347,7 +2319,7 @@ export default function App() {
           }
           setProgress((p) => ({ ...p, muted: !p.muted }));
         }}
-        onReplayInstruction={() => speechEngine.replay()}
+        onReplayInstruction={() => speechEngine.speak('manual-workshop', getWorkshopInstruction(currentBlueprint, effectivePlacedPartIds, stagedPartId ?? activeDragPartId ?? effectiveHintPartId), language)}
         voiceAutoRead={progress.voiceAutoRead}
         onToggleVoiceAutoRead={() => handleToggleVoiceAutoRead()}
         timerModeEnabled={progress.timerModeEnabled}
@@ -2361,18 +2333,17 @@ export default function App() {
         onSaveNow={handleManualSave}
         onStartPartDrag={handleStartPartDrag}
         onClickPartCard={handleClickPartCard}
-        onPartDraggedOut={partsTrayOnPartPicked}
         onOpenCatalog={() => setCatalogOpen(true)}
         onOpenVictoryModal={() => setDiscoveryOpen(true)}
         hasNextStage={hasNextStage}
         onGoNextStage={handleGoNextStage}
         onOpenTour={handleOpenTour}
         statusMessage={statusMessage}
-        partsTrayVisible={partsTrayVisible}
         partsTrayPosition={effectiveTrayPosition}
-        onTogglePartsTray={partsTrayOnManualToggle}
         onChangePartsTrayPosition={handleChangePartsTrayPosition}
       />
+
+      </main>
 
       {/* Family Multi-Profiles, Trilingual Web Speech & Offline PWA Modal */}
       <ProfilesModal
@@ -2566,7 +2537,7 @@ export default function App() {
         onOpenProgression={() => setProgressionOpen(true)}
         hasPatent={Boolean(currentPatent)}
         onOpenQuiz={() => setQuizOpen(true)}
-        onStartTestDrive={() => {
+        onStartTestDrive={currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.staticStructure ? undefined : () => {
           if (!testDriveActive) {
             handleToggleTestDrive();
           }
@@ -2695,7 +2666,6 @@ export default function App() {
         onStepChange={(idx) => {
           setTourStep(idx);
           if (idx <= 2) {
-            setDockCollapsed(false);
           }
         }}
         onFinish={handleFinishTour}

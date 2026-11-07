@@ -15,7 +15,7 @@ Trilingue **FR / EN / AR (RTL)**. PWA installable, jouable **hors-ligne**. Cible
 | Tests unitaires (Vitest, `src/**/*.test.ts`) | `npm test` |
 | Build | `npm run build` |
 | Prévisualisation Cloudflare | `npm run preview` |
-| Déploiement (Worker `mecanokids-3d`) | `npm run deploy`, **seulement si on te le demande explicitement** |
+| Déploiement (Cloudflare Pages, projet `octoglos`) | `npm run deploy`, **seulement si on te le demande explicitement** |
 
 Avant de déclarer une tâche terminée : `npm run lint` et `npm test` doivent passer.
 
@@ -26,7 +26,7 @@ Avant de déclarer une tâche terminée : `npm run lint` et `npm test` doivent p
   - `src/components/WorkshopCanvas.tsx` : scène, caméra et interactions.
   - `src/three/` : géométries des pièces, matériaux, environnements.
 - **Orchestration** : `src/App.tsx` (~2 500 lignes). Ne pas y ajouter de logique : extraire dans des hooks (`src/hooks/`) ou des utilitaires (`src/utils/`).
-- **Pièces** : `src/components/PartsTray.tsx` + `src/hooks/usePartsTrayController.ts` (tiroir), `BottomPartsDock.tsx`.
+- **Pièces** : `src/components/PartsTray.tsx` (palette persistante), `WorkshopHud.tsx` (caméra flottante et réglages). Aucune ouverture, réduction ou rétraction des pièces pendant le jeu.
 - **Données** : véhicules et plans dans `src/data/`. `blueprints.ts` et `englishBlueprints.ts` sont en doublon par langue, à unifier (voir ROADMAP).
 - **i18n** : `src/i18n/translations.ts`. Chaque nouvelle chaîne doit exister en `fr`, `en` et `ar`.
 - **Persistance** : `src/utils/storage.ts` (localStorage).
@@ -43,6 +43,10 @@ Les routes `/api/*` de `server.ts` **n'existent donc pas en production**, et le 
 Ne pas « corriger » ça au passage : c'est la tâche P0-ARCH de `docs/ROADMAP.md`, avec une décision d'architecture à valider avant.
 
 ## Règles produit non négociables
+
+**Un seul espace de jeu.** Tout atelier, défi et essai scientifique se joue sur l’établi 3D principal (`WorkshopCanvas`). Le catalogue sélectionne un atelier et l’ouvre sur cet établi. Les panneaux et fiches servent aux consignes, aux commandes accessibles et aux conclusions. Ne jamais créer de mini-jeu, de simulateur ou de plateau parallèle dans le catalogue, une fiche ou une page distincte.
+
+**Pièces toujours accessibles.** La palette des pièces reste visible pendant toute la sélection et la pose. Ne jamais réintroduire d’ouverture/réduction d’établi ni de rétraction automatique. Les vues caméra flottent sur le côté opposé ; les réglages secondaires sont dans un menu séparé.
 
 1. **Aucun achat, lien externe ni impression dans le parcours enfant.** Tout passe derrière la porte parents (`ParentalGateModal`, `utils/parentalGate.ts`).
 2. **Aucune donnée personnelle d'enfant côté serveur.** Pas de nom, de photo ni d'identifiant persistant. Les événements analytics sont anonymes et agrégés (RGPD, COPPA si diffusion aux États-Unis).

@@ -16,8 +16,10 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { initServiceWorker } from './utils/pwa';
+import { unlockWorkshopAudio } from './audio/audioContext';
 
 initServiceWorker();
+unlockWorkshopAudio();
 import { initAnalytics } from './utils/stemAnalytics';
 initAnalytics();
 

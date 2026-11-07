@@ -13,6 +13,45 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [x] UX-PALETTES — Supprimer l’ouverture et la réduction de l’établi (retour enfant du 7 novembre)
+- Palette de pièces flottante persistante, vues caméra et recentrage sur le côté opposé ; réglages secondaires dans un menu indépendant qui ne recouvre pas les pièces.
+- Aucun tiroir rétractable, aucun bouton d’ouverture/réduction, aucun raccourci H. Le canvas garde toute sa hauteur pendant sélection, pose et changement de côté.
+- Cadrage dans la zone dégagée et rapprochement automatique sur la pièce choisie. Lecture manuelle disponible même avec la voix automatique désactivée.
+- Assemblages tactiles : château 61 pièces, aqueduc 58, tour solaire 59 et portique 45 ; zéro ouverture/réduction pendant les parcours, caméra face/profil/dessus et palette déplacée. Glisser-déposer souris vérifié. Neuf défis et treize laboratoires testés en FR/EN/AR. Voir `docs/qa/2026-11-07-palettes-flottantes.md`.
+
+
+### [ ] JEU-ETABLI-HISTOIRE — Réagencer l’établi et enrichir les grands montages (demande du 7 novembre)
+- Première proposition de zones réservées abandonnée après retour utilisateur. La palette persistante remplace entièrement le dock (UX-PALETTES).
+- Première série : portique 45 pièces, château 61, yourte 41, viaduc à treillis 56, temple 49, moulin interactif 59 donjon guidé 24, tour solaire interactive 59 et dôme triangulé 58 et aqueduc interactif 58 ; nouvelle catégorie Histoire, intégralement sur l’établi commun et en FR/EN/AR.
+- Les dix nouveaux montages passent leurs assemblages FR/EN/AR ; moulin et pont levant ont leurs commandes dans la zone réservée aux missions. 566 tests passent. Rapport : `docs/qa/2026-11-07-etabli-histoire.md`. Poursuivre l’enrichissement après validation de chaque montage.
+
+
+### [x] QA-ATELIERS — Corriger les défauts confirmés de l’audit du 5 novembre 2026
+- **Fait** : inventaires dédiés pour les 15 expériences STEM, molécules et appareils fidèles aux consignes, pendule connecté et animé autour d’un pivot commun, réussite validée sur les composants/connexions, registre des 9 catégories, compteurs dynamiques, contenu FR/EN/AR et aperçu du tiroir sans déplacement des cartes. Régression Comics corrigée.
+- **Validation** : tests catalogue/géométries dans les quatre styles, audit reproductible, galerie des 124 montages et retests H₂O/pendule/catalogue/RTL. Détails et limites : `docs/qa/2026-11-05-validation-corrections.md`. Note tablette basée sur `TABLET_TEST_PROTOCOL.md` ; validation sur appareils réels encore à effectuer.
+- **Suivi WebGL** : libération explicite des contextes, restauration avec réveil du rendu et relance accessible ; 4 pertes/restaurations et 40 aperçus successifs testés. Voir `docs/qa/2026-11-05-webgl-recovery.md`.
+- **Recette locale du 6 novembre** : 20 raccords corrigés parmi 50 signaux sur 40 modèles, contrôles du tiroir FR/EN/AR, reprise hors ligne sur le build de production et 20 minutes d’endurance sur 124 modèles et quatre styles. Voir `docs/qa/2026-11-06-recette-pilote.md`.
+
+### [x] STEM-JEU — Jouer les défis scientifiques sur l’établi commun
+- Les neuf essais appartiennent aux quatre ateliers d’origine : circuit LED, levier, eau et CO₂. Après l’assemblage, le panneau Mission scientifique lance l’essai sur le plateau 3D. Les pièces interactives et les commandes accessibles pilotent le même résultat.
+- Le catalogue présente les univers sous forme de grandes tuiles. Il ouvre les ateliers sur l’établi et regroupe les filtres avancés et la gestion des sauvegardes dans des panneaux repliés.
+- Le test navigateur part du catalogue, joue chaque essai sur le plateau, le rejoue au clavier et vérifie le retour au montage (`scripts/test-science-challenges.mjs`).
+
+### [x] QA-ADMIN-LOCAL — Ouvrir n’importe quel atelier pour les essais
+- Dans PowerShell : `$env:PORT='7302'; npm run dev -- --local-admin`, puis ouvrir `http://127.0.0.1:7302/?admin=1`. Le catalogue s’ouvre directement, sans seuil de progression ni licence. Le serveur de test écoute uniquement sur la boucle locale ; le mode est désactivé dans les builds de production.
+
+### [x] STEM-LABOS — Intégrer 13 missions scientifiques à l’établi 3D
+- Physique : pendule de Newton, pression et Venturi, fusée à eau, stabilité d’une tour.
+- Chimie : états de l’eau, ADN de fraise, polymères, indicateur au chou rouge.
+- Électronique et logique : conducteurs, résistance du graphite, portes ET/OU/NON.
+- Vivant et Terre : capillarité d’une fleur, ruissellement et érosion.
+- Les missions apparaissent comme des ateliers ordinaires dans les filtres du catalogue. L’enfant assemble les pièces sur le plateau, lance l’essai depuis le panneau Mission scientifique, puis observe le résultat dans la même scène 3D et lit la conclusion en FR/EN/AR. Sources pédagogiques : [NASA – fusée à eau](https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/flight-of-a-water-rocket/), [NHGRI – ADN de fraise](https://www.genome.gov/about-genomics/teaching-tools/strawberry-dna-extraction), [ACS – indicateur au chou rouge](https://www.acs.org/education/activities/red-cabbage-indicator.html), [USGS – capillarité](https://www.usgs.gov/water-science-school/science/capillary-action-and-water).
+- Vérification Chrome : 13 assemblages complets et 13 conclusions dans chacune des trois langues, à la souris en FR et au toucher simulé en EN et AR (`scripts/test-virtual-labs.mjs`).
+- Le moteur vocal utilise des pistes locales FR/EN/AR quand la synthèse du navigateur est indisponible. Elles couvrent les consignes scientifiques, les fiches, les pièces, les quiz du catalogue et le tutoriel. Regénération avec `scripts/build-narration.ts`.
+
+### [ ] QA-PILOTE-TABLETTE 🧑 — Valider les expériences sur les appareils pilotes
+- **CA** : renseigner la grille FR/EN/AR sur Android et iPad, vérifier les gestes au doigt, la reprise après interruption et la session prolongée sur chaque appareil. Revoir visuellement les raccords secondaires signalés. Protocole : `docs/qa/recette-tablette-stem.md`.
+
 ### [x] P0-SEC — Protéger `stripe.env` *(fait : stripe.env et *.env ajoutés au .gitignore, git check-ignore validé)*
 - **Contexte** : `stripe.env` est non suivi, mais il n'est pas couvert par `.gitignore` (le motif `.env*` ne couvre pas `stripe.env`).
 - **Travail** : ajouter `stripe.env` et `*.env` au `.gitignore`. Vérifier avec `git status` qu'il n'apparaît plus.
@@ -38,17 +77,11 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## Phase 0 — Quick wins (semaines 1-2)
 
-### [x] Q1 — Refaire la sélection des pièces *(fait : vignettes ≥ 80px, position par défaut 'bottom', auto-rétraction et tap-to-pick déjà présents)*
-- **Fichiers** : `PartsTray.tsx`, `usePartsTrayController.ts`, `BottomPartsDock.tsx`, `WorkshopCanvas.tsx`.
-- **Travail** :
-  - tiroir ancré en bas, qui se rétracte automatiquement pendant le placement ;
-  - tiroir déplaçable à gauche, à droite ou en bas, avec la position mémorisée ;
-  - vignettes ≥ 80 px ;
-  - interaction **tap pour prendre la pièce, puis tap sur la zone cible** ; le glisser-déposer reste une option.
-- **CA** :
-  - un enfant de 6 ans pose sa première pièce en ≤ 30 s, sans aide ;
-  - le tiroir ne masque jamais le point d'ancrage actif ;
-  - ça fonctionne au doigt sur une tablette de 10 pouces.
+### [x] Q1 — Refaire la sélection des pièces (corrigé après retour enfant le 7 novembre)
+- Pièces toujours visibles dans une palette flottante à côté du plateau. Cartes tactiles ≥ 80 px, filtre disponibles/toutes, vignettes liées à la géométrie et indépendantes de la langue.
+- Tap pour prendre, puis tap sur la cible ; glisser-déposer conservé. Pas de fermeture/rétraction automatique ni de panneau à rouvrir pour continuer.
+- Vues caméra et recentrage flottants opposés à la palette. Style, vue éclatée et réglages secondaires dans un menu distinct. Position start/end mémorisée, RTL respecté.
+- Tests : `scripts/test-floating-workshop.mjs` et `scripts/test-workspace-layout.mjs`. Validation au doigt sur appareils physiques à poursuivre avec les enfants.
 
 ### [x] Q2 — Rendre l'aimantation tolérante et visible *(fait : anneau TorusGeometry pulsé à targetPos, icône ✓/⚠ dans le DragHud, vibrate(50) à l'entrée de zone, vibrate(80) au snap)*
 - **Travail** :
@@ -59,7 +92,7 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 - **CA** : poser une pièce à moins d'une demi-pièce de distance réussit ; l'aperçu fantôme se distingue sans couleur.
 
 ### [x] Q3 — Ajouter Annuler et « recommencer l'étape » *(fait : pile undo dans App.tsx, bouton Annuler ≥48px dans WorkshopToolbar, bouton Recommencer existant conservé, 5 tests unitaires)*
-- **Fichiers** : `WorkshopToolbar.tsx` et l'état d'assemblage.
+- **Fichiers** : `WorkshopHud.tsx` et l'état d'assemblage.
 - **CA** : Annuler défait la dernière pose, y compris plusieurs fois de suite ; les deux boutons restent toujours visibles et font ≥ 64 px ; tests unitaires sur la pile d'historique.
 
 ### [x] Q4 — Borner la caméra *(fait : minDistance/maxDistance/maxPolarAngle existants confirmés, reducedMotion instant, bouton ⌖ Recentrer flottant, auto-orient vers ancrage à la sélection d'une pièce)*
@@ -105,6 +138,10 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 ---
 
 ## Phase 1 — Jouable seul dès 6 ans (semaines 3-6)
+
+- [x] Ateliers Maître à plusieurs sous-ensembles sur l’établi commun. Le Pont des quatre appuis (36 pièces) relie trois travées. La Station orbitale à quatre ailes (39 pièces) combine modules, amarrage, alimentation et radiateurs. Les dépendances permettent plusieurs ordres de montage et conservent les numéros des ateliers existants.
+- [x] Retour pilote : Octo fait un high five, danse ou jongle à certains paliers de montage. Le catalogue 11–12 ans regroupe les trois montages Maître, dont le Rover d’exploration à six roues (38 pièces). Les petites pièces de ces ateliers demandent un glisser-déposer plus précis pour ce profil.
+- [x] Pont levant du port (48 pièces). Après l’assemblage, les commandes de l’établi lèvent les tabliers, font traverser le bateau, puis rouvrent la route. Le bateau attend tant que le chenal est fermé.
 
 ### [x] M1 — Décrire les missions en données *(fait : `src/missions/schema.ts` (types + validateMission), `src/data/unifiedBlueprints.ts` (vue FR/EN/AR sans toucher les importeurs), `src/missions/catalog.ts` (15 missions), `src/missions/catalog.test.ts` (6 tests verts))*
 - **Travail** :

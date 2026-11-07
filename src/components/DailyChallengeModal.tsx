@@ -1,3 +1,4 @@
+import { getCategoryLabel } from '../data/categories';
 import React, { useEffect, useState } from 'react';
 import {
   ArrowLeft,
@@ -75,21 +76,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
   const collectedSet = new Set(dailyState.collectedRareIds);
   const totalRareCount = RARE_COLLECTIBLES_CATALOG.length;
 
-  const categoryLabel = (cat: VehicleCategory): string => {
-    switch (cat) {
-      case VehicleCategory.CAR:
-        return t.catCar;
-      case VehicleCategory.BOAT:
-        return t.catBoat;
-      case VehicleCategory.PLANE:
-        return t.catPlane;
-      case VehicleCategory.CONSTRUCTION:
-        return t.catConstruction;
-      case VehicleCategory.SPACE:
-      default:
-        return t.catSpace;
-    }
-  };
+  const categoryLabel = (cat: VehicleCategory) => getCategoryLabel(cat, language);
 
   return (
     <div

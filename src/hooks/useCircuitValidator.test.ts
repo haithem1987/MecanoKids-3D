@@ -58,14 +58,14 @@ describe('validateCircuit', () => {
     expect(result.missingConnections).toContain('resistor');
   });
 
-  it('ignores deps of unplaced parts', () => {
+  it('does not accept a partial circuit as complete', () => {
     const bp = makeBp(VehicleCategory.ELECTRONICS, {
       battery: [],
       resistor: ['battery'],
       led: ['resistor'],
     });
-    // only battery placed — resistor not placed, so its dep on battery is not checked
     const result = validateCircuit(bp, new Set(['battery']));
-    expect(result.isComplete).toBe(true);
+    expect(result.isComplete).toBe(false);
+    expect(result.missingConnections).toEqual(expect.arrayContaining(['resistor', 'led']));
   });
 });

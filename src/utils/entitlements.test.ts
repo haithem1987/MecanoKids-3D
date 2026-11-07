@@ -31,6 +31,11 @@ describe('family tier', () => {
 
   it('canPlayStage(100) = true', () => expect(canPlayStage(license, 100)).toBe(true));
   it('canPlayStage(101) = false', () => expect(canPlayStage(license, 101)).toBe(false));
+  it('includes the additional Master builds beyond the base catalogue', () => {
+    expect(canPlayStage(license, 138, true)).toBe(true);
+    expect(canPlayStage({ tier: 'school' }, 139, true)).toBe(true);
+    expect(canPlayStage({ tier: 'discovery' }, 138, true)).toBe(false);
+  });
   it('canCreateProfile with 4 existing = true', () => expect(canCreateProfile(license, 4)).toBe(true));
   it('canUseLivery with premium livery = true', () =>
     expect(canUseLivery(license, 'flame_gold', FREE_LIVERIES)).toBe(true));

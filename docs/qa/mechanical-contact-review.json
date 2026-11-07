@@ -1,0 +1,2002 @@
+[
+  {
+    "id": "plane-aeroclub",
+    "name": "Monomoteur d'Aéroclub",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.051,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.78,
+          1.39
+        ],
+        "scale": [
+          1.1,
+          1.15,
+          0.35
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "main-wing",
+            "distance": 0.8356
+          },
+          {
+            "id": "landing-gear",
+            "distance": 0.8448
+          },
+          {
+            "id": "tail",
+            "distance": 2.2945
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-island-floatplane",
+    "name": "Hydravion des Îles",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.056,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.92,
+          1.38356
+        ],
+        "scale": [
+          1.14,
+          1.16,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "pontoons",
+            "distance": 0.0448
+          },
+          {
+            "id": "lower-wing",
+            "distance": 0.8292
+          },
+          {
+            "id": "tail",
+            "distance": 2.2969
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-acro-biplane",
+    "name": "Biplan Acrobatique",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "radial-engine",
+        "distance": 0.076,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.78,
+          1.425
+        ],
+        "scale": [
+          1.15,
+          1.18,
+          0.32
+        ],
+        "nearest": [
+          {
+            "id": "radial-engine",
+            "distance": 0
+          },
+          {
+            "id": "fuselage",
+            "distance": 0.1416
+          },
+          {
+            "id": "upper-wing",
+            "distance": 0.7506
+          },
+          {
+            "id": "gear",
+            "distance": 0.7798
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crane-tower",
+    "name": "Grue à Tour de Chantier",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "hook",
+        "dependency": "jib",
+        "distance": 0.551,
+        "shape": "heli_winch",
+        "position": [
+          0,
+          3.345,
+          -1.72
+        ],
+        "scale": [
+          0.38,
+          0.62,
+          0.28
+        ],
+        "nearest": [
+          {
+            "id": "jib",
+            "distance": 0
+          },
+          {
+            "id": "cab",
+            "distance": 1.4266
+          },
+          {
+            "id": "mast",
+            "distance": 1.44
+          },
+          {
+            "id": "counter-jib",
+            "distance": 1.567
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "train-steam-loco",
+    "name": "Locomotive à Vapeur Pacifique",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "cab",
+        "dependency": "boiler",
+        "distance": 0.138,
+        "shape": "car_cabin",
+        "position": [
+          0,
+          0.98,
+          -0.92
+        ],
+        "scale": [
+          1.05,
+          0.82,
+          0.88
+        ],
+        "nearest": [
+          {
+            "id": "tender",
+            "distance": 0
+          },
+          {
+            "id": "chassis",
+            "distance": 0.0313
+          },
+          {
+            "id": "boiler",
+            "distance": 0.1376
+          },
+          {
+            "id": "drive-wheels",
+            "distance": 0.5166
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-twin-commuter",
+    "name": "Avion Régional Turboprop",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.059,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.8,
+          1.49028
+        ],
+        "scale": [
+          1.12,
+          1.15,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "nose-engine",
+            "distance": 0
+          },
+          {
+            "id": "main-wing",
+            "distance": 0.9343
+          },
+          {
+            "id": "landing-gear",
+            "distance": 0.9651
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-concrete-mixer-rig",
+    "name": "Engin Malaxeur de Chantier",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "front-header",
+        "dependency": "front-wheels",
+        "distance": 0.161,
+        "shape": "harvester_header",
+        "position": [
+          0,
+          0.46,
+          1.716
+        ],
+        "scale": [
+          1.9584,
+          0.52,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "agri-frame",
+            "distance": 0
+          },
+          {
+            "id": "front-wheels",
+            "distance": 0.1606
+          },
+          {
+            "id": "hood-engine",
+            "distance": 0.2161
+          },
+          {
+            "id": "tractor-cab",
+            "distance": 1.3317
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-water-bomber",
+    "name": "Hydravion Bombardier d’Eau",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.081,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.92,
+          1.5408800000000002
+        ],
+        "scale": [
+          1.14,
+          1.16,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "radial-motor",
+            "distance": 0
+          },
+          {
+            "id": "pontoons",
+            "distance": 0.049
+          },
+          {
+            "id": "upper-wing",
+            "distance": 0.9265
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "boat-ocean-research",
+    "name": "Navire Océanographique",
+    "category": "bateau",
+    "candidates": [
+      {
+        "part": "rov-sub",
+        "dependency": "crane",
+        "distance": 0.06,
+        "shape": "boat_rov",
+        "position": [
+          -0.24,
+          1.22,
+          -0.92
+        ],
+        "scale": [
+          0.58,
+          0.42,
+          0.72
+        ],
+        "nearest": [
+          {
+            "id": "main-deck",
+            "distance": 0
+          },
+          {
+            "id": "a-frame",
+            "distance": 0.01
+          },
+          {
+            "id": "crane",
+            "distance": 0.06
+          },
+          {
+            "id": "bridge",
+            "distance": 0.0868
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-combine-harvester",
+    "name": "Moissonneuse-Batteuse Géante",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "front-header",
+        "dependency": "front-wheels",
+        "distance": 0.19,
+        "shape": "harvester_header",
+        "position": [
+          0,
+          0.46,
+          1.782
+        ],
+        "scale": [
+          2.112,
+          0.52,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "agri-frame",
+            "distance": 0
+          },
+          {
+            "id": "front-wheels",
+            "distance": 0.1898
+          },
+          {
+            "id": "hood-engine",
+            "distance": 0.2548
+          },
+          {
+            "id": "chimney-stack",
+            "distance": 1.0883
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aero-planetary-rover",
+    "name": "Rover planétaire autonome",
+    "category": "aerospatiale",
+    "candidates": [
+      {
+        "part": "high-gain-dish",
+        "dependency": "solar-deck",
+        "distance": 0.116,
+        "shape": "parabolic_dish",
+        "position": [
+          -0.32,
+          1.045,
+          -0.35
+        ],
+        "scale": [
+          0.68,
+          0.42,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "solar-deck",
+            "distance": 0
+          },
+          {
+            "id": "warm-box",
+            "distance": 0.031
+          },
+          {
+            "id": "rear-bogie",
+            "distance": 0.291
+          },
+          {
+            "id": "mid-bogie",
+            "distance": 0.291
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-tgv-express",
+    "name": "Motrice Train Grande Vitesse",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "cowcatcher",
+        "dependency": "front-bogie",
+        "distance": 0.197,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.32,
+          2.0384
+        ],
+        "scale": [
+          1.3132000000000001,
+          0.26,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "rail-frame",
+            "distance": 0
+          },
+          {
+            "id": "nose-body",
+            "distance": 0
+          },
+          {
+            "id": "front-bogie",
+            "distance": 0.1968
+          },
+          {
+            "id": "exhaust-vent",
+            "distance": 0.9781
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-perseverance-lab-rover",
+    "name": " Grand Rover Astrobiologiste",
+    "category": "espace",
+    "candidates": [
+      {
+        "part": "high-gain-dish",
+        "dependency": "solar-deck",
+        "distance": 0.116,
+        "shape": "parabolic_dish",
+        "position": [
+          -0.32,
+          1.045,
+          -0.35
+        ],
+        "scale": [
+          0.68,
+          0.42,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "solar-deck",
+            "distance": 0
+          },
+          {
+            "id": "warm-box",
+            "distance": 0.031
+          },
+          {
+            "id": "rear-bogie",
+            "distance": 0.291
+          },
+          {
+            "id": "mid-bogie",
+            "distance": 0.291
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-desert-rally-raid",
+    "name": "Prototype Rallye-Raid",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "front-splitter",
+        "dependency": "engine",
+        "distance": 0.051,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.3,
+          1.554
+        ],
+        "scale": [
+          1.6416000000000002,
+          0.22,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "engine",
+            "distance": 0.0506
+          },
+          {
+            "id": "front-axle",
+            "distance": 0.07
+          },
+          {
+            "id": "cabin",
+            "distance": 0.5744
+          }
+        ]
+      },
+      {
+        "part": "rear-spoiler",
+        "dependency": "cabin",
+        "distance": 0.282,
+        "shape": "f1_rear_wing",
+        "position": [
+          0,
+          0.9,
+          -1.3860000000000001
+        ],
+        "scale": [
+          1.4472000000000003,
+          0.44,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "rear-axle",
+            "distance": 0
+          },
+          {
+            "id": "cabin",
+            "distance": 0.2819
+          },
+          {
+            "id": "side-skirts",
+            "distance": 0.4936
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-solar-glider",
+    "name": "Avion Solaire Tour du Monde",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.055,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.8,
+          1.46452
+        ],
+        "scale": [
+          1.12,
+          1.15,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "nose-engine",
+            "distance": 0
+          },
+          {
+            "id": "wing-turboprops",
+            "distance": 0.8218
+          },
+          {
+            "id": "main-wing",
+            "distance": 0.9158
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-port-container-reach",
+    "name": "Élévateur Portuaire à Conteneurs",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "telescopic-boom",
+        "dependency": "rear-counterweight",
+        "distance": 0.214,
+        "shape": "fire_ladder",
+        "position": [
+          0,
+          1.72,
+          -0.05
+        ],
+        "scale": [
+          0.76,
+          0.48,
+          2.475
+        ],
+        "nearest": [
+          {
+            "id": "safety-cab",
+            "distance": 0
+          },
+          {
+            "id": "lift-mast",
+            "distance": 0
+          },
+          {
+            "id": "warning-beacon",
+            "distance": 0
+          },
+          {
+            "id": "rear-counterweight",
+            "distance": 0.2139
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-orbital-research-station",
+    "name": "Vaisseau Laboratoire Orbital",
+    "category": "espace",
+    "candidates": [
+      {
+        "part": "main-thrusters",
+        "dependency": "orbiter-body",
+        "distance": 0.156,
+        "shape": "rocket_nozzle_cluster",
+        "position": [
+          0,
+          0.92,
+          -1.8144
+        ],
+        "scale": [
+          0.78,
+          0.56,
+          0.78
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "nearest": [
+          {
+            "id": "orbiter-body",
+            "distance": 0
+          },
+          {
+            "id": "vertical-stabilizer",
+            "distance": 0
+          },
+          {
+            "id": "orbital-pods",
+            "distance": 0
+          },
+          {
+            "id": "heat-shield-wings",
+            "distance": 0.2252
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aero-iss-module",
+    "name": "Module de station orbitale",
+    "category": "aerospatiale",
+    "candidates": [
+      {
+        "part": "main-thrusters",
+        "dependency": "orbiter-body",
+        "distance": 0.163,
+        "shape": "rocket_nozzle_cluster",
+        "position": [
+          0,
+          0.92,
+          -1.848
+        ],
+        "scale": [
+          0.78,
+          0.56,
+          0.78
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "nearest": [
+          {
+            "id": "orbiter-body",
+            "distance": 0
+          },
+          {
+            "id": "vertical-stabilizer",
+            "distance": 0
+          },
+          {
+            "id": "orbital-pods",
+            "distance": 0
+          },
+          {
+            "id": "heat-shield-wings",
+            "distance": 0.2347
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-heritage-steam-loco",
+    "name": "Locomotive Express Classique",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "cowcatcher",
+        "dependency": "front-bogie",
+        "distance": 0.171,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.32,
+          1.9656000000000002
+        ],
+        "scale": [
+          1.3668,
+          0.26,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "rail-frame",
+            "distance": 0
+          },
+          {
+            "id": "nose-body",
+            "distance": 0
+          },
+          {
+            "id": "front-bogie",
+            "distance": 0.1712
+          },
+          {
+            "id": "side-fairings",
+            "distance": 0.6286
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-heavy-cargo-lifter",
+    "name": "Avion Cargo Humanitaire",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.075,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.8,
+          1.5933199999999998
+        ],
+        "scale": [
+          1.12,
+          1.15,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "nose-engine",
+            "distance": 0
+          },
+          {
+            "id": "wing-turboprops",
+            "distance": 0.9506
+          },
+          {
+            "id": "main-wing",
+            "distance": 1.0086
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-bridge-girder-crane",
+    "name": "Engin Poseur de Viaducs",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "telescopic-boom",
+        "dependency": "rear-counterweight",
+        "distance": 0.204,
+        "shape": "fire_ladder",
+        "position": [
+          0,
+          1.72,
+          -0.05
+        ],
+        "scale": [
+          0.76,
+          0.48,
+          2.565
+        ],
+        "nearest": [
+          {
+            "id": "safety-cab",
+            "distance": 0
+          },
+          {
+            "id": "lift-mast",
+            "distance": 0
+          },
+          {
+            "id": "warning-beacon",
+            "distance": 0
+          },
+          {
+            "id": "hoist-winch",
+            "distance": 0.084
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-lunar-pressurized-cruiser",
+    "name": "Rover Lunaire Pressurisé",
+    "category": "espace",
+    "candidates": [
+      {
+        "part": "high-gain-dish",
+        "dependency": "solar-deck",
+        "distance": 0.116,
+        "shape": "parabolic_dish",
+        "position": [
+          -0.32,
+          1.045,
+          -0.35
+        ],
+        "scale": [
+          0.68,
+          0.42,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "solar-deck",
+            "distance": 0
+          },
+          {
+            "id": "warm-box",
+            "distance": 0.031
+          },
+          {
+            "id": "uhf-antenna",
+            "distance": 0.09
+          },
+          {
+            "id": "rear-bogie",
+            "distance": 0.291
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-solar-cruiser-gt",
+    "name": "Berline Aérodynamique Éco-GT",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "front-splitter",
+        "dependency": "engine",
+        "distance": 0.052,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.3,
+          1.6280000000000001
+        ],
+        "scale": [
+          1.5504,
+          0.22,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "engine",
+            "distance": 0.0522
+          },
+          {
+            "id": "front-axle",
+            "distance": 0.1
+          },
+          {
+            "id": "cabin",
+            "distance": 0.6104
+          }
+        ]
+      },
+      {
+        "part": "rear-spoiler",
+        "dependency": "cabin",
+        "distance": 0.31,
+        "shape": "f1_rear_wing",
+        "position": [
+          0,
+          0.9,
+          -1.4520000000000002
+        ],
+        "scale": [
+          1.3668,
+          0.44,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "rear-axle",
+            "distance": 0
+          },
+          {
+            "id": "rear-cargo-box",
+            "distance": 0
+          },
+          {
+            "id": "cabin",
+            "distance": 0.3101
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-polar-ski-biplane",
+    "name": "Avion d’Expédition Arctique",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.077,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.92,
+          1.5146600000000001
+        ],
+        "scale": [
+          1.14,
+          1.16,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "radial-motor",
+            "distance": 0
+          },
+          {
+            "id": "pontoons",
+            "distance": 0.0483
+          },
+          {
+            "id": "upper-turbines",
+            "distance": 0.8986
+          }
+        ]
+      },
+      {
+        "part": "search-radar",
+        "dependency": "upper-wing",
+        "distance": 0.067,
+        "shape": "boat_radar",
+        "position": [
+          0,
+          2.02,
+          0.24
+        ],
+        "scale": [
+          0.58,
+          0.44,
+          0.35
+        ],
+        "nearest": [
+          {
+            "id": "upper-turbines",
+            "distance": 0
+          },
+          {
+            "id": "upper-wing",
+            "distance": 0.0668
+          },
+          {
+            "id": "interplane-struts",
+            "distance": 0.2296
+          },
+          {
+            "id": "fuselage",
+            "distance": 0.265
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-autonomous-agro-harvester",
+    "name": "Moissonneuse Robotisée GPS RTK",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "front-header",
+        "dependency": "front-wheels",
+        "distance": 0.219,
+        "shape": "harvester_header",
+        "position": [
+          0,
+          0.46,
+          1.848
+        ],
+        "scale": [
+          2.1504000000000003,
+          0.52,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "agri-frame",
+            "distance": 0
+          },
+          {
+            "id": "front-wheels",
+            "distance": 0.219
+          },
+          {
+            "id": "hood-engine",
+            "distance": 0.2935
+          },
+          {
+            "id": "chimney-stack",
+            "distance": 1.1489
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-winged-shuttle-expedition",
+    "name": "Grande Navette Spatiale à Soute",
+    "category": "espace",
+    "candidates": [
+      {
+        "part": "main-thrusters",
+        "dependency": "orbiter-body",
+        "distance": 0.197,
+        "shape": "rocket_nozzle_cluster",
+        "position": [
+          0,
+          0.92,
+          -1.8816000000000002
+        ],
+        "scale": [
+          0.78,
+          0.56,
+          0.78
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "nearest": [
+          {
+            "id": "orbiter-body",
+            "distance": 0
+          },
+          {
+            "id": "vertical-stabilizer",
+            "distance": 0
+          },
+          {
+            "id": "orbital-pods",
+            "distance": 0
+          },
+          {
+            "id": "heat-shield-wings",
+            "distance": 0.2442
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-maglev-shinkansen",
+    "name": "Train à Lévitation Magnétique",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "cowcatcher",
+        "dependency": "front-bogie",
+        "distance": 0.235,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.32,
+          2.1476
+        ],
+        "scale": [
+          1.3132000000000001,
+          0.26,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "rail-frame",
+            "distance": 0
+          },
+          {
+            "id": "nose-body",
+            "distance": 0
+          },
+          {
+            "id": "front-bogie",
+            "distance": 0.2352
+          },
+          {
+            "id": "side-fairings",
+            "distance": 0.7099
+          }
+        ]
+      },
+      {
+        "part": "rear-coupler",
+        "dependency": "rear-bogie",
+        "distance": 0.271,
+        "shape": "fire_tank",
+        "position": [
+          0,
+          0.52,
+          -2.183
+        ],
+        "scale": [
+          0.85,
+          0.34,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "rail-frame",
+            "distance": 0
+          },
+          {
+            "id": "driver-cab",
+            "distance": 0.0879
+          },
+          {
+            "id": "rear-bogie",
+            "distance": 0.2706
+          },
+          {
+            "id": "pantograph",
+            "distance": 0.9181
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "boat-wind-cargo-wingsail",
+    "name": "Cargo Vélique Nouvelle Génération",
+    "category": "bateau",
+    "candidates": [
+      {
+        "part": "stern-solar",
+        "dependency": "roof-cabin",
+        "distance": 0.055,
+        "shape": "solar_panel_array",
+        "position": [
+          0,
+          1.585,
+          -0.6136
+        ],
+        "scale": [
+          1.3176,
+          0.06,
+          0.52
+        ],
+        "nearest": [
+          {
+            "id": "main-mast",
+            "distance": 0
+          },
+          {
+            "id": "main-sail",
+            "distance": 0
+          },
+          {
+            "id": "roof-cabin",
+            "distance": 0
+          },
+          {
+            "id": "wind-radar",
+            "distance": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-subsea-trencher-crawler",
+    "name": "Excavatrice Sous-Marine Téléopérée",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "aux-winch",
+        "dependency": "hydraulic-pump",
+        "distance": 0.07,
+        "shape": "heli_winch",
+        "position": [
+          0.56,
+          1.24,
+          0.35
+        ],
+        "scale": [
+          0.48,
+          0.45,
+          0.28
+        ],
+        "nearest": [
+          {
+            "id": "turret-deck",
+            "distance": 0
+          },
+          {
+            "id": "boom-arm",
+            "distance": 0
+          },
+          {
+            "id": "hydraulic-pump",
+            "distance": 0.07
+          },
+          {
+            "id": "side-coolers",
+            "distance": 0.1045
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-supersonic-land-record",
+    "name": "Flèche du Record Terrestre",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "shark-fin",
+        "dependency": "halo-guard",
+        "distance": 0.147,
+        "shape": "plane_tail",
+        "position": [
+          0,
+          0.92,
+          -1.056
+        ],
+        "scale": [
+          0.55,
+          0.48,
+          0.62
+        ],
+        "nearest": [
+          {
+            "id": "monocoque",
+            "distance": 0
+          },
+          {
+            "id": "rear-slicks",
+            "distance": 0
+          },
+          {
+            "id": "hybrid-powerunit",
+            "distance": 0
+          },
+          {
+            "id": "sidepods",
+            "distance": 0
+          }
+        ]
+      },
+      {
+        "part": "rear-diffuser",
+        "dependency": "rear-slicks",
+        "distance": 0.054,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.24,
+          -2.064
+        ],
+        "scale": [
+          1.3247999999999998,
+          0.2,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "aero-floor",
+            "distance": 0
+          },
+          {
+            "id": "rear-slicks",
+            "distance": 0.054
+          },
+          {
+            "id": "rear-wing",
+            "distance": 0.105
+          },
+          {
+            "id": "hybrid-powerunit",
+            "distance": 0.146
+          }
+        ]
+      },
+      {
+        "part": "rear-diffuser",
+        "dependency": "rear-wing",
+        "distance": 0.105,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.24,
+          -2.064
+        ],
+        "scale": [
+          1.3247999999999998,
+          0.2,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "aero-floor",
+            "distance": 0
+          },
+          {
+            "id": "rear-slicks",
+            "distance": 0.054
+          },
+          {
+            "id": "rear-wing",
+            "distance": 0.105
+          },
+          {
+            "id": "hybrid-powerunit",
+            "distance": 0.146
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "boat-abyssal-hadal-sub",
+    "name": "Bathyscaphe des Grandes Fosses",
+    "category": "bateau",
+    "candidates": [
+      {
+        "part": "winch-sonar",
+        "dependency": "deck-walkway",
+        "distance": 0.08,
+        "shape": "heli_winch",
+        "position": [
+          -0.42,
+          1.12,
+          -1.1760000000000002
+        ],
+        "scale": [
+          0.46,
+          0.42,
+          0.28
+        ],
+        "nearest": [
+          {
+            "id": "pressure-hull",
+            "distance": 0
+          },
+          {
+            "id": "stern-fins",
+            "distance": 0
+          },
+          {
+            "id": "deck-walkway",
+            "distance": 0.08
+          },
+          {
+            "id": "escape-hatch",
+            "distance": 0.2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-sample-return-mars-rover",
+    "name": "Rover Foreur de Retour d’Échantillons",
+    "category": "espace",
+    "candidates": [
+      {
+        "part": "high-gain-dish",
+        "dependency": "solar-deck",
+        "distance": 0.116,
+        "shape": "parabolic_dish",
+        "position": [
+          -0.32,
+          1.045,
+          -0.35
+        ],
+        "scale": [
+          0.68,
+          0.42,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "solar-deck",
+            "distance": 0
+          },
+          {
+            "id": "mini-copter-drone",
+            "distance": 0
+          },
+          {
+            "id": "warm-box",
+            "distance": 0.031
+          },
+          {
+            "id": "uhf-antenna",
+            "distance": 0.09
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-mobile-science-convoy",
+    "name": "Camion Laboratoire Sismique",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "front-bumper-guard",
+        "dependency": "front-axle",
+        "distance": 0.176,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.42,
+          2.0469999999999997
+        ],
+        "scale": [
+          1.6848,
+          0.3,
+          0.38
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "cab",
+            "distance": 0.031
+          },
+          {
+            "id": "front-axle",
+            "distance": 0.176
+          },
+          {
+            "id": "diesel-engine",
+            "distance": 0.215
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "boat-offshore-wind-vessel",
+    "name": "Navire Atelier Éolien en Mer",
+    "category": "bateau",
+    "candidates": [
+      {
+        "part": "rescue-rov",
+        "dependency": "deck-crane",
+        "distance": 0.26,
+        "shape": "boat_rov",
+        "position": [
+          -0.36,
+          1.62,
+          -1.1832
+        ],
+        "scale": [
+          0.54,
+          0.38,
+          0.66
+        ],
+        "nearest": [
+          {
+            "id": "funnel",
+            "distance": 0
+          },
+          {
+            "id": "cargo-hold",
+            "distance": 0
+          },
+          {
+            "id": "stern-aframe",
+            "distance": 0.064
+          },
+          {
+            "id": "deck-crane",
+            "distance": 0.26
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-heavy-skycrane-rotor",
+    "name": "Grue Volante Multi-Rotors",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "top-radar",
+        "dependency": "main-rotor",
+        "distance": 0.065,
+        "shape": "parabolic_dish",
+        "position": [
+          0,
+          2.01,
+          0.12
+        ],
+        "scale": [
+          0.52,
+          0.28,
+          0.52
+        ],
+        "nearest": [
+          {
+            "id": "main-rotor",
+            "distance": 0
+          },
+          {
+            "id": "rotor-mast",
+            "distance": 0.124
+          },
+          {
+            "id": "turbine-pack",
+            "distance": 0.284
+          },
+          {
+            "id": "core-cabin",
+            "distance": 0.4885
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-modular-wind-tower-crane",
+    "name": "Grue Mobile d’Assemblage Géant",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "telescopic-boom",
+        "dependency": "rear-counterweight",
+        "distance": 0.194,
+        "shape": "fire_ladder",
+        "position": [
+          0,
+          1.72,
+          -0.05
+        ],
+        "scale": [
+          0.76,
+          0.48,
+          2.655
+        ],
+        "nearest": [
+          {
+            "id": "safety-cab",
+            "distance": 0
+          },
+          {
+            "id": "lift-mast",
+            "distance": 0
+          },
+          {
+            "id": "warning-beacon",
+            "distance": 0
+          },
+          {
+            "id": "wind-sensor",
+            "distance": 0
+          }
+        ]
+      },
+      {
+        "part": "wind-sensor",
+        "dependency": "rear-counterweight",
+        "distance": 0.174,
+        "shape": "boat_radar",
+        "position": [
+          -0.45,
+          1.56,
+          -1.121
+        ],
+        "scale": [
+          0.48,
+          0.38,
+          0.3
+        ],
+        "nearest": [
+          {
+            "id": "telescopic-boom",
+            "distance": 0
+          },
+          {
+            "id": "safety-cab",
+            "distance": 0.0722
+          },
+          {
+            "id": "overhead-cage",
+            "distance": 0.165
+          },
+          {
+            "id": "rear-counterweight",
+            "distance": 0.1742
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "car-autonomous-cyber-shuttle",
+    "name": "Véhicule Laboratoire Lidar",
+    "category": "voiture",
+    "candidates": [
+      {
+        "part": "front-splitter",
+        "dependency": "engine",
+        "distance": 0.051,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.3,
+          1.5984
+        ],
+        "scale": [
+          1.6112000000000002,
+          0.22,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "front-winch",
+            "distance": 0
+          },
+          {
+            "id": "engine",
+            "distance": 0.0507
+          },
+          {
+            "id": "front-axle",
+            "distance": 0.088
+          }
+        ]
+      },
+      {
+        "part": "rear-spoiler",
+        "dependency": "cabin",
+        "distance": 0.299,
+        "shape": "f1_rear_wing",
+        "position": [
+          0,
+          0.9,
+          -1.4256000000000002
+        ],
+        "scale": [
+          1.4204,
+          0.44,
+          0.42
+        ],
+        "nearest": [
+          {
+            "id": "chassis",
+            "distance": 0
+          },
+          {
+            "id": "rear-axle",
+            "distance": 0
+          },
+          {
+            "id": "rear-cargo-box",
+            "distance": 0
+          },
+          {
+            "id": "rear-fog-bar",
+            "distance": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plane-hybrid-transatlantic-prop",
+    "name": "Avion Laboratoire Hybride-Électrique",
+    "category": "avion",
+    "candidates": [
+      {
+        "part": "propeller",
+        "dependency": "fuselage",
+        "distance": 0.078,
+        "shape": "plane_propeller",
+        "position": [
+          0,
+          0.8,
+          1.6190799999999999
+        ],
+        "scale": [
+          1.12,
+          1.15,
+          0.34
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "nose-engine",
+            "distance": 0
+          },
+          {
+            "id": "nose-lights",
+            "distance": 0.9047
+          },
+          {
+            "id": "wing-turboprops",
+            "distance": 0.9763
+          }
+        ]
+      },
+      {
+        "part": "tail-gear",
+        "dependency": "tail-unit",
+        "distance": 0.093,
+        "shape": "wheel_axle",
+        "position": [
+          0,
+          0.42,
+          -1.3339999999999999
+        ],
+        "scale": [
+          0.55,
+          0.36,
+          0.36
+        ],
+        "nearest": [
+          {
+            "id": "fuselage",
+            "distance": 0
+          },
+          {
+            "id": "tail-unit",
+            "distance": 0.0932
+          },
+          {
+            "id": "belly-cargo-pod",
+            "distance": 0.339
+          },
+          {
+            "id": "dorsal-radar",
+            "distance": 0.8211
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "const-solar-autonomous-agri-titan",
+    "name": "Combiné Agro-Écologique Multi-Capteurs",
+    "category": "chantier",
+    "candidates": [
+      {
+        "part": "front-header",
+        "dependency": "front-wheels",
+        "distance": 0.248,
+        "shape": "harvester_header",
+        "position": [
+          0,
+          0.46,
+          1.9139999999999997
+        ],
+        "scale": [
+          2.2272,
+          0.52,
+          0.68
+        ],
+        "nearest": [
+          {
+            "id": "agri-frame",
+            "distance": 0
+          },
+          {
+            "id": "front-weights",
+            "distance": 0
+          },
+          {
+            "id": "front-wheels",
+            "distance": 0.2482
+          },
+          {
+            "id": "hood-engine",
+            "distance": 0.3322
+          }
+        ]
+      },
+      {
+        "part": "front-weights",
+        "dependency": "hood-engine",
+        "distance": 0.153,
+        "shape": "f1_front_wing",
+        "position": [
+          0,
+          0.62,
+          1.6471999999999998
+        ],
+        "scale": [
+          1.18,
+          0.28,
+          0.36
+        ],
+        "nearest": [
+          {
+            "id": "agri-frame",
+            "distance": 0
+          },
+          {
+            "id": "front-header",
+            "distance": 0
+          },
+          {
+            "id": "front-wheels",
+            "distance": 0.07
+          },
+          {
+            "id": "hood-engine",
+            "distance": 0.1534
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "space-international-modular-station",
+    "name": "Grande Station Spatiale Modulaire",
+    "category": "espace",
+    "candidates": [
+      {
+        "part": "main-thrusters",
+        "dependency": "orbiter-body",
+        "distance": 0.357,
+        "shape": "rocket_nozzle_cluster",
+        "position": [
+          0,
+          0.92,
+          -2.016
+        ],
+        "scale": [
+          0.78,
+          0.56,
+          0.78
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "nearest": [
+          {
+            "id": "orbiter-body",
+            "distance": 0
+          },
+          {
+            "id": "vertical-stabilizer",
+            "distance": 0
+          },
+          {
+            "id": "orbital-pods",
+            "distance": 0
+          },
+          {
+            "id": "heat-shield-wings",
+            "distance": 0.2822
+          }
+        ]
+      }
+    ]
+  }
+]

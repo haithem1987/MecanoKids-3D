@@ -1,30 +1,35 @@
 import { VehicleCategory, VisualStyleMode } from '../types/game';
+import { getAudioContext } from './audioContext';
 
 class WorkshopSoundEngine {
-  private ctx: AudioContext | null = null;
+  private output: GainNode | undefined;
   private muted = false;
   private sfxVolume = 1;
 
   public setMuted(muted: boolean): void {
     this.muted = muted;
+    this.updateVolume();
   }
 
   public setVolumeSfx(v: number): void {
     this.sfxVolume = Math.min(1, Math.max(0, v));
+    this.updateVolume();
   }
 
   private ensureContext(): AudioContext | null {
-    if (this.muted || typeof window === 'undefined') return null;
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (AudioCtx) {
-        this.ctx = new AudioCtx();
-      }
+    if (this.muted || !this.sfxVolume) return null;
+    const context = getAudioContext();
+    if (!context) return null;
+    if (this.output?.context !== context) {
+      this.output = context.createGain();
+      this.output.connect(context.destination);
+      this.updateVolume();
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
-    }
-    return this.ctx;
+    return context;
+  }
+
+  private updateVolume(): void {
+    if (this.output) this.output.gain.value = this.muted ? 0 : this.sfxVolume;
   }
 
   public playPickup(style: VisualStyleMode): void {
@@ -45,7 +50,7 @@ class WorkshopSoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.output!);
     osc.start(now);
     osc.stop(now + 0.11);
   }
@@ -66,7 +71,7 @@ class WorkshopSoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.output!);
     osc.start(now);
     osc.stop(now + 0.055);
   }
@@ -109,7 +114,7 @@ class WorkshopSoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.output!);
     osc.start(now);
     osc.stop(now + 0.16);
   }
@@ -207,13 +212,12 @@ class WorkshopSoundEngine {
     osc.frequency.setValueAtTime(startFreq, startTime);
     osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
 
-    const scaledGain = peakGain * this.sfxVolume;
     gain.gain.setValueAtTime(0.001, startTime);
-    gain.gain.linearRampToValueAtTime(scaledGain, startTime + 0.01);
+    gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(this.output!);
     osc.start(startTime);
     osc.stop(startTime + duration + 0.01);
   }

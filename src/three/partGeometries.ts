@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { PartShapeKind, PartSpec, VisualStyleMode } from '../types/game';
 import { createPartMaterialSet, PartMaterialSet } from './materials';
+import { addStemGeometry } from './stemGeometries';
 
 function makeRoundedRectShape(w: number, h: number, r: number): THREE.Shape {
   const shape = new THREE.Shape();
@@ -836,7 +837,9 @@ export function buildPartMeshGroup(
         mats.primary,
       );
       body.rotation.x = Math.PI / 2;
-      body.scale.set(1, sy / sx, 1);
+      // The capsule's longitudinal axis is local Y. After the X rotation,
+      // local Z becomes world Y, so only Z may adjust its vertical thickness.
+      body.scale.set(1, 1, sy / sx);
       body.castShadow = true;
       body.receiveShadow = true;
       root.add(body);
@@ -1854,20 +1857,23 @@ export function buildPartMeshGroup(
       root.add(board);
       // Hole-grid dots
       const holeMat = new THREE.MeshStandardMaterial({ color: '#374151', roughness: 0.6 });
-      const holeGeo = new THREE.CylinderGeometry(0.015, 0.015, sy * 1.1, 6);
+      const holeGeo = new THREE.CircleGeometry(0.015, 8);
+      holeGeo.rotateX(-Math.PI / 2);
       const cols = Math.round(sx / 0.14);
       const rows = Math.round(sz / 0.14);
+      const holes = new THREE.InstancedMesh(holeGeo, holeMat, cols * rows);
+      const holeTransform = new THREE.Matrix4();
       for (let c = 0; c < cols; c++) {
         for (let r = 0; r < rows; r++) {
-          const dot = new THREE.Mesh(holeGeo, holeMat);
-          dot.position.set(
+          holeTransform.makeTranslation(
             (c - (cols - 1) / 2) * 0.14,
-            sy * 0.52,
+            sy * 0.5 + 0.016,
             (r - (rows - 1) / 2) * 0.14,
           );
-          root.add(dot);
+          holes.setMatrixAt(c * rows + r, holeTransform);
         }
       }
+      root.add(holes);
       break;
     }
 
@@ -1912,6 +1918,12 @@ export function buildPartMeshGroup(
       bodyR.rotation.x = Math.PI / 2;
       bodyR.castShadow = true;
       root.add(bodyR);
+      for (const end of [-1, 1]) {
+        const lead = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, sz * 0.30, 8), mats.metalAccent);
+        lead.rotation.x = Math.PI / 2;
+        lead.position.z = end * sz * 0.35;
+        root.add(lead);
+      }
       const bandColors = ['#f97316', '#1d4ed8', '#7c3aed'];
       bandColors.forEach((c, i) => {
         const band = new THREE.Mesh(new THREE.CylinderGeometry(sy * 0.42, sy * 0.42, sz * 0.07, 10),
@@ -2011,6 +2023,9 @@ export function buildPartMeshGroup(
       const atomCl = new THREE.Mesh(new THREE.SphereGeometry(sx * 0.5, 18, 18), mats.primary);
       atomCl.castShadow = true;
       root.add(atomCl);
+      const charge = new THREE.Mesh(new THREE.BoxGeometry(sx * 0.45, sx * 0.08, sx * 0.08), mats.secondary);
+      charge.position.z = sx * 0.48;
+      root.add(charge);
       break;
     }
 
@@ -2024,13 +2039,12 @@ export function buildPartMeshGroup(
 
     case PartShapeKind.BOND_DOUBLE: {
       const bd1Geo = new THREE.CylinderGeometry(sx * 0.35, sx * 0.35, sz, 10);
-      bd1Geo.rotateX(Math.PI / 2);
       const bd1 = new THREE.Mesh(bd1Geo, mats.primary);
-      bd1.position.x = -sx * 0.5;
+      bd1.position.z = -sx * 0.5;
       bd1.castShadow = true;
       root.add(bd1);
       const bd2 = new THREE.Mesh(bd1Geo.clone(), mats.secondary ?? mats.primary);
-      bd2.position.x = sx * 0.5;
+      bd2.position.z = sx * 0.5;
       root.add(bd2);
       break;
     }
@@ -2189,9 +2203,11 @@ export function buildPartMeshGroup(
     }
 
     default: {
-      const box = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.04), mats.primary);
-      box.castShadow = true;
-      root.add(box);
+      if (!addStemGeometry(root, spec, mats)) {
+        const box = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.04), mats.primary);
+        box.castShadow = true;
+        root.add(box);
+      }
     }
   }
 
@@ -2204,8 +2220,11 @@ export function buildPartMeshGroup(
       color: '#0f172a',
       side: THREE.BackSide,
     });
+    const outlinedMeshes: THREE.Mesh[] = [];
     root.traverse((obj) => {
-      if (!(obj instanceof THREE.Mesh)) return;
+      if (obj instanceof THREE.Mesh && !(obj instanceof THREE.InstancedMesh)) outlinedMeshes.push(obj);
+    });
+    outlinedMeshes.forEach((obj) => {
       const outline = new THREE.Mesh(obj.geometry, outlineMat);
       outline.scale.setScalar(1.06);
       obj.add(outline);

@@ -12,6 +12,9 @@ import { FLEET_AEROSPACE_SEEDS } from './fleetAerospatiale';
 import { FLEET_ELECTRONIQUE_SEEDS } from './fleetElectronique';
 import { FLEET_CHIMIE_SEEDS } from './fleetChimie';
 import { FLEET_PHYSIQUE_SEEDS } from './fleetPhysique';
+import { VIRTUAL_LAB_BLUEPRINTS } from './virtualLabBlueprints';
+import { MASTER_BLUEPRINTS } from './masterBlueprints';
+import { HERITAGE_BLUEPRINTS } from './heritageBlueprints';
 
 const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
   // =========================================================================
@@ -271,7 +274,7 @@ const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
         secondaryColor: '#eab308',
         materialKind: 'dark_mech',
         scale: [1.1, 1.15, 0.35],
-        targetPos: [0, 0.78, 1.46],
+        targetPos: [0, 0.78, 1.39],
         explodeOffset: [0, 0, 1.05],
         dependsOn: ['fuselage'],
         snapRadius: 1.4,
@@ -651,7 +654,7 @@ const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
         secondaryColor: '#facc15',
         materialKind: 'wood_structural',
         scale: [1.15, 1.18, 0.32],
-        targetPos: [0, 0.78, 1.52],
+        targetPos: [0, 0.78, 1.425],
         explodeOffset: [0, 0, 1.25],
         dependsOn: ['radial-engine'],
         snapRadius: 1.12,
@@ -1174,12 +1177,12 @@ const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
         secondaryColor: '#334155',
         materialKind: 'bright_trim',
         scale: [0.38, 0.62, 0.28],
-        targetPos: [0, 2.2, -1.72],
+        // The trolley arm rests on the jib; its existing cable then hangs below.
+        targetPos: [0, 3.345, -1.72],
         explodeOffset: [0.55, 1.65, -1.5],
         dependsOn: ['jib'],
         snapRadius: 1.12,
         isRarePart: true,
-        animation: PartAnimationKind.SPIN_Y,
       },
     ],
   },
@@ -1925,7 +1928,7 @@ function assemble100Blueprints(): VehicleBlueprint[] {
     }
   }
 
-  return ordered.map((bp, idx) => ({
+  return [...ordered, ...VIRTUAL_LAB_BLUEPRINTS, ...MASTER_BLUEPRINTS, ...HERITAGE_BLUEPRINTS].map((bp, idx) => ({
     ...bp,
     stageNumber: idx + 1,
   }));

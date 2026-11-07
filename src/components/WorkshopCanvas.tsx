@@ -1,3 +1,10 @@
+import { measureFloatingFraming } from '../utils/floatingFraming';
+import { AqueductTrial } from './AqueductTrial';
+import { getFittedCameraPosition, getViewportCameraScale, getPartFocusDistance } from '../utils/cameraFraming';
+import { isAssemblyComplete } from '../utils/assemblyValidation';
+import { BeaconTrial } from './BeaconTrial';
+import { getAxialRotationPose } from '../utils/axialRotation';
+import { WatermillTrial } from './WatermillTrial';
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -9,6 +16,7 @@ import {
   LiveryPresetId,
   PartAnimationKind,
   PartSpec,
+  PlayerProgress,
   VehicleBlueprint,
   VehicleCategory,
   VisualStyleMode,
@@ -25,12 +33,19 @@ import {
   createXRayCutawayMaterial,
 } from '../three/materials';
 import { buildPartMeshGroup } from '../three/partGeometries';
+import { getPendulumPose } from '../utils/pendulumMotion';
+import { observeWebGLContext, releaseWebGLRenderer } from '../three/rendererLifecycle';
 import {
   buildThematicEnvironment,
   isOuterShellPartForXRay,
   ThematicSceneArtifacts,
 } from '../three/thematicEnvironment';
 import { soundEngine } from '../audio/soundEngine';
+import type { VirtualLabTrial } from '../data/virtualLabs';
+import { clearVirtualLab, drawVirtualLab } from '../three/virtualLabScenes';
+import { buildScienceChallengeScene } from '../three/scienceChallengeScene';
+import { DRAWBRIDGE_ID, DrawbridgeTrial } from './DrawbridgeTrial';
+import type { ScienceTrial } from '../data/scienceChallenges';
 
 // Pre-allocated math helpers at module scope (zero GC in render loop)
 const _mouseNDC = new THREE.Vector2();
@@ -63,6 +78,7 @@ export interface DragFeedbackOverlay {
 }
 
 interface WorkshopCanvasProps {
+  trayPosition?: 'left' | 'right';
   language: LanguageCode;
   blueprint: VehicleBlueprint;
   placedPartIds: string[];
@@ -71,6 +87,9 @@ interface WorkshopCanvasProps {
   environmentMode: WorkbenchEnvironmentMode;
   xRayMode: boolean;
   testDriveActive: boolean;
+  labTrial?: VirtualLabTrial;
+  scienceTrial?: ScienceTrial;
+  onScienceAction?: (value: number) => void;
   noSilhouetteMode: boolean;
   faultyPartIds: string[];
   onExtractFaultyPart?: (partId: string) => void;
@@ -110,7 +129,19 @@ function disposeObject3D(obj: THREE.Object3D): void {
   });
 }
 
+function createStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.WebGLRenderTarget {
+  const generator = new THREE.PMREMGenerator(renderer);
+  const room = new RoomEnvironment();
+  try {
+    return generator.fromScene(room, 0.04);
+  } finally {
+    room.dispose();
+    generator.dispose();
+  }
+}
+
 export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
+  trayPosition,
   language,
   blueprint,
   placedPartIds,
@@ -119,6 +150,9 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
   environmentMode,
   xRayMode,
   testDriveActive,
+  labTrial,
+  scienceTrial,
+  onScienceAction,
   noSilhouetteMode,
   faultyPartIds,
   onExtractFaultyPart,
@@ -236,6 +270,11 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     maxAnisotropy: number;
     triggerSparks: (origin: [number, number, number]) => void;
     wakeRender: () => void;
+    framingAspect: number;
+    updateFraming: () => void;
+    mechanismElapsed: number;
+    mechanismRate: number;
+    applyMechanismPose?: () => void;
   } | null>(null);
 
   // 1. Initialize WebGLRenderer & Studio Scene ONCE
@@ -262,10 +301,14 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       return { isSoftwareGl: soft, isWeakGpu: weak };
     })();
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isSoftwareGl,
-      powerPreference: 'high-performance',
-    });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: !isSoftwareGl, powerPreference: 'high-performance' });
+    } catch {
+      setWebglLost(true);
+      return;
+    }
+    setWebglLost(false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
@@ -283,9 +326,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     scene.fog = new THREE.FogExp2(0xf4f6f9, 0.028);
 
     // Mandatory studio environment reflection map
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
-    pmremGenerator.dispose();
+    let environmentMap = createStudioEnvironment(renderer);
+    scene.environment = environmentMap.texture;
 
     const camera = new THREE.PerspectiveCamera(
       44,
@@ -293,14 +335,15 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       0.1,
       100,
     );
-    camera.position.set(4.4, 3.2, 4.9);
+    let viewportScale = getViewportCameraScale(camera.aspect);
+    camera.position.fromArray(getFittedCameraPosition([4.4, 3.2, 4.9], [0, .9, 0], camera.aspect));
 
     const controls = new OrbitControls(camera, renderer.domElement);
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
     controls.enableDamping = !isSoftwareGl && !reducedMotion;
     controls.dampingFactor = 0.07;
     controls.minDistance = 2.6;
-    controls.maxDistance = 12.5;
+    controls.maxDistance = 12.5 * viewportScale;
     controls.minPolarAngle = 0;
     controls.maxPolarAngle = Math.PI * 0.485;
     controls.target.set(0, 0.9, 0);
@@ -486,6 +529,10 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       maxAnisotropy,
       triggerSparks,
       wakeRender: () => { /* assigned below */ },
+      framingAspect: camera.aspect,
+      updateFraming: () => {},
+      mechanismElapsed: 0,
+      mechanismRate: 1,
     };
 
     // Expose synchronous WebGL capture callback (must call renderer.render right before toDataURL!)
@@ -507,26 +554,53 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     }
 
     // Handle WebGL Context Loss
-    const onContextLost = (e: Event) => {
-      e.preventDefault();
-      setWebglLost(true);
-    };
-    const onContextRestored = () => {
-      setWebglLost(false);
-    };
-    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
-    renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
+    // getExtension() can return null while the context is lost; retain it beforehand.
+    const contextLossExtension = renderer.getContext().getExtension('WEBGL_lose_context');
+    let restoreTimer: ReturnType<typeof setTimeout> | undefined;
+    const stopObservingContext = observeWebGLContext(renderer.domElement, {
+      lost: () => {
+        setWebglLost(true);
+        clearTimeout(restoreTimer);
+        restoreTimer = setTimeout(() => {
+          if (!unmounted && renderer.getContext().isContextLost()) {
+            contextLossExtension?.restoreContext();
+          }
+        }, 500);
+      },
+      restored: () => {
+        clearTimeout(restoreTimer);
+        // The reflection texture lives on the GPU and loses its contents with the context.
+        environmentMap.dispose();
+        environmentMap = createStudioEnvironment(renderer);
+        scene.environment = environmentMap.texture;
+        setWebglLost(false);
+      },
+      wake: () => wakeRender(),
+    });
 
     // Resize Observer
-    const resizeObserver = new ResizeObserver(() => {
+    const updateFraming = () => {
       if (!container) return;
       const w = Math.max(1, container.clientWidth);
       const h = Math.max(1, container.clientHeight);
       camera.aspect = w / h;
+      const framing = measureFloatingFraming(container);
+      camera.setViewOffset(w, h, framing.offset, 0, w, h);
+      const nextScale = getViewportCameraScale(framing.aspect);
+      if (engineRef.current) engineRef.current.framingAspect = framing.aspect;
+      const ratio = nextScale / viewportScale;
+      camera.position.sub(controls.target).multiplyScalar(ratio).add(controls.target);
+      const transition = engineRef.current?.cameraTransition;
+      if (transition?.active) transition.pos.sub(transition.target).multiplyScalar(ratio).clampLength(controls.minDistance, 12.5 * nextScale * .95).add(transition.target);
+      viewportScale = nextScale;
+      controls.maxDistance = 12.5 * nextScale;
+      if (scene.fog instanceof THREE.FogExp2) scene.fog.density = .028 / nextScale;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
       wakeRender();
-    });
+    };
+    if (engineRef.current) engineRef.current.updateFraming = updateFraming;
+    const resizeObserver = new ResizeObserver(updateFraming);
     resizeObserver.observe(container);
 
     // M5: render-on-demand — only call render() when scene has moved
@@ -574,6 +648,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
     function tick() {
       if (unmounted) return;
+      if (renderer.getContext().isContextLost()) { loopRunning = false; return; }
       const dt = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.elapsedTime;
       const eng = engineRef.current;
@@ -586,7 +661,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           const factor = eng.reducedMotion ? 1 : 1 - Math.exp(-6.5 * dt);
           eng.camera.position.lerp(eng.cameraTransition.pos, factor);
           eng.controls.target.lerp(eng.cameraTransition.target, factor);
-          if (eng.reducedMotion || eng.camera.position.distanceTo(eng.cameraTransition.pos) < 0.03) {
+          if (eng.reducedMotion || (eng.camera.position.distanceTo(eng.cameraTransition.pos) < 0.03 &&
+            eng.controls.target.distanceTo(eng.cameraTransition.target) < 0.03)) {
             eng.cameraTransition.active = false;
           }
         }
@@ -597,7 +673,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           currentProps.blueprint.parts.length > 0 &&
           currentProps.faultyPartIds.length === 0;
 
-        const isTestDrive = isCompleted && currentProps.testDriveActive && !eng.draggedMesh;
+        const canShowcase = isCompleted && !currentProps.blueprint.interactiveTrial && currentProps.blueprint.id !== DRAWBRIDGE_ID && eng.assembledGroup.visible && !eng.draggedMesh;
+        const isTestDrive = canShowcase && currentProps.testDriveActive;
 
         if (eng.thematicArtifacts) {
           eng.thematicArtifacts.testDriveFxGroup.visible = isTestDrive;
@@ -656,7 +733,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
               pivot.rotation.z = Math.sin(elapsed * 2.2 + phase) * 0.55;
             }
           }
-        } else if (isCompleted && !eng.draggedMesh) {
+        } else if (canShowcase) {
           // Gentle showcase rotation when completed (idle)
           eng.turntableGroup.rotation.y += dt * 0.42;
           eng.assembledGroup.rotation.x = THREE.MathUtils.damp(eng.assembledGroup.rotation.x, 0, 8, dt);
@@ -685,6 +762,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         const exp = currentProps.explodedFactor;
         const speedBoost = isTestDrive ? 2.65 : 1.0;
 
+        if (isCompleted && !eng.reducedMotion && currentProps.explodedFactor === 0) eng.mechanismElapsed += dt * eng.mechanismRate;
         eng.placedPartEntries.forEach((entry) => {
           const { group, spec } = entry;
           const tx = spec.targetPos[0] + spec.explodeOffset[0] * exp;
@@ -698,8 +776,15 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           entry.popScale = THREE.MathUtils.damp(entry.popScale, 1.0, 12, dt);
           group.scale.setScalar(entry.popScale);
 
-          if (isCompleted && spec.animation) {
-            if (spec.animation === PartAnimationKind.SPIN_X) {
+          if (isCompleted && spec.animation && !eng.reducedMotion) {
+            if (spec.motionPivot && spec.animationSpeed !== undefined && exp === 0) {
+              const pose = getAxialRotationPose(spec, eng.mechanismElapsed * spec.animationSpeed);
+              group.position.copy(pose.position); group.quaternion.copy(pose.quaternion);
+            } else if (spec.animation === PartAnimationKind.PENDULUM && exp === 0) {
+              const pose = getPendulumPose(spec, elapsed);
+              group.position.fromArray(pose.position);
+              group.rotation.z = (spec.targetRot?.[2] ?? 0) + pose.angle;
+            } else if (spec.animation === PartAnimationKind.SPIN_X) {
               group.rotation.x += dt * 7.5 * speedBoost;
             } else if (spec.animation === PartAnimationKind.SPIN_Y) {
               group.rotation.y += dt * 9.5 * speedBoost;
@@ -712,6 +797,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
             group.rotation.x += dt * 11.0;
           }
         });
+
+        eng.applyMechanismPose?.();
 
         // Subtle looseness oscillation on Diagnostic faulty parts so they look mechanically unfastened
         eng.faultyPartEntries.forEach((entry) => {
@@ -761,7 +848,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         const hasActiveSparks = eng.sparks.some((s) => s.active);
         hasContinuousAnim =
           isTestDrive ||
-          (isCompleted && !eng.draggedMesh) ||
+          (isCompleted && !currentProps.blueprint.interactiveTrial && currentProps.blueprint.id !== DRAWBRIDGE_ID && !eng.draggedMesh) ||
+          Boolean(isCompleted && currentProps.blueprint.interactiveTrial === 'watermill' && eng.mechanismRate > 0 && !eng.reducedMotion) ||
           (eng.draggedMesh !== null && currentProps.stagedPartId !== null && currentProps.activeDragPartId === null) ||
           eng.cameraTransition.active ||
           eng.anchorIndicator !== null ||
@@ -803,11 +891,12 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
       resizeObserver.disconnect();
-      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
-      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
+      clearTimeout(restoreTimer);
+      stopObservingContext();
       controls.dispose();
       disposeObject3D(scene);
-      renderer.dispose();
+      environmentMap.dispose();
+      releaseWebGLRenderer(renderer);
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
@@ -815,15 +904,93 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     };
   }, [onRegisterSnapshotCapture]);
 
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine || !labTrial || labTrial.id !== blueprint.virtualLab) return;
+    const result = new THREE.Group();
+    const animate = drawVirtualLab(result, labTrial.id, labTrial.settings, labTrial.outcome);
+    result.scale.setScalar(0.48);
+    result.position.y = 0.18;
+    engine.turntableGroup.add(result);
+    engine.assembledGroup.visible = false;
+    let animationFrame = 0;
+    if (animate && !engine.reducedMotion) {
+      const start = performance.now();
+      const step = (now: number) => {
+        const progress = Math.min(1, (now - start) / 1000);
+        animate(progress);
+        engine.wakeRender();
+        if (progress < 1) animationFrame = requestAnimationFrame(step);
+      };
+      animate(0);
+      animationFrame = requestAnimationFrame(step);
+    }
+    engine.wakeRender();
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      result.removeFromParent();
+      clearVirtualLab(result);
+      engine.assembledGroup.visible = true;
+      if (engineRef.current === engine) engine.wakeRender();
+    };
+  }, [blueprint.virtualLab, labTrial, onRegisterSnapshotCapture]);
+
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine || !scienceTrial || scienceTrial.blueprintId !== blueprint.id) return;
+    const { root, targets } = buildScienceChallengeScene(scienceTrial);
+    engine.turntableGroup.add(root);
+    engine.assembledGroup.visible = false;
+    engine.turntableGroup.rotation.y = 0;
+    root.updateWorldMatrix(true, true);
+    const canvas = engine.renderer.domElement;
+    const ray = new THREE.Raycaster();
+    const position = new THREE.Vector2();
+    const press = new THREE.Vector2();
+    const rememberPress = (event: PointerEvent) => press.set(event.clientX, event.clientY);
+    const interact = (event: MouseEvent) => {
+      if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > 8) return;
+      const bounds = canvas.getBoundingClientRect();
+      position.set((event.clientX - bounds.left) * 2 / bounds.width - 1, 1 - (event.clientY - bounds.top) * 2 / bounds.height);
+      ray.setFromCamera(position, engine.camera);
+      const hit = ray.intersectObject(root, true)[0];
+      const value = hit && targets.get(hit.object);
+      if (value !== undefined) onScienceAction?.(value);
+    };
+    canvas.addEventListener('pointerdown', rememberPress);
+    canvas.addEventListener('click', interact);
+    engine.wakeRender();
+    return () => {
+      canvas.removeEventListener('click', interact);
+      canvas.removeEventListener('pointerdown', rememberPress);
+      root.removeFromParent();
+      disposeObject3D(root);
+      engine.assembledGroup.visible = true;
+      if (engineRef.current === engine) engine.wakeRender();
+    };
+  }, [blueprint.id, scienceTrial, onScienceAction, onRegisterSnapshotCapture]);
+
+  useEffect(() => {
+    const frame=requestAnimationFrame(()=>engineRef.current?.updateFraming());
+    return ()=>cancelAnimationFrame(frame);
+  },[trayPosition]);
+
   // 2. Camera Preset Transitions
   useEffect(() => {
     const eng = engineRef.current;
     if (!eng) return;
     const preset = CAMERA_PRESET_VECTORS[cameraPreset];
-    eng.cameraTransition.pos.set(preset.pos[0], preset.pos[1], preset.pos[2]);
-    eng.cameraTransition.target.set(preset.target[0], preset.target[1], preset.target[2]);
+    const staged = propsRef.current.blueprint.parts.find(part => part.id === propsRef.current.stagedPartId);
+    if (staged) {
+      const direction=new THREE.Vector3(...preset.pos).sub(new THREE.Vector3(...preset.target)).normalize();
+      eng.cameraTransition.target.fromArray(staged.targetPos);
+      eng.cameraTransition.pos.fromArray(staged.targetPos).addScaledVector(direction,Math.min(eng.controls.maxDistance*.95,getPartFocusDistance(staged.scale,eng.framingAspect)));
+    } else {
+      eng.cameraTransition.pos.fromArray(getFittedCameraPosition(preset.pos, preset.target, eng.framingAspect));
+      eng.cameraTransition.target.set(preset.target[0], preset.target[1], preset.target[2]);
+    }
     eng.cameraTransition.active = true;
-  }, [cameraPreset, cameraPresetNonce]);
+  }, [cameraPreset, cameraPresetNonce, blueprint.id, placedPartIds.length === blueprint.parts.length]);
 
   // 2a-bis. Auto-orient toward the staged part's anchor (guided mode only, no active drag)
   useEffect(() => {
@@ -834,7 +1001,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     if (!spec) return;
     // Pan the orbit target toward the anchor; keep camera position (just reorient the pivot)
     eng.cameraTransition.target.set(spec.targetPos[0], spec.targetPos[1], spec.targetPos[2]);
-    eng.cameraTransition.pos.copy(eng.camera.position);
+    const direction=eng.camera.position.clone().sub(eng.controls.target).normalize();
+    eng.cameraTransition.pos.fromArray(spec.targetPos).addScaledVector(direction,Math.min(eng.controls.maxDistance*.95,getPartFocusDistance(spec.scale,eng.framingAspect)));
     eng.cameraTransition.active = true;
   }, [stagedPartId, activeDragPartId, blueprint.parts]);
 
@@ -1303,7 +1471,13 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       if (!silEntry) return;
 
       const hits = raycaster.intersectObject(silEntry.group, true);
-      if (hits.length > 0) {
+      // A frame or open vessel can have empty space at the centre of its silhouette.
+      silEntry.group.getWorldPosition(_projectedVec).project(engine.camera);
+      const distanceToAnchor = Math.hypot(
+        (_projectedVec.x - _mouseNDC.x) * rect.width / 2,
+        (_projectedVec.y - _mouseNDC.y) * rect.height / 2,
+      );
+      if (hits.length > 0 || (_projectedVec.z >= -1 && _projectedVec.z <= 1 && distanceToAnchor <= 32)) {
         const placedSet = new Set(currentProps.placedPartIds);
         const missingDeps = silEntry.spec.dependsOn.filter((d) => !placedSet.has(d));
         if (missingDeps.length === 0) {
@@ -1346,15 +1520,27 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     };
 
     const domEl = eng.renderer.domElement;
+    const cancelDrag = () => {
+      const currentProps = propsRef.current;
+      if (!currentProps.activeDragPartId) return;
+      eng.controls.enabled = true;
+      if (eng.draggedMesh) eng.draggedMesh.magnetized = false;
+      setDragHud(null);
+      currentProps.onDragEndSignal();
+    };
     domEl.addEventListener('pointerdown', handleCanvasPointerDown);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', cancelDrag);
+    window.addEventListener('blur', cancelDrag);
     domEl.addEventListener('click', handleCanvasClick);
 
     return () => {
       domEl.removeEventListener('pointerdown', handleCanvasPointerDown);
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', cancelDrag);
+      window.removeEventListener('blur', cancelDrag);
       domEl.removeEventListener('click', handleCanvasClick);
     };
   }, []);
@@ -1362,10 +1548,25 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
   const t = UI_TRANSLATIONS[language];
 
   return (
-    <div dir="ltr" className="relative w-full h-full overflow-hidden">
+    <div dir="ltr" data-workbench={blueprint.id} data-assembly-complete={!faultyPartIds.length && isAssemblyComplete(blueprint, placedPartIds)} data-lab-outcome={labTrial?.outcome} data-science-trial={scienceTrial?.challenge.id} data-science-setting={scienceTrial?.setting} className="relative w-full h-full overflow-hidden">
       {/* Isolated WebGL mount container */}
       {/* touch-action:none prevents browser scroll/zoom from stealing pointer events during part drag */}
       <div ref={canvasMountRef} className="w-full h-full" style={{ touchAction: 'none' }} />
+      {blueprint.interactiveTrial === 'aqueduct' && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && (
+        <AqueductTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
+      )}
+      {blueprint.interactiveTrial === 'beacon' && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && (
+        <BeaconTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
+      )}
+      {blueprint.interactiveTrial === 'watermill' && placedPartIds.length === blueprint.parts.length &&
+        !faultyPartIds.length && !explodedFactor && !webglLost && (
+          <WatermillTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
+        )}
+      {blueprint.id === DRAWBRIDGE_ID && placedPartIds.length === blueprint.parts.length &&
+        !faultyPartIds.length && !explodedFactor && !webglLost && (
+          <DrawbridgeTrial engine={engineRef} language={language}
+            sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
+        )}
 
       {/* Accessible Semantic Drag & Snap Feedback Overlay (no backdrop-blur over WebGL) */}
       {dragHud && (
@@ -1386,24 +1587,6 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         </div>
       )}
 
-      {/* Floating Recenter button — always visible, bottom-right of canvas */}
-      <button
-        type="button"
-        aria-label={t.recenterBtn}
-        title={t.recenterBtn}
-        onClick={() => {
-          const eng = engineRef.current;
-          if (!eng) return;
-          const preset = CAMERA_PRESET_VECTORS[cameraPreset];
-          eng.cameraTransition.pos.set(preset.pos[0], preset.pos[1], preset.pos[2]);
-          eng.cameraTransition.target.set(preset.target[0], preset.target[1], preset.target[2]);
-          eng.cameraTransition.active = true;
-        }}
-        className="pointer-events-auto absolute bottom-4 end-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white border border-slate-200 shadow text-slate-600 hover:text-slate-900 transition-colors text-base select-none"
-      >
-        ⌖
-      </button>
-
       {/* WebGL Context Lost Fallback */}
       {webglLost && (
         <div
@@ -1415,6 +1598,10 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
               {t.webglResetTitle}
             </h2>
             <p className="text-sm text-slate-600">{t.webglResetDesc}</p>
+            <button type="button" onClick={() => window.location.reload()}
+              className="mt-4 min-h-[64px] px-6 rounded-lg bg-sky-700 text-white font-semibold cursor-pointer">
+              {t.webglRetryBtn}
+            </button>
           </div>
         </div>
       )}

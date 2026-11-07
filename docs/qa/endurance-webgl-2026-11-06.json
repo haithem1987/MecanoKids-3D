@@ -1,0 +1,23 @@
+{
+  "running": false,
+  "completed": true,
+  "wallSeconds": 1200,
+  "visibleSeconds": 1200,
+  "visibility": "visible",
+  "transitions": 454,
+  "models": 124,
+  "styles": [
+    "wood",
+    "blocks",
+    "realistic",
+    "comics"
+  ],
+  "captures": {
+    "successful": 455,
+    "failed": 0
+  },
+  "drawCallsObserved": 7593607,
+  "losses": 0,
+  "restores": 0,
+  "runtimeErrors": []
+}

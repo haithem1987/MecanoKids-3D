@@ -1,0 +1,74 @@
+[
+  {
+    "style": "wood",
+    "category": "Électronique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "wood",
+    "category": "Chimie",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "wood",
+    "category": "Physique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "blocks",
+    "category": "Électronique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "blocks",
+    "category": "Chimie",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "blocks",
+    "category": "Physique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "comics",
+    "category": "Électronique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "comics",
+    "category": "Chimie",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "comics",
+    "category": "Physique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "realistic",
+    "category": "Électronique",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "realistic",
+    "category": "Chimie",
+    "rendered": 5,
+    "invalid": false
+  },
+  {
+    "style": "realistic",
+    "category": "Physique",
+    "rendered": 5,
+    "invalid": false
+  }
+]
