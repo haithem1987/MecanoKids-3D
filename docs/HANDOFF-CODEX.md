@@ -1,3 +1,9 @@
+## Évolution du 7 novembre — aventures et découvertes
+
+Cinq activités après construction dans la scène commune, dix variantes de réactions marines, modes guidé/réparation/expert, trois aventures de trois étapes et carnet local par profil. Entrée depuis catalogue et réglages. Pas de modification de l’agencement téléphone, à tester plus tard sur Pixel 10.
+
+Validation : TypeScript, 605 tests, build ; parcours FR/EN/AR des interactions/modes/carnet/audio et essai hors ligne. Rapports `docs/qa/2026-11-07-aventures-decouvertes.md` et `docs/qa/2026-11-07-construction-play.md`. Aucun déploiement demandé pour ce lot. Carnet indépendant du backup progression ; essais/médias locaux et pré-cachés. Reste validation sur tablettes physiques et budget initial JS (~599 Ko gzip).
+
 # Handoff — Octo Gears (MécanoKids 3D) → CODEX
 
 ## Priorité actuelle — palettes persistantes (7 novembre)

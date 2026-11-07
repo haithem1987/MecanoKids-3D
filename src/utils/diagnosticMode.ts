@@ -13,7 +13,7 @@ export interface DiagnosticMissionPlan {
 /**
  * Builds a Diagnostic & Repair scenario for any blueprint:
  * Keeps structural roots intact, flags 1–2 mounted parts as loosened/faulty on the 3D model,
- * and leaves 1–2 upper/outer parts missing in the workbench tray so 2–3 total parts are diagnosed & repaired.
+ * and leaves upper/outer parts missing in the workbench tray. Large builds scale up to at least eight interventions.
  */
 export function createDiagnosticMission(
   blueprint: VehicleBlueprint,
@@ -37,7 +37,7 @@ export function createDiagnosticMission(
   // Leaf parts (parts that nothing else depends on) are ideal candidates for missing & faulty components!
   const leafParts = parts.filter((p) => (dependentsOf.get(p.id)?.length ?? 0) === 0);
 
-  const desiredTotalIssues = total <= 5 ? 2 : 3;
+  const desiredTotalIssues = Math.min(Math.max(1,total-1), total <= 5 ? 2 : total < 20 ? 3 : total < 40 ? 5 : 8);
   const selectedIssueIds: string[] = [];
 
   if (leafParts.length >= desiredTotalIssues) {

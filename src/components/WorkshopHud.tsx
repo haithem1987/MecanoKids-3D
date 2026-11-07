@@ -1,8 +1,9 @@
+import {WorkshopPlayModes} from './WorkshopPlayModes';
 import { PhoneWorkshopTools } from './PhoneWorkshopTools';
 import {Settings2,Undo2,Volume2,Play,Sparkles,ArrowRight,Crosshair} from 'lucide-react';
 import { formatStopwatchMs } from '../utils/speedrun';
 import React from 'react';
-import { PHONE_HUD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
+import { EXPERIENCE_TEXT, PHONE_HUD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
 import {
   CameraPreset,
   LanguageCode,
@@ -61,6 +62,7 @@ interface WorkshopHudProps {
   onStartPartDrag: (partId: string) => void;
   onClickPartCard: (partId: string) => void;
   onOpenCatalog: () => void;
+  onOpenNotebook: () => void;
   onOpenVictoryModal: () => void;
   hasNextStage: boolean;
   onGoNextStage: () => void;
@@ -118,6 +120,7 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
   onStartPartDrag,
   onClickPartCard,
   onOpenCatalog,
+  onOpenNotebook,
   onOpenVictoryModal,
   hasNextStage,
   onGoNextStage,
@@ -158,7 +161,9 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
       <summary className={`${button} flex w-16 cursor-pointer items-center justify-center text-xl`} aria-label={t.hudTools}><Settings2 className="h-6 w-6" aria-hidden /><span className="phone-tool-label">{PHONE_HUD_TEXT.settings[locale]}</span></summary>
       <div className={`absolute bottom-full mb-2 max-h-[min(70svh,calc(100svh-12rem))] w-[min(22rem,calc(100vw-1rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-xl ${side==='right'?'start-0':'end-0'}`}>
         <h2 className="mb-2 font-bold text-sky-950">{t.hudTools}</h2>
+        <WorkshopPlayModes language={language} noSilhouette={noSilhouetteMode} autoRead={voiceAutoRead} repairing={isDiagnosticActive} onToggleSilhouette={onToggleNoSilhouette} onToggleAutoRead={onToggleVoiceAutoRead} onStartRepair={onStartDiagnostic} onQuitRepair={onQuitDiagnostic}/>
         <div className="grid grid-cols-2 gap-2">
+          <button type="button" data-open-notebook className={button} onClick={onOpenNotebook}>{EXPERIENCE_TEXT.notebook[locale]}</button>
           <button type="button" className={button} onClick={onOpenCatalog}>{t.stagesBtn}</button>
           <button type="button" className={button} onClick={onSaveNow}>{t.autoSavedBadge}</button>
           <button type="button" className={button} onClick={onToggleMute}>{muted?t.unmuteAria:t.muteAria}</button>

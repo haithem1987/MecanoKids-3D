@@ -1,3 +1,5 @@
+import {useSceneReady} from '../hooks/useSceneReady';
+import {useTrialDiscovery} from '../hooks/useTrialDiscovery';
 import {MissionPanel,missionButton} from './MissionPanel';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -74,11 +76,13 @@ export function DrawbridgeTrial({ engine, language, sceneRevision }: {
   language: LanguageCode;
   sceneRevision: string;
 }) {
+ const sceneReady=useSceneReady(engine);
   const [phase, setPhase] = useState<Phase>('closed');
   const angleRef = useRef(0);
   const trafficRef = useRef<ReturnType<typeof createTraffic> | null>(null);
   const locale = language === 'fr' ? 0 : language === 'en' ? 1 : 2;
   const t = DRAWBRIDGE_TEXT;
+ useTrialDiscovery(DRAWBRIDGE_ID,'drawbridge',phase,t[phase],phase==='passed');
   const { isSupported, toggle } = useSpeech();
 
   useEffect(() => {
@@ -101,7 +105,7 @@ export function DrawbridgeTrial({ engine, language, sceneRevision }: {
       trafficRef.current = null;
       scene.wakeRender();
     };
-  }, [engine, sceneRevision]);
+  }, [engine,sceneReady, sceneRevision]);
 
   useEffect(() => {
     const scene = engine.current;
@@ -126,7 +130,7 @@ export function DrawbridgeTrial({ engine, language, sceneRevision }: {
     };
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, [engine, phase, sceneRevision]);
+  }, [engine,sceneReady, phase, sceneRevision]);
 
   const raised = phase === 'open' || phase === 'passed';
   return <WorkshopMissionPortal><MissionPanel language={language} title={t.trial[locale]} attributes={{'data-drawbridge-phase':phase}} status={t[phase][locale]}

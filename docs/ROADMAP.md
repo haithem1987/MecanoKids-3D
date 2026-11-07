@@ -13,6 +13,13 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [x] JEU-AVENTURES — Donner une suite jouable aux constructions (7 novembre)
+- Cinq montages ont des activités sur la scène principale : livraison au portique, visite du château/donjon/temple, convoi du viaduc. Les essais existants alimentent aussi le carnet.
+- Dix variantes de réactions marines, jalons variables et célébrations des essais réussis sans répétition rapide.
+- Modes guidé/réparation/expert sur les ateliers existants ; jusqu'à huit interventions dans les réparations des grands montages, sans perdre l'assemblage standard.
+- Trois aventures de trois ateliers : port, village et recherche. Carnet local par profil, observations trilingues, reprise dans la scène commune, droits du catalogue conservés.
+- Téléphone exclu de cette demande : aucun réagencement supplémentaire. Rapport : `docs/qa/2026-11-07-aventures-decouvertes.md`.
+
 ### [x] UX-SMARTPHONE — Adapter les palettes et les missions au téléphone
 - Ruban de pièces permanent en portrait et palette latérale compacte en paysage ; commandes tactiles de 64 px.
 - Missions scientifiques : réglages paginés, action Tester toujours disponible, informations séparées. Le lancement ferme les réglages pour observer la scène 3D commune.

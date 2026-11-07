@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { VEHICLE_BLUEPRINTS } from '../src/data/blueprints';
-import { DIAGNOSTIC_NARRATION, DRAWBRIDGE_TEXT, WATERMILL_TRIAL_TEXT, BEACON_TRIAL_TEXT, AQUEDUCT_TRIAL_TEXT, getLocalizedBlueprint, SCIENCE_CHALLENGE_TEXT, UI_TRANSLATIONS, VIRTUAL_LAB_TEXT, VIRTUAL_LAB_UI } from '../src/i18n/translations';
+import { ADVENTURE_NOTEBOOK_TEXT, PLAY_MODES_TEXT, CONSTRUCTION_PLAY_TEXT, DIAGNOSTIC_NARRATION, DRAWBRIDGE_TEXT, WATERMILL_TRIAL_TEXT, BEACON_TRIAL_TEXT, AQUEDUCT_TRIAL_TEXT, getLocalizedBlueprint, SCIENCE_CHALLENGE_TEXT, UI_TRANSLATIONS, VIRTUAL_LAB_TEXT, VIRTUAL_LAB_UI } from '../src/i18n/translations';
 import { generateMechanicalQuiz } from '../src/utils/quizGenerator';
 import { narrationKey, narrationPhrases } from '../src/audio/narrationText';
 import type { LanguageCode } from '../src/types/game';
@@ -24,9 +24,12 @@ const supplement = process.argv.includes('--diagnostic-only');
 const append = supplement || process.argv.includes('--append');
 for (const phrase of [t.voiceTestSample, t.howItWorksTitle, t.realRecordTitle, t.discoveryObservationTitle, t.didYouKnowTitle]) add(phrase);
 for (const step of t.tourSteps) [step.title, step.description, step.tip].forEach(add);
-for (const labels of [SCIENCE_CHALLENGE_TEXT, VIRTUAL_LAB_UI, DRAWBRIDGE_TEXT, WATERMILL_TRIAL_TEXT, BEACON_TRIAL_TEXT, AQUEDUCT_TRIAL_TEXT]) {
+for (const labels of [PLAY_MODES_TEXT, CONSTRUCTION_PLAY_TEXT, SCIENCE_CHALLENGE_TEXT, VIRTUAL_LAB_UI, DRAWBRIDGE_TEXT, WATERMILL_TRIAL_TEXT, BEACON_TRIAL_TEXT, AQUEDUCT_TRIAL_TEXT]) {
   Object.values(labels).forEach(row => add(row[locale]));
 }
+const {routes,...notebookLabels}=ADVENTURE_NOTEBOOK_TEXT;
+Object.values(notebookLabels).forEach(row=>add(row[locale]));
+Object.values(routes).forEach(route=>[route.title,route.goal].forEach(row=>add(row[locale])));
 for (const lab of Object.values(VIRTUAL_LAB_TEXT)) {
   [lab.name, lab.goal, lab.why, ...lab.outcomes].forEach(row => add(row[locale]));
 }

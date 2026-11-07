@@ -1,3 +1,5 @@
+import {ConstructionPlayTrial} from './ConstructionPlayTrial';
+import {getConstructionPlayKind} from '../data/constructionPlay';
 import { measureFloatingFraming } from '../utils/floatingFraming';
 import { AqueductTrial } from './AqueductTrial';
 import { getFittedCameraPosition, getViewportCameraScale, getPartFocusDistance } from '../utils/cameraFraming';
@@ -689,7 +691,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           currentProps.blueprint.parts.length > 0 &&
           currentProps.faultyPartIds.length === 0;
 
-        const canShowcase = isCompleted && !currentProps.blueprint.interactiveTrial && currentProps.blueprint.id !== DRAWBRIDGE_ID && eng.assembledGroup.visible && !eng.draggedMesh;
+        const canShowcase = isCompleted && !currentProps.blueprint.interactiveTrial && !getConstructionPlayKind(currentProps.blueprint.id) && currentProps.blueprint.id !== DRAWBRIDGE_ID && eng.assembledGroup.visible && !eng.draggedMesh;
         const isTestDrive = canShowcase && currentProps.testDriveActive;
 
         if (eng.thematicArtifacts) {
@@ -864,7 +866,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         const hasActiveSparks = eng.sparks.some((s) => s.active);
         hasContinuousAnim =
           isTestDrive ||
-          (isCompleted && !currentProps.blueprint.interactiveTrial && currentProps.blueprint.id !== DRAWBRIDGE_ID && !eng.draggedMesh) ||
+          (isCompleted && !currentProps.blueprint.interactiveTrial && !getConstructionPlayKind(currentProps.blueprint.id) && currentProps.blueprint.id !== DRAWBRIDGE_ID && !eng.draggedMesh) ||
           Boolean(isCompleted && currentProps.blueprint.interactiveTrial === 'watermill' && eng.mechanismRate > 0 && !eng.reducedMotion) ||
           (eng.draggedMesh !== null && currentProps.stagedPartId !== null && currentProps.activeDragPartId === null) ||
           eng.cameraTransition.active ||
@@ -1570,6 +1572,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       {/* Isolated WebGL mount container */}
       {/* touch-action:none prevents browser scroll/zoom from stealing pointer events during part drag */}
       <div ref={canvasMountRef} className="w-full h-full" style={{ touchAction: 'none' }} />
+      {getConstructionPlayKind(blueprint.id) && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && <ConstructionPlayTrial key={blueprint.id} engine={engineRef} language={language} blueprintId={blueprint.id} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
       {blueprint.interactiveTrial === 'aqueduct' && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && (
         <AqueductTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
       )}

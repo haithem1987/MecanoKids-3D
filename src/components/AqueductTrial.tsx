@@ -1,3 +1,5 @@
+import {useSceneReady} from '../hooks/useSceneReady';
+import {useTrialDiscovery} from '../hooks/useTrialDiscovery';
 import {MissionPanel,missionButton} from './MissionPanel';
 import {useEffect,useRef,useState} from 'react';
 import * as THREE from 'three';
@@ -11,9 +13,11 @@ interface AqueductScene {
  applyMechanismPose?:()=>void;wakeRender:()=>void;
 }
 export function AqueductTrial({engine,language,sceneRevision}:{engine:{current:AqueductScene|null};language:LanguageCode;sceneRevision:string}){
+ const sceneReady=useSceneReady(engine);
  const [phase,setPhase]=useState<'supported'|'released'|'flowing'>('supported');
  const waterRef=useRef<{water:THREE.Mesh<THREE.BoxGeometry,THREE.MeshStandardMaterial>;drops:THREE.InstancedMesh}|null>(null);
  const locale=language==='fr'?0:language==='en'?1:2,t=AQUEDUCT_TRIAL_TEXT;
+ useTrialDiscovery('expansion-aqueduct','aqueduct',phase,t[phase],phase==='flowing');
  const {toggle,isSupported}=useSpeech();
  useEffect(()=>{
   const scene=engine.current;if(!scene)return;
@@ -21,7 +25,7 @@ export function AqueductTrial({engine,language,sceneRevision}:{engine:{current:A
   const drops=new THREE.InstancedMesh(new THREE.SphereGeometry(.025,8,6),new THREE.MeshBasicMaterial({color:'#7dd3fc'}),12);
   water.visible=false;drops.visible=false;scene.turntableGroup.add(water,drops);waterRef.current={water,drops};scene.wakeRender();
   return()=>{water.removeFromParent();drops.removeFromParent();water.geometry.dispose();water.material.dispose();drops.dispose();drops.geometry.dispose();if(drops.material instanceof THREE.Material)drops.material.dispose();waterRef.current=null;scene.wakeRender();};
- },[engine,sceneRevision]);
+ },[engine,sceneReady,sceneRevision]);
  useEffect(()=>{
   const scene=engine.current;if(!scene)return;
   const apply=()=>{for(const entry of scene.placedPartEntries.values())if(entry.spec.temporarySupport)entry.group.visible=phase==='supported';};
@@ -37,7 +41,7 @@ export function AqueductTrial({engine,language,sceneRevision}:{engine:{current:A
   };
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('click',click);scene.wakeRender();
   return()=>{canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('click',click);if(scene.applyMechanismPose===apply)scene.applyMechanismPose=undefined;for(const entry of scene.placedPartEntries.values())if(entry.spec.temporarySupport)entry.group.visible=true;scene.wakeRender();};
- },[engine,phase,sceneRevision]);
+ },[engine,sceneReady,phase,sceneRevision]);
  useEffect(()=>{
   const scene=engine.current,water=waterRef.current;if(!scene||!water||phase!=='flowing')return;
   let frame=0;const start=performance.now(),dummy=new THREE.Object3D();
@@ -47,7 +51,7 @@ export function AqueductTrial({engine,language,sceneRevision}:{engine:{current:A
    water.drops.instanceMatrix.needsUpdate=true;scene.wakeRender();if(!scene.reducedMotion)frame=requestAnimationFrame(draw);
   };
   frame=requestAnimationFrame(draw);return()=>cancelAnimationFrame(frame);
- },[engine,phase,sceneRevision]);
+ },[engine,sceneReady,phase,sceneRevision]);
  return <WorkshopMissionPortal><MissionPanel language={language} title={t.title[locale]} attributes={{'data-aqueduct-phase':phase}} status={t[phase][locale]}
   info={<><p>{t[phase][locale]}</p><p>{t.touch[locale]}</p></>} onListen={isSupported?()=>toggle('aqueduct',t[phase][locale],language):undefined}
   actions={<><button type="button" data-mission-primary data-aqueduct-centering className={missionButton} onClick={()=>setPhase(phase==='supported'?'released':'supported')}>{t[phase==='supported'?'remove':'restore'][locale]}</button><button type="button" data-mission-reset data-aqueduct-water disabled={phase==='supported'} className={missionButton} onClick={()=>setPhase(phase==='flowing'?'released':'flowing')}>{t[phase==='flowing'?'stop':'water'][locale]}</button></>}/></WorkshopMissionPortal>;

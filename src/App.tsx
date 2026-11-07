@@ -1,3 +1,6 @@
+import {removeNotebook} from './utils/discoveryNotebook';
+import {WorkshopExperienceHub} from './components/WorkshopExperienceHub';
+import {getConstructionPlayKind} from './data/constructionPlay';
 import { getWorkshopInstruction } from './utils/workshopInstruction';
 /**
  * @license
@@ -174,13 +177,13 @@ export default function App() {
   // Axe 1, 2 & 3 interactive states
   const [xRayMode, setXRayMode] = useState<boolean>(false);
   const [testDriveActive, setTestDriveActive] = useState<boolean>(false);
-  const [labTrial, setLabTrial] = useState<VirtualLabTrial>();
-  const [scienceTrial, setScienceTrial] = useState<ScienceTrial>();
+  const [labTrial, setLabTrial] = useState<VirtualLabTrial & {profileId:string}>();
+  const [scienceTrial, setScienceTrial] = useState<ScienceTrial & {profileId:string}>();
   const startScienceTrial = useCallback((trial: ScienceTrial | undefined) => {
-    setScienceTrial(trial);
-  }, []);
+    setScienceTrial(trial?{...trial,profileId:activeProfile.id}:undefined);
+  }, [activeProfile.id]);
   const handleScienceAction = useCallback((value: number) => {
-    setScienceTrial(previous => previous && applyScienceAction(previous, value));
+    setScienceTrial(previous => previous && {...applyScienceAction(previous, value),profileId:previous.profileId});
   }, []);
   const [studioOpen, setStudioOpen] = useState<boolean>(false);
   const [garageOpen, setGarageOpen] = useState<boolean>(false);
@@ -199,6 +202,7 @@ export default function App() {
   const [upgradeReason, setUpgradeReason] = useState<'stages' | 'profiles' | 'liveries'>('stages');
   const [licenseActivationOpen, setLicenseActivationOpen] = useState<boolean>(false);
   const [profilesOpen, setProfilesOpen] = useState<boolean>(false);
+  const [notebookOpen,setNotebookOpen]=useState(false);
   const [catalogOpen, setCatalogOpen] = useState<boolean>(localAdminActive);
   const [streakModalOpen, setStreakModalOpen] = useState<boolean>(false);
   const [dailyModalOpen, setDailyModalOpen] = useState<boolean>(false);
@@ -332,13 +336,13 @@ export default function App() {
   const mistakesCount = currentStageState?.mistakesCount ?? 0;
   const baseElapsedMs = currentStageState?.elapsedMs ?? 0;
   const isCompleted = !activeDiagnostic && isAssemblyComplete(currentBlueprint, standardPlacedPartIds);
-  const activeLabTrial = isCompleted && labTrial?.id === currentBlueprint.virtualLab ? labTrial : undefined;
+  const activeLabTrial = isCompleted && labTrial?.profileId===activeProfile.id && labTrial?.id === currentBlueprint.virtualLab ? labTrial : undefined;
   const scienceChallenges = getScienceChallenges(currentBlueprint.id);
-  const activeScienceTrial = isCompleted && scienceTrial?.blueprintId === currentBlueprint.id ? scienceTrial : undefined;
+  const activeScienceTrial = isCompleted && scienceTrial?.profileId===activeProfile.id && scienceTrial?.blueprintId === currentBlueprint.id ? scienceTrial : undefined;
   useEffect(() => {
     setLabTrial(undefined);
     setScienceTrial(undefined);
-  }, [currentBlueprint.id, isCompleted]);
+  }, [activeProfile.id, currentBlueprint.id, isCompleted]);
 
   // Keep No-Silhouette clean-run tracker synchronized when starting fresh at 0 parts
   // Handle Stripe checkout return (?checkout=success&session_id=cs_xxx)
@@ -474,7 +478,7 @@ export default function App() {
   ]);
 
   const anyOverlayOpen =
-    profilesOpen ||
+    notebookOpen || profilesOpen ||
     catalogOpen ||
     streakModalOpen ||
     dailyModalOpen ||
@@ -780,6 +784,7 @@ export default function App() {
         resetTransientWorkbenchState();
       }
 
+      removeNotebook(profileId);
       const nextActiveId = deletingActive ? remaining[0].id : storeSnap.activeProfileId;
       setProfileStore((store) => ({
         ...store,
@@ -1733,7 +1738,7 @@ export default function App() {
           flashStatus(t.streakExtendedToast(streakOutcome.nextStreak.currentStreak));
         }
 
-        if (currentBlueprint.id !== DRAWBRIDGE_ID && !currentBlueprint.interactiveTrial && !currentBlueprint.virtualLab && !getScienceChallenges(currentBlueprint.id)) {
+        if (currentBlueprint.id !== DRAWBRIDGE_ID && !currentBlueprint.interactiveTrial && !getConstructionPlayKind(currentBlueprint.id) && !currentBlueprint.virtualLab && !getScienceChallenges(currentBlueprint.id)) {
           window.setTimeout(() => {
             const latest = latestProgressRef.current;
             if (latest.currentBlueprintId === currentBlueprint.id &&
@@ -2208,7 +2213,7 @@ export default function App() {
       {/* Reserved areas for the 3D scene, instructions and parts. */}
       <main className="workbench-workspace relative flex min-h-0 flex-1 w-full overflow-hidden" data-tray-position={effectiveTrayPosition}>
         <div className="workbench-scene relative min-h-0 min-w-0 flex-1">
-        <OctoSurprise key={`${activeProfile.id}-${currentBlueprint.id}`} placed={standardPlacedPartIds.length}
+        <OctoSurprise blueprintId={currentBlueprint.id} key={`${activeProfile.id}-${currentBlueprint.id}`} placed={standardPlacedPartIds.length}
           total={currentBlueprint.parts.length} stageNumber={currentBlueprint.stageNumber} blocked={anyOverlayOpen || Boolean(activeDiagnostic)}
           completed={isCompleted} congratulations={t.octoCongratulations} />
         {/* Non-intrusive Offline Connectivity Indicator */}
@@ -2226,7 +2231,7 @@ export default function App() {
           </div>
         )}
 
-        <WorkshopCanvas
+        <WorkshopCanvas key={`${activeProfile.id}-${currentBlueprint.id}`}
           trayPosition={effectiveTrayPosition}
           language={language}
           blueprint={currentBlueprint}
@@ -2262,12 +2267,12 @@ export default function App() {
           }}
         />
         </div>
-        {!activeDiagnostic && (currentBlueprint.virtualLab || scienceChallenges || ((currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial) && isCompleted)) && (
+        {!activeDiagnostic && (currentBlueprint.virtualLab || scienceChallenges || ((currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial || getConstructionPlayKind(currentBlueprint.id)) && isCompleted)) && (
           <div className="workbench-mission min-h-0 overflow-y-auto p-2">
-            {(currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial) && <div id="workbench-trial-controls" />}
+            {(currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial || getConstructionPlayKind(currentBlueprint.id)) && <div id="workbench-trial-controls" />}
             {currentBlueprint.virtualLab && (
               <VirtualLabMission key={`${currentBlueprint.id}-${isCompleted}`} id={currentBlueprint.virtualLab}
-                language={language} assembled={isCompleted} trial={activeLabTrial} onTrial={setLabTrial} />
+                language={language} assembled={isCompleted} trial={activeLabTrial} onTrial={trial=>setLabTrial(trial?{...trial,profileId:activeProfile.id}:undefined)} />
             )}
             {scienceChallenges && (
               <ScienceChallengeMission blueprintId={currentBlueprint.id} challenges={scienceChallenges} trial={activeScienceTrial}
@@ -2280,6 +2285,7 @@ export default function App() {
       <WorkshopHud
         language={language}
         blueprint={currentBlueprint}
+        onOpenNotebook={() => setNotebookOpen(true)}
         totalStages={VEHICLE_BLUEPRINTS.length}
         placedPartIds={effectivePlacedPartIds}
         faultyPartIds={effectiveFaultyPartIds}
@@ -2345,6 +2351,7 @@ export default function App() {
 
       </main>
 
+      <WorkshopExperienceHub isOpen={notebookOpen} onClose={()=>setNotebookOpen(false)} profileId={activeProfile.id} language={language} progress={progress} blueprints={VEHICLE_BLUEPRINTS} blueprint={currentBlueprint} labTrial={activeLabTrial} scienceTrial={activeScienceTrial} onOpenBlueprint={handleSelectBlueprint}/>
       {/* Family Multi-Profiles, Trilingual Web Speech & Offline PWA Modal */}
       <ProfilesModal
         isOpen={profilesOpen}
@@ -2381,6 +2388,7 @@ export default function App() {
         }
         unlockedBadgesCount={progressionSummary.unlockedCount}
         totalBadgesCount={progressionSummary.badges.length}
+        onOpenNotebook={()=>setNotebookOpen(true)}
         onOpenProgression={() => {
           setCatalogOpen(false);
           setProgressionOpen(true);

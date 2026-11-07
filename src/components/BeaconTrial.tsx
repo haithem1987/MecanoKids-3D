@@ -1,3 +1,5 @@
+import {useSceneReady} from '../hooks/useSceneReady';
+import {useTrialDiscovery} from '../hooks/useTrialDiscovery';
 import {MissionPanel,MissionOptions,missionButton} from './MissionPanel';
 import {MISSION_PANEL_TEXT} from '../i18n/translations';
 import {useEffect,useState} from 'react';
@@ -12,11 +14,13 @@ interface BeaconScene {
  renderer:THREE.WebGLRenderer;camera:THREE.PerspectiveCamera;wakeRender:()=>void;applyMechanismPose?:()=>void;
 }
 export function BeaconTrial({engine,language,sceneRevision}:{engine:{current:BeaconScene|null};language:LanguageCode;sceneRevision:string}){
+ const sceneReady=useSceneReady(engine);
  const [settings,setSettings]=useState<BeaconSettings>({source:'solar',daylight:true,charged:true});
  const [draft,setDraft]=useState<BeaconSettings>({source:'solar',daylight:true,charged:true});
  const outcome=getBeaconOutcome(settings),on=outcome.endsWith('On');
  const locale=language==='fr'?0:language==='en'?1:2,t=BEACON_TRIAL_TEXT;
  const {toggle,isSupported}=useSpeech();
+ useTrialDiscovery('expansion-beacon','beacon',JSON.stringify(settings),t[outcome],on);
  useEffect(()=>{
   const scene=engine.current;if(!scene)return;
   const lever=new THREE.Group();lever.position.set(.75,.54,.7);lever.rotation.z=settings.source==='solar'?-.4:.4;
@@ -57,7 +61,7 @@ export function BeaconTrial({engine,language,sceneRevision}:{engine:{current:Bea
   };
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('click',click);scene.wakeRender();
   return()=>{canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('click',click);if(scene.applyMechanismPose===applyAppearance)scene.applyMechanismPose=undefined;originals.forEach((saved,material)=>{material.color.copy(saved.color);material.emissive.copy(saved.emissive);material.emissiveIntensity=saved.intensity;});lever.removeFromParent();handle.geometry.dispose();handle.material.dispose();knob.geometry.dispose();knob.material.dispose();scene.wakeRender();};
- },[engine,sceneRevision,settings.source,settings.daylight,settings.charged,on]);
+ },[engine,sceneReady,sceneRevision,settings.source,settings.daylight,settings.charged,on]);
  const controls=[{label:'source',options:['solar','battery'],selected:draft.source,onChange:(value:string)=>setDraft(s=>({...s,source:value==='solar'?'solar':'battery'}))},
   {label:'light',options:['day','night'],selected:draft.daylight?'day':'night',onChange:(value:string)=>setDraft(s=>({...s,daylight:value==='day'}))},
   {label:'charge',options:['full','empty'],selected:draft.charged?'full':'empty',onChange:(value:string)=>setDraft(s=>({...s,charged:value==='full'}))}] as const;

@@ -1,3 +1,4 @@
+import {isWorkshopUnlocked,TIER_UNLOCK_THRESHOLDS} from '../utils/workshopAccess';
 import React, { useMemo, useRef, useState } from 'react';
 import {
   Calendar,
@@ -15,7 +16,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { CATALOG_BROWSE_TEXT, LOCAL_ADMIN_LABEL, MASTER_BUILD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
+import { EXPERIENCE_TEXT, CATALOG_BROWSE_TEXT, LOCAL_ADMIN_LABEL, MASTER_BUILD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
 import { CATEGORIES, CATEGORY_META, getCategoryLabel } from '../data/categories';
 import {
   DifficultyTier,
@@ -43,6 +44,7 @@ interface StageCatalogModalProps {
   unlockedBadgesCount: number;
   totalBadgesCount: number;
   onOpenProgression: () => void;
+  onOpenNotebook: () => void;
   onOpenLeaderboard: () => void;
   dailyVehicleName: string;
   dailyRarePartName: string;
@@ -55,13 +57,7 @@ interface StageCatalogModalProps {
   onOpenUpgrade: (reason: 'stages') => void;
 }
 
-const TIER_UNLOCK_THRESHOLDS: Record<DifficultyTier, number> = {
-  [DifficultyTier.DISCOVERY]: 0,
-  [DifficultyTier.WORKSHOP]: 3,
-  [DifficultyTier.ENGINEER]: 10,
-  [DifficultyTier.EXPERT]: 25,
-  [DifficultyTier.MASTER]: 45,
-};
+
 
 const normalizeSearch = (value: string) => value.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').trim();
 
@@ -79,6 +75,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   unlockedBadgesCount,
   totalBadgesCount,
   onOpenProgression,
+  onOpenNotebook,
   onOpenLeaderboard,
   dailyVehicleName,
   dailyRarePartName,
@@ -136,21 +133,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
   const totalStars = completedRecords.reduce((sum, r) => sum + (r.stars || 0), 0);
   const maxStars = blueprints.length * 3;
 
-  const isStageUnlocked = (bp: VehicleBlueprint): boolean => {
-    if (bp.masterExpansion && progress.ageProfile === '11-12') return true;
-    if (progress.freeWorkshopUnlocked) return true;
-    if (bp.id === currentBlueprintId) return true;
-    if (progress.completedStages[bp.id]?.completed) return true;
-    if ((progress.inProgressStages[bp.id]?.placedPartIds.length ?? 0) > 0) return true;
-
-    const needed = TIER_UNLOCK_THRESHOLDS[bp.tier] ?? 0;
-    if (completedCount >= needed) return true;
-
-    const prevBp = blueprints[bp.stageNumber - 2];
-    if (prevBp && progress.completedStages[prevBp.id]?.completed) return true;
-
-    return false;
-  };
+  const isStageUnlocked = (bp:VehicleBlueprint)=>isWorkshopUnlocked(bp,progress,blueprints,currentBlueprintId);
 
   const tiers: Array<{ tier: DifficultyTier; title: string; subtitle: string }> = [
     {
@@ -251,6 +234,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                 </h3>
               </div>
             )}
+            <button type="button" data-catalog-notebook onClick={()=>{onClose();onOpenNotebook();}} className="min-h-16 rounded-xl border border-sky-200 bg-sky-50 px-4 text-start font-bold text-sky-950">{EXPERIENCE_TEXT.notebook[locale]}</button>
             <details className="rounded-xl border border-slate-200 bg-white px-3">
               <summary className="flex min-h-16 cursor-pointer items-center font-semibold text-slate-700">{browse.tools[locale]}</summary>
               <div className="flex flex-wrap items-center gap-2 pb-3">

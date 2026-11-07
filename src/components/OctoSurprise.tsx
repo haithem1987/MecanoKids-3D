@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-const moves = ['high-five', 'crab-clap', 'dance', 'fish-bubbles', 'juggle', 'turtle-spin'] as const;
-type Move = typeof moves[number] | 'victory';
+import { assemblySurprise, successSurprise, type SeaSurpriseMove } from '../utils/workshopSurprises';
+type Move = SeaSurpriseMove | 'victory';
 export const OCTO_VICTORY_DURATION_MS = 2600;
 
 function Crab() {
@@ -41,33 +41,92 @@ function Turtle() {
   </g>;
 }
 
-export function OctoSurprise({ placed, total, stageNumber, blocked, completed, congratulations }: {
+function Dolphin() {
+  return <g className="octo-fish" fill="#38bdf8" stroke="#0369a1" strokeWidth="2" strokeLinejoin="round">
+    <path d="M22 81q12-57 57-44l11-18 9 28q17 10 25 24l-23-4q-37-26-60 4l-2 21-12-8-16 3Z"/>
+    <path d="M57 60q11-12 27-8l-7 13q-9-5-20-5Z" fill="#e0f2fe" stroke="none"/>
+    <circle cx="92" cy="51" r="3" fill="#172554" stroke="none"/>
+    <path d="M107 60q5 3 10 0" fill="none" strokeLinecap="round"/>
+  </g>;
+}
+function Ray() {
+  return <g className="octo-fish" fill="#818cf8" stroke="#4338ca" strokeWidth="2" strokeLinejoin="round">
+    <path d="M71 78q0 16 13 22" fill="none" strokeWidth="5" strokeLinecap="round"/>
+    <path d="M70 36q-22 12-50 8 13 36 50 38 37-2 50-38-28 4-50-8Z"/>
+    <path d="M54 56q16 20 32 0" fill="#c7d2fe" stroke="none"/>
+    <circle cx="59" cy="51" r="3" fill="#172554" stroke="none"/><circle cx="80" cy="51" r="3" fill="#172554" stroke="none"/>
+    <path d="M64 62q6 5 12 0" fill="none" stroke="#312e81" strokeLinecap="round"/>
+  </g>;
+}
+function Jellyfish() {
+  return <g className="octo-turtle" strokeLinecap="round">
+    <path d="M45 68q-10 17 0 28m14-28q-8 23 1 30m15-30q8 23-1 30m15-30q10 17 0 28" stroke="#c084fc" strokeWidth="5" fill="none"/>
+    <path d="M31 67q0-42 38-42 38 0 38 42-10 8-19 0-10 8-19 0-10 8-19 0-10 8-19 0Z" fill="#e9d5ff" stroke="#a855f7" strokeWidth="3"/>
+    <circle cx="57" cy="51" r="3" fill="#581c87"/><circle cx="80" cy="51" r="3" fill="#581c87"/>
+    <path d="M63 59q6 6 12 0" fill="none" stroke="#581c87" strokeWidth="3"/>
+  </g>;
+}
+function SeaStar() {
+  return <g className="octo-turtle" strokeLinejoin="round">
+    <path d="m70 23 13 27 30-5-19 26 13 29-36-13-32 13 8-29-20-24 31 3Z" fill="#fda4af" stroke="#e11d48" strokeWidth="3"/>
+    <circle cx="61" cy="62" r="3" fill="#881337"/><circle cx="80" cy="62" r="3" fill="#881337"/>
+    <path d="M64 74q6 6 12 0" fill="none" stroke="#881337" strokeWidth="3" strokeLinecap="round"/>
+  </g>;
+}
+
+export function OctoSurprise({ placed, total, stageNumber, blocked, completed, congratulations, successEvent = 0, blueprintId }: {
   placed: number;
   total: number;
   stageNumber: number;
   blocked: boolean;
   completed: boolean;
   congratulations: string;
+  /** Monotonic successful experiment/repair counter; only its increments celebrate. */
+  successEvent?: number;
+  blueprintId?: string;
 }) {
   const highest = useRef(placed);
+  const previousPlaced = useRef(placed);
+  const previousSuccess = useRef(successEvent);
+  const lastDiscoveryAt = useRef(-Infinity);
+  const discoveries = useRef(0);
   const [surprise, setSurprise] = useState<{ move: Move; step: number }>();
   useEffect(() => {
     const previous = highest.current;
-    highest.current = Math.max(previous, placed);
+    const previousCount = previousPlaced.current;
+    previousPlaced.current = placed;
+    highest.current = placed === 0 ? 0 : Math.max(previous, placed);
     if (blocked) {
       setSurprise(undefined);
       return;
     }
-    if (placed <= previous) return;
+    if (placed <= previous || placed !== previousCount + 1) return;
     if (completed) {
       setSurprise({ move: 'victory', step: placed });
       return;
     }
-    const first = total <= 5 ? 2 : 3;
-    if (placed >= total || placed < first || (placed - first) % 5 !== 0) return;
-    const move = moves[(stageNumber + (placed - first) / 5) % moves.length];
-    setSurprise({ move, step: placed });
+    const move = assemblySurprise(placed,total,stageNumber);
+    if (move) setSurprise({ move, step: placed });
   }, [placed, total, stageNumber, blocked, completed]);
+  useEffect(() => {
+    const previous = previousSuccess.current;
+    previousSuccess.current = successEvent;
+    if (blocked || successEvent <= previous) return;
+    setSurprise({move:successSurprise(successEvent,stageNumber),step:total+successEvent});
+  },[successEvent,stageNumber,blocked,total]);
+  useEffect(() => {
+    const celebrateDiscovery = (event: Event) => {
+      const detail = (event as CustomEvent<{blueprintId?: string; success?: boolean}>).detail;
+      if (detail?.success !== true || blueprintId && detail.blueprintId !== blueprintId) return;
+      const now = performance.now();
+      if (blocked || now - lastDiscoveryAt.current < 10000) return;
+      lastDiscoveryAt.current = now;
+      discoveries.current += 1;
+      setSurprise({move:successSurprise(discoveries.current,stageNumber),step:total+discoveries.current});
+    };
+    window.addEventListener('octogears:workshop-discovery',celebrateDiscovery);
+    return () => window.removeEventListener('octogears:workshop-discovery',celebrateDiscovery);
+  },[stageNumber,blocked,total,blueprintId]);
   useEffect(() => {
     if (!surprise) return;
     const timer = window.setTimeout(() => setSurprise(undefined), OCTO_VICTORY_DURATION_MS);
@@ -90,6 +149,10 @@ export function OctoSurprise({ placed, total, stageNumber, blocked, completed, c
         {surprise.move === 'crab-clap' && <Crab />}
         {surprise.move === 'fish-bubbles' && <Fish />}
         {surprise.move === 'turtle-spin' && <Turtle />}
+        {surprise.move === 'dolphin-leap' && <Dolphin />}
+        {surprise.move === 'ray-glide' && <Ray />}
+        {surprise.move === 'jelly-bounce' && <Jellyfish />}
+        {surprise.move === 'star-wave' && <SeaStar />}
         {isOcto && <g className="octo-surprise-body" strokeLinecap="round" strokeLinejoin="round">
           <path d="M46 68 Q35 95 20 91 M56 75 Q47 102 34 99 M65 78 Q62 102 53 104 M75 78 Q78 102 87 104 M84 75 Q93 102 106 99 M94 68 Q105 95 120 91"
             fill="none" stroke="#db2777" strokeWidth="9" />

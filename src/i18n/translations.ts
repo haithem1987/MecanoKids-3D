@@ -3422,3 +3422,40 @@ export const MISSION_PANEL_TEXT = {
   previous: ['Réglage précédent', 'Previous setting', 'الإعداد السابق'], next: ['Réglage suivant', 'Next setting', 'الإعداد التالي'],
   choose: ['Choisis un défi', 'Choose a challenge', 'اختر تحدياً'], close: ['Fermer', 'Close', 'أغلق'],
 } as const;
+
+export const CONSTRUCTION_PLAY_TEXT = {
+ gantry: ['Livraison au port','Harbour delivery','توصيل في الميناء'],
+ castle: ['Un visiteur au château','A visitor at the castle','زائر في القلعة'],
+ temple: ['Explorer le temple','Explore the temple','استكشاف المعبد'],
+ truss: ['Le convoi du viaduc','The viaduct convoy','قافلة الجسر'],
+ gantryGoal: ['Lève la caisse, déplace le chariot, puis pose la caisse sur le repère bleu.','Lift the crate, move the trolley, then lower the crate onto the blue marker.','ارفع الصندوق، ثم حرّك العربة وضع الصندوق على العلامة الزرقاء.'],
+ castleGoal: ['Choisis le passage libre pour accueillir la petite tortue dans la cour.','Choose the clear passage to welcome the little turtle into the courtyard.','اختر الممر الخالي لاستقبال السلحفاة الصغيرة في الساحة.'],
+ templeGoal: ['Guide la tortue entre les colonnes, sans traverser la pierre.','Guide the turtle between the columns, without going through the stone.','وجّه السلحفاة بين الأعمدة دون المرور عبر الحجر.'],
+ trussGoal: ['Place le convoi au centre du tablier pour franchir le viaduc entre les garde-corps.','Place the convoy in the middle of the deck to cross between the guardrails.','ضع القافلة في وسط سطح الجسر لتعبر بين الحاجزين.'],
+ lift: ['Lever la caisse','Lift the crate','رفع الصندوق'], move: ['Déplacer le chariot','Move the trolley','تحريك العربة'], lower: ['Déposer la caisse','Lower the crate','وضع الصندوق'],
+ go: ['Faire avancer','Move forward','تقدّم'], reset: ['Rejouer','Replay','إعادة اللعب'],
+ route: ['Choisir le passage','Choose the passage','اختيار الممر'], clear: ['Au centre','Through the centre','عبر الوسط'], blockedRoute: ['Sur le côté','Along the side','على الجانب'],
+ ready: ['À toi de guider le mouvement !','You guide the movement!','حان دورك لتوجيه الحركة!'],
+ moving: ['Observe le mouvement dans ta construction.','Watch the movement in your construction.','راقب الحركة داخل بنائك.'],
+ blocked: ['Ce passage rencontre un obstacle. Essaie le centre pour garder la voie libre.','This route meets an obstacle. Try the centre to keep the way clear.','يوجد عائق في هذا الممر. جرّب الوسط ليبقى الطريق خالياً.'],
+ gantryDone: ['Caisse livrée ! Le levage libère le sol avant le déplacement horizontal.','Crate delivered! Lifting clears the ground before horizontal travel.','تم توصيل الصندوق! يبعد الرفع الحمولة عن الأرض قبل الحركة الأفقية.'],
+ castleDone: ['Bienvenue ! Le linteau porte le mur et laisse une ouverture pour passer.','Welcome! The lintel supports the wall and leaves an opening to pass through.','أهلاً بك! يحمل العتب الجدار ويترك فتحة للمرور.'],
+ templeDone: ['Passage trouvé ! Les colonnes soutiennent les poutres et laissent une allée centrale.','Passage found! The columns support the beams and leave a central aisle.','وجدت الممر! تحمل الأعمدة العوارض وتترك ممراً وسطياً.'],
+ trussDone: ['Convoi arrivé ! Le tablier porte les roues, les garde-corps bordent le passage.','Convoy delivered! The deck supports the wheels and the guardrails line the route.','وصلت القافلة! يحمل السطح العجلات ويحدّد الحاجزان جانبي الممر.'],
+ touch: ['Tu peux aussi toucher la tortue, le convoi ou la caisse dans la scène pour avancer.','You can also tap the turtle, convoy or crate in the scene to advance.','يمكنك أيضاً لمس السلحفاة أو القافلة أو الصندوق في المشهد للتقدّم.'],
+} as const;
+
+export const PLAY_MODES_TEXT = {
+ title: ['Ta façon de jouer', 'Your way to play', 'طريقتك في اللعب'],
+ guided: ['Construire avec Octo', 'Build with Octo', 'ابنِ مع أوكتو'],
+ guidedDescription: ['Suis la silhouette et écoute les consignes.', 'Follow the outline and listen to the instructions.', 'اتبع الشكل الإرشادي واستمع إلى التعليمات.'],
+ repair: ['Réparer un montage', 'Repair a build', 'أصلح بناءً'],
+ repairDescription: ['Cherche les pièces desserrées et remets les pièces manquantes. Ton montage est conservé.', 'Find loose parts and replace missing pieces. Your build is kept.', 'ابحث عن القطع المفكوكة وأعد القطع الناقصة. يبقى بناؤك محفوظًا.'],
+ expert: ['Construire en expert', 'Build as an expert', 'ابنِ كخبير'],
+ expertDescription: ['Assemble sans silhouette ni consignes automatiques. Tu peux toujours demander de l’aide.', 'Build without outlines or automatic instructions. You can still ask for help.', 'ركّب دون شكل إرشادي أو تعليمات تلقائية. يمكنك دائمًا طلب المساعدة.'],
+ custom: ['Tes réglages personnalisés sont actifs.', 'Your custom settings are active.', 'إعداداتك المخصصة مفعّلة.'],
+} as const;
+
+export const EXPERIENCE_TEXT={notebook:['Mes aventures et découvertes','My adventures and discoveries','مغامراتي واكتشافاتي']} as const;
+
+export {ADVENTURE_NOTEBOOK_TEXT} from './adventureNotebookText';

@@ -1,0 +1,25 @@
+/** Re-exported by translations.ts to keep every child-facing label in the i18n registry. */
+export const ADVENTURE_NOTEBOOK_TEXT = {
+  title: ['Mes aventures et découvertes', 'My adventures and discoveries', 'مغامراتي واكتشافاتي'],
+  adventures: ['Aventures', 'Adventures', 'المغامرات'],
+  notebook: ['Carnet', 'Notebook', 'دفتر الاكتشافات'],
+  close: ['Fermer', 'Close', 'إغلاق'],
+  listen: ['Écouter', 'Listen', 'استمع'],
+  resume: ['Continuer cette aventure', 'Continue this adventure', 'تابع هذه المغامرة'],
+  replay: ['Retrouver ma construction', 'Revisit my build', 'عد إلى بنائي'],
+  open: ['Ouvrir cet atelier', 'Open this workshop', 'افتح هذه الورشة'],
+  completed: ['Construit', 'Built', 'تم بناؤه'],
+  available: ['À découvrir', 'Ready to discover', 'جاهز للاكتشاف'],
+  locked: ['À débloquer dans le catalogue', 'Unlock in the catalogue', 'افتحه من الكتالوج'],
+  finished: ['Aventure accomplie ! Tu peux retrouver chaque construction.', 'Adventure complete! You can revisit every build.', 'اكتملت المغامرة! يمكنك العودة إلى كل بناء.'],
+  progress: ['ateliers construits', 'workshops built', 'ورش مكتملة'],
+  empty: ['Ton carnet attend ta première construction. Chaque montage terminé et chaque résultat observé y trouve sa place.', 'Your notebook is waiting for your first build. Completed builds and observed results will appear here.', 'دفترك ينتظر بناءك الأول. ستجد هنا أبنيتك المكتملة ونتائج تجاربك.'],
+  local: ['Ton carnet est conservé sur cet appareil, pour ton profil. Reviens quand tu veux : aucune série à maintenir.', 'Your notebook stays on this device for your profile. Return whenever you like: no streak to maintain.', 'يُحفظ دفترك على هذا الجهاز لملفك. عد متى شئت، دون إلزام باللعب كل يوم.'],
+  observations: ['Mes observations', 'My observations', 'ملاحظاتي'],
+  discovery: ['Ce que j’ai découvert', 'What I discovered', 'ما اكتشفته'],
+  routes: {
+    harbour: { title: ['Le port reprend vie', 'Bring the harbour to life', 'أعد الحياة إلى الميناء'], goal: ['Monte le portique, ouvre le pont puis éclaire le port avec le phare.', 'Build the crane, open the bridge, then light the harbour with the beacon.', 'ابنِ الرافعة وافتح الجسر ثم أنر الميناء بالمنارة.'] },
+    village: { title: ['Un village à travers le temps', 'A village through time', 'قرية عبر الزمن'], goal: ['Construis le donjon, utilise la force de l’eau au moulin puis apporte l’eau par l’aqueduc.', 'Build the keep, use water power at the mill, then bring water through the aqueduct.', 'ابنِ البرج واستخدم قوة الماء في الطاحونة ثم أوصل الماء بالقناة.'] },
+    research: { title: ['L’équipe des scientifiques', 'The science team', 'فريق العلماء'], goal: ['Cherche ce qui conduit le courant, observe l’air en mouvement puis protège un village de l’érosion.', 'Find what conducts electricity, observe moving air, then protect a village from erosion.', 'اكتشف ما يوصل الكهرباء وراقب الهواء المتحرك ثم احمِ قرية من التعرية.'] },
+  },
+} as const;
