@@ -1,3 +1,4 @@
+import {MissionPanel,missionButton} from './MissionPanel';
 import {useEffect,useRef,useState} from 'react';
 import * as THREE from 'three';
 import type {LanguageCode,PartSpec} from '../types/game';
@@ -47,10 +48,7 @@ export function AqueductTrial({engine,language,sceneRevision}:{engine:{current:A
   };
   frame=requestAnimationFrame(draw);return()=>cancelAnimationFrame(frame);
  },[engine,phase,sceneRevision]);
- return <WorkshopMissionPortal><section data-aqueduct-phase={phase} className="space-y-3 rounded-xl border border-sky-200 bg-white p-3 text-sky-950">
-  <h2 className="font-bold">{t.title[locale]}</h2><p role="status">{t[phase][locale]}</p>
-  <div className="flex flex-wrap gap-2"><button type="button" data-aqueduct-centering className="min-h-16 rounded-xl border border-sky-200 px-3 font-semibold" onClick={()=>setPhase(phase==='supported'?'released':'supported')}>{t[phase==='supported'?'remove':'restore'][locale]}</button>
-   <button type="button" data-aqueduct-water disabled={phase==='supported'} className="min-h-16 rounded-xl border border-sky-200 px-3 font-semibold disabled:opacity-50" onClick={()=>setPhase(phase==='flowing'?'released':'flowing')}>{t[phase==='flowing'?'stop':'water'][locale]}</button></div>
-  <p className="text-sm">{t.touch[locale]}</p>{isSupported&&<button type="button" className="min-h-16 rounded-xl border border-sky-200 px-3 font-semibold" onClick={()=>toggle('aqueduct',t[phase][locale],language)}>{SCIENCE_CHALLENGE_TEXT.listen[locale]}</button>}
- </section></WorkshopMissionPortal>;
+ return <WorkshopMissionPortal><MissionPanel language={language} title={t.title[locale]} attributes={{'data-aqueduct-phase':phase}} status={t[phase][locale]}
+  info={<><p>{t[phase][locale]}</p><p>{t.touch[locale]}</p></>} onListen={isSupported?()=>toggle('aqueduct',t[phase][locale],language):undefined}
+  actions={<><button type="button" data-mission-primary data-aqueduct-centering className={missionButton} onClick={()=>setPhase(phase==='supported'?'released':'supported')}>{t[phase==='supported'?'remove':'restore'][locale]}</button><button type="button" data-mission-reset data-aqueduct-water disabled={phase==='supported'} className={missionButton} onClick={()=>setPhase(phase==='flowing'?'released':'flowing')}>{t[phase==='flowing'?'stop':'water'][locale]}</button></>}/></WorkshopMissionPortal>;
 }

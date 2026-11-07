@@ -1,3 +1,4 @@
+import {MissionPanel,missionButton} from './MissionPanel';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { DRAWBRIDGE_TEXT, SCIENCE_CHALLENGE_TEXT } from '../i18n/translations';
@@ -128,20 +129,7 @@ export function DrawbridgeTrial({ engine, language, sceneRevision }: {
   }, [engine, phase, sceneRevision]);
 
   const raised = phase === 'open' || phase === 'passed';
-  return (
-    <WorkshopMissionPortal><section data-drawbridge-phase={phase} dir={language === 'ar' ? 'rtl' : 'ltr'} aria-label={t.trial[locale]}
-      className="pointer-events-auto space-y-2 rounded-xl border border-sky-200 bg-white p-3 shadow">
-      <h2 className="font-bold text-sky-950">{t.trial[locale]}</h2>
-      <p role="status" className="font-semibold text-sky-950">{t[phase][locale]}</p>
-      <div className="flex flex-wrap gap-2">
-        <button type="button" className={control} disabled={phase !== 'closed' && !raised}
-          onClick={() => setPhase(raised ? 'closing' : 'opening')}>{t[raised || phase === 'crossing' || phase === 'closing' ? 'lower' : 'raise'][locale]}</button>
-        <button type="button" className={control} disabled={!raised}
-          onClick={() => setPhase('crossing')}>{t.sail[locale]}</button>
-        {isSupported && <button type="button" className={control} onClick={() => toggle('drawbridge', t[phase][locale], language)}>
-          {SCIENCE_CHALLENGE_TEXT.listen[locale]}
-        </button>}
-      </div>
-    </section></WorkshopMissionPortal>
-  );
+  return <WorkshopMissionPortal><MissionPanel language={language} title={t.trial[locale]} attributes={{'data-drawbridge-phase':phase}} status={t[phase][locale]}
+    info={<p>{t[phase][locale]}</p>} onListen={isSupported?()=>toggle('drawbridge',t[phase][locale],language):undefined}
+    actions={<><button type="button" data-mission-primary className={missionButton} disabled={phase!=='closed'&&!raised} onClick={()=>setPhase(raised?'closing':'opening')}>{t[raised||phase==='crossing'||phase==='closing'?'lower':'raise'][locale]}</button><button type="button" data-mission-reset className={missionButton} disabled={!raised} onClick={()=>setPhase('crossing')}>{t.sail[locale]}</button></>}/></WorkshopMissionPortal>;
 }

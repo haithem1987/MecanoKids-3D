@@ -1,3 +1,4 @@
+import {pickMission,openMission} from './mission-controls.mjs';
 import {canvasTarget} from './canvas-geometry.mjs';
 import { createRequire } from 'node:module';
 
@@ -54,7 +55,7 @@ try {
           const canvas = workbench.locator('canvas');
           const lab = page.locator(`[data-virtual-lab="${id}"]`);
           const run = () => activate(lab.locator('[data-virtual-lab-run]'));
-          const pick = (index, value) => activate(lab.locator(`[data-lab-control="${index}"] button`).nth(value));
+          const pick = (index, value) => pickMission(lab,String(index),value);
           await canvas.waitFor();
           for (const part of parts) {
             const card = page.locator(`[data-part-id="${part}"]:visible`);
@@ -71,10 +72,10 @@ try {
             }
             if (await workbench.getAttribute('data-assembly-complete') !== 'true' && (!await card.count() || !await card.isDisabled())) throw new Error(`${language}/${id}/${part}: la pièce ne s’est pas emboîtée.`);
           }
-          await activate(lab.locator('summary'));
+          await openMission(lab);
           if (id === 'newton' && process.env.OCTO_SKIP_AUDIO_TEST !== '1') {
             const before = await page.evaluate(() => window.narrationPlayed);
-            await activate(lab.getByRole('button', { name: listen, exact: true }));
+            await activate(lab.getByRole('button', { name: listen, exact: true }).filter({visible:true}).first());
             await page.waitForFunction(before => window.narrationPlayed > before, before);
           }
           await run();

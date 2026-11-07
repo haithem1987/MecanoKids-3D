@@ -1,3 +1,4 @@
+import { isPhoneLayout } from '../hooks/usePhoneLayout';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { AlertTriangle, Check, Gem, Lock, Wrench } from 'lucide-react';
 import { applyLiveryToPartSpec } from '../data/liveries';
@@ -91,7 +92,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
     return (
       <React.Fragment key={part.id}>
         {showSeparator && (
-          <div className={`shrink-0 flex ${isVertical ? 'flex-row items-center' : 'flex-col items-center justify-center'} gap-1 px-1`}>
+          <div data-part-separator className={`shrink-0 flex ${isVertical ? 'flex-row items-center' : 'flex-col items-center justify-center'} gap-1 px-1`}>
             <div className={isVertical ? 'h-px w-8 bg-slate-200' : 'w-px h-12 bg-slate-200'} />
             <span className="text-[10px] text-slate-400 whitespace-nowrap">{placed.length}✓</span>
           </div>
@@ -104,7 +105,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
         style={{ display: readyOnly && isLocked ? 'none' : undefined }}
         disabled={isPlaced}
         onPointerDown={(e) => {
-          if (isPlaced || isFaultyMounted) return;
+          if (isPlaced || isFaultyMounted || e.pointerType === 'touch' && isPhoneLayout()) return;
           if (e.button === 0 || e.pointerType !== 'mouse') {
             onStartPartDrag(part.id);
           }
@@ -145,8 +146,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
             <Gem className="w-3.5 h-3.5 text-amber-600 shrink-0" aria-hidden="true" />
           ) : (
             <span
-              className="shrink-0"
-              style={{ width: 40, height: 40 }}
+              className="part-thumbnail shrink-0"
               dangerouslySetInnerHTML={{ __html: getPartShapeSvg(part.roleHint, paintedSpec.primaryColor, part) }}
               aria-hidden="true"
             />
@@ -185,6 +185,6 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
 
   return <aside data-parts-palette data-tour="parts-tray" className={`floating-parts pointer-events-auto absolute top-2 bottom-2 z-20 flex min-h-0 flex-col gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1 shadow-md ${position==='right'?'end-2':'start-2'}`}>
     <button type="button" aria-label={readyOnly?t.trayShowAll:t.trayShowReady} aria-pressed={readyOnly} onClick={()=>setReadyOnly(value=>!value)} className="min-h-[64px] min-w-[64px] shrink-0 rounded-xl bg-sky-50 px-1 text-xs font-semibold text-sky-950">{readyOnly?t.trayShowAll:t.trayShowReady}<span className="block">{t.partsCounter(placedPartIds.length,blueprint.parts.length)}</span></button>
-    <div ref={scrollRef} id={trayId} className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain">{partCards}</div>
+    <div ref={scrollRef} id={trayId} className="parts-list min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain">{partCards}</div>
   </aside>;
 };

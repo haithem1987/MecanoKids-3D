@@ -1,3 +1,5 @@
+import {MissionPanel,MissionOptions,missionButton} from './MissionPanel';
+import {MISSION_PANEL_TEXT} from '../i18n/translations';
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { WATERMILL_TRIAL_TEXT, SCIENCE_CHALLENGE_TEXT } from '../i18n/translations';
@@ -14,6 +16,7 @@ export function WatermillTrial({ engine, language, sceneRevision }: {
   engine: {current:MillScene|null}; language:LanguageCode; sceneRevision:string;
 }) {
   const [flow,setFlow]=useState<0|1|2>(0);
+  const [draftFlow,setDraftFlow]=useState<0|1|2>(0);
   const locale=language==='fr'?0:language==='en'?1:2;
   const t=WATERMILL_TRIAL_TEXT;
   const {toggle,isSupported}=useSpeech();
@@ -29,10 +32,8 @@ export function WatermillTrial({ engine, language, sceneRevision }: {
     return()=>{if(scene){scene.mechanismRate=1;scene.mechanismElapsed=0;}};
   },[engine]);
   const status=t[flow===0?'off':flow===1?'low':'high'][locale];
-  return <WorkshopMissionPortal><section data-watermill-flow={flow} className="space-y-3 rounded-xl border border-sky-200 bg-white p-3 text-sky-950">
-    <h2 className="font-bold">{t.title[locale]}</h2><p role="status">{status}</p>
-    <div className="flex flex-wrap gap-2">{(['stop','slow','fast'] as const).map((label,index)=><button key={label} type="button" data-watermill-set={index} aria-pressed={flow===index}
-      className="min-h-16 min-w-16 rounded-xl border border-sky-200 px-3 py-2 font-semibold aria-pressed:bg-sky-100" onClick={()=>setFlow(index as 0|1|2)}>{t[label][locale]}</button>)}</div>
-    {isSupported&&<button type="button" className="min-h-16 rounded-xl border border-sky-200 px-3 font-semibold" onClick={()=>toggle('watermill',status,language)}>{SCIENCE_CHALLENGE_TEXT.listen[locale]}</button>}
-  </section></WorkshopMissionPortal>;
+  return <WorkshopMissionPortal><MissionPanel language={language} title={t.title[locale]} attributes={{'data-watermill-flow':flow}} status={status}
+    fields={[{id:'flow',label:MISSION_PANEL_TEXT.flow[locale],content:<div data-watermill-control><MissionOptions label={MISSION_PANEL_TEXT.flow[locale]} value={draftFlow} options={(['stop','slow','fast'] as const).map((key,value)=>({value,label:t[key][locale]}))} onChange={value=>setDraftFlow(value as 0|1|2)}/></div>}]}
+    info={<p>{status}</p>} onListen={isSupported?()=>toggle('watermill',status,language):undefined}
+    actions={<><button type="button" data-mission-primary className={`${missionButton} bg-sky-100`} onClick={()=>setFlow(draftFlow)}>{MISSION_PANEL_TEXT.run[locale]}</button><button type="button" data-mission-reset className={missionButton} disabled={flow===0} onClick={()=>{setFlow(0);setDraftFlow(0);}}>{t.stop[locale]}</button></>}/></WorkshopMissionPortal>;
 }

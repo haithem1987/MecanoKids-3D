@@ -224,3 +224,138 @@ html[dir="rtl"] .font-display {
 .workbench-workspace:has(.hud-settings[open]) .workbench-mission { visibility: hidden; pointer-events: none; }
 
 .hud-settings button { overflow-wrap: anywhere; }
+
+.part-thumbnail, .part-thumbnail svg { inline-size: 40px; block-size: 40px; }
+.hud-phone-tools, .phone-tool-label { display: none; }
+@media (max-width: 639px), (max-height: 500px) and (pointer: coarse) {
+ [data-floating-camera] { display: none; }
+ .hud-phone-tools { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); justify-items: center; position: absolute; inset-block-start: .5rem; inset-inline-start: .5rem; inline-size: calc(75% - .75rem); }
+ .phone-camera-options { inset-block-start: calc(100% + .5rem); inset-inline-start: 0; }
+ .phone-tool-label { display: block; font-size: .75rem; line-height: 1rem; }
+ .workbench-workspace .hud-settings { inset-block-start: .5rem; inset-block-end: auto; inset-inline-start: calc(87.5% - 38px); inset-inline-end: auto; }
+ .hud-settings > summary { flex-direction: column; gap: .25rem; }
+ .workbench-workspace .hud-settings > div { inset-block-start: calc(100% + .5rem); inset-block-end: auto; inset-inline-start: calc(46px - 87.5vw); inset-inline-end: auto; inline-size: calc(100vw - 1rem); max-block-size: calc(100svh - 22rem); margin-block: 0; }
+}
+@media (max-width: 639px) {
+ .workbench-workspace .floating-parts { inset-block-start: auto; inset-block-end: .5rem; inset-inline: .5rem; inline-size: auto; block-size: 8rem; flex-direction: row; border-radius: 1rem; }
+ .floating-parts > button { inline-size: 4rem; padding-inline: .125rem; }
+ .floating-parts .parts-list { display: flex; gap: .25rem; overflow-x: auto; overflow-y: hidden; touch-action: pan-x; }
+ .floating-parts .parts-list > * { margin-block: 0; }
+ .floating-parts [data-part-separator] { display: none; }
+ .floating-parts .parts-list [data-part-id] { inline-size: 5.75rem; block-size: 7rem; min-block-size: 7rem; flex-shrink: 0; }
+ .floating-parts .part-thumbnail, .floating-parts .part-thumbnail svg { inline-size: 32px; block-size: 32px; }
+ .workbench-workspace .hud-title { inset-block-start: auto; inset-block-end: 9rem; inset-inline-start: 50%; max-inline-size: calc(100% - 2rem); padding-block: .25rem; }
+ .hud-counter { display: none; }
+ .workbench-workspace .hud-completion { inset-block-end: 9rem; inset-inline-start: 50%; inline-size: auto; max-block-size: none; }
+ .workbench-workspace .hud-status { inset-block-end: 9rem; inset-inline-start: 50%; inline-size: calc(100% - 2rem); max-block-size: 3rem; overflow: hidden; }
+ .workbench-workspace .workbench-mission { inset-block-start: auto; inset-block-end: 9rem; inset-inline: .5rem; inline-size: auto; max-block-size: none; overflow: visible; padding: 0; }
+ .workbench-workspace:has(.workbench-mission) .hud-completion { display: none; }
+}
+@media (min-width: 640px) and (max-height: 500px) and (pointer: coarse) {
+ .workbench-workspace { --floating-parts-width: 6.5rem; }
+ .hud-phone-tools { inline-size: 4rem; grid-template-columns: 1fr; gap: .25rem; }
+ [data-palette-side="left"] .hud-phone-tools { inset-inline-start: auto; inset-inline-end: .5rem; }
+ .phone-camera-options { inset-block-start: 0; inset-inline-start: calc(100% + .5rem); }
+ [data-palette-side="left"] .phone-camera-options { inset-inline-start: auto; inset-inline-end: calc(100% + .5rem); }
+ .workbench-workspace .hud-settings { inset-block-start: auto; inset-block-end: .5rem; inset-inline-start: .5rem; }
+ [data-palette-side="left"] .hud-settings { inset-inline-start: auto; inset-inline-end: .5rem; }
+ .workbench-workspace .hud-settings > div { inset-block-start: auto; inset-block-end: calc(100% + .5rem); inset-inline-start: 5rem; inline-size: min(22rem,calc(100vw - 14rem)); max-block-size: calc(100svh - 12rem); }
+ [data-palette-side="left"] .hud-settings > div { inset-inline-start: auto; inset-inline-end: 5rem; }
+ .workbench-workspace .workbench-mission { inline-size: 14rem; max-block-size: none; overflow: visible; padding: 0; }
+ .workbench-workspace[data-tray-position="right"] .workbench-mission { inset-inline-end: 7.5rem; }
+ .workbench-workspace[data-tray-position="left"] .workbench-mission { inset-inline-start: 7.5rem; }
+}
+
+/* Mission actions stay outside the parameter/info panels. Core play never requires vertical scrolling. */
+.workbench-workspace .workbench-mission { max-block-size: none; overflow: visible; }
+.mission-panel { position: relative; pointer-events: auto; }
+.mission-parameters { padding: .25rem; }
+.mission-native-select { display: none; }
+.mission-actions > button { flex: 1; overflow-wrap: anywhere; }
+.mission-information { position: absolute; z-index: 35; inset-inline: 0; inset-block-end: calc(4rem + .75rem); display: flex; flex-direction: column; max-block-size: min(60svh,28rem); }
+.mission-information-body { min-block-size: 0; overflow-y: auto; }
+@media (max-width: 639px), (max-height: 500px) and (pointer: coarse) {
+ .mission-panel { border: 1px solid #bae6fd; border-radius: 1rem; background: rgb(255 255 255 / .97); padding: .25rem; box-shadow: 0 2px 8px #0f172a14; }
+ .mission-panel[data-ready="true"] { min-block-size: 6rem; }
+ .mission-panel[data-ready="false"] { min-block-size: 4.5rem; }
+ .mission-status { block-size: 1.25rem; margin-block-end: .25rem; padding-inline: .25rem; }
+ .mission-parameters { position: absolute; z-index: 30; inset-block-end: calc(100% + .5rem); inset-inline: 0; border: 1px solid #bae6fd; border-radius: 1rem; background: white; padding: .5rem; box-shadow: 0 4px 12px #0f172a26; }
+ .mission-button-options { display: none; }
+ .mission-native-select { display: block; }
+ .mission-panel[data-ready="true"] .mission-listen { display: none; }
+ .mission-button { font-size: .75rem; line-height: 1rem; padding: .25rem; }
+ .mission-information { inset-block-end: calc(100% + .5rem); max-block-size: calc(100svh - 24rem); }
+ .mission-information > div:last-child { flex-shrink: 0; }
+ .workbench-workspace:has(.phone-camera-menu[open]) .workbench-mission { visibility: hidden; }
+}
+@media (min-width: 640px) and (max-height: 500px) and (pointer: coarse) {
+ .workbench-workspace .workbench-mission { inline-size: 18rem; }
+ .mission-parameters { inset-block-end: auto; inset-block-start: calc(100% + .5rem); }
+ .mission-information { inset-block-end: auto; inset-block-start: calc(100% + .5rem); max-block-size: calc(100svh - 14rem); }
+}
+
+@media (max-width: 639px) {
+ .workbench-workspace .hud-title, .workbench-workspace:has(.workbench-mission) .hud-title { display: block; inset-block-start: 5rem; inset-block-end: auto; }
+ .workbench-workspace:has(.hud-settings[open]) .hud-title, .workbench-workspace:has(.phone-camera-menu[open]) .hud-title { visibility: hidden; }
+ .workbench-workspace:has([data-phone-mission] [data-mission-parameters]:not([hidden])) .hud-title { visibility: hidden; }
+ .octo-surprise-position { inset-block-start: 7rem; justify-content: flex-end; padding-inline: .75rem; }
+ .octo-surprise svg { inline-size: 96px; block-size: 64px; }
+ .octo-surprise > span { max-inline-size: 9rem; padding-inline: .5rem; font-size: .65rem; line-height: .9rem; text-align: center; }
+ .workbench-workspace:has(.workbench-mission) .octo-surprise > span { display: none; }
+ .mission-information { inset-block-start: auto; }
+}
+/* Keep the PC/tablet information within its panel, above the fixed action row. */
+@media (min-width: 640px) and (min-height: 501px) {
+ .mission-information { inset-block-start: 0; max-block-size: none; }
+}
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+ .workbench-workspace { --floating-parts-width: 5.5rem; }
+ .workbench-workspace .floating-parts { inset-block: .5rem; inset-inline: auto; inline-size: var(--floating-parts-width); block-size: auto; flex-direction: column; }
+ [data-palette-side="right"] .floating-parts { inset-inline-end: .5rem; }
+ [data-palette-side="left"] .floating-parts { inset-inline-start: .5rem; }
+ .floating-parts > button { inline-size: auto; }
+ .floating-parts .parts-list { display: block; overflow-x: hidden; overflow-y: auto; touch-action: pan-y; }
+ .floating-parts .parts-list [data-part-id] { inline-size: 100%; margin-block-end: .25rem; }
+ .hud-phone-tools { inline-size: 4rem; grid-template-columns: 1fr; gap: .25rem; }
+ [data-palette-side="left"] .hud-phone-tools { inset-inline-start: auto; inset-inline-end: .5rem; }
+ .phone-camera-options { inset-block-start: 0; inset-inline-start: calc(100% + .5rem); }
+ [data-palette-side="left"] .phone-camera-options { inset-inline-start: auto; inset-inline-end: calc(100% + .5rem); }
+ .workbench-workspace .hud-settings { inset-block-start: auto; inset-block-end: .5rem; inset-inline-start: .5rem; }
+ [data-palette-side="left"] .hud-settings { inset-inline-start: auto; inset-inline-end: .5rem; }
+ .workbench-workspace .hud-settings > div { inset-block-start: auto; inset-block-end: calc(100% + .5rem); inset-inline-start: 5rem; inline-size: min(22rem,calc(100vw - 14rem)); max-block-size: calc(100svh - 12rem); }
+ [data-palette-side="left"] .hud-settings > div { inset-inline-start: auto; inset-inline-end: 5rem; }
+ .workbench-workspace .hud-title, .workbench-workspace:has(.workbench-mission) .hud-title { display: none; }
+ .octo-surprise-position { display: none; }
+ .workbench-workspace:has(.workbench-mission) .hud-completion { display: none; }
+ .workbench-workspace .workbench-mission { inset-block-start: 0; inset-block-end: auto; inline-size: 18rem; padding: 0; }
+ .workbench-workspace[data-tray-position="right"] .workbench-mission { inset-inline-start: auto; inset-inline-end: 6.5rem; }
+ .workbench-workspace[data-tray-position="left"] .workbench-mission { inset-inline-start: 6.5rem; inset-inline-end: auto; }
+ .mission-parameters { inset-block-end: auto; inset-block-start: calc(100% + .25rem); }
+ .mission-information { inset-block-end: auto; inset-block-start: calc(100% + .25rem); max-block-size: calc(100svh - 14rem); }
+}
+@media (orientation: landscape) and (max-height: 360px) and (pointer: coarse) {
+ .hud-phone-tools { inline-size: 8.25rem; grid-template-columns: repeat(2,4rem); }
+ .workbench-workspace .hud-settings { inset-block-start: 4.75rem; inset-block-end: auto; inset-inline-start: 4.75rem; }
+ [data-palette-side="left"] .hud-settings { inset-inline-start: auto; inset-inline-end: 4.75rem; }
+}
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 639px) and (pointer: coarse) {
+ .hud-phone-tools { inline-size: 8.25rem; grid-template-columns: repeat(2,4rem); }
+ .workbench-workspace .hud-settings { inset-block-start: 4.75rem; inset-block-end: auto; inset-inline-start: 4.75rem; }
+ [data-palette-side="left"] .hud-settings { inset-inline-start: auto; inset-inline-end: 4.75rem; }
+ .workbench-workspace .workbench-mission { inset-block-start: auto; inset-block-end: .5rem; inset-inline-start: 9.5rem; inset-inline-end: 6.75rem; inline-size: auto; }
+ .workbench-workspace[data-tray-position="left"] .workbench-mission { inset-inline-start: 6.75rem; inset-inline-end: 9.5rem; }
+ .mission-parameters { inset-block-start: auto; inset-block-end: calc(100% - 1.25rem); }
+ .mission-information { inset-block-start: auto; inset-block-end: calc(100% - 1.25rem); max-block-size: calc(100svh - 12rem); }
+}
+
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 639px) and (pointer: coarse) {
+ .workbench-workspace[data-tray-position="right"] .workbench-mission { inset-inline-start: 9.5rem; inset-inline-end: 6.75rem; }
+}
+@media (max-width: 639px) and (orientation: portrait) {
+ .workbench-workspace .floating-parts { inset-block-end: calc(.5rem + env(safe-area-inset-bottom,0px)); }
+ .workbench-workspace .workbench-mission, .workbench-workspace .hud-status, .workbench-workspace .hud-completion { inset-block-end: calc(9rem + env(safe-area-inset-bottom,0px)); }
+}
+
+@media (max-width: 639px) and (orientation: portrait) {
+ .workbench-workspace[data-tray-position] .workbench-mission { inset-inline: .5rem; inline-size: auto; }
+}

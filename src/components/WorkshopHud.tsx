@@ -1,7 +1,8 @@
+import { PhoneWorkshopTools } from './PhoneWorkshopTools';
 import {Settings2,Undo2,Volume2,Play,Sparkles,ArrowRight,Crosshair} from 'lucide-react';
 import { formatStopwatchMs } from '../utils/speedrun';
 import React from 'react';
-import { UI_TRANSLATIONS } from '../i18n/translations';
+import { PHONE_HUD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
 import {
   CameraPreset,
   LanguageCode,
@@ -126,6 +127,7 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
   onChangePartsTrayPosition,
 }) => {
   const t = UI_TRANSLATIONS[language];
+  const locale=language==='fr'?0:language==='en'?1:2;
   const settingsRef=React.useRef<HTMLDetailsElement>(null);
   React.useEffect(()=>{
     const close=(event:PointerEvent)=>{if(settingsRef.current&&!settingsRef.current.contains(event.target as Node))settingsRef.current.open=false;};
@@ -142,8 +144,9 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
       liveryPreset={liveryPreset} stagedPartId={stagedPartId} activeDragPartId={activeDragPartId} hintPartId={hintPartId}
       position={side} onStartPartDrag={id=>{if(settingsRef.current)settingsRef.current.open=false;onStartPartDrag(id);}} onClickPartCard={id=>{if(settingsRef.current)settingsRef.current.open=false;onClickPartCard(id);}}
       />
+    <PhoneWorkshopTools language={language} preset={cameraPreset} onCamera={onSelectCamera} onUndo={onUndo} canUndo={canUndo} onListen={onReplayInstruction}/>
     <div className="hud-title absolute top-2 start-1/2 max-w-[calc(100%-16rem)] rounded-xl bg-white/90 px-3 py-2 text-center text-xs text-sky-950">
-      <strong className="block truncate">{blueprint.name}</strong>{t.partsCounter(placedPartIds.length,blueprint.parts.length)}{timerModeEnabled&&<span className="block font-mono">{formatStopwatchMs(liveElapsedMs)}</span>}
+      <strong className="block truncate">{blueprint.name}</strong><span className="hud-counter">{t.partsCounter(placedPartIds.length,blueprint.parts.length)}</span>{timerModeEnabled&&<span className="block font-mono">{formatStopwatchMs(liveElapsedMs)}</span>}
     </div>
     <nav data-tour="camera-controls" data-floating-camera aria-label={t.cameraAnglesAria} className={`pointer-events-auto absolute top-2 flex max-h-[calc(100%-6rem)] flex-col gap-1 overflow-y-auto overscroll-contain ${side==='right'?'start-2':'end-2'}`}>
       {([['iso',t.camIso],['front',t.camFront],['side',t.camSide],['top',t.camTop]] as const).map(([preset,label])=><button key={preset} type="button" aria-pressed={cameraPreset===preset} onClick={()=>onSelectCamera(preset as CameraPreset)} className={`${button} w-16 px-1 aria-pressed:bg-sky-100`}>{label}</button>)}
@@ -152,7 +155,7 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
       <button type="button" onClick={onReplayInstruction} aria-label={t.replayInstructionAria} className={button}><Volume2 className="h-6 w-6" aria-hidden /></button>
     </nav>
     <details ref={settingsRef} onKeyDown={event=>{if(event.key==='Escape')event.currentTarget.open=false;}} className={`hud-settings pointer-events-auto absolute bottom-2 ${side==='right'?'start-2':'end-2'}`}>
-      <summary className={`${button} flex w-16 cursor-pointer items-center justify-center text-xl`} aria-label={t.hudTools}><Settings2 className="h-6 w-6" aria-hidden /></summary>
+      <summary className={`${button} flex w-16 cursor-pointer items-center justify-center text-xl`} aria-label={t.hudTools}><Settings2 className="h-6 w-6" aria-hidden /><span className="phone-tool-label">{PHONE_HUD_TEXT.settings[locale]}</span></summary>
       <div className={`absolute bottom-full mb-2 max-h-[min(70svh,calc(100svh-12rem))] w-[min(22rem,calc(100vw-1rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-xl ${side==='right'?'start-0':'end-0'}`}>
         <h2 className="mb-2 font-bold text-sky-950">{t.hudTools}</h2>
         <div className="grid grid-cols-2 gap-2">

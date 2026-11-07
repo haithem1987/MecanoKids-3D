@@ -1,3 +1,5 @@
+import {MissionPanel,MissionOptions,missionButton,type MissionField} from './MissionPanel';
+import {MISSION_PANEL_TEXT} from '../i18n/translations';
 import { useState } from 'react';
 import { VIRTUAL_LAB_MODELS, runVirtualLab, type VirtualLabId, type VirtualLabTrial } from '../data/virtualLabs';
 import { SCIENCE_CHALLENGE_TEXT, UI_TRANSLATIONS, VIRTUAL_LAB_TEXT, VIRTUAL_LAB_UI } from '../i18n/translations';
@@ -37,38 +39,17 @@ export function VirtualLabMission({ id, language, assembled, trial, onTrial }: {
     setTryOther(false);
     onTrial(undefined);
   }
-  return (
-    <details data-virtual-lab={id} className="pointer-events-auto max-h-[min(65%,calc(50svh-4rem))] overflow-auto rounded-xl border border-sky-200 bg-white text-sky-950 shadow sm:max-h-[70%]">
-      <summary className="min-h-16 cursor-pointer p-4 font-bold">{assembled ? VIRTUAL_LAB_UI.mission[locale] : VIRTUAL_LAB_UI.assemble[locale]}</summary>
-      <div className="space-y-3 px-3 pb-3">
-        <p>{text.goal[locale]}</p>
-        {isSupported && <button type="button" className={control} onClick={() => toggle(
-          narrationId, [assembled ? text.goal[locale] : VIRTUAL_LAB_UI.assemble[locale], outcomeText, solved && text.why[locale]].filter(Boolean).join(' '), language,
-        )}>{isSpeaking && activeId === narrationId ? UI_TRANSLATIONS[language].voiceStopBtn : SCIENCE_CHALLENGE_TEXT.listen[locale]}</button>}
-        {assembled && <>
-          {text.controls.map(([label, ...options], index) => (
-            <fieldset key={index} data-lab-control={index} className="min-w-0"
-              hidden={id === 'venturi' && (settings[2] ? index < 2 : index === 3)}>
-              <legend className="mb-1 font-semibold">{label[locale]}</legend>
-              <div className="flex flex-wrap gap-2">
-                {options.map((option, value) => <button key={value} type="button" className={control} aria-pressed={settings[index] === value}
-                  onClick={() => setSettings(previous => previous.map((item, slot) => slot === index ? value : item))}>
-                  {option[locale]}{id === 'ph' && index === 0 && tested.includes(value) && ' ✓'}
-                </button>)}
-              </div>
-            </fieldset>
-          ))}
-          <div className="flex flex-wrap gap-2">
-            <button type="button" data-virtual-lab-run className={`${control} bg-sky-100`} onClick={run}>{VIRTUAL_LAB_UI.run[locale]}</button>
-            {trial && <button type="button" className={control} onClick={reset}>{VIRTUAL_LAB_UI.reset[locale]}</button>}
-          </div>
-          <div role="status" className="space-y-1">
-            {outcomeText && <p>{outcomeText}</p>}
-            {tryOther && <p>{VIRTUAL_LAB_UI.nextStep[locale]}</p>}
-            {solved && <p><strong>{VIRTUAL_LAB_UI.goalReached[locale]}</strong> {text.why[locale]}</p>}
-          </div>
-        </>}
-      </div>
-    </details>
-  );
+  const fields:MissionField[]=text.controls.flatMap(([label,...options],index)=>{
+    if(id==='venturi'&&(settings[2]?index<2:index===3))return [];
+    return [{id:String(index),label:label[locale],content:<fieldset data-lab-control={index}><legend className="sr-only">{label[locale]}</legend><MissionOptions label={label[locale]} value={settings[index]} options={options.map((option,value)=>({value,label:option[locale]+(id==='ph'&&index===0&&tested.includes(value)?' ✓':'')}))} onChange={value=>setSettings(previous=>previous.map((item,slot)=>slot===index?value:item))}/></fieldset>}];
+  });
+  return <MissionPanel language={language} attributes={{'data-virtual-lab':id}} title={assembled?VIRTUAL_LAB_UI.mission[locale]:VIRTUAL_LAB_UI.assemble[locale]} ready={assembled} fields={fields}
+    status={solved?VIRTUAL_LAB_UI.goalReached[locale]:tryOther?VIRTUAL_LAB_UI.nextStep[locale]:outcomeText||undefined}
+    info={<><p>{text.goal[locale]}</p>{outcomeText&&<p>{outcomeText}</p>}{tryOther&&<p>{VIRTUAL_LAB_UI.nextStep[locale]}</p>}{solved&&<p><strong>{VIRTUAL_LAB_UI.goalReached[locale]}</strong> {text.why[locale]}</p>}</>}
+    onListen={isSupported?()=>toggle(narrationId,[assembled?text.goal[locale]:VIRTUAL_LAB_UI.assemble[locale],outcomeText,solved&&text.why[locale]].filter(Boolean).join(' '),language):undefined}
+    speaking={isSpeaking&&activeId===narrationId}
+    actions={<>
+      <button type="button" data-mission-primary data-virtual-lab-run className={`${missionButton} bg-sky-100`} aria-label={VIRTUAL_LAB_UI.run[locale]} onClick={run}>{MISSION_PANEL_TEXT.run[locale]}</button>
+      <button type="button" data-mission-reset className={missionButton} aria-label={VIRTUAL_LAB_UI.reset[locale]} disabled={!trial} onClick={reset}>{MISSION_PANEL_TEXT.replay[locale]}</button>
+    </>}/>;
 }

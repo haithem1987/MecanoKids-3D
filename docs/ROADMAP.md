@@ -13,6 +13,11 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [x] UX-SMARTPHONE — Adapter les palettes et les missions au téléphone
+- Ruban de pièces permanent en portrait et palette latérale compacte en paysage ; commandes tactiles de 64 px.
+- Missions scientifiques : réglages paginés, action Tester toujours disponible, informations séparées. Le lancement ferme les réglages pour observer la scène 3D commune.
+- Rapport : `docs/qa/2026-11-07-smartphone-missions.md`.
+
 ### [x] UX-PALETTES — Supprimer l’ouverture et la réduction de l’établi (retour enfant du 7 novembre)
 - Palette de pièces flottante persistante, vues caméra et recentrage sur le côté opposé ; réglages secondaires dans un menu indépendant qui ne recouvre pas les pièces.
 - Aucun tiroir rétractable, aucun bouton d’ouverture/réduction, aucun raccourci H. Le canvas garde toute sa hauteur pendant sélection, pose et changement de côté.

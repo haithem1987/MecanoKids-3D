@@ -1,3 +1,4 @@
+import {pickMission,openMission} from './mission-controls.mjs';
 import {canvasTarget,canvasFraming,isoProjection} from './canvas-geometry.mjs';
 import {PerspectiveCamera,Vector3} from 'three';
 import {createRequire} from 'node:module';
@@ -31,25 +32,25 @@ try {
     placed.add(part.id);
    }
    if(model.id==='master-drawbridge'){
-    const trial=page.locator('[data-drawbridge-phase]');await trial.waitFor();
+    const trial=page.locator('[data-drawbridge-phase]');await trial.waitFor();await openMission(trial);
     await page.waitForTimeout(3000);const closed=await canvas.screenshot();
-    await trial.getByRole('button').nth(0).click();await page.locator('[data-drawbridge-phase="open"]').waitFor();
+    await trial.locator('[data-mission-primary]').click();await page.locator('[data-drawbridge-phase="open"]').waitFor();
     await page.waitForTimeout(1200);const opened=await canvas.screenshot();await page.waitForTimeout(800);const held=await canvas.screenshot();
     if(Buffer.compare(closed,opened)===0)throw Error('Drawbridge leaves did not lift');
     if(Buffer.compare(opened,held)!==0)throw Error('Drawbridge joints drift while held open');
-    await trial.getByRole('button').nth(1).click();await page.locator('[data-drawbridge-phase="passed"]').waitFor();
-    await trial.getByRole('button').nth(0).click();await page.locator('[data-drawbridge-phase="closed"]').waitFor();
+    await trial.locator('[data-mission-reset]').click();await page.locator('[data-drawbridge-phase="passed"]').waitFor();
+    await trial.locator('[data-mission-primary]').click();await page.locator('[data-drawbridge-phase="closed"]').waitFor();
    }
    if(model.id==='expansion-aqueduct'){
-    const trial=page.locator('[data-aqueduct-phase]');await trial.waitFor();
+    const trial=page.locator('[data-aqueduct-phase]');await trial.waitFor();await openMission(trial);
     if(!await trial.locator('[data-aqueduct-water]').isDisabled())throw Error('Aqueduct water should wait for the centering removal');
     await trial.locator('[data-aqueduct-centering]').click();await page.locator('[data-aqueduct-phase="released"]').waitFor();
     await trial.locator('[data-aqueduct-water]').click();await page.locator('[data-aqueduct-phase="flowing"]').waitFor();
     await trial.locator('[data-aqueduct-centering]').click();await page.locator('[data-aqueduct-phase="supported"]').waitFor();
    }
    if(model.id==='expansion-beacon'){
-    const trial=page.locator('[data-beacon-outcome]');await trial.waitFor();
-    const pick=async(key,value)=>{await trial.locator(`[data-beacon-control="${key}"] button`).nth(value).click();};
+    const trial=page.locator('[data-beacon-outcome]');await trial.waitFor();await openMission(trial);
+    const pick=async(key,value)=>{await pickMission(trial,key,value);await trial.locator('[data-mission-primary]').click();};
     for(const source of [0,1])for(const day of [0,1])for(const charge of [0,1]){
       await pick('source',source);await pick('light',day);await pick('charge',charge);
       const outcome=source===0?(day===0?'solarOn':'solarOff'):(charge===0?'batteryOn':'batteryOff');
@@ -78,17 +79,17 @@ try {
     }
    }
    if(model.id==='expansion-watermill'){
-    const trial=page.locator('[data-watermill-flow]');await trial.waitFor();
+    const trial=page.locator('[data-watermill-flow]');await trial.waitFor();await openMission(trial);
     if(process.env.OCTO_QA_MOTION){
-      await page.waitForTimeout(3000);await trial.locator('[data-watermill-set="2"]').click();await page.waitForTimeout(700);
+      await page.waitForTimeout(3000);await pickMission(trial,'flow',2);await trial.locator('[data-mission-primary]').click();await page.waitForTimeout(700);
       const movingA=await canvas.screenshot();await page.waitForTimeout(700);const movingB=await canvas.screenshot();
       if(Buffer.compare(movingA,movingB)===0)throw Error('Wheel does not rotate with flow');
-      await trial.locator('[data-watermill-set="0"]').click();await page.waitForTimeout(1200);
+      await pickMission(trial,'flow',0);await trial.locator('[data-mission-primary]').click();await page.waitForTimeout(1200);
       const stillA=await canvas.screenshot();await page.waitForTimeout(800);const stillB=await canvas.screenshot();
       if(Buffer.compare(stillA,stillB)!==0)throw Error('Wheel keeps moving with gate closed');
       console.log('Waterwheel: rotation with flow and stable stop verified in rendered pixels');
     }
-    for(const value of [1,2,0]){await trial.locator(`[data-watermill-set="${value}"]`).click();await page.waitForFunction(value=>document.querySelector('[data-watermill-flow]')?.getAttribute('data-watermill-flow')===String(value),value);}
+    for(const value of [1,2,0]){await pickMission(trial,'flow',value);await trial.locator('[data-mission-primary]').click();await page.waitForFunction(value=>document.querySelector('[data-watermill-flow]')?.getAttribute('data-watermill-flow')===String(value),value);}
     const sceneBox=await canvas.boundingBox(),missionBox=await page.locator('.workbench-mission').boundingBox();
     const overlap=Math.max(0,Math.min(sceneBox.x+sceneBox.width,missionBox.x+missionBox.width)-Math.max(sceneBox.x,missionBox.x))*Math.max(0,Math.min(sceneBox.y+sceneBox.height,missionBox.y+missionBox.height)-Math.max(sceneBox.y,missionBox.y));
     // Missions float above the scene; the placement target must remain unobstructed.

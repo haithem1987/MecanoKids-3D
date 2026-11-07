@@ -579,13 +579,18 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     });
 
     // Resize Observer
+    let lastFrameKey='';
+    let lastWidth=0,lastHeight=0;
     const updateFraming = () => {
       if (!container) return;
       const w = Math.max(1, container.clientWidth);
       const h = Math.max(1, container.clientHeight);
-      camera.aspect = w / h;
       const framing = measureFloatingFraming(container);
-      camera.setViewOffset(w, h, framing.offset, 0, w, h);
+      const key=`${w}/${h}/${framing.aspect}/${framing.offset}/${framing.offsetY}`;
+      if(key===lastFrameKey)return;
+      lastFrameKey=key;
+      camera.aspect = w / h;
+      camera.setViewOffset(w, h, framing.offset, framing.offsetY, w, h);
       const nextScale = getViewportCameraScale(framing.aspect);
       if (engineRef.current) engineRef.current.framingAspect = framing.aspect;
       const ratio = nextScale / viewportScale;
@@ -596,12 +601,23 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       controls.maxDistance = 12.5 * nextScale;
       if (scene.fog instanceof THREE.FogExp2) scene.fog.density = .028 / nextScale;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      if(lastWidth!==w||lastHeight!==h){renderer.setSize(w,h);lastWidth=w;lastHeight=h;}
       wakeRender();
     };
     if (engineRef.current) engineRef.current.updateFraming = updateFraming;
     const resizeObserver = new ResizeObserver(updateFraming);
     resizeObserver.observe(container);
+    const observedUi=new Set<Element>();
+    const observeUi=()=>{
+      const nodes=new Set(container.closest('main')?.querySelectorAll('[data-parts-palette],[data-phone-toolbar],.hud-title,.workbench-mission')??[]);
+      for(const node of observedUi)if(!nodes.has(node)){resizeObserver.unobserve(node);observedUi.delete(node);}
+      for(const node of nodes)if(!observedUi.has(node)){resizeObserver.observe(node);observedUi.add(node);}
+      updateFraming();
+    };
+    const uiObserver=new MutationObserver(observeUi);
+    const workspace=container.closest('main');
+    if(workspace)uiObserver.observe(workspace,{childList:true,subtree:true});
+    const initialUiFrame=requestAnimationFrame(observeUi);
 
     // M5: render-on-demand — only call render() when scene has moved
     let needsRender = true;
@@ -891,6 +907,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
       resizeObserver.disconnect();
+      uiObserver.disconnect();
+      cancelAnimationFrame(initialUiFrame);
       clearTimeout(restoreTimer);
       stopObservingContext();
       controls.dispose();

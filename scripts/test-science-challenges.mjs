@@ -1,3 +1,4 @@
+import {pickMission,openMission,readMission} from './mission-controls.mjs';
 import {canvasFraming} from './canvas-geometry.mjs';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -37,17 +38,18 @@ async function seed(page, language, id) {
   await page.reload();
 }
 
-async function play(page, workbench, mission, challenge, t, touch) {
+async function play(page, workbench, mission, challenge, t, touch, index) {
+  await pickMission(mission,"challenge",index);
   await activate(mission.locator(`[data-science-start="${challenge.id}"]`), touch);
   const summary = mission.locator(':scope > summary');
-  if (await mission.getAttribute('open') !== null) await activate(summary, touch);
+  if (await summary.count() && await mission.getAttribute('open') !== null) await activate(summary, touch);
   // Let the canvas resize after collapsing the mission before projecting its 3D controls.
   await page.waitForTimeout(200);
   const bounds = await canvasFraming(workbench.locator('canvas'));
   assert.ok(bounds);
   const camera = new PerspectiveCamera(44, bounds.width / bounds.height, 0.1, 100);
   camera.position.set(4.4, 3.2, 4.9).sub(new Vector3(0,.9,0)).multiplyScalar(Math.max(1,1/Math.max(.25,bounds.aspect))).add(new Vector3(0,.9,0));
-  camera.setViewOffset(bounds.width,bounds.height,bounds.offset,0,bounds.width,bounds.height);
+  camera.setViewOffset(bounds.width,bounds.height,bounds.offset,bounds.offsetY,bounds.width,bounds.height);
   camera.lookAt(0, 0.9, 0);
   camera.updateMatrixWorld();
   let setting = challenge.start;
@@ -78,13 +80,20 @@ async function play(page, workbench, mission, challenge, t, touch) {
   };
   if (challenge.kind === 'molecule') await useCanvas(challenge.target === 1 ? 2 : 1);
   for (const value of solutions[challenge.id]) await useCanvas(value);
-  await activate(summary, touch);
+  await openMission(mission);
+  await readMission(mission);
   await mission.locator('[data-science-result]').getByText(t.solved, { exact: true }).waitFor();
+  await activate(mission.locator('[data-mission-open-info]'),touch);
   await activate(mission.getByRole('button', { name: t.restart, exact: true }), touch);
-  await activate(mission.locator('details summary'), touch);
   const values = challenge.id === 'series' ? [1] : solutions[challenge.id];
-  for (const value of values) await mission.locator(`[data-science-action="${value}"]`).press('Enter');
+  let replaySetting=challenge.start;
+  for (const value of values) {
+    if(challenge.kind==='circuit'){replaySetting^=1<<value;await pickMission(mission,String(value),Number(Boolean(replaySetting&(1<<value))),true);}
+    else await pickMission(mission,'action',value,true);
+  }
+  await readMission(mission);
   await mission.locator('[data-science-result]').getByText(t.solved, { exact: true }).waitFor();
+  await activate(mission.locator('[data-mission-open-info]'),touch);
   await activate(mission.getByRole('button', { name: t.returnToBuild, exact: true }), touch);
   assert.equal(await workbench.getAttribute('data-science-trial'), null);
 }
@@ -122,8 +131,8 @@ try {
         await activate(dialog.locator(`[data-catalog-stage="${id}"]`), touch);
         const workbench = page.locator(`[data-workbench="${id}"]`);
         const mission = page.locator(`[data-science-mission="${id}"]`);
-        await activate(mission.locator(':scope > summary'), touch);
-        for (const game of games) await play(page, workbench, mission, game, t, touch);
+        await openMission(mission);
+        for (const [index,game] of games.entries()) await play(page, workbench, mission, game, t, touch,index);
       }
       console.log(`${language} : 9 défis joués dans la scène 3D et rejoués au clavier.`);
     } finally {

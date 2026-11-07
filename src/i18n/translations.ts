@@ -3410,3 +3410,15 @@ export const AQUEDUCT_TRIAL_TEXT = {
   water: ['Faire passer l’eau', 'Let the water through', 'مرّر الماء'],
   stop: ['Arrêter l’eau', 'Stop the water', 'أوقف الماء'],
 } as const;
+
+export const PHONE_HUD_TEXT = {
+  view: ['Vue', 'View', 'العرض'], listen: ['Écouter', 'Listen', 'استمع'], settings: ['Réglages', 'Settings', 'الإعدادات'],
+} as const;
+export const MISSION_PANEL_TEXT = {
+  flow: ['Débit d’eau', 'Water flow', 'تدفق الماء'],
+  infoShort: ['Infos', 'Info', 'معلومات'], assemble: ['Montage', 'Build', 'التركيب'], observe: ['Observer', 'Observe', 'لاحظ'],
+  controls: ['Réglages', 'Settings', 'الإعدادات'], run: ['Tester', 'Test', 'جرّب'], replay: ['Rejouer', 'Replay', 'أعد'],
+  info: ['Consigne et résultat', 'Instructions and result', 'التعليمات والنتيجة'],
+  previous: ['Réglage précédent', 'Previous setting', 'الإعداد السابق'], next: ['Réglage suivant', 'Next setting', 'الإعداد التالي'],
+  choose: ['Choisis un défi', 'Choose a challenge', 'اختر تحدياً'], close: ['Fermer', 'Close', 'أغلق'],
+} as const;
