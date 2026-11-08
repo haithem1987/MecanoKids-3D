@@ -1,13 +1,26 @@
 import { VehicleCategory, VisualStyleMode } from '../types/game';
-import { getAudioContext } from './audioContext';
+import { getAudioContext, getWorkshopAudioOutput, isWorkshopAudioMuted, setWorkshopAudioMuted, subscribeWorkshopAudioMute } from './audioContext';
 
 class WorkshopSoundEngine {
   private output: GainNode | undefined;
   private muted = false;
   private sfxVolume = 1;
+  private activeSources = new Map<AudioScheduledSourceNode,GainNode>();
+  constructor(){subscribeWorkshopAudioMute(muted=>{if(muted)this.stopSources();});}
+  private stopSources(){
+    for(const[source,gain]of this.activeSources){try{source.stop();}catch{/* Already ended. */}source.disconnect();gain.disconnect();}
+    this.activeSources.clear();
+  }
+  private schedule(source:AudioScheduledSourceNode,gain:GainNode,start:number,end:number){
+    this.activeSources.set(source,gain);
+    source.onended=()=>{source.disconnect();gain.disconnect();this.activeSources.delete(source);};
+    source.start(start);source.stop(end);
+  }
+
 
   public setMuted(muted: boolean): void {
     this.muted = muted;
+    setWorkshopAudioMuted(muted);
     this.updateVolume();
   }
 
@@ -17,12 +30,12 @@ class WorkshopSoundEngine {
   }
 
   private ensureContext(): AudioContext | null {
-    if (this.muted || !this.sfxVolume) return null;
+    if (this.muted || isWorkshopAudioMuted() || !this.sfxVolume) return null;
     const context = getAudioContext();
     if (!context) return null;
     if (this.output?.context !== context) {
       this.output = context.createGain();
-      this.output.connect(context.destination);
+      this.output.connect(getWorkshopAudioOutput(context));
       this.updateVolume();
     }
     return context;
@@ -51,8 +64,7 @@ class WorkshopSoundEngine {
 
     osc.connect(gain);
     gain.connect(this.output!);
-    osc.start(now);
-    osc.stop(now + 0.11);
+    this.schedule(osc,gain,now,now+.11);
   }
 
   public playMagnetHover(): void {
@@ -72,8 +84,7 @@ class WorkshopSoundEngine {
 
     osc.connect(gain);
     gain.connect(this.output!);
-    osc.start(now);
-    osc.stop(now + 0.055);
+    this.schedule(osc,gain,now,now+.055);
   }
 
   public playSnapSuccess(style: VisualStyleMode): void {
@@ -115,8 +126,7 @@ class WorkshopSoundEngine {
 
     osc.connect(gain);
     gain.connect(this.output!);
-    osc.start(now);
-    osc.stop(now + 0.16);
+    this.schedule(osc,gain,now,now+.16);
   }
 
   public playStageVictory(): void {
@@ -218,8 +228,7 @@ class WorkshopSoundEngine {
 
     osc.connect(gain);
     gain.connect(this.output!);
-    osc.start(startTime);
-    osc.stop(startTime + duration + 0.01);
+    this.schedule(osc,gain,startTime,startTime+duration+.01);
   }
 }
 

@@ -6,6 +6,8 @@ export interface DiscoveryObservation {
   kind: string;
   result: NotebookText;
   settings?: readonly number[];
+  /** Only an explicitly validated result completes an adventure experiment. */
+  success?: boolean;
 }
 export interface SavedDiscoveryObservation extends DiscoveryObservation { observedAt: number; attempts: number }
 export interface DiscoveryNotebook { version: 1; observations: SavedDiscoveryObservation[] }
@@ -23,14 +25,14 @@ export function sanitizeNotebook(value: unknown): DiscoveryNotebook {
     if (!Array.isArray(item.result) || item.result.length !== 3 || !item.result.every(text => typeof text === 'string' && text.length > 0 && text.length <= 2000)) continue;
     if (typeof item.observedAt !== 'number' || !Number.isFinite(item.observedAt) || item.observedAt < 0) continue;
     const settings = Array.isArray(item.settings) && item.settings.length <= 16 && item.settings.every(number => typeof number === 'number' && Number.isFinite(number)) ? item.settings as number[] : undefined;
-    observations.push({ blueprintId: item.blueprintId, kind: item.kind, result: item.result as unknown as NotebookText, settings, observedAt: item.observedAt, attempts: typeof item.attempts === 'number' && Number.isFinite(item.attempts) ? Math.max(1, Math.min(9999, Math.floor(item.attempts))) : 1 });
+    observations.push({ blueprintId: item.blueprintId, kind: item.kind, result: item.result as unknown as NotebookText, settings, success: typeof item.success === 'boolean' ? item.success : undefined, observedAt: item.observedAt, attempts: typeof item.attempts === 'number' && Number.isFinite(item.attempts) ? Math.max(1, Math.min(9999, Math.floor(item.attempts))) : 1 });
   }
   return { version: 1, observations: observations.sort((a, b) => b.observedAt - a.observedAt).slice(0, MAX_OBSERVATIONS) };
 }
 export function addObservation(notebook: DiscoveryNotebook, observation: DiscoveryObservation, now = Date.now()): DiscoveryNotebook {
   const same = (entry: DiscoveryObservation) => entry.blueprintId === observation.blueprintId && entry.kind === observation.kind && JSON.stringify(entry.result) === JSON.stringify(observation.result) && JSON.stringify(entry.settings ?? []) === JSON.stringify(observation.settings ?? []);
   const previous = notebook.observations.find(same);
-  return sanitizeNotebook({ version: 1, observations: [{ ...observation, observedAt: now, attempts: (previous?.attempts ?? 0) + 1 }, ...notebook.observations.filter(entry => !same(entry))] });
+  return sanitizeNotebook({ version: 1, observations: [{ ...observation, success: observation.success === true || previous?.success === true ? true : observation.success ?? previous?.success, observedAt: now, attempts: (previous?.attempts ?? 0) + 1 }, ...notebook.observations.filter(entry => !same(entry))] });
 }
 export function readNotebook(profileId: string): DiscoveryNotebook {
   if (!profileId || typeof localStorage === 'undefined') return empty();

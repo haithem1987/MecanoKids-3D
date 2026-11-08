@@ -159,7 +159,7 @@ function masterBlueprint(key: 'bridge' | 'station' | 'rover' | 'drawbridge', cat
   const tier = MASTER_BUILD_TEXT.tier;
   const facts = (locale: 0 | 1 | 2) => ({ howItWorks: why[locale], realRecord: subtitle[locale], didYouKnow: fact[locale] });
   return {
-    id: `master-${key}`, stageNumber: 0, category, tier: DifficultyTier.MASTER, masterExpansion: true, parts,
+    id: `master-${key}`, stageNumber: 0, category, tier: DifficultyTier.MASTER, masterExpansion: true, parts, staticStructure:key==='bridge'||key==='drawbridge'?true:undefined,
     name: name[0], nameEn: name[1], nameAr: name[2], subtitle: subtitle[0], subtitleEn: subtitle[1], subtitleAr: subtitle[2],
     tierLabel: tier[0], tierLabelEn: tier[1], tierLabelAr: tier[2], ageNote: tier[0], ageNoteEn: tier[1], ageNoteAr: tier[2],
     discovery: facts(0), discoveryEn: facts(1), discoveryAr: facts(2), discoveryMode: 'observation',

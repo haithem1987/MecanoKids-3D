@@ -1,3 +1,4 @@
+import {supportsWorkshopPlay} from '../data/workshopActivities';
 import {useEffect} from 'react';
 import {AdventureNotebookModal} from './AdventureNotebookModal';
 import {recordDiscoveryObservation,type NotebookText,type DiscoveryObservation} from '../utils/discoveryNotebook';
@@ -26,5 +27,5 @@ export function WorkshopExperienceHub({isOpen,onClose,profileId,language,progres
   const result=SCIENCE_CHALLENGE_TEXT[observeChallenge(scienceTrial.challenge,scienceTrial.setting)];
   window.dispatchEvent(new CustomEvent('octogears:workshop-discovery',{detail:{blueprintId:blueprint.id,kind:'science-'+scienceTrial.challenge.id,result,settings:[scienceTrial.setting],success:meetsChallenge(scienceTrial.challenge,scienceTrial.setting)}}));
  },[profileId,blueprint.id,scienceTrial]);
- return <AdventureNotebookModal isOpen={isOpen} onClose={onClose} profileId={profileId} language={language} progress={progress} blueprints={blueprints} canOpenBlueprint={bp=>canOpenWorkshop(bp,progress,blueprints,localAdminActive)} onOpenBlueprint={onOpenBlueprint}/>;
+ return <AdventureNotebookModal isOpen={isOpen} onClose={onClose} profileId={profileId} language={language} progress={progress} blueprints={blueprints} supportsPlay={supportsWorkshopPlay} canOpenBlueprint={bp=>canOpenWorkshop(bp,progress,blueprints,localAdminActive)} onOpenBlueprint={onOpenBlueprint}/>;
 }

@@ -1,6 +1,8 @@
+import {VehicleCategory} from './types/game';
+import {useAdventureContinuation} from './hooks/useAdventureContinuation';
 import {removeNotebook} from './utils/discoveryNotebook';
 import {WorkshopExperienceHub} from './components/WorkshopExperienceHub';
-import {getConstructionPlayKind} from './data/constructionPlay';
+import {supportsWorkshopPlay,usesWorkshopMissionPortal} from './data/workshopActivities';
 import { getWorkshopInstruction } from './utils/workshopInstruction';
 /**
  * @license
@@ -398,6 +400,7 @@ export default function App() {
     () => VEHICLE_BLUEPRINTS.findIndex((b) => b.id === currentBlueprint.id),
     [currentBlueprint.id],
   );
+  const adventureNextId=useAdventureContinuation(activeProfile.id,progress,VEHICLE_BLUEPRINTS,currentBlueprint.id);
   const hasNextStage = currentIndex >= 0 && currentIndex < VEHICLE_BLUEPRINTS.length - 1;
 
   const gentleTimerStatus = useMemo(
@@ -1217,7 +1220,7 @@ export default function App() {
     (blueprintId: string) => {
       const completedCount = Object.keys(progress.completedStages).length;
       const target = VEHICLE_BLUEPRINTS.find(bp => bp.id === blueprintId);
-      if (!localAdminActive && !target?.virtualLab && freeTrialExhausted(completedCount) && !isUnlocked(progress.licenseState)) {
+      if (!localAdminActive && !target?.virtualLab && target?.category!==VehicleCategory.MATHS && freeTrialExhausted(completedCount) && !isUnlocked(progress.licenseState)) {
         track('paywall_shown', { missionsCompleted: completedCount });
         setUpgradeReason('stages');
         setUpgradeModalOpen(true);
@@ -1738,7 +1741,7 @@ export default function App() {
           flashStatus(t.streakExtendedToast(streakOutcome.nextStreak.currentStreak));
         }
 
-        if (currentBlueprint.id !== DRAWBRIDGE_ID && !currentBlueprint.interactiveTrial && !getConstructionPlayKind(currentBlueprint.id) && !currentBlueprint.virtualLab && !getScienceChallenges(currentBlueprint.id)) {
+        if (!supportsWorkshopPlay(currentBlueprint)) {
           window.setTimeout(() => {
             const latest = latestProgressRef.current;
             if (latest.currentBlueprintId === currentBlueprint.id &&
@@ -2267,9 +2270,9 @@ export default function App() {
           }}
         />
         </div>
-        {!activeDiagnostic && (currentBlueprint.virtualLab || scienceChallenges || ((currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial || getConstructionPlayKind(currentBlueprint.id)) && isCompleted)) && (
+        {!activeDiagnostic && (currentBlueprint.virtualLab || scienceChallenges || ((usesWorkshopMissionPortal(currentBlueprint)) && isCompleted)) && (
           <div className="workbench-mission min-h-0 overflow-y-auto p-2">
-            {(currentBlueprint.id === DRAWBRIDGE_ID || currentBlueprint.interactiveTrial || getConstructionPlayKind(currentBlueprint.id)) && <div id="workbench-trial-controls" />}
+            {(usesWorkshopMissionPortal(currentBlueprint)) && <div id="workbench-trial-controls" />}
             {currentBlueprint.virtualLab && (
               <VirtualLabMission key={`${currentBlueprint.id}-${isCompleted}`} id={currentBlueprint.virtualLab}
                 language={language} assembled={isCompleted} trial={activeLabTrial} onTrial={trial=>setLabTrial(trial?{...trial,profileId:activeProfile.id}:undefined)} />
@@ -2320,10 +2323,10 @@ export default function App() {
         onSelectStyle={handleSelectStyle}
         muted={progress.muted}
         onToggleMute={() => {
-          if (!progress.muted) {
-            speechEngine.stop();
-          }
-          setProgress((p) => ({ ...p, muted: !p.muted }));
+          const nextMuted=!progress.muted;
+          soundEngine.setMuted(nextMuted || progress.classroomSilent);
+          if(nextMuted)speechEngine.stop();
+          setProgress((p) => ({ ...p, muted: nextMuted }));
         }}
         onReplayInstruction={() => speechEngine.speak('manual-workshop', getWorkshopInstruction(currentBlueprint, effectivePlacedPartIds, stagedPartId ?? activeDragPartId ?? effectiveHintPartId), language)}
         voiceAutoRead={progress.voiceAutoRead}
@@ -2341,8 +2344,8 @@ export default function App() {
         onClickPartCard={handleClickPartCard}
         onOpenCatalog={() => setCatalogOpen(true)}
         onOpenVictoryModal={() => setDiscoveryOpen(true)}
-        hasNextStage={hasNextStage}
-        onGoNextStage={handleGoNextStage}
+        hasNextStage={Boolean(adventureNextId)||hasNextStage}
+        onGoNextStage={()=>adventureNextId?handleSelectBlueprint(adventureNextId):handleGoNextStage()}
         onOpenTour={handleOpenTour}
         statusMessage={statusMessage}
         partsTrayPosition={effectiveTrayPosition}

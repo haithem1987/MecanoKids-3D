@@ -336,7 +336,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                     {items.map((bp) => {
                       const unlocked = localAdminActive || Boolean(bp.virtualLab) || isStageUnlocked(bp);
                       const paywalled =
-                        !localAdminActive && !bp.virtualLab && unlocked && !canPlayStage(progress.licenseState, bp.stageNumber, bp.masterExpansion);
+                        !localAdminActive && !bp.virtualLab && bp.category!==VehicleCategory.MATHS && unlocked && !canPlayStage(progress.licenseState, bp.stageNumber, bp.masterExpansion);
                       const record = progress.completedStages[bp.id];
                       const inProg = progress.inProgressStages[bp.id];
                       const placedCount = inProg?.placedPartIds.length ?? 0;

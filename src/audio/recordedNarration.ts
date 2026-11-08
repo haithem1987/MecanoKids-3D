@@ -1,5 +1,6 @@
 import type { LanguageCode } from '../types/game';
 import { narrationKey, narrationPhrases } from './narrationText';
+import {getWorkshopAudioOutput,isWorkshopAudioMuted,subscribeWorkshopAudioMute} from './audioContext';
 
 type Clip = [track: number, startMs: number, durationMs: number];
 type Index = Record<string, Clip>;
@@ -43,9 +44,17 @@ export function playRecordedNarration(context: AudioContext, text: string, langu
   let playing: AudioBufferSourceNode | undefined;
   const gain = context.createGain();
   gain.gain.value = volume;
-  gain.connect(context.destination);
+  gain.connect(getWorkshopAudioOutput(context));
+  const stop=()=>{
+    if(stopped)return;
+    stopped=true;gain.gain.cancelScheduledValues(context.currentTime);gain.gain.setValueAtTime(0,context.currentTime);
+    try{playing?.stop();}catch{/* A source may have ended while mute was being applied. */}
+  };
+  const unsubscribe=subscribeWorkshopAudioMute(muted=>{if(muted)stop();});
+  if(isWorkshopAudioMuted()||volume<=0)stop();
   const done = (async () => {
     try {
+      if(stopped)return;
       const index = await readIndex(language);
       const clips = narrationPhrases(text).flatMap(phrase => {
         const key = narrationKey(phrase);
@@ -70,14 +79,18 @@ export function playRecordedNarration(context: AudioContext, text: string, langu
         });
       }
     } finally {
+      unsubscribe();
       gain.disconnect();
     }
   })();
   return {
     done,
-    stop() {
-      stopped = true;
-      playing?.stop();
+    stop,
+    setVolume(volume:number){
+      if(stopped)return;
+      gain.gain.cancelScheduledValues(context.currentTime);
+      gain.gain.setValueAtTime(Math.max(0,Math.min(1,volume)),context.currentTime);
+      if(volume<=0)stop();
     },
   };
 }

@@ -40,4 +40,13 @@ describe('carnet de découvertes local', () => {
       expect(readNotebook('two').observations).toHaveLength(1);
     } finally { vi.unstubAllGlobals(); }
   });
+  it('préserve une réussite validée sans attribuer de réussite aux anciennes observations', () => {
+    const observation = { blueprintId: 'lab', kind: 'flow', result };
+    let notebook = addObservation(sanitizeNotebook(null), observation, 1);
+    expect(notebook.observations[0].success).toBeUndefined();
+    notebook = addObservation(notebook, { ...observation, success: true }, 2);
+    notebook = addObservation(notebook, { ...observation, success: false }, 3);
+    expect(notebook.observations[0].success).toBe(true);
+    expect(notebook.observations[0].attempts).toBe(3);
+  });
 });

@@ -1,3 +1,4 @@
+import {MATH_QUIZ_TEXT} from '../i18n/translations';
 import { HERITAGE_QUIZ_TEXT, QUIZ_BUILD_PROMPTS } from '../i18n/translations';
 import { LanguageCode, VehicleBlueprint, VehicleCategory } from '../types/game';
 
@@ -53,7 +54,7 @@ const GENERIC_PART_DISTRACTORS: Record<LanguageCode, string[]> = {
   ],
 };
 
-const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<Exclude<VehicleCategory, VehicleCategory.NATURE | VehicleCategory.HISTORY>, [string, string]>> = {
+const REAL_WORLD_DISTRACTORS: Record<LanguageCode, Record<Exclude<VehicleCategory, VehicleCategory.NATURE | VehicleCategory.HISTORY | VehicleCategory.MATHS>, [string, string]>> = {
   fr: {
     [VehicleCategory.CAR]: [
       'Il utilise une quille lestée sous l’eau et la poussée d’Archimède pour flotter sur les vagues.',
@@ -256,13 +257,13 @@ export function generateMechanicalQuiz(
   // --- QUESTION 3: Real-World Physics & Discovery Principle ---
   const correctFact = truncateCleanly(blueprint.discovery.howItWorks, 165);
   const locale = lang === 'fr' ? 0 : lang === 'en' ? 1 : 2;
-  const [distA, distB] = blueprint.category === VehicleCategory.HISTORY
+  const [distA, distB] = blueprint.category === VehicleCategory.MATHS ? [MATH_QUIZ_TEXT.distractorA[locale],MATH_QUIZ_TEXT.distractorB[locale]] : blueprint.category === VehicleCategory.HISTORY
     ? HERITAGE_QUIZ_TEXT.distractors.map(row => row[locale])
     : REAL_WORLD_DISTRACTORS[lang][blueprint.category === VehicleCategory.NATURE ? VehicleCategory.PHYSICS : blueprint.category];
   const q3Options = deterministicShuffle([correctFact, distA, distB], seed + 53);
   const q3CorrectIndex = q3Options.indexOf(correctFact);
 
-  const q3Prompt = blueprint.category === VehicleCategory.HISTORY ? HERITAGE_QUIZ_TEXT.prompt[locale] :
+  const q3Prompt = blueprint.category === VehicleCategory.MATHS ? MATH_QUIZ_TEXT.prompt[locale] : blueprint.category === VehicleCategory.HISTORY ? HERITAGE_QUIZ_TEXT.prompt[locale] :
     lang === 'ar'
       ? `كيف تعمل «${blueprint.name}» في العالم الحقيقي حسب بطاقة الاكتشاف؟`
       : lang === 'en'

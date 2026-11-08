@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { LanguageCode } from '../types/game';
-import { getAudioContext } from '../audio/audioContext';
+import { getAudioContext, isWorkshopAudioMuted, subscribeWorkshopAudioMute } from '../audio/audioContext';
 import { playRecordedNarration } from '../audio/recordedNarration';
 
 interface SpeechSnapshot {
@@ -26,9 +26,13 @@ class SpeechNarrator {
   private voiceVolume = 1;
   public lastSpoken: { id: string; text: string; lang: LanguageCode } | null = null;
 
+  constructor(){subscribeWorkshopAudioMute(muted=>{if(muted)this.stop();});}
+
   public setVoiceVolume(v: number): void {
     this.voiceVolume = Math.min(1, Math.max(0, v));
-    if (!this.voiceVolume && this.speaking) this.stop();
+    this.playback?.setVolume(this.voiceVolume);
+    if(this.utterance)this.utterance.volume=this.voiceVolume;
+    if (!this.voiceVolume) this.stop();
   }
 
   private hasNativeSpeech(): boolean {
@@ -89,7 +93,7 @@ class SpeechNarrator {
   }
 
   public speak(id: string, rawText: string, lang: LanguageCode): void {
-    if (!this.isSupported() || !this.voiceVolume) return;
+    if (!this.isSupported() || !this.voiceVolume || isWorkshopAudioMuted()) return;
     const cleanText = rawText
       .replace(/[✓★·]/g, ' ')
       .replace(/\s+/g, ' ')
@@ -114,7 +118,7 @@ class SpeechNarrator {
       this.emit();
     };
     const fallback = () => {
-      if (request !== this.request) return;
+      if (request !== this.request || isWorkshopAudioMuted() || !this.voiceVolume) return;
       clearTimeout(this.startTimeout);
       this.utterance = undefined;
       if (!context) { finish(); return; }

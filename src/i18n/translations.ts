@@ -936,6 +936,7 @@ export interface UIStrings {
   filterPhysics: string;
   filterNature: string;
   filterHistory: string;
+  filterMaths: string;
   trayTools: string;
   hudTools: string;
   trayShowAll: string;
@@ -1486,6 +1487,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterPhysics: 'Physique',
     filterNature: 'Vivant et Terre',
     filterHistory: 'Histoire',
+    filterMaths: 'Mathématiques',
     trayTools: 'Réglages des pièces',
     hudTools: 'Réglages de l’atelier',
     trayShowAll: 'Toutes les pièces',
@@ -2099,6 +2101,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterPhysics: 'Physics',
     filterNature: 'Life and Earth',
     filterHistory: 'History',
+    filterMaths: 'Mathematics',
     trayTools: 'Part settings',
     hudTools: 'Workshop settings',
     trayShowAll: 'All parts',
@@ -2712,6 +2715,7 @@ export const UI_TRANSLATIONS: Record<LanguageCode, UIStrings> = {
     filterPhysics: 'فيزياء',
     filterNature: 'الأحياء والأرض',
     filterHistory: 'التاريخ',
+    filterMaths: 'الرياضيات',
     trayTools: 'إعدادات القطع',
     hudTools: 'إعدادات الورشة',
     trayShowAll: 'كل القطع',
@@ -3459,3 +3463,140 @@ export const PLAY_MODES_TEXT = {
 export const EXPERIENCE_TEXT={notebook:['Mes aventures et découvertes','My adventures and discoveries','مغامراتي واكتشافاتي']} as const;
 
 export {ADVENTURE_NOTEBOOK_TEXT} from './adventureNotebookText';
+
+export const HERITAGE_DISCOVERY_TEXT={
+ shelter:['Un abri dans les steppes','A shelter on the steppe','مأوى في السهوب'],loadpaths:['Les chemins de la charge','Following the load paths','مسارات الحمل'],
+ shelterGoal:['Essaie le vent avec les parois ouvertes, puis fermées. Observe le rôle du feutre autour de la charpente.','Try the wind with open walls, then closed walls. Observe how felt shelters the frame.','جرّب الرياح والجدران مفتوحة ثم مغلقة. لاحظ دور اللباد حول الهيكل.'],
+ loadpathsGoal:['Compare une charge au sommet et sur le côté. Suis les chemins dorés jusqu’aux appuis.','Compare a load at the top and at the side. Follow the gold paths down to the supports.','قارن حملاً عند القمة وآخر على الجانب. تتبّع المسارات الذهبية حتى الدعامات.'],
+ cover:['Parois de feutre','Felt walls','جدران اللباد'],open:['Ouvertes','Open','مفتوحة'],closed:['Fermées','Closed','مغلقة'],
+ position:['Position de la charge','Load position','موضع الحمل'],top:['Au sommet','At the top','عند القمة'],side:['Sur le côté','At the side','على الجانب'],
+ run:['Essayer','Try it','جرّب'],reset:['Rejouer','Replay','أعد اللعب'],ready:['Choisis, puis observe ta construction.','Choose, then watch your construction.','اختر ثم راقب بناءك.'],running:['Observe le mouvement dans la scène.','Watch the movement in the scene.','راقب الحركة في المشهد.'],
+ exposed:['Le vent traverse les espaces ouverts. La charpente seule ne forme pas un abri fermé.','Wind passes through the open spaces. The frame alone does not enclose a shelter.','تمر الرياح عبر الفراغات المفتوحة. الهيكل وحده لا يشكّل مأوى مغلقاً.'],
+ sheltered:['Les parois arrêtent le vent latéral dans ce modèle. Le feutre complète la charpente pour former un abri.','The walls block side wind in this model. Felt completes the frame to make a shelter.','تصدّ الجدران الرياح الجانبية في هذا النموذج. يكمل اللباد الهيكل ليشكّل مأوى.'],
+ central:['Au sommet, plusieurs barres transmettent la charge vers les appuis tout autour. Essaie aussi le côté.','At the top, several struts carry the load towards supports all around. Try the side too.','عند القمة، تنقل عدة قضبان الحمل إلى الدعامات المحيطة. جرّب الجانب أيضاً.'],
+ lateral:['Sur le côté, les chemins représentés rejoignent les appuis les plus proches. Compare avec le sommet.','At the side, the illustrated paths lead to nearby supports. Compare with the top.','على الجانب، تصل المسارات المرسومة إلى أقرب الدعامات. قارن مع القمة.'],
+ compared:['Deux observations ! Les triangles relient les nœuds : la position de la charge change les chemins vers les appuis. Ce dessin montre les chemins, pas une mesure de résistance.','Two observations! Triangles link the joints: the load position changes the paths to the supports. This diagram shows paths, not a strength measurement.','ملاحظتان! تربط المثلثات بين العقد، ويتغيّر مسار الحمل نحو الدعامات حسب موضعه. يوضّح الرسم المسارات ولا يقيس المقاومة.'],
+} as const;
+
+export const SCIENCE_DISCOVERY_TEXT = {
+ radioTitle:['Accorde le récepteur','Tune the receiver','اضبط المستقبل'],balanceTitle:['Équilibre la balance','Balance the scale','وازن الميزان'],prismTitle:['Décompose la lumière','Split the light','حلّل الضوء'],
+ radioGoal:['Accorde le récepteur sur la station pour obtenir un signal net autour du haut-parleur.','Tune the receiver to the station to obtain a clear signal around the speaker.','اضبط المستقبل على المحطّة للحصول على إشارة واضحة حول مكبّر الصوت.'],
+ balanceGoal:['Compare la masse de droite à celle de gauche pour placer les plateaux à la même hauteur.','Compare the right-hand mass with the left-hand mass to bring the pans to the same height.','قارن الكتلة اليمنى باليسرى لجعل الكفّتين على الارتفاع نفسه.'],
+ prismGoal:['Envoie de la lumière blanche dans le prisme pour faire apparaître plusieurs couleurs.','Send white light into the prism to reveal several colours.','أرسل ضوءاً أبيض إلى المنشور لإظهار عدّة ألوان.'],
+ frequency:['Accord de la station','Station tuning','ضبط المحطّة'],mass:['Masse de droite','Right-hand mass','الكتلة اليمنى'],light:['Source lumineuse','Light source','مصدر الضوء'],below:['En dessous','Below','أقلّ'],tuned:['Accordée','Tuned','مضبوطة'],above:['Au-dessus','Above','أعلى'],lighter:['Plus légère','Lighter','أخفّ'],equal:['Égale','Equal','متساوية'],heavier:['Plus lourde','Heavier','أثقل'],dark:['Éteinte','Off','مطفأ'],white:['Blanche','White','أبيض'],red:['Rouge','Red','أحمر'],
+ radio0:['L’accord est trop bas : le signal reste faible.','The tuning is too low: the signal remains weak.','الضبط منخفض جداً: تبقى الإشارة ضعيفة.'],radio1:['Station trouvée ! Le circuit sélectionne une fréquence et le haut-parleur restitue le signal. Les anneaux représentent le son.','Station found! The circuit selects a frequency and the speaker reproduces the signal. The rings represent sound.','وجدت المحطّة! تختار الدارة تردّداً ويعيد مكبّر الصوت الإشارة. تمثّل الحلقات الصوت.'],radio2:['L’accord est trop haut : essaie la position centrale.','The tuning is too high: try the middle position.','الضبط مرتفع جداً: جرّب الموضع الأوسط.'],
+ balance0:['La masse de droite est plus légère : le côté gauche descend.','The right-hand mass is lighter: the left side moves down.','الكتلة اليمنى أخفّ: ينخفض الجانب الأيسر.'],balance1:['Les masses et les bras sont égaux : la balance reste horizontale.','The masses and arms are equal: the scale stays horizontal.','الكتل والأذرع متساوية: يبقى الميزان أفقياً.'],balance2:['La masse de droite est plus lourde : le côté droit descend.','The right-hand mass is heavier: the right side moves down.','الكتلة اليمنى أثقل: ينخفض الجانب الأيمن.'],
+ prism0:['Sans lumière, le prisme ne produit pas de spectre.','Without light, the prism does not produce a spectrum.','دون ضوء لا ينتج المنشور طيفاً.'],prism1:['Le prisme sépare les couleurs présentes dans la lumière blanche.','The prism separates the colours present in white light.','يفصل المنشور الألوان الموجودة في الضوء الأبيض.'],prism2:['La lumière rouge reste rouge : le prisme ne crée pas les autres couleurs.','Red light stays red: the prism does not create the other colours.','يبقى الضوء الأحمر أحمر: لا يصنع المنشور الألوان الأخرى.'],
+ fanTitle:['Pilote le ventilateur','Control the fan','تحكّم في المروحة'],
+ alarmTitle:['Déclenche l’alarme à lumière','Trigger the light alarm','شغّل إنذار الضوء'],
+ solarTitle:['Donne de l’énergie au moteur','Power the motor','زوّد المحرّك بالطاقة'],
+ rampTitle:['Compare les descentes','Compare the descents','قارن الانحدارات'],
+ compassTitle:['Guide l’aiguille avec l’aimant','Guide the needle with the magnet','وجّه الإبرة بالمغناطيس'],
+ pendulumTitle:['Compare les oscillations','Compare the swings','قارن التأرجحات'],
+ saltTitle:['Retrouve le réseau du sel','Find the salt lattice','اكتشف شبكة الملح'],
+ beakerTitle:['Observe ce qui se dissout','Observe what dissolves','لاحظ ما يذوب'],
+ fanGoal:['Fais tourner les pales rapidement en augmentant l’alimentation du moteur.','Make the blades turn quickly by increasing the motor supply.','اجعل الشفرات تدور بسرعة بزيادة تغذية المحرّك.'],
+ alarmGoal:['Arme le circuit puis couvre le capteur : observe les anneaux autour du buzzer.','Arm the circuit, then cover the sensor: watch the rings around the buzzer.','فعّل الدارة ثم غطّ المستشعر: راقب الحلقات حول الجرس.'],
+ solarGoal:['Compare l’ombre, la lumière oblique et la pleine lumière pour faire tourner le moteur.','Compare shade, angled light and full light to turn the motor.','قارن الظل والضوء المائل والضوء الكامل لتدوير المحرّك.'],
+ rampGoal:['Choisis une pente raide puis libère le bloc. Compare la durée de la descente.','Choose a steep slope, then release the block. Compare the descent time.','اختر منحدراً شديداً ثم حرّر القطعة. قارن زمن النزول.'],
+ compassGoal:['Déplace l’aimant de l’ouest vers l’est et observe le changement de direction de l’aiguille.','Move the magnet from west to east and watch the needle change direction.','انقل المغناطيس من الغرب إلى الشرق وراقب تغيّر اتجاه الإبرة.'],
+ pendulumGoal:['Choisis un fil long et un petit écart : observe une oscillation plus lente que celle du fil court.','Choose a long rod and a small displacement: observe a slower swing than with the short rod.','اختر قضيباً طويلاً وإزاحة صغيرة: راقب تأرجحاً أبطأ من القضيب القصير.'],
+ saltGoal:['Fais diminuer l’eau pour retrouver les ions alternés du cristal. C’est un modèle simplifié.','Reduce the water to recover the alternating ions of the crystal. This is a simplified model.','قلّل الماء لاستعادة أيونات البلورة المتناوبة. هذا نموذج مبسّط.'],
+ beakerGoal:['Compare le sel et le sable dans l’eau, puis mélange : lequel ne laisse plus de grains visibles ?','Compare salt and sand in water, then stir: which leaves no visible grains?','قارن الملح والرمل في الماء ثم حرّك: أيّهما لا يترك حبيبات مرئية؟'],
+ power:['Alimentation','Power supply','التغذية'],switch:['Circuit','Circuit','الدارة'],sensor:['Capteur de lumière','Light sensor','مستشعر الضوء'],sun:['Lumière sur le panneau','Light on the panel','الضوء على اللوح'],slope:['Pente','Slope','الانحدار'],magnet:['Position de l’aimant','Magnet position','موضع المغناطيس'],length:['Longueur du pendule','Pendulum length','طول البندول'],amplitude:['Écart initial','Initial displacement','الإزاحة الأولية'],water:['Eau du modèle','Water in the model','الماء في النموذج'],material:['Grains dans l’eau','Grains in water','الحبيبات في الماء'],stir:['Mélange','Stirring','التحريك'],
+ off:['Coupée','Off','مقطوعة'],on:['Armé','Armed','مفعّلة'],low:['Faible','Low','منخفضة'],high:['Forte','High','عالية'],uncovered:['Éclairé','Uncovered','مضاء'],covered:['Couvert','Covered','مغطّى'],shade:['Ombre','Shade','ظل'],oblique:['Lumière oblique','Angled light','ضوء مائل'],bright:['Pleine lumière','Full light','ضوء كامل'],gentle:['Douce','Gentle','خفيف'],medium:['Moyenne','Medium','متوسّط'],steep:['Raide','Steep','شديد'],west:['Ouest','West','الغرب'],east:['Est','East','الشرق'],north:['Nord','North','الشمال'],short:['Court','Short','قصير'],long:['Long','Long','طويل'],small:['Petit','Small','صغيرة'],large:['Grand','Large','كبيرة'],solution:['Beaucoup d’eau','Plenty of water','ماء كثير'],crystal:['Eau évaporée','Water evaporated','ماء متبخّر'],salt:['Sel','Salt','ملح'],sand:['Sable','Sand','رمل'],still:['Sans remuer','No stirring','دون تحريك'],mixed:['Remuer','Stir','تحريك'],
+ ready:['Choisis puis observe ta construction.','Choose, then watch your construction.','اختر ثم راقب بناءك.'],run:['Observer','Observe','راقب'],reset:['Remettre à zéro','Reset','إعادة الضبط'],touch:['Tu peux aussi toucher la pièce active dans la scène pour refaire l’essai.','You can also tap the active part in the scene to repeat the trial.','يمكنك أيضاً لمس القطعة النشطة في المشهد لإعادة التجربة.'],
+ fan0:['Sans alimentation, les pales sont immobiles.','Without power, the blades stay still.','دون تغذية تبقى الشفرات ثابتة.'],fan1:['Avec une faible alimentation, les pales tournent lentement.','With a low supply, the blades turn slowly.','مع تغذية منخفضة تدور الشفرات ببطء.'],fan2:['Les pales tournent plus vite : le moteur transforme l’énergie électrique en mouvement.','The blades turn faster: the motor turns electrical energy into motion.','تدور الشفرات أسرع: يحوّل المحرّك الطاقة الكهربائية إلى حركة.'],
+ alarmOff:['Le circuit n’est pas armé, ou le capteur reçoit de la lumière : pas de signal.','The circuit is not armed, or the sensor receives light: no signal.','الدارة غير مفعّلة أو المستشعر يتلقّى الضوء: لا إشارة.'],alarmOn:['Le capteur couvert déclenche le buzzer : les anneaux représentent le signal sonore.','The covered sensor triggers the buzzer: the rings represent the sound signal.','يشغّل المستشعر المغطّى الجرس: تمثّل الحلقات الإشارة الصوتية.'],
+ solar0:['À l’ombre, le panneau ne fournit pas assez d’énergie pour ce moteur.','In shade, the panel does not provide enough energy for this motor.','في الظل لا يوفّر اللوح طاقة كافية لهذا المحرّك.'],solar1:['La lumière oblique fournit moins d’énergie : le moteur tourne lentement.','Angled light provides less energy: the motor turns slowly.','يوفّر الضوء المائل طاقة أقل: يدور المحرّك ببطء.'],solar2:['Bien éclairé, le panneau alimente le moteur plus rapidement.','In full light, the panel powers the motor faster.','مع ضوء كامل يزوّد اللوح المحرّك بطاقة أكبر.'],
+ ramp0:['Sur la pente douce, la descente est plus lente.','On the gentle slope, the descent is slower.','على المنحدر الخفيف يكون النزول أبطأ.'],ramp1:['La pente moyenne accélère davantage le bloc.','The medium slope accelerates the block more.','يزيد المنحدر المتوسّط تسارع القطعة.'],ramp2:['Sur la pente raide, la descente est plus rapide. Le modèle néglige les frottements.','On the steep slope, the descent is faster. This model ignores friction.','على المنحدر الشديد يكون النزول أسرع. يهمل هذا النموذج الاحتكاك.'],
+ compass0:['L’aiguille s’aligne avec le champ de l’aimant placé à l’ouest.','The needle aligns with the field of the magnet to the west.','تصطفّ الإبرة مع مجال المغناطيس الموجود غرباً.'],compass1:['En déplaçant l’aimant à l’est, tu changes la direction du champ près de l’aiguille.','Moving the magnet east changes the field direction near the needle.','بنقل المغناطيس شرقاً تغيّر اتجاه المجال قرب الإبرة.'],compass2:['L’aimant au nord fait encore tourner l’aiguille.','The magnet to the north turns the needle again.','يدير المغناطيس الموجود شمالاً الإبرة مجدّداً.'],
+ pendulumShort:['Le pendule court effectue ses allers-retours plus rapidement.','The short pendulum swings back and forth faster.','يتأرجح البندول القصير ذهاباً وإياباً بسرعة أكبر.'],pendulumLong:['Le pendule long oscille plus lentement. Pour les petits écarts, la longueur compte davantage que l’écart initial.','The long pendulum swings more slowly. For small displacements, length matters more than the initial displacement.','يتأرجح البندول الطويل ببطء أكبر. للإزاحات الصغيرة يكون الطول أهم من الإزاحة الأولية.'],
+ salt0:['Dans l’eau du modèle, les ions sont dispersés.','In the model water, ions are dispersed.','في ماء النموذج تكون الأيونات متفرّقة.'],salt1:['Le réseau se reforme : les ions sodium et chlorure alternent.','The lattice reforms: sodium and chloride ions alternate.','تتشكّل الشبكة مجدّداً: تتناوب أيونات الصوديوم والكلوريد.'],
+ sandRemains:['Le sable reste visible au fond : remuer ne le dissout pas.','Sand remains visible at the bottom: stirring does not dissolve it.','يبقى الرمل مرئياً في القاع: التحريك لا يذيبه.'],saltWaiting:['Les grains de sel attendent d’être mélangés à l’eau.','The salt grains are waiting to be mixed into the water.','حبيبات الملح تنتظر أن تختلط بالماء.'],saltDissolved:['Les grains ne sont plus visibles, mais le sel est toujours dans l’eau : il est dissous.','The grains are no longer visible, but the salt is still in the water: it has dissolved.','لم تعد الحبيبات مرئية لكن الملح ما زال في الماء: لقد ذاب.'],
+} as const;
+
+export const VEHICLE_ADVENTURE_TEXT={
+ deliveryTitle:['La livraison du quartier','Neighbourhood delivery','توصيل في الحي'],
+ navigationTitle:['Le passage des bouées','The buoy passage','المرور بين العوامات'],
+ flightTitle:['Le vol des balises','Beacon flight','رحلة المنارات'],
+ siteTitle:['La charge du chantier','Construction site cargo','حمولة الورشة'],
+ roverTitle:['La roche à observer','The observation rock','الصخرة المرصودة'],
+ orbitTitle:['Un message depuis l’espace','A message from space','رسالة من الفضاء'],
+ launchTitle:['Le vol de la fusée','The rocket flight','رحلة الصاروخ'],
+ deliveryGoal:['Choisis le détour libre, conduis le véhicule puis dépose le colis au repère.','Choose the clear detour, drive the vehicle, then unload the parcel at the marker.','اختر الطريق الجانبي الخالي، ثم قد السيارة وضع الطرد عند العلامة.'],
+ navigationGoal:['Prépare la propulsion et suis les bouées pour rejoindre le mouillage.','Prepare the propulsion and follow the buoys to reach the mooring.','جهّز الدفع واتبع العوامات للوصول إلى المرسى.'],
+ flightGoal:['Garde une hauteur libre et une charge équilibrée. Décolle, rejoins la balise puis pose-toi.','Keep a clear flight height and a balanced load. Take off, reach the beacon, then land.','اختر ارتفاعاً آمناً وحمولة متوازنة. أقلع وبلغ المنارة ثم اهبط.'],
+ siteGoal:['Prépare un sol stable et une zone libre. Lève la charge, positionne-la puis dépose-la.','Prepare stable ground and a clear area. Lift the load, position it, then lower it.','جهّز أرضاً ثابتة ومنطقة خالية. ارفع الحمولة وحرّكها ثم ضعها.'],
+ roverGoal:['Choisis un trajet dégagé et prépare l’énergie. Approche la roche pour la scanner.','Choose a clear route and prepare the power. Approach the rock to scan it.','اختر مساراً خالياً وجهّز الطاقة. اقترب من الصخرة لمسحها.'],
+ orbitGoal:['Éclaire les panneaux et libère l’antenne. Oriente le satellite puis transmets ses observations.','Light the panels and clear the antenna. Orient the satellite, then transmit its observations.','أضئ الألواح وأخلِ طريق الهوائي. وجّه القمر الصناعي ثم أرسل رصده.'],
+ launchGoal:['Centre la charge et prépare le carburant. Allume le moteur, monte jusqu’à la balise puis reviens.','Centre the load and prepare the fuel. Ignite the engine, rise to the beacon, then return.','وسّط الحمولة وجهّز الوقود. شغّل المحرك واصعد إلى المنارة ثم عُد.'],
+ deliveryDone:['Colis livré ! Un trajet libre permet d’atteindre la destination.','Parcel delivered! A clear route lets the vehicle reach its destination.','وصل الطرد! يسمح الطريق الخالي ببلوغ الوجهة.'],
+ navigationDone:['Mouillage atteint ! Propulsion et cap guident le bateau entre les bouées.','Mooring reached! Propulsion and heading guide the boat between the buoys.','وصلت إلى المرسى! يوجّه الدفع والاتجاه القارب بين العوامات.'],
+ flightDone:['Atterrissage effectué ! Le vol relie décollage, trajet et retour au sol.','Landed! Flight connects take-off, travel and a return to the ground.','تم الهبوط! يربط الطيران بين الإقلاع والرحلة والعودة إلى الأرض.'],
+ siteDone:['Charge déposée ! On lève avant de déplacer, puis on repose dans une zone libre.','Load delivered! Lift before moving, then lower into a clear area.','وُضعت الحمولة! نرفع قبل النقل ثم ننزل في منطقة خالية.'],
+ roverDone:['Roche observée ! Le rover rejoint sa cible puis collecte des informations à distance.','Rock observed! The rover reaches its target and gathers information remotely.','رُصدت الصخرة! يبلغ المسبار هدفه ويجمع المعلومات عن بُعد.'],
+ orbitDone:['Message reçu ! Les panneaux fournissent l’énergie et l’antenne transmet les observations.','Message received! Panels supply power and the antenna transmits observations.','وصلت الرسالة! توفّر الألواح الطاقة ويرسل الهوائي الرصد.'],
+ launchDone:['Vol terminé ! La poussée fait monter la fusée ; le retour conclut cette mission miniature.','Flight complete! Thrust raises the rocket; the return completes this miniature mission.','انتهت الرحلة! يرفع الدفع الصاروخ وتُكمل العودة هذه المهمة المصغّرة.'],
+ ready:['Prépare ta mission.','Prepare your mission.','جهّز مهمتك.'],
+ prepared:['Tout est prêt : à toi de guider !','Ready: you are in control!','كل شيء جاهز: تولّ القيادة!'],
+ moving:['Observe ton montage en action.','Watch your construction in action.','راقب بناءك أثناء العمل.'],
+ obstacle:['Ce trajet rencontre un obstacle. Cherche le passage libre.','This route meets an obstacle. Find the clear passage.','يوجد عائق في هذا المسار. ابحث عن الممر الخالي.'],
+ energy:['Il faut une source d’énergie disponible pour cette action.','This action needs an available source of power.','تحتاج هذه الحركة إلى مصدر طاقة متاح.'],
+ balance:['Répartis la charge ou choisis un appui stable avant de continuer.','Balance the load or choose stable support before continuing.','وازن الحمولة أو اختر دعامة ثابتة قبل المتابعة.'],
+ clearance:['Dégage la trajectoire avant de continuer.','Clear the path before continuing.','أخلِ المسار قبل المتابعة.'],
+ deliveryRoute:['Itinéraire','Route','المسار'], direct:['Passage encombré','Obstructed passage','ممر فيه عائق'], detour:['Détour libre','Clear detour','طريق جانبي خالٍ'],
+ navigationPower:['Propulsion','Propulsion','الدفع'], stopped:['Au repos','At rest','ساكن'], powered:['Propulsion active','Propulsion on','الدفع يعمل'], wind:['Voile et vent','Sail and wind','الشراع والرياح'], slackSail:['Voile détendue','Slack sail','شراع مرتخٍ'], trimmedSail:['Voile réglée','Trimmed sail','شراع مضبوط'],
+ heading:['Cap','Heading','الاتجاه'], current:['Vers l’obstacle','Towards the obstacle','نحو العائق'], buoys:['Entre les bouées','Between the buoys','بين العوامات'],
+ flightAltitude:['Hauteur de vol','Flight height','ارتفاع الطيران'], low:['Trajet trop bas','Path too low','مسار منخفض جداً'], clearHeight:['Hauteur libre','Clear height','ارتفاع خالٍ'],
+ balanceField:['Charge','Load','الحمولة'], unbalanced:['Charge décentrée','Off-centre load','حمولة غير متمركزة'], balanced:['Charge centrée','Centred load','حمولة متمركزة'],
+ siteGround:['Appui au sol','Ground support','الاستناد إلى الأرض'], sloped:['Appui incliné','Sloped support','دعامة مائلة'], stable:['Appui stable','Stable support','دعامة ثابتة'],
+ siteClearance:['Zone de travail','Work area','منطقة العمل'], occupied:['Zone encombrée','Obstructed area','منطقة فيها عوائق'], free:['Zone libre','Clear area','منطقة خالية'],
+ roverGround:['Trajet du rover','Rover route','مسار المسبار'], rough:['Obstacle rocheux','Rock obstacle','عائق صخري'], smooth:['Passage dégagé','Clear passage','ممر خالٍ'],
+ energyField:['Énergie','Power','الطاقة'], empty:['Réserve vide','Empty reserve','مخزون فارغ'], charged:['Réserve prête','Reserve ready','المخزون جاهز'],
+ orbitSun:['Panneaux solaires','Solar panels','الألواح الشمسية'], shade:['Dans l’ombre','In the shade','في الظل'], sunlight:['Éclairés','In sunlight','مضاءة'], antennaField:['Antenne','Antenna','الهوائي'], antennaBlocked:['Trajet masqué','Blocked path','مسار محجوب'], antennaClear:['Trajet dégagé','Clear path','مسار خالٍ'],
+ launchPayload:['Charge utile','Payload','الحمولة النافعة'], fuelField:['Carburant','Fuel','الوقود'], fuelEmpty:['Réservoir vide','Empty tank','خزان فارغ'], fuelReady:['Réservoir prêt','Tank ready','الخزان جاهز'],
+ prepare:['Préparer','Prepare','تجهيز'], deliver:['Conduire','Drive','قيادة'], unload:['Déposer','Unload','تنزيل'], sail:['Naviguer','Navigate','إبحار'], dock:['Amarrer','Moor','رسوّ'], takeoff:['Décoller','Take off','إقلاع'], fly:['Rejoindre','Travel','وصول'], land:['Atterrir','Land','هبوط'], lift:['Lever','Lift','رفع'], position:['Positionner','Position','تموضع'], lower:['Poser','Lower','وضع'], approach:['Approcher','Approach','اقتراب'], scan:['Scanner','Scan','مسح'], orient:['Orienter','Orient','توجيه'], transmit:['Transmettre','Transmit','إرسال'], ignite:['Allumer','Ignite','تشغيل'], launch:['Monter','Rise','صعود'], return:['Revenir','Return','عودة'], replay:['Rejouer','Replay','إعادة'],
+ touch:['Tu peux aussi toucher ton véhicule dans la scène pour lancer la prochaine action.','You can also tap your vehicle in the scene to start the next action.','يمكنك أيضاً لمس مركبتك في المشهد لبدء الخطوة التالية.'],
+} as const;
+
+export const WORKSHOP_ACCESS_TEXT={instruction:['Consigne','Instruction','التعليمات'],sound:['Son actif','Sound on','الصوت مفعّل'],muted:['Son coupé','Sound off','الصوت مكتوم'],catalog:['Autre atelier','Another workshop','ورشة أخرى']} as const;
+
+export const MATH_QUIZ_TEXT={prompt:['Que permet de comprendre ce modèle mathématique ?','What does this mathematical model help us understand?','ماذا يساعدنا هذا النموذج الرياضي على فهمه؟'],distractorA:['La couleur seule détermine toujours la quantité.','Colour alone always determines the quantity.','اللون وحده يحدد الكمية دائماً.'],distractorB:['La taille du plateau change le résultat du même calcul.','The size of the platform changes the result of the same calculation.','يغيّر حجم المنصة نتيجة العملية الحسابية نفسها.']} as const;
+
+export const RAIL_WORKSHOP_TEXT={
+ frame:{name:['Châssis ferroviaire','Railway frame','هيكل القطار'],hint:['Le cadre porte la caisse et relie les essieux du train.','The frame supports the body and connects the train axles.','يحمل الهيكل جسم القطار ويربط محاوره.']},
+ axle:{name:['Essieu ferroviaire','Railway axle','محور القطار'],hint:['Cet axe traverse le châssis et relie deux roues en acier.','This shaft crosses the frame and links two steel wheels.','يعبر هذا العمود الهيكل ويربط عجلتين فولاذيتين.']},
+ wheel:{name:['Roue en acier','Steel wheel','عجلة فولاذية'],hint:['La bande de roulement en acier repose sur le rail.','The steel tread rests on the rail.','يرتكز سطح العجلة الفولاذي على القضيب.']},
+ boiler:{name:['Chaudière longitudinale','Longitudinal boiler','غلاية طولية'],hint:['Le grand cylindre contient l’eau chauffée pour produire la vapeur.','The large cylinder contains water heated to produce steam.','تحتوي الأسطوانة الكبيرة على الماء المسخّن لإنتاج البخار.']},
+ cab:{name:['Cabine du mécanicien','Driver’s cab','مقصورة السائق'],hint:['Le mécanicien surveille les commandes depuis cette cabine.','The driver monitors the controls from this cab.','يراقب السائق أدوات التحكم من هذه المقصورة.']},
+ roof:{name:['Toiture de cabine','Cab roof','سقف المقصورة'],hint:['La toiture protège la cabine et couvre la caisse.','The roof protects the cab and covers the body.','يحمي السقف المقصورة ويغطي الجسم.']},
+ window:{name:['Vitre de cabine','Cab window','نافذة المقصورة'],hint:['Cette ouverture vitrée laisse voir la voie devant le train.','This glazed opening gives a view of the track ahead.','تتيح هذه النافذة رؤية السكة أمام القطار.']},
+ chimney:{name:['Cheminée à vapeur','Steam chimney','مدخنة البخار'],hint:['La cheminée évacue les gaz au-dessus de la chaudière.','The chimney releases gases above the boiler.','تُخرج المدخنة الغازات فوق الغلاية.']},
+ tender:{name:['Réserve du tender','Tender reserve','خزان عربة التموين'],hint:['Le tender transporte le charbon et l’eau derrière la locomotive.','The tender carries coal and water behind the locomotive.','تحمل عربة التموين الفحم والماء خلف القاطرة.']},
+ coal:{name:['Chargement de charbon','Coal load','حمولة الفحم'],hint:['Le charbon stocké dans le tender alimente le foyer.','Coal stored in the tender fuels the firebox.','يغذّي الفحم المخزّن في عربة التموين موقد القاطرة.']},
+ rod:{name:['Bielle d’accouplement','Coupling rod','قضيب الربط'],hint:['La bielle relie les roues motrices de chaque côté de la locomotive.','The rod links the driving wheels on each side of the locomotive.','يربط القضيب عجلات الدفع على كل جانب من القاطرة.']},
+ piston:{name:['Cylindre moteur','Power cylinder','أسطوانة المحرّك'],hint:['La vapeur pousse le piston qui entraîne les roues par une bielle.','Steam pushes the piston, which drives the wheels through a rod.','يدفع البخار المكبس الذي يدير العجلات عبر قضيب.']},
+ coupling:{name:['Attelage ferroviaire','Rail coupling','وصلة القطار'],hint:['Cet attelage relie deux éléments de la rame.','This coupling links two units of the train.','تربط هذه الوصلة بين وحدتين من القطار.']},
+ nose:{name:['Nez de motrice','Power-car nose','مقدمة العربة المحرّكة'],hint:['Le nez prolonge la caisse de la motrice au-dessus des rails.','The nose extends the power-car body above the rails.','تمتد المقدمة من جسم العربة المحرّكة فوق القضبان.']},
+ body:{name:['Caisse de rame','Train body','جسم عربة القطار'],hint:['La longue caisse repose sur plusieurs essieux ferroviaires.','The long body rests on several railway axles.','يرتكز الجسم الطويل على عدة محاور للقطار.']},
+ bogie:{name:['Cadre de bogie','Bogie frame','إطار مجموعة العجلات'],hint:['Le bogie regroupe deux essieux sous la caisse du train.','The bogie groups two axles under the train body.','يجمع هذا الإطار محورين تحت جسم القطار.']},
+ door:{name:['Porte voyageurs','Passenger door','باب الركاب'],hint:['Les portes latérales donnent accès à la rame à l’arrêt.','Side doors give access to the train when it is stopped.','تتيح الأبواب الجانبية ركوب القطار عند توقفه.']},
+ pantograph:{name:['Pantographe','Pantograph','مجمّع التيار'],hint:['Le pantographe capte le courant de la ligne électrique aérienne.','The pantograph collects current from the overhead power line.','يجمع هذا الجهاز التيار من الخط الكهربائي العلوي.']},
+ age:['{count} pièces','{count} parts','{count} قطعة'],
+ tier:['Expert ferroviaire','Railway expert','خبير السكك الحديدية'],
+} as const;
+
+export {MATH_TEXT} from './mathText';
+
+export const RAIL_ADVENTURE_TEXT={
+ title:['Le voyage sur les rails','The railway journey','رحلة على القضبان'],
+ goal:['Vérifie la voie et choisis une allure prudente. Quitte la gare puis arrête le train au repère.','Check the track and choose a cautious speed. Leave the station, then stop the train at the marker.','تحقّق من السكة واختر سرعة حذرة. غادر المحطة ثم أوقف القطار عند العلامة.'],
+ done:['Train arrivé ! Les roues en acier suivent les rails et chaque essieu relie deux roues.','Train arrived! Steel wheels follow the rails and each axle links two wheels.','وصل القطار! تتبع العجلات الفولاذية القضبان ويربط كل محور عجلتين.'],
+ signal:['État de la voie','Track condition','حالة السكة'], speed:['Allure','Speed','السرعة'], busy:['Voie occupée','Occupied track','سكة مشغولة'], clear:['Voie libre','Clear track','سكة خالية'], fast:['Allure trop rapide','Speed too high','سرعة عالية جداً'], cautious:['Allure prudente','Cautious speed','سرعة حذرة'], depart:['Quitter la gare','Leave station','مغادرة المحطة'], stop:['Arrêter en gare','Stop at station','توقّف في المحطة'],
+} as const;
+
+export const RAIL_MAGLEV_TEXT={
+ shoe:{name:['Patin de guidage magnétique','Magnetic guide shoe','حذاء التوجيه المغناطيسي'],hint:['Ce support guide la rame le long de la voie sans roues en acier au contact des rails.','This support guides the train along the guideway without steel wheels touching rails.','يوجّه هذا الحامل القطار على المسار دون عجلات فولاذية تلامس القضبان.']},
+ done:['Rame arrivée ! Le guidage magnétique maintient la rame au-dessus de sa voie dédiée.','Train arrived! Magnetic guidance keeps the train above its dedicated guideway.','وصل القطار! يحافظ التوجيه المغناطيسي على القطار فوق مساره المخصّص.'],
+} as const;

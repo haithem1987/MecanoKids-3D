@@ -1,3 +1,9 @@
+## Lot du 8 novembre — catalogue jouable, maths et retours enfant
+
+157 ateliers ont une activité après construction ; 17 aventures, 6 nouveaux ateliers mathématiques (18 défis), 11 nouveaux essais scientifiques, 5 trains corrigés et bouton de silence commun. Navigation vérifiée sur tout le catalogue et continuation selon l'aventure sélectionnée. Le dernier atelier propose toujours Autre atelier. Pas de réagencement téléphone.
+
+666 tests, TypeScript, build, contrôles navigateur FR/EN/AR et test maths hors ligne. Rapports dans `docs/qa/2026-11-08-*.md`. Dernier déploiement demandé : `fbb9bd8` (avant ce lot). Les nouveautés ne sont pas automatiquement déployées. Budget JS initial toujours dépassé (~637 Ko gzip), validation physique Android/iPad/Pixel à poursuivre.
+
 ## Évolution du 7 novembre — aventures et découvertes
 
 Cinq activités après construction dans la scène commune, dix variantes de réactions marines, modes guidé/réparation/expert, trois aventures de trois étapes et carnet local par profil. Entrée depuis catalogue et réglages. Pas de modification de l’agencement téléphone, à tester plus tard sur Pixel 10.

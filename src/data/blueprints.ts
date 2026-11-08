@@ -1,3 +1,4 @@
+import {createMathBlueprints} from './mathBlueprints';
 import {
   DifficultyTier,
   PartAnimationKind,
@@ -15,6 +16,7 @@ import { FLEET_PHYSIQUE_SEEDS } from './fleetPhysique';
 import { VIRTUAL_LAB_BLUEPRINTS } from './virtualLabBlueprints';
 import { MASTER_BLUEPRINTS } from './masterBlueprints';
 import { HERITAGE_BLUEPRINTS } from './heritageBlueprints';
+import {applyRailBlueprint} from './railBlueprints';
 
 const HANDCRAFTED_BLUEPRINTS: VehicleBlueprint[] = [
   // =========================================================================
@@ -1934,5 +1936,5 @@ function assemble100Blueprints(): VehicleBlueprint[] {
   }));
 }
 
-export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = assemble100Blueprints();
+export const VEHICLE_BLUEPRINTS: VehicleBlueprint[] = [...assemble100Blueprints(),...createMathBlueprints(VehicleCategory.MATHS)].map((bp,index)=>applyRailBlueprint({...bp,stageNumber:index+1}));
 

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { PartShapeKind, PartSpec, VisualStyleMode } from '../types/game';
 import { createPartMaterialSet, PartMaterialSet } from './materials';
 import { addStemGeometry } from './stemGeometries';
+import { createRailWheelset, createHighSpeedRailNose } from './railGeometry';
 
 function makeRoundedRectShape(w: number, h: number, r: number): THREE.Shape {
   const shape = new THREE.Shape();
@@ -171,6 +172,7 @@ export function buildPartMeshGroup(
     }
 
     case PartShapeKind.WHEEL_AXLE: {
+      if (spec.railWheelset) { root.add(createRailWheelset(spec, mats)); break; }
       const axleLen = sx;
       const wheelRadius = sy * 0.5;
       const wheelWidth = Math.max(0.24, sz * 0.36);
@@ -2203,7 +2205,8 @@ export function buildPartMeshGroup(
     }
 
     default: {
-      if (!addStemGeometry(root, spec, mats)) {
+      if (spec.railNose) { root.add(createHighSpeedRailNose(spec, mats)); }
+      else if (!addStemGeometry(root, spec, mats)) {
         const box = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.04), mats.primary);
         box.castShadow = true;
         root.add(box);

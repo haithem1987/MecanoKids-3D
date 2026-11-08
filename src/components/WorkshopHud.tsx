@@ -1,9 +1,10 @@
+import {supportsWorkshopPlay} from '../data/workshopActivities';
 import {WorkshopPlayModes} from './WorkshopPlayModes';
 import { PhoneWorkshopTools } from './PhoneWorkshopTools';
-import {Settings2,Undo2,Volume2,Play,Sparkles,ArrowRight,Crosshair} from 'lucide-react';
+import {Settings2,Undo2,Volume2,VolumeX,AudioLines,Play,Sparkles,ArrowRight,Crosshair} from 'lucide-react';
 import { formatStopwatchMs } from '../utils/speedrun';
 import React from 'react';
-import { EXPERIENCE_TEXT, PHONE_HUD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
+import { WORKSHOP_ACCESS_TEXT, EXPERIENCE_TEXT, PHONE_HUD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
 import {
   CameraPreset,
   LanguageCode,
@@ -155,7 +156,8 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
       {([['iso',t.camIso],['front',t.camFront],['side',t.camSide],['top',t.camTop]] as const).map(([preset,label])=><button key={preset} type="button" aria-pressed={cameraPreset===preset} onClick={()=>onSelectCamera(preset as CameraPreset)} className={`${button} w-16 px-1 aria-pressed:bg-sky-100`}>{label}</button>)}
       <button type="button" onClick={()=>onSelectCamera(cameraPreset)} aria-label={t.recenterBtn} className={button}><Crosshair className="h-6 w-6" aria-hidden /></button>
       <button type="button" disabled={!canUndo} onClick={onUndo} aria-label={t.undoBtn} className={`${button} disabled:opacity-40`}><Undo2 className="h-6 w-6" aria-hidden /></button>
-      <button type="button" onClick={onReplayInstruction} aria-label={t.replayInstructionAria} className={button}><Volume2 className="h-6 w-6" aria-hidden /></button>
+      <button type="button" onClick={onReplayInstruction} aria-label={t.replayInstructionAria} className={button}><AudioLines className="h-6 w-6" aria-hidden /><span className="text-[10px]">{WORKSHOP_ACCESS_TEXT.instruction[locale]}</span></button>
+      <button type="button" data-workshop-mute aria-pressed={muted} aria-label={muted?t.unmuteAria:t.muteAria} onClick={onToggleMute} className={button}>{muted?<VolumeX className="h-6 w-6" aria-hidden/>:<Volume2 className="h-6 w-6" aria-hidden/>}<span className="block text-[10px]">{WORKSHOP_ACCESS_TEXT[muted?'muted':'sound'][locale]}</span></button>
     </nav>
     <details ref={settingsRef} onKeyDown={event=>{if(event.key==='Escape')event.currentTarget.open=false;}} className={`hud-settings pointer-events-auto absolute bottom-2 ${side==='right'?'start-2':'end-2'}`}>
       <summary className={`${button} flex w-16 cursor-pointer items-center justify-center text-xl`} aria-label={t.hudTools}><Settings2 className="h-6 w-6" aria-hidden /><span className="phone-tool-label">{PHONE_HUD_TEXT.settings[locale]}</span></summary>
@@ -187,9 +189,10 @@ export const WorkshopHud: React.FC<WorkshopHudProps> = ({
     </details>
     {!isStageCompleted&&(statusMessage||diagnosticInfo)&&<div role="status" aria-live="polite" className="hud-status pointer-events-none absolute bottom-3 start-1/2 w-[min(28rem,calc(100%-16rem))] rounded-xl bg-slate-900/90 px-3 py-2 text-center text-xs text-white">{diagnosticInfo?t.diagnosticActiveBanner(diagnosticInfo.faultyPartIds.length,diagnosticInfo.missingLeft):statusMessage}</div>}
     {isStageCompleted&&<div className="hud-completion pointer-events-auto absolute bottom-2 flex justify-center gap-1">
-      {!blueprint.staticStructure&&!blueprint.virtualLab&&blueprint.id!=='master-drawbridge'&&<button type="button" aria-label={testDriveActive?t.testDriveActiveBtn:t.testDriveBtn} title={t.testDriveBtn} className={`${button} bg-amber-50 text-xl`} onClick={onToggleTestDrive}><Play className="h-6 w-6" aria-hidden /></button>}
+      {!blueprint.staticStructure&&!supportsWorkshopPlay(blueprint)&&<button type="button" aria-label={testDriveActive?t.testDriveActiveBtn:t.testDriveBtn} title={t.testDriveBtn} className={`${button} bg-amber-50 text-xl`} onClick={onToggleTestDrive}><Play className="h-6 w-6" aria-hidden /></button>}
       <button type="button" aria-label={t.discoveryBtn} title={t.discoveryBtn} className={`${button} text-xl`} onClick={onOpenVictoryModal}><Sparkles className="h-6 w-6" aria-hidden /></button>
-      {(hasNextStage||blueprint.isDailyBonus)&&<button type="button" aria-label={t.nextStageBtn} title={t.nextStageBtn} className={`${button} bg-sky-100 text-xl`} onClick={onGoNextStage}><ArrowRight className="h-6 w-6 rtl:-scale-x-100" aria-hidden /></button>}
+      {(hasNextStage||blueprint.isDailyBonus)&&<button data-workshop-next type="button" aria-label={t.nextStageBtn} title={t.nextStageBtn} className={`${button} bg-sky-100 text-xl`} onClick={onGoNextStage}><ArrowRight className="mx-auto h-6 w-6 rtl:-scale-x-100" aria-hidden /><span className="block text-xs">{t.nextStageBtn}</span></button>}
+      <button type="button" data-workshop-catalog className={button} onClick={onOpenCatalog}>{WORKSHOP_ACCESS_TEXT.catalog[locale]}</button>
     </div>}
   </div>;
 };

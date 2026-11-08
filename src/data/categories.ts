@@ -1,7 +1,7 @@
 import { UI_TRANSLATIONS, UIStrings } from '../i18n/translations';
 import { LanguageCode, VehicleCategory } from '../types/game';
 
-type CategoryLabelKey = keyof Pick<UIStrings, 'filterCars' | 'filterBoats' | 'filterPlanes' | 'filterConstruction' | 'filterSpace' | 'filterAerospace' | 'filterElectronics' | 'filterChemistry' | 'filterPhysics' | 'filterNature' | 'filterHistory'>;
+type CategoryLabelKey = keyof Pick<UIStrings, 'filterCars' | 'filterBoats' | 'filterPlanes' | 'filterConstruction' | 'filterSpace' | 'filterAerospace' | 'filterElectronics' | 'filterChemistry' | 'filterPhysics' | 'filterNature' | 'filterHistory' | 'filterMaths'>;
 export const CATEGORY_META: Record<VehicleCategory, { labelKey: CategoryLabelKey; emoji: string; color: string; gradient: string }> = {
   [VehicleCategory.CAR]: { labelKey: 'filterCars', emoji: '🚗', color: '#f59e0b', gradient: 'from-sky-500 to-blue-600' },
   [VehicleCategory.BOAT]: { labelKey: 'filterBoats', emoji: '⛵', color: '#0ea5e9', gradient: 'from-teal-500 to-cyan-600' },
@@ -13,6 +13,7 @@ export const CATEGORY_META: Record<VehicleCategory, { labelKey: CategoryLabelKey
   [VehicleCategory.CHEMISTRY]: { labelKey: 'filterChemistry', emoji: '⚗️', color: '#a855f7', gradient: 'from-purple-500 to-violet-600' },
   [VehicleCategory.PHYSICS]: { labelKey: 'filterPhysics', emoji: '🧲', color: '#ec4899', gradient: 'from-pink-500 to-rose-600' },
   [VehicleCategory.HISTORY]: { labelKey: 'filterHistory', emoji: '🏰', color: '#a16207', gradient: 'from-amber-600 to-stone-600' },
+  [VehicleCategory.MATHS]: { labelKey: 'filterMaths', emoji: '🔢', color: '#0891b2', gradient: 'from-cyan-500 to-blue-600' },
   [VehicleCategory.NATURE]: { labelKey: 'filterNature', emoji: '🌱', color: '#16a34a', gradient: 'from-green-500 to-teal-600' },
 };
 export const CATEGORIES = Object.values(VehicleCategory);

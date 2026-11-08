@@ -13,6 +13,13 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [x] JEU-AVENTURES-CATALOGUE — Généraliser le jeu après assemblage et ouvrir les maths (8 novembre)
+- 157 ateliers jouables après assemblage, 111 véhicules répartis en huit familles, onze nouveaux essais scientifiques et deux expériences de patrimoine.
+- Dix-sept aventures avec recherche/filtres et étapes « construit / essai réussi », reprise cohérente de l'aventure, accès à un autre atelier à toute fin de montage.
+- Cinq trains corrigés sur voies dédiées ; silence commun aux effets et voix, réel bouton distinct de la consigne.
+- Six ateliers mathématiques (dix-huit défis) fondés sur les programmes français CP–sixième, catégorie et deux aventures dédiées.
+- Validation : 666 tests, navigation des 157 ateliers, parcours FR/EN/AR, son réel, build et hors-ligne. Rapports : `docs/qa/2026-11-08-generalisation-aventures.md`, `docs/qa/2026-11-08-mathematiques.md`, `docs/qa/2026-11-08-science-audio.md`.
+
 ### [x] JEU-AVENTURES — Donner une suite jouable aux constructions (7 novembre)
 - Cinq montages ont des activités sur la scène principale : livraison au portique, visite du château/donjon/temple, convoi du viaduc. Les essais existants alimentent aussi le carnet.
 - Dix variantes de réactions marines, jalons variables et célébrations des essais réussis sans répétition rapide.

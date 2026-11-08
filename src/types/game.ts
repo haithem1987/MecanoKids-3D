@@ -19,6 +19,7 @@ export enum VehicleCategory {
   PHYSICS = 'physique',
   NATURE = 'vivant-et-terre',
   HISTORY = 'histoire',
+  MATHS = 'mathematiques',
 }
 
 export enum DifficultyTier {
@@ -186,6 +187,9 @@ export interface PartSpec {
   archStone?: { innerRadius: number; outerRadius: number; startAngle: number; endAngle: number };
   archSpandrel?: { radius: number; halfWidth: number; side: -1 | 1 };
   temporarySupport?: true;
+  /** Steel wheels with flanges, connected by a railway axle rather than road tyres. */
+  railWheelset?: true;
+  railNose?: true;
 }
 
 export interface DiscoveryFacts {

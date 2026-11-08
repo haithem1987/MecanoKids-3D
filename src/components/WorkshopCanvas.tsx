@@ -1,12 +1,11 @@
-import {ConstructionPlayTrial} from './ConstructionPlayTrial';
-import {getConstructionPlayKind} from '../data/constructionPlay';
+import {RailWorkshopTrack} from './RailWorkshopTrack';
+import {isRailBlueprint} from '../data/railBlueprints';
+import {WorkshopPostAssemblyPlay} from './WorkshopPostAssemblyPlay';
+import {supportsWorkshopPlay} from '../data/workshopActivities';
 import { measureFloatingFraming } from '../utils/floatingFraming';
-import { AqueductTrial } from './AqueductTrial';
 import { getFittedCameraPosition, getViewportCameraScale, getPartFocusDistance } from '../utils/cameraFraming';
 import { isAssemblyComplete } from '../utils/assemblyValidation';
-import { BeaconTrial } from './BeaconTrial';
 import { getAxialRotationPose } from '../utils/axialRotation';
-import { WatermillTrial } from './WatermillTrial';
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -691,7 +690,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
           currentProps.blueprint.parts.length > 0 &&
           currentProps.faultyPartIds.length === 0;
 
-        const canShowcase = isCompleted && !currentProps.blueprint.interactiveTrial && !getConstructionPlayKind(currentProps.blueprint.id) && currentProps.blueprint.id !== DRAWBRIDGE_ID && eng.assembledGroup.visible && !eng.draggedMesh;
+        const canShowcase = isCompleted && !supportsWorkshopPlay(currentProps.blueprint) && eng.assembledGroup.visible && !eng.draggedMesh;
         const isTestDrive = canShowcase && currentProps.testDriveActive;
 
         if (eng.thematicArtifacts) {
@@ -866,7 +865,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
         const hasActiveSparks = eng.sparks.some((s) => s.active);
         hasContinuousAnim =
           isTestDrive ||
-          (isCompleted && !currentProps.blueprint.interactiveTrial && !getConstructionPlayKind(currentProps.blueprint.id) && currentProps.blueprint.id !== DRAWBRIDGE_ID && !eng.draggedMesh) ||
+          (isCompleted && !supportsWorkshopPlay(currentProps.blueprint) && !eng.draggedMesh) ||
           Boolean(isCompleted && currentProps.blueprint.interactiveTrial === 'watermill' && eng.mechanismRate > 0 && !eng.reducedMotion) ||
           (eng.draggedMesh !== null && currentProps.stagedPartId !== null && currentProps.activeDragPartId === null) ||
           eng.cameraTransition.active ||
@@ -1032,8 +1031,10 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
     if (!eng) return;
 
     const topMat = eng.turntableTopMesh.material as THREE.MeshStandardMaterial;
+    const themed=environmentMode==='auto_thematic'&&!isRailBlueprint(blueprint.id);
+    topMat.map?.dispose();
     topMat.map =
-      environmentMode === 'auto_thematic'
+      themed
         ? createThematicTurntableTexture(blueprint.category, eng.maxAnisotropy)
         : createTurntableTexture(visualStyle, eng.maxAnisotropy);
     topMat.needsUpdate = true;
@@ -1043,14 +1044,14 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
 
     const artifacts = buildThematicEnvironment(
       blueprint.category,
-      environmentMode === 'auto_thematic',
+      themed,
     );
     artifacts.testDriveFxGroup.visible = false;
     eng.thematicContainer.add(artifacts.propsGroup);
     eng.thematicContainer.add(artifacts.testDriveFxGroup);
     eng.thematicArtifacts = artifacts;
     eng.wakeRender();
-  }, [blueprint.category, environmentMode, visualStyle]);
+  }, [blueprint.id, blueprint.category, environmentMode, visualStyle]);
 
   // 2c. Apply workshop ground theme when workshopTheme changes
   useEffect(() => {
@@ -1572,22 +1573,8 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       {/* Isolated WebGL mount container */}
       {/* touch-action:none prevents browser scroll/zoom from stealing pointer events during part drag */}
       <div ref={canvasMountRef} className="w-full h-full" style={{ touchAction: 'none' }} />
-      {getConstructionPlayKind(blueprint.id) && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && <ConstructionPlayTrial key={blueprint.id} engine={engineRef} language={language} blueprintId={blueprint.id} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
-      {blueprint.interactiveTrial === 'aqueduct' && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && (
-        <AqueductTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
-      )}
-      {blueprint.interactiveTrial === 'beacon' && placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && (
-        <BeaconTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
-      )}
-      {blueprint.interactiveTrial === 'watermill' && placedPartIds.length === blueprint.parts.length &&
-        !faultyPartIds.length && !explodedFactor && !webglLost && (
-          <WatermillTrial engine={engineRef} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
-        )}
-      {blueprint.id === DRAWBRIDGE_ID && placedPartIds.length === blueprint.parts.length &&
-        !faultyPartIds.length && !explodedFactor && !webglLost && (
-          <DrawbridgeTrial engine={engineRef} language={language}
-            sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />
-        )}
+      {isRailBlueprint(blueprint.id) && !isAssemblyComplete(blueprint,placedPartIds) && !webglLost && <RailWorkshopTrack engine={engineRef} blueprintId={blueprint.id} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
+      {placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && <WorkshopPostAssemblyPlay key={blueprint.id} engine={engineRef} blueprint={blueprint} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
 
       {/* Accessible Semantic Drag & Snap Feedback Overlay (no backdrop-blur over WebGL) */}
       {dragHud && (

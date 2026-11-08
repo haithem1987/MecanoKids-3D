@@ -1,0 +1,30 @@
+import {MathActivityTrial} from './MathActivityTrial';
+import {getMathActivityKind} from '../data/mathActivities';
+import type {ComponentProps} from 'react';
+import type {LanguageCode,VehicleBlueprint} from '../types/game';
+import {getConstructionPlayKind} from '../data/constructionPlay';
+import {getHeritageDiscoveryKind} from '../data/heritageDiscoveries';
+import {getScienceDiscoveryKind} from '../data/scienceDiscovery';
+import {getVehicleAdventureKind} from '../data/vehicleAdventures';
+import {ConstructionPlayTrial} from './ConstructionPlayTrial';
+import {HeritageDiscoveryTrial} from './HeritageDiscoveryTrial';
+import {ScienceDiscoveryTrial} from './ScienceDiscoveryTrial';
+import {VehicleAdventureTrial} from './VehicleAdventureTrial';
+import {AqueductTrial} from './AqueductTrial';
+import {BeaconTrial} from './BeaconTrial';
+import {WatermillTrial} from './WatermillTrial';
+import {DrawbridgeTrial,DRAWBRIDGE_ID} from './DrawbridgeTrial';
+type Scene=NonNullable<ComponentProps<typeof VehicleAdventureTrial>['engine']['current']>&NonNullable<ComponentProps<typeof ConstructionPlayTrial>['engine']['current']>&NonNullable<ComponentProps<typeof ScienceDiscoveryTrial>['engine']['current']>&NonNullable<ComponentProps<typeof WatermillTrial>['engine']['current']>;
+export function WorkshopPostAssemblyPlay({engine,blueprint,language,sceneRevision}:{engine:{current:Scene|null};blueprint:VehicleBlueprint;language:LanguageCode;sceneRevision:string}){
+ const common={engine,language,sceneRevision},blueprintId=blueprint.id;
+ if(getMathActivityKind(blueprintId))return <MathActivityTrial {...common} blueprintId={blueprintId}/>;
+ if(getHeritageDiscoveryKind(blueprintId))return <HeritageDiscoveryTrial {...common} blueprintId={blueprintId}/>;
+ if(getScienceDiscoveryKind(blueprintId))return <ScienceDiscoveryTrial {...common} blueprintId={blueprintId}/>;
+ if(getVehicleAdventureKind(blueprint))return <VehicleAdventureTrial {...common} blueprint={blueprint}/>;
+ if(getConstructionPlayKind(blueprintId))return <ConstructionPlayTrial {...common} blueprintId={blueprintId}/>;
+ if(blueprintId===DRAWBRIDGE_ID)return <DrawbridgeTrial {...common}/>;
+ if(blueprint.interactiveTrial==='aqueduct')return <AqueductTrial {...common}/>;
+ if(blueprint.interactiveTrial==='beacon')return <BeaconTrial {...common}/>;
+ if(blueprint.interactiveTrial==='watermill')return <WatermillTrial {...common}/>;
+ return null;
+}

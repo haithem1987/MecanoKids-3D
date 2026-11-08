@@ -81,4 +81,19 @@ describe('SpeechNarrator', () => {
     const { speechEngine } = await import('./speech');
     expect(speechEngine.isSupported()).toBe(true);
   });
+  it('mute cancels a native utterance immediately and prevents replay until unmuted', async()=>{
+    const synth=setupSpeech();synth.speak.mockImplementation(()=>{});
+    const {speechEngine}=await import('./speech');const {setWorkshopAudioMuted}=await import('../audio/audioContext');
+    speechEngine.speak('active','Bonjour','fr');expect(speechEngine.getSnapshot().isSpeaking).toBe(true);
+    setWorkshopAudioMuted(true);expect(speechEngine.getSnapshot().isSpeaking).toBe(false);expect(synth.cancel).toHaveBeenCalledTimes(2);
+    const count=synth.speak.mock.calls.length;speechEngine.replay();expect(synth.speak).toHaveBeenCalledTimes(count);
+    setWorkshopAudioMuted(false);speechEngine.replay();expect(synth.speak).toHaveBeenCalledTimes(count+1);speechEngine.stop();
+  });
+  it('voice volume zero cancels speech and cannot be bypassed by manual playback',async()=>{
+    const synth=setupSpeech();synth.speak.mockImplementation(()=>{});const {speechEngine}=await import('./speech');
+    speechEngine.speak('voice','Hello','en');speechEngine.setVoiceVolume(0);expect(speechEngine.getSnapshot().isSpeaking).toBe(false);
+    const count=synth.speak.mock.calls.length;speechEngine.speak('manual','Hello','en');expect(synth.speak).toHaveBeenCalledTimes(count);
+    speechEngine.setVoiceVolume(.5);speechEngine.speak('manual','Hello','en');expect(synth.speak).toHaveBeenCalledTimes(count+1);speechEngine.stop();
+  });
+
 });

@@ -1,6 +1,6 @@
 export type ConstructionPlayKind = 'gantry' | 'castle' | 'temple' | 'truss';
 const kinds: Readonly<Record<string, ConstructionPlayKind>> = {
- 'expansion-gantry':'gantry', 'expansion-castle':'castle', 'expansion-keep':'castle',
+ 'master-bridge':'truss', 'expansion-gantry':'gantry', 'expansion-castle':'castle', 'expansion-keep':'castle',
  'expansion-temple':'temple', 'expansion-truss':'truss',
 };
 export const getConstructionPlayKind=(blueprintId:string):ConstructionPlayKind|undefined=>kinds[blueprintId];
