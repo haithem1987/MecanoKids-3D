@@ -8,13 +8,13 @@ try{
  for(const language of ['fr','en','ar']){
   if(process.env.OCTO_QA_LANGUAGE&&process.env.OCTO_QA_LANGUAGE!==language)continue;
   const touch=language==='en',page=await browser.newPage({viewport:{width:touch?1024:1280,height:900},hasTouch:touch,reducedMotion:'reduce'}),errors=[];page.on('pageerror',error=>errors.push(error.message));page.setDefaultTimeout(12000);
-  await page.goto('http://127.0.0.1:7302/?admin=1');
+  await page.goto('http://127.0.0.1:7302/?admin=1&mathPrototypes=1');
   const seed=await page.evaluate(async language=>{const s=await import('/src/utils/storage.ts'),{VEHICLE_BLUEPRINTS}=await import('/src/data/blueprints.ts');const progress=s.createDefaultProgress(language,true);progress.ageProfile='8-10';const profile=s.createNewPlayerProfile({name:'Math QA',progressOverride:progress});return{key:s.PROFILES_STORAGE_KEY,store:JSON.stringify({activeProfileId:profile.id,profiles:[profile]}),profileId:profile.id,blueprints:VEHICLE_BLUEPRINTS.filter(bp=>bp.id.startsWith('math-')).map(bp=>({id:bp.id,category:bp.category,kind:bp.id.slice(5),parts:bp.parts.map(part=>part.id)}))};},language);
   assert.equal(seed.blueprints.length,6);
   await page.addInitScript(({key,store})=>{if(!sessionStorage.getItem('math-qa-seed')){localStorage.setItem(key,store);sessionStorage.setItem('math-qa-seed','1');}},seed);await page.reload();
   const activate=locator=>touch?locator.tap():locator.click();
   for(const bp of seed.blueprints){
-   if(bp.kind==='addition')continue; // Actual assembly lesson: scripts/test-addition-bridge.mjs
+   if(bp.kind==='addition'||bp.kind==='groups')continue; // Actual assembly lesson: scripts/test-addition-bridge.mjs
    if(process.env.OCTO_QA_MODEL&&process.env.OCTO_QA_MODEL!==bp.id)continue;
    await activate(page.locator(`[data-catalog-world="${bp.category}"]`));await activate(page.locator(`[data-catalog-stage="${bp.id}"]`));
    const workbench=page.locator(`[data-workbench="${bp.id}"]`),canvas=workbench.locator('canvas');await canvas.waitFor();

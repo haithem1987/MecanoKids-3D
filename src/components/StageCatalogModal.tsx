@@ -16,7 +16,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { EXPERIENCE_TEXT, CATALOG_BROWSE_TEXT, LOCAL_ADMIN_LABEL, MASTER_BUILD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
+import { MATH_TEXT, EXPERIENCE_TEXT, CATALOG_BROWSE_TEXT, LOCAL_ADMIN_LABEL, MASTER_BUILD_TEXT, UI_TRANSLATIONS } from '../i18n/translations';
 import { CATEGORIES, CATEGORY_META, getCategoryLabel } from '../data/categories';
 import {
   DifficultyTier,
@@ -28,7 +28,8 @@ import {
 } from '../types/game';
 import { formatStopwatchMs } from '../utils/speedrun';
 import { canPlayStage } from '../utils/entitlements';
-import { localAdminActive } from '../utils/localAdmin';
+import { localAdminActive,mathPrototypesActive } from '../utils/localAdmin';
+import {isMathWorkshopAvailable} from '../data/mathAvailability';
 
 interface StageCatalogModalProps {
   isOpen: boolean;
@@ -98,6 +99,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
 
   const filteredBlueprints = useMemo(() => {
     return blueprints.filter((bp) => {
+      if(!isMathWorkshopAvailable(bp.id,progress.ageProfile,mathPrototypesActive))return false;
       if (categoryFilter === 'master-expansion') {
         if (!bp.masterExpansion || bp.tier !== DifficultyTier.MASTER) return false;
       } else if (categoryFilter && categoryFilter !== 'all' && bp.category !== categoryFilter) return false;
@@ -110,7 +112,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
       }
       return true;
     }).sort((a,b) => a.tier-b.tier || a.stageNumber-b.stageNumber);
-  }, [blueprints, categoryFilter, normalizedQuery, tierFilter]);
+  }, [blueprints, categoryFilter, normalizedQuery, tierFilter,progress.ageProfile]);
 
   if (!isOpen) return null;
 
@@ -211,7 +213,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
                   </button>
                 )}
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-                  {CATEGORIES.filter(category => blueprints.some(bp => bp.category === category)).map(category => (
+                  {CATEGORIES.filter(category => blueprints.some(bp => bp.category === category&&isMathWorkshopAvailable(bp.id,progress.ageProfile,mathPrototypesActive))).map(category => (
                     <button key={category} type="button" data-catalog-world={category} onClick={() => chooseWorld(category)}
                       className="flex min-h-24 flex-col items-start justify-center gap-2 rounded-xl border border-slate-200 bg-white p-3 text-start text-base font-bold text-slate-900 shadow-sm hover:border-sky-500 hover:bg-sky-50 focus-visible:outline-2 focus-visible:outline-sky-700">
                       <span aria-hidden="true" className="text-3xl">{CATEGORY_META[category].emoji}</span>
@@ -265,6 +267,7 @@ export const StageCatalogModal: React.FC<StageCatalogModalProps> = ({
 
         {/* Scrollable 5-Tier Catalog List */}
         <div className="px-4 py-5 space-y-8 sm:px-6">
+          {categoryFilter===VehicleCategory.MATHS&&<p className="rounded-xl bg-sky-50 p-3 text-sm text-sky-950">{MATH_TEXT.cranePrototype[locale]}</p>}
           {localAdminActive && <p className="rounded-xl border border-sky-200 bg-sky-50 p-3 font-semibold text-sky-950">{LOCAL_ADMIN_LABEL[language]}</p>}
           {/* Daily Mechanical Challenge Spotlight Banner */}
           {!showStages && <div className="p-4 bg-amber-50/55 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-4">

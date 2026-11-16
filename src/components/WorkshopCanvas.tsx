@@ -80,6 +80,7 @@ export interface DragFeedbackOverlay {
 }
 
 interface WorkshopCanvasProps {
+  ageProfile?: PlayerProgress['ageProfile'];
   trayPosition?: 'left' | 'right';
   language: LanguageCode;
   blueprint: VehicleBlueprint;
@@ -143,6 +144,7 @@ function createStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.WebGLRend
 }
 
 export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
+  ageProfile,
   trayPosition,
   language,
   blueprint,
@@ -1576,7 +1578,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       <div ref={canvasMountRef} className="w-full h-full" style={{ touchAction: 'none' }} />
       {blueprint.id==='math-addition'&&!isAssemblyComplete(blueprint,placedPartIds)&&!webglLost&&<AdditionBridgeBuildScene engine={engineRef} placedPartIds={placedPartIds} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`}/>}
       {isRailBlueprint(blueprint.id) && !isAssemblyComplete(blueprint,placedPartIds) && !webglLost && <RailWorkshopTrack engine={engineRef} blueprintId={blueprint.id} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
-      {placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && <WorkshopPostAssemblyPlay key={blueprint.id} engine={engineRef} blueprint={blueprint} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
+      {placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && <WorkshopPostAssemblyPlay key={`${blueprint.id}/${ageProfile}`} engine={engineRef} blueprint={blueprint} language={language} ageProfile={ageProfile} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
 
       {/* Accessible Semantic Drag & Snap Feedback Overlay (no backdrop-blur over WebGL) */}
       {dragHud && (

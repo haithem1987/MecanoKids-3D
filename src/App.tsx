@@ -1,5 +1,8 @@
+import {useAvailableWorkshop} from './hooks/useAvailableWorkshop';
 import {MathWorkshopBrief} from './components/MathWorkshopBrief';
 import {additionBridgePlacedParts} from './data/additionBridge';
+import {isMathWorkshopAvailable} from './data/mathAvailability';
+import {mathPrototypesActive} from './utils/localAdmin';
 import {getMathActivityKind} from './data/mathActivities';
 import {VehicleCategory} from './types/game';
 import {useAdventureContinuation} from './hooks/useAdventureContinuation';
@@ -264,20 +267,7 @@ export default function App() {
     [language],
   );
 
-  const currentRawBlueprint = useMemo(() => {
-    if (progress.currentBlueprintId === todayDailyBundle.blueprint.id) {
-      return todayDailyBundle.blueprint;
-    }
-    return (
-      VEHICLE_BLUEPRINTS.find((b) => b.id === progress.currentBlueprintId) ??
-      VEHICLE_BLUEPRINTS.find((b) => b.id === progress.lastStandardBlueprintId) ??
-      VEHICLE_BLUEPRINTS[0]
-    );
-  }, [
-    progress.currentBlueprintId,
-    progress.lastStandardBlueprintId,
-    todayDailyBundle.blueprint,
-  ]);
+  const {rawBlueprint:currentRawBlueprint,currentIndex,nextBlueprint:nextStandardBlueprint,hasNextStage}=useAvailableWorkshop(VEHICLE_BLUEPRINTS,progress,todayDailyBundle.blueprint,setProgress);
 
   const currentBlueprint = useMemo(() => {
     const bp = getLocalizedBlueprint(currentRawBlueprint, language);
@@ -291,6 +281,8 @@ export default function App() {
       })),
     };
   }, [currentRawBlueprint, language, progress.ageProfile]);
+
+
 
   const progressionSummary = useMemo(
     () =>
@@ -399,12 +391,7 @@ export default function App() {
     return () => window.clearInterval(id);
   }, [activeDiagnostic, currentBlueprint.id, currentBlueprint.parts, hintPartId, isCompleted, standardPlacedPartIds]);
 
-  const currentIndex = useMemo(
-    () => VEHICLE_BLUEPRINTS.findIndex((b) => b.id === currentBlueprint.id),
-    [currentBlueprint.id],
-  );
   const adventureNextId=useAdventureContinuation(activeProfile.id,progress,VEHICLE_BLUEPRINTS,currentBlueprint.id);
-  const hasNextStage = currentIndex >= 0 && currentIndex < VEHICLE_BLUEPRINTS.length - 1;
 
   const gentleTimerStatus = useMemo(
     () =>
@@ -1223,6 +1210,7 @@ export default function App() {
     (blueprintId: string) => {
       const completedCount = Object.keys(progress.completedStages).length;
       const target = VEHICLE_BLUEPRINTS.find(bp => bp.id === blueprintId);
+      if(!target||!isMathWorkshopAvailable(target.id,progress.ageProfile,mathPrototypesActive))return;
       if (!localAdminActive && !target?.virtualLab && target?.category!==VehicleCategory.MATHS && freeTrialExhausted(completedCount) && !isUnlocked(progress.licenseState)) {
         track('paywall_shown', { missionsCompleted: completedCount });
         setUpgradeReason('stages');
@@ -1256,11 +1244,12 @@ export default function App() {
       setCameraPresetNonce((n) => n + 1);
       setStatusMessage(null);
     },
-    [currentBlueprint.id, flushActiveStopwatchSegment, setProgress, progress.completedStages, progress.licenseState, scienceTrial],
+    [currentBlueprint.id, flushActiveStopwatchSegment, setProgress, progress.completedStages, progress.licenseState, progress.ageProfile, scienceTrial],
   );
 
   const handleStartTimedStage = useCallback(
     (blueprintId: string) => {
+      if(!isMathWorkshopAvailable(blueprintId,progress.ageProfile,mathPrototypesActive))return;
       speechEngine.stop();
       segmentStartRef.current = null;
       setTimerArmed(false);
@@ -1294,7 +1283,7 @@ export default function App() {
       setCameraPresetNonce((n) => n + 1);
       flashStatus(t.timerEnabledToast);
     },
-    [flashStatus, setProgress, t.timerEnabledToast],
+    [flashStatus, setProgress, t.timerEnabledToast,progress.ageProfile],
   );
 
   const handleStartDailyBuild = useCallback(
@@ -1904,8 +1893,8 @@ export default function App() {
       return;
     }
     if (hasNextStage) {
-      const nextBp = VEHICLE_BLUEPRINTS[currentIndex + 1];
-      if (!localAdminActive && !nextBp.virtualLab && !canPlayStage(progress.licenseState, nextBp.stageNumber, nextBp.masterExpansion)) {
+      const nextBp = nextStandardBlueprint!;
+      if (!localAdminActive && !nextBp.virtualLab && nextBp.category!==VehicleCategory.MATHS && !canPlayStage(progress.licenseState, nextBp.stageNumber, nextBp.masterExpansion)) {
         track('paywall_shown', { reason: 'stages' });
         setUpgradeReason('stages');
         setUpgradeModalOpen(true);
@@ -1916,6 +1905,7 @@ export default function App() {
   }, [
     currentBlueprint.isDailyBonus,
     currentIndex,
+    nextStandardBlueprint,
     handleSelectBlueprint,
     hasNextStage,
     progress.lastStandardBlueprintId,
@@ -2237,7 +2227,7 @@ export default function App() {
           </div>
         )}
 
-        <WorkshopCanvas key={`${activeProfile.id}-${currentBlueprint.id}`}
+        <WorkshopCanvas key={`${activeProfile.id}-${currentBlueprint.id}`} ageProfile={progress.ageProfile}
           trayPosition={effectiveTrayPosition}
           language={language}
           blueprint={currentBlueprint}

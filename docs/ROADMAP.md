@@ -13,10 +13,16 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [x] MATHS-AGE — Appuyer les activités sur les programmes français et supprimer le remplissage (16 novembre)
+- Recherche officielle GS → cinquième, programmes applicables en 2026 ; distinction entre prérequis, apprentissages en cours et acquis attendus. Rapport : `docs/qa/2026-11-16-maths-niveaux-france.md`.
+- Passerelle de découverte uniquement 5–7 ans ; ancien treuil à vingt boulons remplacé par une grue à équilibrer : produits entiers pour les 8–10 ans, choix masse/distance et décimaux pour les 11–12 ans. Dix pièces fonctionnelles, aucun stock de points à monter, un problème concret au lieu de variantes répétées.
+- Fractions, aire, symétrie et engrenages retirés du parcours enfant en attendant leur refonte. Filtrage du catalogue, des aventures et de la reprise ; sauvegardes conservées. Admin local suit l’âge par défaut, prototypes sur option technique explicite.
+- TypeScript, 681 tests, neuf parcours âge/langue, mouvements et audio hors ligne vérifiés. Compréhension à confirmer avec des enfants ; aucun déploiement.
+
 ### [ ] MATHS-MANIPULATION — Faire de la construction l’apprentissage (retour utilisateur du 16 novembre)
 - La validation technique MATHS-MECANISMES ne valide pas le sens pédagogique. L’utilisateur ne comprenait pas le lien entre dix lames de réserve, le réglage 2 + 3 et le passage de la tortue.
 - Passerelle corrigée : deux vraies lames présentes dès le départ, trois lames à poser directement dans le tablier, comptage vivant 2 + 1 / 2 + 2 / 2 + 3, puis traversée. Une seule mission complète remplace les trois réglages abstraits. Attendre le retour utilisateur avant de généraliser cette approche.
-- À reprendre : fixations, fractions, aire, symétrie et engrenages. Faire porter l’action mathématique par les poses ou gestes réels ; aucun montage de stock suivi d’un formulaire. Rapport : `docs/qa/2026-11-16-addition-construite.md`.
+- Fixations remplacées par une grue à contrepoids (MATHS-AGE). À reprendre : fractions, aire, symétrie et engrenages, actuellement hors du parcours enfant. Faire porter l’action mathématique par les poses ou gestes réels ; aucun montage de stock suivi d’un formulaire. Rapport initial : `docs/qa/2026-11-16-addition-construite.md`.
 
 ### [x] MATHS-MECANISMES — Donner un sens concret aux six ateliers mathématiques (16 novembre)
 - Remplacement des plateaux abstraits par passerelles, treuil, plateau élévateur, charpente et engrenages fonctionnels dans la scène commune ; 18 missions avec conséquences animées et explications avant le montage.

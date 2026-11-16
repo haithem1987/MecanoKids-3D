@@ -1,3 +1,11 @@
+## Correction du 16 novembre — niveaux scolaires et fin des poses de remplissage
+
+Recherche dans les programmes officiels français en vigueur en 2026, de la GS à la cinquième : `docs/qa/2026-11-16-maths-niveaux-france.md`. Les âges sont des points d’entrée, pas un diagnostic des acquis. L’addition de découverte n’est proposée qu’en 5–7 ans. `math-groups` garde son ID de sauvegarde mais devient une grue à équilibrer : produits entiers en 8–10, choix de masse et distances décimales en 11–12. Dix pièces structurelles, aucune série de vingt boulons. Inclinaison puis levage dans WorkshopCanvas ; pas de variantes répétitives ni de boucle de récompense sans décision.
+
+Quatre prototypes retirés du parcours enfant : fractions, aire, symétrie, engrenages. Catalogue, recherche, aventures, reprise et sélection respectent la politique. Les progrès restent sauvegardés. Admin local suit aussi l’âge par défaut ; pour vérifier un prototype, opt-in `http://127.0.0.1:7302/?admin=1&mathPrototypes=1`. Cette option est inopérante en production.
+
+681 tests et TypeScript, neuf parcours âge/langue, 60 poses de structure de grue, animations, ajout réel de la passerelle et lecture hors ligne vérifiés. Validation enfant encore nécessaire ; aucun déploiement. Serveur local conservé sur 7302.
+
 ## Correction du 16 novembre — addition par poses réelles
 
 Retour utilisateur : les tests techniques n’ont pas rendu les maths compréhensibles. La passerelle avait encore dix lames de réserve et deux nombres à régler. Elle démarre désormais avec deux lames ; seules trois lames restent à poser directement dans le pont. Comptage et équation suivent les poses. Une seule mission complète, traversée ensuite sans formulaire. Palette limitée aux trois lames à ajouter. Nouvelle observation `math-addition-construction-v3`.

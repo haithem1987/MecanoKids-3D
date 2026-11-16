@@ -1,7 +1,8 @@
 import {MathActivityTrial} from './MathActivityTrial';
+import {CraneBalanceTrial} from './CraneBalanceTrial';
 import {getMathActivityKind} from '../data/mathActivities';
 import type {ComponentProps} from 'react';
-import type {LanguageCode,VehicleBlueprint} from '../types/game';
+import type {AgeProfile,LanguageCode,VehicleBlueprint} from '../types/game';
 import {getConstructionPlayKind} from '../data/constructionPlay';
 import {getHeritageDiscoveryKind} from '../data/heritageDiscoveries';
 import {getScienceDiscoveryKind} from '../data/scienceDiscovery';
@@ -15,8 +16,9 @@ import {BeaconTrial} from './BeaconTrial';
 import {WatermillTrial} from './WatermillTrial';
 import {DrawbridgeTrial,DRAWBRIDGE_ID} from './DrawbridgeTrial';
 type Scene=NonNullable<ComponentProps<typeof VehicleAdventureTrial>['engine']['current']>&NonNullable<ComponentProps<typeof ConstructionPlayTrial>['engine']['current']>&NonNullable<ComponentProps<typeof ScienceDiscoveryTrial>['engine']['current']>&NonNullable<ComponentProps<typeof WatermillTrial>['engine']['current']>;
-export function WorkshopPostAssemblyPlay({engine,blueprint,language,sceneRevision}:{engine:{current:Scene|null};blueprint:VehicleBlueprint;language:LanguageCode;sceneRevision:string}){
+export function WorkshopPostAssemblyPlay({engine,blueprint,language,sceneRevision,ageProfile}:{engine:{current:Scene|null};blueprint:VehicleBlueprint;language:LanguageCode;sceneRevision:string;ageProfile?:AgeProfile}){
  const common={engine,language,sceneRevision},blueprintId=blueprint.id;
+ if(blueprintId==='math-groups')return <CraneBalanceTrial {...common} ageProfile={ageProfile}/>;
  if(getMathActivityKind(blueprintId))return <MathActivityTrial {...common} blueprintId={blueprintId}/>;
  if(getHeritageDiscoveryKind(blueprintId))return <HeritageDiscoveryTrial {...common} blueprintId={blueprintId}/>;
  if(getScienceDiscoveryKind(blueprintId))return <ScienceDiscoveryTrial {...common} blueprintId={blueprintId}/>;

@@ -245,9 +245,9 @@ export const VIRTUAL_LAB_TEXT = {
   },
 } as const satisfies Record<import('../data/virtualLabs').VirtualLabId, VirtualLabText>;
 export const LOCAL_ADMIN_LABEL: Record<LanguageCode, string> = {
-  fr: 'Mode admin local · Tous les ateliers sont accessibles',
-  en: 'Local admin mode · All workshops are available',
-  ar: 'وضع الإدارة المحلي · جميع الورش متاحة',
+  fr: 'Mode admin local · Progression déverrouillée · Maths adaptées à l’âge',
+  en: 'Local admin mode · Progress unlocked · Age-appropriate maths',
+  ar: 'وضع الإدارة المحلي · التقدم مفتوح · رياضيات مناسبة للعمر',
 };
 export const SCIENCE_CHALLENGE_TEXT = {
   title: ['Mini-laboratoire', 'Mini lab', 'مختبر صغير'],

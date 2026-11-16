@@ -48,6 +48,8 @@ Ne pas « corriger » ça au passage : c'est la tâche P0-ARCH de `docs/ROADMAP.
 
 **Une mission compréhensible avant de construire.** Chaque atelier annonce ce que l’enfant fabrique, pourquoi ses pièces sont utiles et ce qu’il pourra observer en l’actionnant. Les mathématiques servent une construction ou un mécanisme concret ; ne pas remplacer la mission par des nombres à régler ou un quiz de validation. Les essais montrent les conséquences du réglage dans la scène commune.
 
+**Mathématiques adaptées aux acquis, sans remplissage.** Documenter le niveau scolaire et les prérequis depuis les programmes français en vigueur. L’âge oriente la proposition sans prouver la maîtrise. Les petits nombres ne sont pas proposés aux 11–12 ans. Ne jamais augmenter la durée ou la difficulté en répétant des poses identiques (boulons, quilles, points) ; chaque action doit apporter une fonction, une décision ou une observation nouvelle. Les prototypes incompréhensibles restent hors du parcours enfant, y compris dans les aventures et la reprise.
+
 **Pièces toujours accessibles.** La palette des pièces reste visible pendant toute la sélection et la pose. Ne jamais réintroduire d’ouverture/réduction d’établi ni de rétraction automatique. Sur PC et tablette, les vues caméra flottent sur le côté opposé ; sur téléphone portrait, les pièces forment un ruban permanent inférieur et les commandes une barre supérieure compacte. Les réglages secondaires sont dans un menu séparé. Les actions scientifiques principales restent accessibles sans défilement vertical.
 
 1. **Aucun achat, lien externe ni impression dans le parcours enfant.** Tout passe derrière la porte parents (`ParentalGateModal`, `utils/parentalGate.ts`).

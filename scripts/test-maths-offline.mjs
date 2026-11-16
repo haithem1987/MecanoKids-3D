@@ -7,7 +7,7 @@ try{
  const seed=await source.evaluate(async()=>{
   const s=await import('/src/utils/storage.ts'),{VEHICLE_BLUEPRINTS}=await import('/src/data/blueprints.ts');
   const progress=s.createDefaultProgress('fr',true),bp=VEHICLE_BLUEPRINTS.find(bp=>bp.id==='math-addition');
-  progress.ageProfile='11-12';progress.licenseState={tier:'family'};progress.freeWorkshopUnlocked=true;progress.currentBlueprintId=bp.id;progress.lastStandardBlueprintId=bp.id;
+  progress.ageProfile='5-7';progress.licenseState={tier:'family'};progress.freeWorkshopUnlocked=true;progress.currentBlueprintId=bp.id;progress.lastStandardBlueprintId=bp.id;
   progress.inProgressStages[bp.id]={placedPartIds:bp.parts.map(p=>p.id),mistakesCount:0,updatedAt:Date.now()};
   const profile=s.createNewPlayerProfile({name:'Offline QA',progressOverride:progress});return{key:s.PROFILES_STORAGE_KEY,store:JSON.stringify({activeProfileId:profile.id,profiles:[profile]}),profileId:profile.id};
  });await source.close();

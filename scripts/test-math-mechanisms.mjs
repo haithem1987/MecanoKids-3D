@@ -1,8 +1,8 @@
 import {createRequire} from 'node:module';
 import {openMission,pickMission} from './mission-controls.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.argv[2]??'playwright'),browser=await chromium.launch({channel:'chrome',args:['--enable-unsafe-swiftshader']});
-try{for(const kind of ['groups','fractions','area','symmetry','ratio']){
- const p=await browser.newPage({viewport:kind==='fractions'?{width:768,height:1024}:{width:1280,height:900},hasTouch:kind==='fractions',reducedMotion:'no-preference'}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:7302/?admin=1');
+try{for(const kind of ['fractions','area','symmetry','ratio']){
+ const p=await browser.newPage({viewport:kind==='fractions'?{width:768,height:1024}:{width:1280,height:900},hasTouch:kind==='fractions',reducedMotion:'no-preference'}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:7302/?admin=1&mathPrototypes=1');
  const seed=await p.evaluate(async kind=>{const s=await import('/src/utils/storage.ts'),{VEHICLE_BLUEPRINTS:b}=await import('/src/data/blueprints.ts'),bp=b.find(bp=>bp.id===`math-${kind}`),progress=s.createDefaultProgress('fr',true),{mathSolution}=await import('/src/data/mathActivities.ts');progress.inProgressStages[bp.id]={placedPartIds:bp.parts.map(x=>x.id),mistakesCount:0,updatedAt:Date.now()};const profile=s.createNewPlayerProfile({name:'Mechanism QA',progressOverride:progress});return{key:s.PROFILES_STORAGE_KEY,store:JSON.stringify({activeProfileId:profile.id,profiles:[profile]}),id:bp.id,solution:mathSolution(kind,0)};},kind);
  await p.addInitScript(seed=>localStorage.setItem(seed.key,seed.store),seed);await p.reload();await p.locator('[data-catalog-world="mathematiques"]').click();await p.locator(`[data-catalog-stage="${seed.id}"]`).click();const mission=p.locator('[data-math-activity]');await mission.waitFor();await openMission(mission);await p.locator('[data-math-mission-brief]').waitFor();
  for(const[index,value]of seed.solution.entries())await pickMission(mission,index===0?'a':'b',value);await p.waitForTimeout(1200);

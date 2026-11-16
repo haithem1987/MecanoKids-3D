@@ -1,6 +1,7 @@
 import {DifficultyTier,PartShapeKind as Shape,type VehicleCategory,type VehicleBlueprint,type PartSpec} from '../types/game';
 import {MATH_TEXT,type MathTextKey} from '../i18n/mathText';
 import {MATH_ACTIVITY_KINDS,type MathActivityKind} from './mathActivities';
+import {createCraneBlueprint} from './craneBlueprint';
 type Vec=[number,number,number];
 const blue='#38bdf8',gold='#fbbf24',slate='#64748b';
 export const MATH_LEVEL_KEYS:Record<MathActivityKind,MathTextKey>={addition:'levelAddition',groups:'levelGroups',fractions:'levelFractions',area:'levelArea',symmetry:'levelSymmetry',ratio:'levelRatio'};
@@ -20,7 +21,8 @@ export function mathTokenPosition(kind:MathActivityKind,index:number):Vec{
 export const MATH_TOKEN_COUNTS:Record<MathActivityKind,number>={addition:5,groups:20,fractions:8,area:16,symmetry:18,ratio:15};
 export function createMathBlueprints(category:VehicleCategory):VehicleBlueprint[]{
  return MATH_ACTIVITY_KINDS.map(kind=>{
-  const title=MATH_TEXT[`${kind}Title`],goal=MATH_TEXT[`${kind}Goal`],why=MATH_TEXT[`${kind}Why`],level=MATH_TEXT[MATH_LEVEL_KEYS[kind]],note=MATH_TEXT.ageNote;
+  if(kind==='groups')return createCraneBlueprint(category);
+  const title=MATH_TEXT[`${kind}Title`],goal=MATH_TEXT[`${kind}Goal`],why=MATH_TEXT[`${kind}Why`],level=MATH_TEXT[MATH_LEVEL_KEYS[kind]],note=kind==='addition'?MATH_TEXT.bridgeAge:MATH_TEXT.ageNote;
   const parts=[part('base','base',Shape.APPARATUS_BASE,[3.8,.16,3],[0,.08,0],'#334155',[])];
   const add=(id:string,label:MathTextKey,size:Vec,pos:Vec,color=slate,deps=['base'],shape=Shape.APPARATUS_BASE)=>parts.push(part(id,label,shape,size,pos,color,deps));
   if(kind==='addition'||kind==='fractions'){
@@ -34,8 +36,8 @@ export function createMathBlueprints(category:VehicleCategory):VehicleBlueprint[
   }else{
    for(const side of [-1,1])add(`post-${side}`,'post',[.16,1.6,.30],[side*1.6,.96,-.25]);
    add('cross-beam','beam',[3.36,.16,.35],[0,1.84,-.25],gold,['post--1','post-1']);
-   if(kind==='groups'||kind==='area'){
-    const x=kind==='groups'?1.12:0;
+   if(kind==='area'){
+    const x=0;
     add('winch','winch',[.26,.16,.26],[x,1.73,-.25],'#2563eb',['cross-beam'],Shape.LAB_CYLINDER);
     parts.at(-1)!.targetRot=[Math.PI/2,0,0];
     add('cable','cable',[.035,kind==='area'?.73:1.09,.035],[x,kind==='area'?1.285:1.105,-.25],'#334155',['winch']);
@@ -45,7 +47,7 @@ export function createMathBlueprints(category:VehicleCategory):VehicleBlueprint[
     add('axis','axis',[.025,1.4,.025],[0,1.03,-.25],gold,['cross-beam']);
     for(const side of [-1,1]){for(let i=0;i<4;i++)add(`grid-post-${side}-${i}`,'post',[.045,.96,.12],[side*.7+side*i*.3,.78,-.25]);for(let i=0;i<4;i++)add(`grid-beam-${side}-${i}`,'beam',[.98,.045,.12],[side*1.15,.30+i*.32,-.25]);}
    }
-   if(kind==='groups')add('mount-plate','beam',[1.65,.12,1.12],[-.85,.37,-.05]);
+
    if(kind==='ratio'){
     for(const [id,x,diameter,teeth] of [['drive-wheel',-.55,.6,12],['driven-wheel',.20,.9,18]] as const){
      add(id==='drive-wheel'?'drive-axle':'driven-axle','axle',[.08,.50,.08],[x,1.35,-.15],slate,['cross-beam'],Shape.LAB_CYLINDER);
@@ -57,10 +59,10 @@ export function createMathBlueprints(category:VehicleCategory):VehicleBlueprint[
    }
   }
   for(let i=0;i<MATH_TOKEN_COUNTS[kind];i++){
-   const size:Vec=kind==='fractions'?[.4,.09,.38]:kind==='addition'?[.28,.09,.38]:kind==='symmetry'?[.07,.45,.07]:kind==='area'?[.315,.10,.315]:kind==='groups'?[.10,.12,.10]:[.055,.055,.055];
-   const label:MathTextKey=kind==='addition'||kind==='fractions'?'plank':kind==='groups'?'bolt':kind==='area'?'tile':kind==='symmetry'?'brace':'reference';
-   const deps=kind==='addition'?i?['left-pad','right-pad',`token-${i-1}`]:['left-pad','right-pad']:kind==='fractions'?['left-pad','right-pad']:kind==='groups'?['mount-plate']:kind==='ratio'?['drive-wheel','driven-wheel']:kind==='symmetry'?parts.filter(p=>p.id.startsWith('grid-beam-')).map(p=>p.id):['cross-beam'];
-   parts.push(part(`token-${i}`,label,kind==='groups'?Shape.LAB_CYLINDER:Shape.APPARATUS_BASE,size,mathTokenPosition(kind,i),kind==='ratio'?i<6?gold:blue:kind==='addition'?i<2?blue:gold:blue,deps));
+   const size:Vec=kind==='fractions'?[.4,.09,.38]:kind==='addition'?[.28,.09,.38]:kind==='symmetry'?[.07,.45,.07]:kind==='area'?[.315,.10,.315]:[.055,.055,.055];
+   const label:MathTextKey=kind==='addition'||kind==='fractions'?'plank':kind==='area'?'tile':kind==='symmetry'?'brace':'reference';
+   const deps=kind==='addition'?i?['left-pad','right-pad',`token-${i-1}`]:['left-pad','right-pad']:kind==='fractions'?['left-pad','right-pad']:kind==='ratio'?['drive-wheel','driven-wheel']:kind==='symmetry'?parts.filter(p=>p.id.startsWith('grid-beam-')).map(p=>p.id):['cross-beam'];
+   parts.push(part(`token-${i}`,label,Shape.APPARATUS_BASE,size,mathTokenPosition(kind,i),kind==='ratio'?i<6?gold:blue:kind==='addition'?i<2?blue:gold:blue,deps));
    if(kind==='symmetry')parts.at(-1)!.targetRot=[0,0,i<9?Math.PI/4:-Math.PI/4];
   }
   const discovery=([0,1,2]as const).map(i=>({howItWorks:why[i],realRecord:goal[i],didYouKnow:note[i]}));

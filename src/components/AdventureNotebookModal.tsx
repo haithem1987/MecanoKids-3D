@@ -7,6 +7,8 @@ import { useDiscoveryNotebook } from '../hooks/useDiscoveryNotebook';
 import { discoveredBlueprintIds } from '../utils/discoveryNotebook';
 import { useSpeech } from '../utils/speech';
 import type { LanguageCode, PlayerProgress, VehicleBlueprint } from '../types/game';
+import {isMathWorkshopAvailable} from '../data/mathAvailability';
+import {mathPrototypesActive} from '../utils/localAdmin';
 
 export interface AdventureNotebookModalProps {
   isOpen: boolean;
@@ -34,7 +36,7 @@ export function AdventureNotebookModal({ isOpen, onClose, profileId, language, p
   const requiresPlay = (id: string) => { const bp = blueprints.find(item => item.id === id); return Boolean(bp && supportsPlay(bp)); };
   const normalize = (text: string) => text.toLocaleLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
   const search = normalize(query.trim());
-  const filtered = WORKSHOP_ADVENTURES.filter(item => (group === 'all' || item.group === group) && (!search || normalize([TEXT.routes[item.id].title[locale], TEXT.routes[item.id].goal[locale], ...item.steps.map(id => localized.get(id)?.name ?? '')].join(' ')).includes(search)));
+  const filtered = WORKSHOP_ADVENTURES.filter(item => item.steps.every(id=>isMathWorkshopAvailable(id,progress.ageProfile,mathPrototypesActive))&&(group === 'all' || item.group === group) && (!search || normalize([TEXT.routes[item.id].title[locale], TEXT.routes[item.id].goal[locale], ...item.steps.map(id => localized.get(id)?.name ?? '')].join(' ')).includes(search)));
   const route = filtered.find(item => item.id === routeId) ?? filtered[0] ?? WORKSHOP_ADVENTURES[0];
   const routeText = TEXT.routes[route.id], journey = adventureProgress(route.steps, progress, notebook, requiresPlay);
   useEffect(() => {

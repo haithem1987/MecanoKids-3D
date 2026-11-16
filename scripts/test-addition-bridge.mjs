@@ -8,7 +8,7 @@ try{for(const language of ['fr','en','ar']){
  page.on('pageerror',error=>errors.push(error.message));await page.goto('http://127.0.0.1:7302/?admin=1');
  const seed=await page.evaluate(async language=>{
   const s=await import('/src/utils/storage.ts');const progress=s.createDefaultProgress(language,true);
-  progress.ageProfile='8-10';progress.currentBlueprintId='math-addition';progress.lastStandardBlueprintId='math-addition';
+  progress.ageProfile='5-7';progress.currentBlueprintId='math-addition';progress.lastStandardBlueprintId='math-addition';
   const profile=s.createNewPlayerProfile({name:'Bridge QA',progressOverride:progress});return{key:s.PROFILES_STORAGE_KEY,store:JSON.stringify({activeProfileId:profile.id,profiles:[profile]})};
  },language);
  await page.addInitScript(seed=>{if(!sessionStorage.getItem('bridge-seed')){localStorage.setItem(seed.key,seed.store);localStorage.setItem('mkids_onboarding_v1','1');localStorage.setItem('mkids_landing_seen','1');sessionStorage.setItem('bridge-seed','1');}},seed);await page.reload();
