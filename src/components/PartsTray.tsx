@@ -74,12 +74,13 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
 
   const isVertical = true;
 
-  const unplaced = blueprint.parts.filter((p) => !placedSet.has(p.id));
-  const placed = blueprint.parts.filter((p) => placedSet.has(p.id));
+  const trayParts=blueprint.id==='math-addition'?blueprint.parts.filter(part=>['token-2','token-3','token-4'].includes(part.id)):blueprint.parts;
+  const unplaced = trayParts.filter((p) => !placedSet.has(p.id));
+  const placed = trayParts.filter((p) => placedSet.has(p.id));
   const sorted = [...unplaced.filter(p => getMissingDepName(p) === null), ...unplaced.filter(p => getMissingDepName(p) !== null), ...placed];
 
   const partCards = sorted.map((part, sortedIdx) => {
-    const originalIdx = blueprint.parts.indexOf(part);
+    const originalIdx = trayParts.indexOf(part);
     const paintedSpec = applyLiveryToPartSpec(part, liveryPreset);
     const isPlaced = placedSet.has(part.id);
     const isFaultyMounted = !isPlaced && faultySet.has(part.id);
@@ -184,7 +185,7 @@ export const PartsTray: React.FC<PartsTrayProps> = ({
   });
 
   return <aside data-parts-palette data-tour="parts-tray" className={`floating-parts pointer-events-auto absolute top-2 bottom-2 z-20 flex min-h-0 flex-col gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1 shadow-md ${position==='right'?'end-2':'start-2'}`}>
-    <button type="button" aria-label={readyOnly?t.trayShowAll:t.trayShowReady} aria-pressed={readyOnly} onClick={()=>setReadyOnly(value=>!value)} className="min-h-[64px] min-w-[64px] shrink-0 rounded-xl bg-sky-50 px-1 text-xs font-semibold text-sky-950">{readyOnly?t.trayShowAll:t.trayShowReady}<span className="block">{t.partsCounter(placedPartIds.length,blueprint.parts.length)}</span></button>
+    <button type="button" aria-label={readyOnly?t.trayShowAll:t.trayShowReady} aria-pressed={readyOnly} onClick={()=>setReadyOnly(value=>!value)} className="min-h-[64px] min-w-[64px] shrink-0 rounded-xl bg-sky-50 px-1 text-xs font-semibold text-sky-950">{readyOnly?t.trayShowAll:t.trayShowReady}<span className="block">{t.partsCounter(placed.length,trayParts.length)}</span></button>
     <div ref={scrollRef} id={trayId} className="parts-list min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain">{partCards}</div>
   </aside>;
 };

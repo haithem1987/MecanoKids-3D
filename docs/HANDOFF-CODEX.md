@@ -1,3 +1,9 @@
+## Correction du 16 novembre — addition par poses réelles
+
+Retour utilisateur : les tests techniques n’ont pas rendu les maths compréhensibles. La passerelle avait encore dix lames de réserve et deux nombres à régler. Elle démarre désormais avec deux lames ; seules trois lames restent à poser directement dans le pont. Comptage et équation suivent les poses. Une seule mission complète, traversée ensuite sans formulaire. Palette limitée aux trois lames à ajouter. Nouvelle observation `math-addition-construction-v3`.
+
+676 tests, parcours réel FR/EN/AR et animations vérifiés ; voir `docs/qa/2026-11-16-addition-construite.md`. Les cinq autres ateliers restent à revoir pédagogiquement ; ne pas les présenter comme validés par des enfants. Aucun déploiement.
+
 ## Lot du 16 novembre — refonte mathématique mécanique
 
 Les six prototypes mathématiques du 8 novembre sont remplacés par des mécanismes concrets, avec mission expliquée avant montage, trois défis et essai animé dans la même scène. Passerelles addition/fractions, fixations de treuil, plateau élévateur, charpente symétrique, engrenages 12/18 et tambour. Audio FR/EN/AR local actualisé. Migration des montages sauvegardés, récompenses et anciennes observations conservées.

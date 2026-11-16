@@ -33,7 +33,7 @@ export function createMathActivityScene(kind:MathActivityKind,entries:()=>Map<st
   for(let i=0;i<MATH_TOKEN_COUNTS[kind];i++){
    const entry=entries().get(`token-${i}`);if(!entry)continue;
    const position=new THREE.Vector3(...mathTokenPosition(kind,i)),scale=new THREE.Vector3(1,1,1);let chosen=false;
-   if(kind==='addition'){const blue=i<5,slot=i%5;chosen=slot<(blue?a:b);if(chosen)position.set(-1.4+((blue?slot:a+slot)+.5)*.28,.70,0);}
+   if(kind==='addition'){const blue=i<2,slot=blue?i:i-2;chosen=slot<(blue?a:b);if(chosen)position.set(-1.4+((blue?slot:a+slot)+.5)*.28,.70,0);}
    if(kind==='fractions'){chosen=i<a;scale.x=4/(b===8?8:4);if(chosen)position.set(-1.6+(i+.5)*1.6/(b===8?8:4),.70,0);}
    if(kind==='groups'){const row=Math.floor(i/5),column=i%5;chosen=row<a&&column<b;if(chosen)position.set(-1.35+column*.27,.47,-.45+row*.27);}
    if(kind==='area'){chosen=i%4<a&&Math.floor(i/4)<b;if(chosen)position.y=.48+lift;else{position.set(-1.45+i*.18,.185,1.12);scale.setScalar(.5);}}
@@ -46,6 +46,7 @@ export function createMathActivityScene(kind:MathActivityKind,entries:()=>Map<st
    pose('left-foot',[start-.17,.40,0]);pose('left-pad',[start-.17,.69,0]);pose('right-foot',[end+.17,.40,0]);pose('right-pad',[end+.17,.69,0]);
    for(let i=0;i<2;i++){targetFrame[i].visible=true;targetFrame[i].scale.set(needed,1,.025);targetFrame[i].position.set(start+needed/2,.69,i===0?-.25:.25);}
    if(water){water.scale.x=needed;water.position.set(start+needed/2,.18,0);}
+   if(kind==='addition')for(let i=0;i<5;i++){const present=entries().has(`token-${i}`);outlines[i].visible=!present;outlines[i].scale.set(2.8,1,3.8);outlines[i].position.set(start+(i+.5)*.28,.70,0);}
    const travel=success?needed+.34:Math.max(0,Math.min(actual,needed)-.12);runner.position.set(start-.17+(attempted?travel*progress:0),.745,0);runner.rotation.y=-Math.PI/2;
    loadMarker.visible=true;loadMarker.position.set(end,.76,0);
   }else if(kind==='groups'){

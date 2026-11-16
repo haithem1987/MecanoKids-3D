@@ -1,5 +1,5 @@
 import {createRequire} from 'node:module';
-import {openMission,pickMission} from './mission-controls.mjs';
+import {openMission} from './mission-controls.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.argv[2]??'playwright');
 const browser=await chromium.launch({channel:'chrome',args:['--enable-unsafe-swiftshader']});
 try{
@@ -18,9 +18,9 @@ try{
  await page.evaluate(async()=>{await navigator.serviceWorker.register('/sw.js');await navigator.serviceWorker.ready;});
  await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,undefined,{timeout:60000});
  await context.setOffline(true);await page.reload();const mission=page.locator('[data-math-activity="addition"]');await mission.waitFor();await openMission(mission);
- await pickMission(mission,'a',2);await pickMission(mission,'b',3);await mission.locator('[data-math-run]').click();await page.locator('[data-math-success="true"]').waitFor();
+ await mission.locator('[data-math-run]').click();await page.locator('[data-math-success="true"]').waitFor();
  await mission.locator('.mission-listen').click();await page.waitForFunction(()=>window.offlineMathAudio>0);
  await page.locator('.hud-settings > summary').click();await page.locator('[data-open-notebook]').click();await page.locator('[data-notebook-tab="notebook"]').click();await page.locator('[data-notebook-entry="math-addition"]').locator('li').filter({hasText:/Les longueurs des lames/}).waitFor();
- const audio=await page.evaluate(async()=>{const response=await fetch('/narration/fr/217.mp3');return response.ok&&(await response.arrayBuffer()).byteLength>1000;});if(!audio)throw Error('New narration not cached offline');
+ const audio=await page.evaluate(async()=>{const response=await fetch('/narration/fr/218.mp3');return response.ok&&(await response.arrayBuffer()).byteLength>1000;});if(!audio)throw Error('New narration not cached offline');
  if(errors.length)throw Error(errors.join('\n'));console.log('Production build offline: reload, 3D addition challenge, saved notebook result and new narration available');await context.close();
 }finally{await browser.close();}

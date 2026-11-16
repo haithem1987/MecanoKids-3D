@@ -1,6 +1,7 @@
 import {RailWorkshopTrack} from './RailWorkshopTrack';
 import {isRailBlueprint} from '../data/railBlueprints';
 import {WorkshopPostAssemblyPlay} from './WorkshopPostAssemblyPlay';
+import {AdditionBridgeBuildScene} from './AdditionBridgeBuildScene';
 import {supportsWorkshopPlay} from '../data/workshopActivities';
 import { measureFloatingFraming } from '../utils/floatingFraming';
 import { getFittedCameraPosition, getViewportCameraScale, getPartFocusDistance } from '../utils/cameraFraming';
@@ -1573,6 +1574,7 @@ export const WorkshopCanvas: React.FC<WorkshopCanvasProps> = ({
       {/* Isolated WebGL mount container */}
       {/* touch-action:none prevents browser scroll/zoom from stealing pointer events during part drag */}
       <div ref={canvasMountRef} className="w-full h-full" style={{ touchAction: 'none' }} />
+      {blueprint.id==='math-addition'&&!isAssemblyComplete(blueprint,placedPartIds)&&!webglLost&&<AdditionBridgeBuildScene engine={engineRef} placedPartIds={placedPartIds} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`}/>}
       {isRailBlueprint(blueprint.id) && !isAssemblyComplete(blueprint,placedPartIds) && !webglLost && <RailWorkshopTrack engine={engineRef} blueprintId={blueprint.id} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
       {placedPartIds.length === blueprint.parts.length && !faultyPartIds.length && !explodedFactor && !webglLost && <WorkshopPostAssemblyPlay key={blueprint.id} engine={engineRef} blueprint={blueprint} language={language} sceneRevision={`${visualStyle}/${liveryPreset}/${xRayMode}`} />}
 

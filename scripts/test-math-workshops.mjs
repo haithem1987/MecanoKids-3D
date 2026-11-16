@@ -14,6 +14,7 @@ try{
   await page.addInitScript(({key,store})=>{if(!sessionStorage.getItem('math-qa-seed')){localStorage.setItem(key,store);sessionStorage.setItem('math-qa-seed','1');}},seed);await page.reload();
   const activate=locator=>touch?locator.tap():locator.click();
   for(const bp of seed.blueprints){
+   if(bp.kind==='addition')continue; // Actual assembly lesson: scripts/test-addition-bridge.mjs
    if(process.env.OCTO_QA_MODEL&&process.env.OCTO_QA_MODEL!==bp.id)continue;
    await activate(page.locator(`[data-catalog-world="${bp.category}"]`));await activate(page.locator(`[data-catalog-stage="${bp.id}"]`));
    const workbench=page.locator(`[data-workbench="${bp.id}"]`),canvas=workbench.locator('canvas');await canvas.waitFor();

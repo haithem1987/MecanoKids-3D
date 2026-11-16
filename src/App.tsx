@@ -1,4 +1,5 @@
 import {MathWorkshopBrief} from './components/MathWorkshopBrief';
+import {additionBridgePlacedParts} from './data/additionBridge';
 import {getMathActivityKind} from './data/mathActivities';
 import {VehicleCategory} from './types/game';
 import {useAdventureContinuation} from './hooks/useAdventureContinuation';
@@ -319,8 +320,8 @@ export default function App() {
 
   const currentStageState = progress.inProgressStages[currentBlueprint.id];
   const standardPlacedPartIds = useMemo(
-    () => currentStageState?.placedPartIds ?? [],
-    [currentStageState],
+    () => currentBlueprint.id==='math-addition'?additionBridgePlacedParts(currentBlueprint,currentStageState?.placedPartIds??[]):currentStageState?.placedPartIds ?? [],
+    [currentStageState,currentBlueprint],
   );
 
   const activeDiagnostic =
@@ -2274,7 +2275,7 @@ export default function App() {
         </div>
         {!activeDiagnostic && (getMathActivityKind(currentBlueprint.id) || currentBlueprint.virtualLab || scienceChallenges || ((usesWorkshopMissionPortal(currentBlueprint)) && isCompleted)) && (
           <div className="workbench-mission min-h-0 overflow-y-auto p-2">
-            {getMathActivityKind(currentBlueprint.id)&&!isCompleted&&<MathWorkshopBrief blueprintId={currentBlueprint.id} language={language}/>}
+            {getMathActivityKind(currentBlueprint.id)&&!isCompleted&&<MathWorkshopBrief blueprintId={currentBlueprint.id} language={language} placedPartIds={standardPlacedPartIds}/>}
             {(usesWorkshopMissionPortal(currentBlueprint)) && <div id="workbench-trial-controls" />}
             {currentBlueprint.virtualLab && (
               <VirtualLabMission key={`${currentBlueprint.id}-${isCompleted}`} id={currentBlueprint.virtualLab}

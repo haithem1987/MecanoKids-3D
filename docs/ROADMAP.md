@@ -13,6 +13,11 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [ ] MATHS-MANIPULATION — Faire de la construction l’apprentissage (retour utilisateur du 16 novembre)
+- La validation technique MATHS-MECANISMES ne valide pas le sens pédagogique. L’utilisateur ne comprenait pas le lien entre dix lames de réserve, le réglage 2 + 3 et le passage de la tortue.
+- Passerelle corrigée : deux vraies lames présentes dès le départ, trois lames à poser directement dans le tablier, comptage vivant 2 + 1 / 2 + 2 / 2 + 3, puis traversée. Une seule mission complète remplace les trois réglages abstraits. Attendre le retour utilisateur avant de généraliser cette approche.
+- À reprendre : fixations, fractions, aire, symétrie et engrenages. Faire porter l’action mathématique par les poses ou gestes réels ; aucun montage de stock suivi d’un formulaire. Rapport : `docs/qa/2026-11-16-addition-construite.md`.
+
 ### [x] MATHS-MECANISMES — Donner un sens concret aux six ateliers mathématiques (16 novembre)
 - Remplacement des plateaux abstraits par passerelles, treuil, plateau élévateur, charpente et engrenages fonctionnels dans la scène commune ; 18 missions avec conséquences animées et explications avant le montage.
 - FR/EN/AR et audio hors ligne, migration des anciens montages sans perte des récompenses. Anciennes observations conservées, nouvelles validations d’aventures fondées sur les essais mécaniques.
