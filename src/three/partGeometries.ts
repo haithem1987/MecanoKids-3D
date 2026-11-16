@@ -135,7 +135,12 @@ export function buildPartMeshGroup(
   const root = new THREE.Group();
   const [sx, sy, sz] = spec.scale;
 
-  switch (spec.shape) {
+  if(spec.mathGearTeeth){
+    const teeth=spec.mathGearTeeth,r=sx/2,outline=new THREE.Shape();
+    for(let i=0;i<teeth*4;i++){const angle=i*Math.PI*2/(teeth*4),radius=r+(i%4===1||i%4===2?.018:-.018),x=radius*Math.cos(angle),y=radius*Math.sin(angle);if(i===0)outline.moveTo(x,y);else outline.lineTo(x,y);}outline.closePath();
+    const geometry=new THREE.ExtrudeGeometry(outline,{depth:sy,bevelEnabled:false,steps:1});geometry.translate(0,0,-sy/2);geometry.rotateX(-Math.PI/2);root.add(new THREE.Mesh(geometry,mats.primary));
+    if(teeth===18){const drum=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.12,16),mats.metalAccent);drum.position.y=.135;root.add(drum);for(const y of [.075,.195]){const flange=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.015,16),mats.metalAccent);flange.position.y=y;root.add(flange);}}
+  } else switch (spec.shape) {
     case PartShapeKind.CAR_CHASSIS: {
       const mainDeck = new THREE.Mesh(makeBeveledBox(sx, sy, sz, 0.05), mats.primary);
       mainDeck.castShadow = true;

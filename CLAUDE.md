@@ -46,6 +46,8 @@ Ne pas « corriger » ça au passage : c'est la tâche P0-ARCH de `docs/ROADMAP.
 
 **Un seul espace de jeu.** Tout atelier, défi et essai scientifique se joue sur l’établi 3D principal (`WorkshopCanvas`). Le catalogue sélectionne un atelier et l’ouvre sur cet établi. Les panneaux et fiches servent aux consignes, aux commandes accessibles et aux conclusions. Ne jamais créer de mini-jeu, de simulateur ou de plateau parallèle dans le catalogue, une fiche ou une page distincte.
 
+**Une mission compréhensible avant de construire.** Chaque atelier annonce ce que l’enfant fabrique, pourquoi ses pièces sont utiles et ce qu’il pourra observer en l’actionnant. Les mathématiques servent une construction ou un mécanisme concret ; ne pas remplacer la mission par des nombres à régler ou un quiz de validation. Les essais montrent les conséquences du réglage dans la scène commune.
+
 **Pièces toujours accessibles.** La palette des pièces reste visible pendant toute la sélection et la pose. Ne jamais réintroduire d’ouverture/réduction d’établi ni de rétraction automatique. Sur PC et tablette, les vues caméra flottent sur le côté opposé ; sur téléphone portrait, les pièces forment un ruban permanent inférieur et les commandes une barre supérieure compacte. Les réglages secondaires sont dans un menu séparé. Les actions scientifiques principales restent accessibles sans défilement vertical.
 
 1. **Aucun achat, lien externe ni impression dans le parcours enfant.** Tout passe derrière la porte parents (`ParentalGateModal`, `utils/parentalGate.ts`).

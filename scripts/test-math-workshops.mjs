@@ -17,14 +17,16 @@ try{
    if(process.env.OCTO_QA_MODEL&&process.env.OCTO_QA_MODEL!==bp.id)continue;
    await activate(page.locator(`[data-catalog-world="${bp.category}"]`));await activate(page.locator(`[data-catalog-stage="${bp.id}"]`));
    const workbench=page.locator(`[data-workbench="${bp.id}"]`),canvas=workbench.locator('canvas');await canvas.waitFor();
+   await page.locator('[data-math-build-brief]').waitFor();
+   if(bp.kind==='fractions')await page.screenshot({path:`qa/math-v2-fractions-before-${language}.png`});
    for(const id of bp.parts){const card=page.locator(`[data-part-id="${id}"]:visible`);if(touch)await card.tap();else await card.press('Enter');await page.waitForTimeout(220);const point=await canvasTarget(canvas);if(touch)await page.touchscreen.tap(point.x,point.y);else await page.mouse.click(point.x,point.y);await page.waitForTimeout(65);assert.ok(await card.isDisabled(),`${language}/${bp.id}/${id}: piece must assemble`);}
    assert.equal(await workbench.getAttribute('data-assembly-complete'),'true');
    const mission=page.locator(`[data-math-activity="${bp.kind}"]`);await mission.waitFor();
    await page.locator('[data-floating-camera] button').first().click();await page.waitForTimeout(350);
-   const positions={addition:[-1.4,.27,.65],groups:[1.235,.275,.82],fractions:[-.9,.25,-.3],area:[-.2,.235,-.2],symmetry:[.85,.172,-.4],ratio:[-1,.245,-.4]};
+   const positions={addition:[-1.45,.205,.85],groups:[-.29,.22,1.28],fractions:[-1.4,.205,.85],area:[-.55,.185,1.12],symmetry:[.85,.46,-.25],ratio:[.20,1.08,.23]};
    const expected={addition:'1,0',groups:'4,5',fractions:'1,4',area:'2,2',symmetry:'1',ratio:'1,0'};
    const point=isoProjection(await canvasFraming(canvas),positions[bp.kind]);if(touch)await page.touchscreen.tap(point.x,point.y);else await page.mouse.click(point.x,point.y);
-   await page.waitForFunction(({kind,value})=>document.querySelector(`[data-math-activity="${kind}"]`)?.getAttribute('data-math-settings')===value,{kind:bp.kind,value:expected[bp.kind]});
+   await page.waitForFunction(({kind,value})=>document.querySelector(`[data-math-activity="${kind}"]`)?.getAttribute('data-math-settings')===value,{kind:bp.kind,value:expected[bp.kind]}).catch(async error=>{await page.screenshot({path:'qa/math-v2-click-failure.png'});console.log(bp.kind,await mission.getAttribute('data-math-settings'),point,await canvasFraming(canvas));throw error;});
    await openMission(mission);
    await mission.locator('[data-math-run]').click();await page.waitForFunction(kind=>document.querySelector(`[data-math-activity="${kind}"]`)?.getAttribute('data-math-phase')==='done',bp.kind);
    assert.equal(await mission.getAttribute('data-math-success'),'false','an intermediate arrangement must not validate the challenge');

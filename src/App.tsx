@@ -1,3 +1,5 @@
+import {MathWorkshopBrief} from './components/MathWorkshopBrief';
+import {getMathActivityKind} from './data/mathActivities';
 import {VehicleCategory} from './types/game';
 import {useAdventureContinuation} from './hooks/useAdventureContinuation';
 import {removeNotebook} from './utils/discoveryNotebook';
@@ -2270,8 +2272,9 @@ export default function App() {
           }}
         />
         </div>
-        {!activeDiagnostic && (currentBlueprint.virtualLab || scienceChallenges || ((usesWorkshopMissionPortal(currentBlueprint)) && isCompleted)) && (
+        {!activeDiagnostic && (getMathActivityKind(currentBlueprint.id) || currentBlueprint.virtualLab || scienceChallenges || ((usesWorkshopMissionPortal(currentBlueprint)) && isCompleted)) && (
           <div className="workbench-mission min-h-0 overflow-y-auto p-2">
+            {getMathActivityKind(currentBlueprint.id)&&!isCompleted&&<MathWorkshopBrief blueprintId={currentBlueprint.id} language={language}/>}
             {(usesWorkshopMissionPortal(currentBlueprint)) && <div id="workbench-trial-controls" />}
             {currentBlueprint.virtualLab && (
               <VirtualLabMission key={`${currentBlueprint.id}-${isCompleted}`} id={currentBlueprint.virtualLab}

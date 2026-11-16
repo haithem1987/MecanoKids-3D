@@ -27,7 +27,7 @@ export type AdventureId = typeof WORKSHOP_ADVENTURES[number]['id'];
 export function adventureProgress(steps: readonly string[], progress: Pick<PlayerProgress, 'completedStages'>, notebook?: DiscoveryNotebook, requiresPlay: (id: string) => boolean = () => false) {
   const states = steps.map(id => {
     const built = Boolean(progress.completedStages[id]?.completed), requiresObservation = requiresPlay(id);
-    const observed = Boolean(notebook?.observations.some(entry => entry.blueprintId === id && entry.success === true));
+    const observed = Boolean(notebook?.observations.some(entry => entry.blueprintId === id && entry.success === true && (!id.startsWith('math-')||entry.kind===`${id}-mechanism-v2`)));
     return { id, built, requiresObservation, observed, completed: built && (!requiresObservation || observed) };
   });
   const next = states.find(step => !step.completed);

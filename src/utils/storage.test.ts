@@ -121,3 +121,14 @@ describe('sanitizeMultiProfileStore', () => {
     expect(store.activeProfileId).toBe('known')
   })
 })
+
+describe('migration des ateliers mathématiques mécaniques',()=>{
+ it('retire les pièces sans appui des anciens plateaux et conserve les récompenses',()=>{
+  const progress=createDefaultProgress('fr',true);progress.inProgressStages['math-fractions']={placedPartIds:['base','reference',...Array.from({length:8},(_,i)=>`token-${i}`)],mistakesCount:0,updatedAt:1};progress.completedStages['math-fractions']={completed:true,stars:3,bestMistakes:0};
+  const restored=sanitizeProgress(progress);expect(restored.inProgressStages['math-fractions'].placedPartIds).toEqual(['base']);expect(restored.completedStages['math-fractions'].stars).toBe(3);
+ });
+ it('conserve un mécanisme mathématique actuel assemblé',()=>{
+  const progress=createDefaultProgress('fr',true);for(const bp of VEHICLE_BLUEPRINTS.filter(bp=>bp.id.startsWith('math-')))progress.inProgressStages[bp.id]={placedPartIds:bp.parts.map(part=>part.id),mistakesCount:0,updatedAt:1};
+  const restored=sanitizeProgress(progress);for(const bp of VEHICLE_BLUEPRINTS.filter(bp=>bp.id.startsWith('math-')))expect(restored.inProgressStages[bp.id].placedPartIds).toEqual(bp.parts.map(part=>part.id));
+ });
+});

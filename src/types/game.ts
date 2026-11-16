@@ -189,6 +189,7 @@ export interface PartSpec {
   temporarySupport?: true;
   /** Steel wheels with flanges, connected by a railway axle rather than road tyres. */
   railWheelset?: true;
+  mathGearTeeth?: number;
   railNose?: true;
 }
 

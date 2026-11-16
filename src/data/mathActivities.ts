@@ -11,10 +11,10 @@ export function rotateMathMask(mask:number){let result=0;for(let i=0;i<9;i++)if(
 export function mathControls(kind:MathActivityKind,level:number):readonly MathControl[]{
  if(kind==='addition')return[{id:'a',label:'blue',options:numbers(6)},{id:'b',label:'yellow',options:numbers(6)}];
  if(kind==='groups')return[{id:'a',label:'rows',options:numbers(4,1)},{id:'b',label:'columns',options:numbers(5,1)}];
- if(kind==='fractions')return[{id:'a',label:'numerator',options:numbers(9)},{id:'b',label:'denominator',options:[{value:4},{value:8}]}];
+ if(kind==='fractions')return[{id:'a',label:'numerator',options:numbers(9)},{id:'b',label:'denominator',options:[{value:4,label:'quarter'},{value:8,label:'eighth'}]}];
  if(kind==='area')return[{id:'a',label:'width',options:numbers(4,1)},{id:'b',label:'length',options:numbers(4,1)}];
  if(kind==='symmetry'){const mask=mathReferenceMask(level);return[{id:'a',label:'pattern',options:[{value:0,label:'empty'},{value:mask,label:'copy'},{value:rotateMathMask(mask),label:'rotated'},{value:reflectMathMask(mask),label:'reflected'}]}];}
- return[{id:'a',label:'blue',options:numbers(7)},{id:'b',label:'yellow',options:numbers(10)}];
+ return[{id:'a',label:'drivenTurns',options:numbers(7)},{id:'b',label:'driveTurns',options:numbers(10)}];
 }
 export function mathSolution(kind:MathActivityKind,level:number):readonly number[]{
  const l=Math.min(2,Math.max(0,level));
@@ -28,9 +28,9 @@ export function mathSolution(kind:MathActivityKind,level:number):readonly number
 export function mathSuccess(kind:MathActivityKind,settings:readonly number[],level:number){
  const target=mathSolution(kind,level),[a=0,b=0]=settings;
  if(kind==='addition')return Number.isInteger(a)&&Number.isInteger(b)&&a>=0&&a<=5&&b>=0&&b<=5&&a+b===target[0]+target[1];
- if(kind==='groups')return Number.isInteger(a)&&Number.isInteger(b)&&a>=1&&a<=4&&b>=1&&b<=5&&a*b===target[0]*target[1];
+ if(kind==='groups')return Number.isInteger(a)&&Number.isInteger(b)&&a>=1&&a<=4&&b>=1&&b<=5&&a===target[0]&&b===target[1];
  if(kind==='fractions')return a*target[1]===target[0]*b&&(b===4||b===8);
- if(kind==='area')return a*b===target[0]*target[1]&&2*(a+b)===2*(target[0]+target[1]);
+ if(kind==='area')return a===target[0]&&b===target[1];
  return target.every((value,index)=>settings[index]===value);
 }
 export function mathEquation(kind:MathActivityKind,settings:readonly number[],level:number,target=false){
@@ -40,7 +40,7 @@ export function mathEquation(kind:MathActivityKind,settings:readonly number[],le
  if(kind==='fractions')return `${a} / ${b}`;
  if(kind==='area')return `A = ${a*b} u² · P = ${2*(a+b)} u`;
  if(kind==='symmetry')return '↔';
- return `${level+1} × (2 : 3) → ${a} : ${b}`;
+ return `12 × ${b} ${12*b===18*a?'=':'≠'} 18 × ${a}`;
 }
 /** The same mutations are used by direct 3D taps and accessible controls. */
 export function mathTap(kind:MathActivityKind,index:number,settings:readonly number[]):readonly number[]{
@@ -51,4 +51,13 @@ export function mathTap(kind:MathActivityKind,index:number,settings:readonly num
  if(kind==='area')return[index%4+1,Math.floor(index/4)+1];
  if(kind==='symmetry')return[a^(1<<index)];
  return index<6?[(a+1)%7,b]:[a,(b+1)%10];
+}
+
+export type MathFeedback='success'|'shortBridge'|'longBridge'|'fixings'|'platform'|'braces'|'transmission';
+export function mathFeedback(kind:MathActivityKind,settings:readonly number[],level:number):MathFeedback{
+ if(mathSuccess(kind,settings,level))return 'success';
+ const [a=0,b=0]=settings,target=mathSolution(kind,level);
+ if(kind==='addition')return a+b<target[0]+target[1]?'shortBridge':'longBridge';
+ if(kind==='fractions')return a/b<target[0]/target[1]?'shortBridge':'longBridge';
+ return kind==='groups'?'fixings':kind==='area'?'platform':kind==='symmetry'?'braces':'transmission';
 }

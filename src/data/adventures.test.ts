@@ -37,3 +37,5 @@ describe('aventures dans le catalogue commun', () => {
     expect(state).toMatchObject({ built: 0, completed: 0, nextAction: 'build', finished: false });
   });
 });
+
+it('ne valide pas les nouvelles missions mécaniques avec les anciens exercices abstraits',()=>{const progress={completedStages:{'math-fractions':{completed:true,stars:3,bestMistakes:0}}};const old={version:1 as const,observations:[{blueprintId:'math-fractions',kind:'math-fractions',result:['a','b','c'] as const,success:true,observedAt:1,attempts:1}]};expect(adventureProgress(['math-fractions'],progress,old,()=>true).finished).toBe(false);old.observations[0].kind='math-fractions-mechanism-v2';expect(adventureProgress(['math-fractions'],progress,old,()=>true).finished).toBe(true);});

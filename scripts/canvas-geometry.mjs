@@ -4,10 +4,11 @@ export async function canvasFraming(canvas){
   const rect=node.getBoundingClientRect(),main=node.closest('main'),phone=matchMedia('(max-width: 639px), (max-height: 500px) and (pointer: coarse)').matches,landscape=phone&&matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)').matches,portrait=phone&&!landscape,smallLandscape=landscape&&rect.width<640;
   let left=8,right=8,top=8,bottom=8;
   const inline=panel=>{if(panel.x+panel.width/2<rect.x+rect.width/2)left=Math.max(left,panel.right-rect.x+12);else right=Math.max(right,rect.right-panel.left+12);};
-  for(const part of main?.querySelectorAll('[data-parts-palette],[data-floating-camera],[data-phone-toolbar],.hud-title,.workbench-mission')??[]){
+  for(const part of main?.querySelectorAll('[data-parts-palette],[data-floating-camera],[data-phone-toolbar],.hud-title,.workbench-mission,.hud-completion')??[]){
    const panel=part.getBoundingClientRect();if(!panel.width||!panel.height)continue;
+   if(part.matches('.hud-completion')){if(!phone&&main?.querySelector('[data-math-mission-brief]'))bottom=Math.max(bottom,rect.bottom-panel.top+8);continue;}
    if(part.matches('.hud-title')){if(portrait)top=Math.max(top,panel.bottom-rect.top+8);continue;}
-   if(part.matches('.workbench-mission')){if(phone){if(portrait||smallLandscape)bottom=Math.max(bottom,rect.bottom-panel.top+8);else inline(panel);}continue;}
+   if(part.matches('.workbench-mission')){if(!phone&&part.querySelector('[data-math-build-brief],[data-math-mission-brief]')){if(rect.width<900&&rect.height>rect.width)top=Math.max(top,panel.bottom-rect.top+12);else inline(panel);continue;}if(phone){if(portrait||smallLandscape)bottom=Math.max(bottom,rect.bottom-panel.top+8);else inline(panel);}continue;}
    if(phone&&portrait){if(part.matches('[data-parts-palette]'))bottom=Math.max(bottom,rect.bottom-panel.top+8);else if(part.matches('[data-phone-toolbar]'))top=Math.max(top,panel.bottom-rect.top+8);}else inline(panel);
   }
   return{x:rect.x,y:rect.y,width:rect.width,height:rect.height,aspect:Math.min(Math.max(1,rect.width-left-right),Math.max(1,rect.height-top-bottom))/rect.height,offset:(right-left)/2,offsetY:(bottom-top)/2};

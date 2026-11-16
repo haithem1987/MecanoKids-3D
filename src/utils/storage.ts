@@ -317,7 +317,13 @@ export function sanitizeProgress(raw: unknown): PlayerProgress {
             (id): id is string => typeof id === 'string' && validPartIds.has(id),
           )
         : [];
-      const uniquePlaced = Array.from(new Set(placedPartIds));
+      let uniquePlaced = Array.from(new Set(placedPartIds));
+      if(bpId.startsWith('math-')){
+        // Old counting boards have no mechanical supports. Keep only still-connected parts.
+        const saved=new Set(uniquePlaced),connected=new Set<string>();
+        for(const part of bp.parts)if(saved.has(part.id)&&part.dependsOn.every(id=>connected.has(id)))connected.add(part.id);
+        uniquePlaced=[...connected];
+      }
       inProgressStages[bpId] = {
         placedPartIds: uniquePlaced,
         mistakesCount:

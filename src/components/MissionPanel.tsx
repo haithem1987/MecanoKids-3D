@@ -27,15 +27,16 @@ function FieldPager({fields,language}:{fields:readonly MissionField[];language:L
  </div>;
 }
 type DataAttributes={ [key:`data-${string}`]:string|number|boolean|undefined };
-export function MissionPanel({language,title,ready=true,fields=[],actions,info,status,onListen,speaking=false,attributes={},closeOnChange=false}:{
- language:LanguageCode;title:string;ready?:boolean;fields?:readonly MissionField[];actions?:ReactNode;info:ReactNode;status?:ReactNode;
+export function MissionPanel({language,title,ready=true,fields=[],actions,info,status,onListen,speaking=false,attributes={},closeOnChange=false,intro,initiallyOpen=false}:{
+ intro?:ReactNode;initiallyOpen?:boolean;language:LanguageCode;title:string;ready?:boolean;fields?:readonly MissionField[];actions?:ReactNode;info:ReactNode;status?:ReactNode;
  onListen?:()=>void;speaking?:boolean;attributes?:DataAttributes;closeOnChange?:boolean;
 }){
- const phone=usePhoneLayout(),[controlsOpen,setControlsOpen]=useState(false),[infoOpen,setInfoOpen]=useState(false);
+ const phone=usePhoneLayout(),[controlsOpen,setControlsOpen]=useState(initiallyOpen),[infoOpen,setInfoOpen]=useState(false);
  const root=useRef<HTMLElement|null>(null),infoId=useId(),locale=language==='fr'?0:language==='en'?1:2,t=MISSION_PANEL_TEXT;
  useEffect(()=>{const outside=(event:PointerEvent)=>{if(root.current&&!root.current.contains(event.target as Node)){setControlsOpen(false);setInfoOpen(false);}};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[]);
  const listenLabel=speaking?UI_TRANSLATIONS[language].voiceStopBtn:SCIENCE_CHALLENGE_TEXT.listen[locale];
  const content=<>
+  {intro}
   {phone&&ready&&<div className="mission-status line-clamp-1 text-xs text-sky-950" role="status" aria-live="polite">{status||title}</div>}
   {ready&&fields.length>0&&<div data-mission-parameters className="mission-parameters" hidden={phone&&!controlsOpen} style={{display:phone&&!controlsOpen?'none':undefined}} onChangeCapture={()=>{if(phone&&closeOnChange)setControlsOpen(false);}}><FieldPager fields={fields} language={language}/></div>}
   <div className="mission-actions flex gap-1" onClickCapture={event=>{if((event.target as HTMLElement).closest('[data-mission-primary],[data-mission-reset]')){setControlsOpen(false);setInfoOpen(false);}}}>
@@ -50,7 +51,7 @@ export function MissionPanel({language,title,ready=true,fields=[],actions,info,s
   </section>}
  </>;
  if(phone)return <section {...attributes} ref={element=>{root.current=element;}} data-mission-shell data-phone-mission data-ready={ready} className="mission-panel" aria-label={title} onKeyDown={event=>{if(event.key==='Escape'){setControlsOpen(false);setInfoOpen(false);event.stopPropagation();}}}>{content}</section>;
- return <details {...attributes} ref={element=>{root.current=element;}} data-mission-shell data-ready={ready} className="mission-panel rounded-xl border border-sky-200 bg-white p-2 text-sky-950 shadow">
+ return <details {...attributes} ref={element=>{root.current=element;}} open={initiallyOpen||undefined} data-mission-shell data-ready={ready} className="mission-panel rounded-xl border border-sky-200 bg-white p-2 text-sky-950 shadow">
   <summary className="min-h-16 cursor-pointer content-center px-2 font-bold">{title}{status&&<span className="block line-clamp-1 text-xs font-normal" role="status">{status}</span>}</summary>
   <div className="mission-content space-y-2">{content}</div>
  </details>;

@@ -3,14 +3,15 @@ import {MATH_ACTIVITY_KINDS,getMathActivityKind,mathControls,mathReferenceMask,m
 import {createMathBlueprints} from './mathBlueprints';
 import {VehicleCategory} from '../types/game';
 describe('mathématiques manipulables',()=>{
- it('prépare six assemblages réels sans chevauchement entre les éléments à compter',()=>{
+ it('prépare six assemblages réels avec une structure porteuse et des pièces de réglage',()=>{
   const blueprints=createMathBlueprints(VehicleCategory.PHYSICS);
   expect(blueprints).toHaveLength(6);
   for(const bp of blueprints){
    expect(getMathActivityKind(bp.id)).toBeDefined();expect(bp.parts.length).toBeGreaterThanOrEqual(10);
    const placed=new Set<string>();for(const part of bp.parts){expect(part.dependsOn.every(id=>placed.has(id))).toBe(true);placed.add(part.id);expect(part.scale.every(value=>value>0&&Number.isFinite(value))).toBe(true);}
    const tokens=bp.parts.filter(part=>part.id.startsWith('token-'));
-   for(const a of tokens)for(const b of tokens)if(a!==b){const overlaps=a.targetPos.every((value,index)=>Math.abs(value-b.targetPos[index])<(a.scale[index]+b.scale[index])/2-.001);expect(overlaps,`${bp.id}:${a.id}/${b.id}`).toBe(false);}
+   expect(bp.parts.some(part=>part.id==='left-foot'||part.id==='cross-beam')).toBe(true);
+   for(const a of tokens)for(const b of tokens)if(a!==b&&bp.id!=='math-symmetry'){const overlaps=a.targetPos.every((value,index)=>Math.abs(value-b.targetPos[index])<(a.scale[index]+b.scale[index])/2-.001);expect(overlaps,`${bp.id}:${a.id}/${b.id}`).toBe(false);}
   }
  });
  it('propose dix-huit défis résolubles par les mêmes commandes accessibles',()=>{
@@ -20,10 +21,10 @@ describe('mathématiques manipulables',()=>{
    expect(mathSuccess(kind,mathStart(kind),level)).toBe(false);
   }
  });
- it('accepte les décompositions additives, groupes commutés et fractions équivalentes',()=>{
+ it('accepte les décompositions additives, fractions équivalentes et respecte le gabarit mécanique',()=>{
   expect(mathSuccess('addition',[3,2],0)).toBe(true);expect(mathSuccess('addition',[0,5],0)).toBe(true);expect(mathSuccess('addition',[-1,6],0)).toBe(false);
-  expect(mathSuccess('groups',[4,3],1)).toBe(true);expect(mathSuccess('fractions',[4,8],0)).toBe(true);expect(mathSuccess('fractions',[6,8],1)).toBe(true);
-  expect(mathSuccess('area',[2,3],0)).toBe(true);expect(mathSuccess('ratio',[3,2],0)).toBe(false);
+  expect(mathSuccess('groups',[4,3],1)).toBe(false);expect(mathSuccess('fractions',[4,8],0)).toBe(true);expect(mathSuccess('fractions',[6,8],1)).toBe(true);
+  expect(mathSuccess('area',[2,3],0)).toBe(false);expect(mathSuccess('ratio',[3,2],0)).toBe(false);
  });
  it('atteint chaque objectif par la manipulation directe des objets du plateau',()=>{
   for(const kind of MATH_ACTIVITY_KINDS)for(let level=0;level<3;level++){

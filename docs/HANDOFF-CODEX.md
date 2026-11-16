@@ -1,3 +1,9 @@
+## Lot du 16 novembre — refonte mathématique mécanique
+
+Les six prototypes mathématiques du 8 novembre sont remplacés par des mécanismes concrets, avec mission expliquée avant montage, trois défis et essai animé dans la même scène. Passerelles addition/fractions, fixations de treuil, plateau élévateur, charpente symétrique, engrenages 12/18 et tambour. Audio FR/EN/AR local actualisé. Migration des montages sauvegardés, récompenses et anciennes observations conservées.
+
+673 tests et TypeScript passent ; 18 montages FR/EN/AR, 54 missions et six animations vérifiés. Build isolé et essai hors ligne réussis. Voir `docs/qa/2026-11-16-maths-mecanismes.md`. La compréhension doit encore être testée par des enfants ; aucun déploiement. Serveur local port 7302, accès admin de développement `/?admin=1`.
+
 ## Lot du 8 novembre — catalogue jouable, maths et retours enfant
 
 157 ateliers ont une activité après construction ; 17 aventures, 6 nouveaux ateliers mathématiques (18 défis), 11 nouveaux essais scientifiques, 5 trains corrigés et bouton de silence commun. Navigation vérifiée sur tout le catalogue et continuation selon l'aventure sélectionnée. Le dernier atelier propose toujours Autre atelier. Pas de réagencement téléphone.

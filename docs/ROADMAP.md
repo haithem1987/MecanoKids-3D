@@ -13,6 +13,11 @@ Les tâches marquées 🧑 demandent une décision ou une action humaine : prép
 
 ## P0 — Bloquants (avant tout le reste)
 
+### [x] MATHS-MECANISMES — Donner un sens concret aux six ateliers mathématiques (16 novembre)
+- Remplacement des plateaux abstraits par passerelles, treuil, plateau élévateur, charpente et engrenages fonctionnels dans la scène commune ; 18 missions avec conséquences animées et explications avant le montage.
+- FR/EN/AR et audio hors ligne, migration des anciens montages sans perte des récompenses. Anciennes observations conservées, nouvelles validations d’aventures fondées sur les essais mécaniques.
+- Validation technique : 673 tests, 18 montages trilingues, 54 missions, six essais animés et build hors ligne. Rapport : `docs/qa/2026-11-16-maths-mecanismes.md`. Compréhension pédagogique à confirmer avec les enfants avant production ; aucun déploiement.
+
 ### [x] JEU-AVENTURES-CATALOGUE — Généraliser le jeu après assemblage et ouvrir les maths (8 novembre)
 - 157 ateliers jouables après assemblage, 111 véhicules répartis en huit familles, onze nouveaux essais scientifiques et deux expériences de patrimoine.
 - Dix-sept aventures avec recherche/filtres et étapes « construit / essai réussi », reprise cohérente de l'aventure, accès à un autre atelier à toute fin de montage.
